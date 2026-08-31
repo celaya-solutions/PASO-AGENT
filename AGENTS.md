@@ -354,6 +354,7 @@ Mechanics only; policy lives above.
 
 - 2026-08-31: Published this checkout as the PASO AGENT fork; this commit triggers its first Railway deployment without changing product code.
 - 2026-08-31: Made Docker cache mounts portable so Railway can validate and build the image.
+- 2026-08-31: Scoped Docker cache IDs to the PASO AGENT Railway service after its builder required service-prefixed IDs.
 
 - Before simulator/emulator testing, check real iOS/Android devices.
 - "restart iOS/Android apps" = rebuild/reinstall/relaunch, not kill/launch.
