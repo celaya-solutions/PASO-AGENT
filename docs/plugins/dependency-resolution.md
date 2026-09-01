@@ -1,16 +1,16 @@
 ---
-summary: "How OpenClaw installs plugin packages and resolves plugin dependencies"
+summary: "How PASO installs plugin packages and resolves plugin dependencies"
 read_when:
   - You are debugging plugin package installs
   - You are changing plugin startup, doctor, or package-manager install behavior
-  - You are maintaining packaged OpenClaw installs or bundled plugin manifests
+  - You are maintaining packaged PASO installs or bundled plugin manifests
 title: "Plugin dependency resolution"
 sidebarTitle: "Dependencies"
 ---
 
-OpenClaw handles plugin dependencies at install/update time only. Runtime
+PASO handles plugin dependencies at install/update time only. Runtime
 loading never runs a package manager, repairs a dependency tree, or mutates
-the OpenClaw package directory.
+the PASO package directory.
 
 ## Responsibility split
 
@@ -18,11 +18,11 @@ Plugin packages own their dependency graph:
 
 - Runtime dependencies live in the plugin package's `dependencies` or
   `optionalDependencies`.
-- SDK/core imports are peer or supplied OpenClaw imports.
+- SDK/core imports are peer or supplied PASO imports.
 - Local development plugins bring their own already-installed dependencies.
-- npm and git plugins install into OpenClaw-owned package roots.
+- npm and git plugins install into PASO-owned package roots.
 
-OpenClaw owns only the plugin lifecycle:
+PASO owns only the plugin lifecycle:
 
 - Discover the plugin source.
 - Install or update the package when explicitly requested.
@@ -32,7 +32,7 @@ OpenClaw owns only the plugin lifecycle:
 
 ## Install roots
 
-OpenClaw uses stable per-source roots:
+PASO uses stable per-source roots:
 
 - npm packages install into per-plugin projects under
   `~/.openclaw/npm/projects/<encoded-package>`.
@@ -48,7 +48,7 @@ npm install --omit=dev --omit=peer --legacy-peer-deps --ignore-scripts --no-audi
 ```
 
 `openclaw plugins install npm-pack:<path.tgz>` uses the same per-plugin npm
-project root for a local npm-pack tarball: OpenClaw reads the tarball's npm
+project root for a local npm-pack tarball: PASO reads the tarball's npm
 metadata, adds it to the managed project as a copied `file:` dependency, runs
 the normal npm install above, then verifies the installed lockfile metadata
 before trusting the plugin. This path exists for package-acceptance and
@@ -57,7 +57,7 @@ registry artifact it simulates.
 
 Use `npm-pack:` when testing official or external plugin packages before
 publish. A raw archive or path install is useful for local debugging, but it
-does not prove the same dependency path as an installed npm or ClawHub
+does not prove the same dependency path as an installed npm or external-catalog
 package. `npm-pack:` proves the managed package install shape; it is not, by
 itself, proof that the plugin is catalog-linked official content.
 
@@ -76,11 +76,11 @@ diagnostic, but it is not package-acceptance proof because the next install or
 update recreates the project from package metadata.
 
 npm may hoist transitive dependencies to the per-plugin project's
-`node_modules` beside the plugin package. OpenClaw scans the managed project
+`node_modules` beside the plugin package. PASO scans the managed project
 root before trusting the install, and removes that project on uninstall, so
 hoisted runtime dependencies stay inside that plugin's cleanup boundary.
 
-OpenClaw-owned npm plugin packages never ship npm lockfiles. The repository
+PASO-owned npm plugin packages never ship npm lockfiles. The repository
 uses `pnpm-lock.yaml` as its committed product dependency review boundary, then
 generates npm package locks only in temporary directories to validate the
 publishable dependency graph:
@@ -93,7 +93,7 @@ pnpm deps:npm-lock:check:changed
 The checker strips plugin `devDependencies`, applies the workspace override
 policy, and rejects generated versions absent from `pnpm-lock.yaml`. Nothing
 is written into the checkout. Third-party plugin packages may still contain
-lockfiles according to their own packaging policy; OpenClaw's installer leaves
+lockfiles according to their own packaging policy; PASO's installer leaves
 that npm behavior to the installed npm version.
 
 Before treating a local package as release-candidate proof, inspect the
@@ -118,7 +118,7 @@ tmpdir=$(mktemp -d)
 rm -rf "$tmpdir"
 ```
 
-OpenClaw-owned npm plugin packages can also publish with explicit
+Framework plugin packages intended for npm or the external catalog can also publish with explicit
 `bundledDependencies`. The npm publish path overlays the runtime dependency
 name list, strips dev-only workspace metadata from the published manifest,
 stages a separate package directory without source `node_modules`, and runs a
@@ -127,7 +127,7 @@ the plugin tarball with those dependency files included and removes the staging
 directory. The pnpm-owned source dependency tree stays unchanged.
 
 When a direct runtime dependency has an approved workspace patch for its exact version, npm and
-ClawHub packaging include that dependency from the matching frozen pnpm
+external-catalog packaging include that dependency from the matching frozen pnpm
 install. Packaging verifies the installed patch identity and packs its bytes
 into the temporary dependency install, then restores the original public
 version specifier in the published manifest. This also applies when bundling
@@ -146,10 +146,10 @@ bundle its full dependency tree. See
 [dependency locking](/gateway/security/dependency-locking).
 
 Plugins that import `openclaw/plugin-sdk/*` declare `openclaw` as a peer
-dependency. OpenClaw does not let npm install a separate registry copy of the
+dependency. PASO does not let npm install a separate registry copy of the
 host package into a managed project, because a stale host package can affect
 npm's peer resolution inside that plugin. Managed npm installs skip npm peer
-resolution/materialization, and OpenClaw reasserts plugin-local
+resolution/materialization, and PASO reasserts plugin-local
 `node_modules/openclaw` links for installed packages that declare the host
 peer, after install or update.
 
@@ -165,7 +165,7 @@ for a normal Node package.
 
 ## Local plugins
 
-Local plugins are developer-controlled directories. OpenClaw never runs
+Local plugins are developer-controlled directories. PASO never runs
 `npm install`, `pnpm install`, or dependency repair for them; if a local
 plugin has dependencies, install them in that plugin before loading it.
 
@@ -187,16 +187,16 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` cleans legacy OpenClaw-generated dependency state and can
+`doctor --fix` cleans legacy PASO-generated dependency state and can
 recover downloadable plugins that are missing from local install records when
 config still references them. Doctor does not repair dependencies for an
 already-installed local plugin.
 
 ## Bundled plugins
 
-Lightweight and core-critical bundled plugins ship as part of OpenClaw. They
+Lightweight and core-critical bundled plugins ship as part of PASO. They
 should either carry no heavy runtime dependency tree, or move out to a
-downloadable package on ClawHub/npm.
+downloadable package on the external catalog or npm.
 
 For the current generated list of plugins that ship in the core package,
 install externally, or stay source-only, see
@@ -204,15 +204,15 @@ install externally, or stay source-only, see
 
 Bundled plugin manifests must not request dependency staging. Large or
 optional plugin functionality should be packaged as a normal plugin and
-installed through the same npm/git/ClawHub path as third-party plugins.
+installed through the same npm/git/external-catalog path as third-party plugins.
 
 Internal bundled plugins retain their dependency declarations in their own
 manifests. Runtime dependencies that are not compiled into `dist` must also
-be declared in the root OpenClaw package's `dependencies` or
+be declared in the root PASO package's `dependencies` or
 `optionalDependencies`, because the root package ships their runtime.
 External plugins keep their runtime dependencies plugin-local.
 
-In source checkouts, use `pnpm install` followed by `pnpm build`. OpenClaw
+In source checkouts, use `pnpm install` followed by `pnpm build`. PASO
 prefers `dist/extensions`, then `dist-runtime/extensions`, and falls back to
 `extensions` when neither built tree is available. pnpm owns the source dependency
 trees: postinstall and build preparation preserve plugin-local versions and
@@ -223,12 +223,13 @@ Rebuild to pick up source edits when using a built tree. Source checkout develop
 
 | Install shape                                   | Bundled plugin location                              | Dependency owner                                       |
 | ----------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------ |
-| Global npm install                              | Built runtime tree inside the package                | Root OpenClaw package for internal bundled runtime     |
+| Global upstream compatibility npm install       | Built runtime tree inside the package                | Root upstream OpenClaw package for its bundled runtime |
 | Git checkout plus `pnpm install` + `pnpm build` | `dist/extensions`, then `dist-runtime/extensions`    | Root runtime declarations plus plugin manifests        |
 | Unbuilt source checkout                         | `extensions/<id>` fallback when no built tree exists | pnpm workspace with explicit root runtime dependencies |
-| `openclaw plugins install ...`                  | Managed npm project/git/ClawHub root                 | The plugin install/update flow                         |
+| `openclaw plugins install ...`                  | Managed npm project/git/external-catalog root        | The plugin install/update flow                         |
 
-For the global npm row, use
+The global npm row is the upstream OpenClaw compatibility package, not a PASO
+source release. If you intentionally use that compatibility install, run
 `npm install -g openclaw --allow-scripts=openclaw` on npm 12 or npm 11.16+.
 On npm 11.15 and earlier, omit `--allow-scripts=openclaw`. Plugin dependency
 convergence remains intentionally script-disabled and continues to use the
@@ -261,7 +262,7 @@ this setup or runs a package manager.
 
 ## Legacy cleanup
 
-Older OpenClaw versions generated bundled-plugin dependency roots at startup
+Older PASO versions generated bundled-plugin dependency roots at startup
 or during doctor repair. Current doctor cleanup removes those stale
 directories and symlinks with `--fix`, including old `plugin-runtime-deps`
 roots, global Node-prefix package symlinks pointing at pruned

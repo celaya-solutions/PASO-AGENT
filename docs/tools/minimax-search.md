@@ -7,7 +7,7 @@ read_when:
 title: "MiniMax search"
 ---
 
-OpenClaw supports MiniMax as a `web_search` provider through the MiniMax
+PASO supports MiniMax as a `web_search` provider through the MiniMax
 Token Plan search API. It returns structured search results with titles, URLs,
 snippets, and related queries.
 
@@ -29,7 +29,7 @@ snippets, and related queries.
   </Step>
 </Steps>
 
-OpenClaw also accepts `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN`, and
+PASO also accepts `MINIMAX_CODING_API_KEY`, `MINIMAX_OAUTH_TOKEN`, and
 `MINIMAX_API_KEY` as env aliases, checked in that order after
 `MINIMAX_CODE_PLAN_KEY`. `MINIMAX_API_KEY` should point at a search-enabled
 Token Plan credential; ordinary MiniMax model API keys may not be accepted by
@@ -72,7 +72,7 @@ MiniMax Search uses these endpoints:
 - Global: `https://api.minimax.io/v1/coding_plan/search`
 - CN: `https://api.minimaxi.com/v1/coding_plan/search`
 
-If `plugins.entries.minimax.config.webSearch.region` is unset, OpenClaw resolves
+If `plugins.entries.minimax.config.webSearch.region` is unset, PASO resolves
 the region in this order:
 
 1. Plugin-owned `webSearch.region`
@@ -90,10 +90,10 @@ can satisfy the MiniMax Search bearer credential.
 
 ## Supported parameters
 
-| Parameter | Type    | Constraints     | Description                                                                 |
-| --------- | ------- | --------------- | --------------------------------------------------------------------------- |
-| `query`   | string  | required        | Search query string.                                                        |
-| `count`   | integer | 1-10, default 5 | Number of results to return. OpenClaw trims the returned list to this size. |
+| Parameter | Type    | Constraints     | Description                                                             |
+| --------- | ------- | --------------- | ----------------------------------------------------------------------- |
+| `query`   | string  | required        | Search query string.                                                    |
+| `count`   | integer | 1-10, default 5 | Number of results to return. PASO trims the returned list to this size. |
 
 Provider-specific filters are not currently supported.
 

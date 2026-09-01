@@ -16,7 +16,6 @@ import { VERSION } from "../version.js";
 import { isTruthyEnvValue } from "./env.js";
 import { executeSqliteQueryTakeFirstSync, getNodeSqliteKysely } from "./kysely-sync.js";
 
-const DEFAULT_TELEMETRY_ENDPOINT = "https://telemetry.openclaw.ai/api/latest-version";
 const TELEMETRY_STATE_KEY = "telemetry.updateCheck";
 const TELEMETRY_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const TELEMETRY_FAILURE_BACKOFF_MS = 60 * 1000;
@@ -57,6 +56,7 @@ type TelemetryStatusReason =
   | "automated-environment"
   | "do-not-track"
   | "config-disabled"
+  | "endpoint-unconfigured"
   | "never-asked"
   | "update-disabled";
 
@@ -123,8 +123,13 @@ function countRecentSessions(nowMs: number): number {
   }
 }
 
-function resolveTelemetryEndpoint(): string {
-  return process.env.OPENCLAW_TELEMETRY_ENDPOINT?.trim() || DEFAULT_TELEMETRY_ENDPOINT;
+function resolveTelemetryEndpoint(): string | null {
+  return process.env.OPENCLAW_TELEMETRY_ENDPOINT?.trim() || null;
+}
+
+/** PASO never sends usage or update-check requests without an operator endpoint. */
+export function hasConfiguredTelemetryEndpoint(): boolean {
+  return resolveTelemetryEndpoint() !== null;
 }
 
 export function buildTelemetryUserAgent(surface: TelemetrySurface): string {
@@ -143,7 +148,7 @@ function readTelemetryState(): TelemetryState {
 export function resolveTelemetryStatus(config: OpenClawConfig): {
   enabled: boolean;
   reason: TelemetryStatusReason;
-  endpoint: string;
+  endpoint: string | null;
   lastPingAt?: number;
 } {
   let reason: TelemetryStatusReason;
@@ -153,6 +158,8 @@ export function resolveTelemetryStatus(config: OpenClawConfig): {
     reason = "update-disabled";
   } else if (isDoNotTrackEnabled()) {
     reason = "do-not-track";
+  } else if (!hasConfiguredTelemetryEndpoint()) {
+    reason = "endpoint-unconfigured";
   } else if (config.telemetry?.enabled === true) {
     reason = "enabled";
   } else if (config.telemetry?.enabled === false || config.telemetry?.consentedAt) {
@@ -235,12 +242,16 @@ export async function checkTelemetryUpdate(
     return null;
   }
 
+  const endpoint = resolveTelemetryEndpoint();
+  if (!endpoint) {
+    return null;
+  }
+
   const state = readTelemetryState();
   const cached = state.latestVersion
     ? { version: state.latestVersion, ...(state.note ? { note: state.note } : {}) }
     : null;
   const nowMs = options.nowMs ?? Date.now();
-  const endpoint = resolveTelemetryEndpoint();
   const stateDirectory = process.env.OPENCLAW_STATE_DIR;
   if (
     state.lastPingAt !== undefined &&

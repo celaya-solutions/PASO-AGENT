@@ -2052,17 +2052,17 @@ async function buildResponsesPayload(
       return buildToolCallEventsWithArgs("read", { path: "FAILURE_RECOVERY_EVIDENCE.md" });
     }
   }
-  if (/lobster invaders/i.test(prompt)) {
+  if (/paso task board/i.test(prompt)) {
     if (!hasCompletedToolOutput) {
       return buildToolCallEventsWithArgs("read", { path: "QA_KICKOFF_TASK.md" });
     }
     if (toolOutput.includes("QA mission") || toolOutput.includes("Testing")) {
       return buildToolCallEventsWithArgs("write", {
-        path: "lobster-invaders.html",
+        path: "paso-task-board.html",
         content: `<!doctype html>
 <html lang="en">
-  <head><meta charset="utf-8" /><title>Lobster Invaders</title></head>
-  <body><h1>Lobster Invaders</h1><p>Tiny playable stub.</p></body>
+  <head><meta charset="utf-8" /><title>PASO Task Board</title></head>
+  <body><h1>PASO Task Board</h1><p>Small interactive task-board stub.</p></body>
 </html>`,
       });
     }
@@ -2468,12 +2468,12 @@ async function buildResponsesPayload(
     if (
       !taskEvidenceText ||
       (!taskEvidenceText.includes("# Personal task ledger") &&
-        !taskEvidenceText.includes("Task: prepare a local OpenClaw PR readiness note."))
+        !taskEvidenceText.includes("Task: prepare a local PASO PR readiness note."))
     ) {
       return buildToolCallEventsWithArgs("read", { path: "PERSONAL_TASK_LEDGER.md" });
     }
     if (
-      taskEvidenceText.includes("Task: prepare a local OpenClaw PR readiness note.") &&
+      taskEvidenceText.includes("Task: prepare a local PASO PR readiness note.") &&
       taskEvidenceText.includes("Done: local evidence captured in personal-task-status.txt.")
     ) {
       return buildToolCallEventsWithArgs("write", {

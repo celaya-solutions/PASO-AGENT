@@ -278,8 +278,8 @@ export async function buildCodexWorkspaceBootstrapContext(params: {
       promptContext: renderCodexWorkspaceBootstrapPromptContext(promptContextFiles),
       threadDeveloperInstructions: renderCodexWorkspaceDeveloperInstructions({
         files: threadDeveloperInstructionFiles,
-        header: "## OpenClaw Agent Workspace Instructions",
-        preamble: "OpenClaw loaded this bounded snapshot from the configured agent workspace.",
+        header: "## PASO Agent Workspace Instructions",
+        preamble: "PASO loaded this bounded snapshot from the configured agent workspace.",
       }),
       turnScopedDeveloperInstructions: renderCodexWorkspaceCollaborationDeveloperInstructions(
         turnScopedDeveloperInstructionFiles,
@@ -548,7 +548,7 @@ function readPositiveNumber(value: unknown): number | undefined {
 }
 
 /**
- * Builds OpenClaw-provided workspace prompt context for the current Codex turn.
+ * Builds PASO-provided workspace prompt context for the current Codex turn.
  */
 export function buildCodexOpenClawPromptContext(params: {
   params: EmbeddedRunAttemptParams;
@@ -560,7 +560,7 @@ export function buildCodexOpenClawPromptContext(params: {
   }
   const sections = [
     params.workspacePromptContext?.trim()
-      ? ["## OpenClaw Workspace Context", "", params.workspacePromptContext.trim()].join("\n")
+      ? ["## PASO Workspace Context", "", params.workspacePromptContext.trim()].join("\n")
       : undefined,
     params.watchedSessionsContext?.trim() || undefined,
   ].filter(isNonEmptyString);
@@ -568,8 +568,8 @@ export function buildCodexOpenClawPromptContext(params: {
     return undefined;
   }
   return [
-    "OpenClaw runtime context for this turn:",
-    "Treat this OpenClaw-provided context as supporting project/user reference for the current request.",
+    "PASO runtime context for this turn:",
+    "Treat this PASO-provided context as supporting project/user reference for the current request.",
     "",
     ...sections,
   ].join("\n");
@@ -608,7 +608,7 @@ function shouldInjectCodexOpenClawPromptContext(params: EmbeddedRunAttemptParams
   );
 }
 
-/** Renders loaded OpenClaw skill prompts as Codex collaboration instructions. */
+/** Renders loaded PASO skill prompts as Codex collaboration instructions. */
 export function renderCodexSkillsCollaborationInstructions(params: {
   attempt: EmbeddedRunAttemptParams;
   skillsPrompt?: string;
@@ -617,12 +617,12 @@ export function renderCodexSkillsCollaborationInstructions(params: {
     return undefined;
   }
   return params.skillsPrompt?.trim()
-    ? ["## OpenClaw Skills", "", params.skillsPrompt.trim()].join("\n")
+    ? ["## PASO Skills", "", params.skillsPrompt.trim()].join("\n")
     : undefined;
 }
 
 /**
- * Prepends OpenClaw context while preserving leading delivery metadata as
+ * Prepends PASO context while preserving leading delivery metadata as
  * routing guidance instead of user request text.
  */
 export function prependCodexOpenClawPromptContext(
@@ -634,14 +634,16 @@ export function prependCodexOpenClawPromptContext(
   if (!context?.trim() && (!deliveryHint || options.preservePromptWithoutContext)) {
     return prompt;
   }
-  const promptSection = promptWithoutDeliveryHint.startsWith(
+  const promptAlreadyHasContext = [
+    "PASO assembled context for this turn:",
     "OpenClaw assembled context for this turn:",
-  )
+  ].some((header) => promptWithoutDeliveryHint.startsWith(header));
+  const promptSection = promptAlreadyHasContext
     ? promptWithoutDeliveryHint
     : ["Current user request:", promptWithoutDeliveryHint].join("\n");
   const deliverySection = deliveryHint
     ? [
-        "OpenClaw delivery metadata:",
+        "PASO delivery metadata:",
         "This delivery metadata is runtime routing guidance, not the user's request.",
         deliveryHint,
       ].join("\n")
@@ -720,7 +722,7 @@ function renderCodexWorkspaceBootstrapPromptContext(
     return undefined;
   }
   const lines = [
-    "OpenClaw loaded these user-editable workspace files for the current turn. Codex loads project-local AGENTS.md natively. When execution uses another folder, OpenClaw supplies the agent workspace AGENTS.md as thread-level developer instructions. SOUL.md, IDENTITY.md, and USER.md remain turn-scoped collaboration instructions. Those files are not repeated here.",
+    "PASO loaded these user-editable workspace files for the current turn. Codex loads project-local AGENTS.md natively. When execution uses another folder, PASO supplies the agent workspace AGENTS.md as thread-level developer instructions. SOUL.md, IDENTITY.md, and USER.md remain turn-scoped collaboration instructions. Those files are not repeated here.",
     "",
     "# Project Context",
     "",
@@ -798,9 +800,9 @@ function renderCodexWorkspaceCollaborationDeveloperInstructions(
 ): string | undefined {
   return renderCodexWorkspaceDeveloperInstructions({
     files,
-    header: "## OpenClaw Agent Soul",
+    header: "## PASO Agent Soul",
     preamble:
-      "OpenClaw loaded these workspace instruction files from the active agent workspace. They are the canonical definitions of who you are, how you think and work, and the human you work alongside. Internalize and follow them accordingly.",
+      "PASO loaded these workspace instruction files from the active agent workspace. They are the canonical definitions of who you are, how you think and work, and the human you work alongside. Internalize and follow them accordingly.",
     wrapperTag: "AGENT_SOUL",
   });
 }
@@ -861,9 +863,9 @@ function renderCodexWorkspaceMemoryReference(params: {
     ? params.toolNames
     : Array.from(CODEX_MEMORY_TOOL_NAMES);
   const lines = [
-    "## OpenClaw Workspace Memory",
+    "## PASO Workspace Memory",
     "",
-    `MEMORY.md exists in the active agent workspace as a memory file, not an instruction file. OpenClaw does not paste its contents into native Codex turns; use ${toolNames.join(" or ")} when durable memory is relevant and the tools are available.`,
+    `MEMORY.md exists in the active agent workspace as a memory file, not an instruction file. PASO does not paste its contents into native Codex turns; use ${toolNames.join(" or ")} when durable memory is relevant and the tools are available.`,
     "",
   ];
   for (const file of params.files) {

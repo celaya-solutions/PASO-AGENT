@@ -78,10 +78,18 @@ async function listGitTags(
   root: string,
   timeoutMs: number,
 ): Promise<string[]> {
-  const result = await runCommand(["git", "-C", root, "tag", "--list", "v*", "--sort=-v:refname"], {
-    timeoutMs,
-  }).catch(() => null);
-  return result?.code === 0 ? normalizeStringEntries(result.stdout.split("\n")) : [];
+  const result = await runCommand(
+    ["git", "-C", root, "ls-remote", "--tags", "--refs", "origin", "refs/tags/v*"],
+    { timeoutMs },
+  ).catch(() => null);
+  if (result?.code !== 0) {
+    return [];
+  }
+  return normalizeStringEntries(result.stdout.split("\n"))
+    .map((line) => line.split(/\s+/u).at(-1) ?? "")
+    .filter((ref) => ref.startsWith("refs/tags/"))
+    .map((ref) => ref.slice("refs/tags/".length))
+    .toSorted((left, right) => compareSemverStrings(right, left) ?? right.localeCompare(left));
 }
 
 export async function resolveChannelTag(

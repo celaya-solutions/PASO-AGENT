@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/deepinfra-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw DeepInfra provider plugin.",
+  "description": "PASO DeepInfra provider plugin.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

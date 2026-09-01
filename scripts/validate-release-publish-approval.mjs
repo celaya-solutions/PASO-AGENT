@@ -8,6 +8,14 @@ import {
   verifyReleaseToolingIdentity,
 } from "./release-tooling-identity.mjs";
 
+const PASO_RELEASE_PUBLISH_WORKFLOW_NAME = "PASO Release Publish";
+const LEGACY_OPENCLAW_RELEASE_PUBLISH_WORKFLOW_NAME = "OpenClaw Release Publish";
+const ACCEPTED_RELEASE_PUBLISH_WORKFLOW_NAMES = new Set([
+  PASO_RELEASE_PUBLISH_WORKFLOW_NAME,
+  // Accept signed approvals and parent runs already in flight when the workflow was renamed.
+  LEGACY_OPENCLAW_RELEASE_PUBLISH_WORKFLOW_NAME,
+]);
+
 const releasePublishRunId = process.env.RELEASE_PUBLISH_RUN_ID ?? "";
 const expectedBranch = process.env.EXPECTED_WORKFLOW_BRANCH ?? "";
 const directRecovery = process.env.DIRECT_RELEASE_RECOVERY === "true";
@@ -48,6 +56,18 @@ function positiveRunAttempt(value) {
   return Number(value);
 }
 
+function normalizeLegacyReleasePublishApproval(approval) {
+  if (
+    approval !== null &&
+    typeof approval === "object" &&
+    !Array.isArray(approval) &&
+    approval.workflow === LEGACY_OPENCLAW_RELEASE_PUBLISH_WORKFLOW_NAME
+  ) {
+    return { ...approval, workflow: PASO_RELEASE_PUBLISH_WORKFLOW_NAME };
+  }
+  return approval;
+}
+
 if (approvalKind === "clawhub-bootstrap" && !approvalPath) {
   fail("ClawHub bootstrap approval requires an attested approval artifact.");
 }
@@ -60,7 +80,7 @@ if (approvalPath) {
     expectedApproval = {
       version: 2,
       repository: process.env.GITHUB_REPOSITORY,
-      workflow: "OpenClaw Release Publish",
+      workflow: PASO_RELEASE_PUBLISH_WORKFLOW_NAME,
       parentRunId: releasePublishRunId,
       parentRunAttempt: positiveRunAttempt(expectedRunAttempt),
       workflowBranch: expectedBranch,
@@ -78,7 +98,7 @@ if (approvalPath) {
       version: 2,
       kind: "clawhub-bootstrap",
       repository: process.env.GITHUB_REPOSITORY,
-      workflow: "OpenClaw Release Publish",
+      workflow: PASO_RELEASE_PUBLISH_WORKFLOW_NAME,
       parentRunId: releasePublishRunId,
       parentRunAttempt: positiveRunAttempt(expectedRunAttempt),
       workflowBranch: expectedBranch,
@@ -93,7 +113,10 @@ if (approvalPath) {
   } else {
     fail(`Unsupported release approval kind: ${approvalKind}`);
   }
-  if (JSON.stringify(approval) !== JSON.stringify(expectedApproval)) {
+  if (
+    JSON.stringify(normalizeLegacyReleasePublishApproval(approval)) !==
+    JSON.stringify(expectedApproval)
+  ) {
     fail(mismatchMessage);
   }
   if (approvalKind === "android") {
@@ -168,8 +191,13 @@ if (approvalPath) {
   }
 }
 
+if (!ACCEPTED_RELEASE_PUBLISH_WORKFLOW_NAMES.has(run.workflowName)) {
+  fail(
+    `Referenced release publish run ${releasePublishRunId} must have workflowName=${PASO_RELEASE_PUBLISH_WORKFLOW_NAME}, got ${run.workflowName ?? "<missing>"}.`,
+  );
+}
+
 const checks = [
-  ["workflowName", "OpenClaw Release Publish"],
   ["headBranch", expectedBranch],
   ["event", "workflow_dispatch"],
 ];

@@ -45,10 +45,14 @@ describe("toSanitizedMarkdownHtml", () => {
 
   it("does not stamp presentation classes on links whose href contains 'tail'", () => {
     const fragment = htmlFragment(
-      toSanitizedMarkdownHtml("[tailscale docs](https://docs.openclaw.ai/tailscale)"),
+      toSanitizedMarkdownHtml(
+        "[tailscale docs](https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs)",
+      ),
     );
     const link = fragment.querySelector("a");
-    expect(link?.getAttribute("href")).toBe("https://docs.openclaw.ai/tailscale");
+    expect(link?.getAttribute("href")).toBe(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
     expect(link?.classList.contains("chat-link-tail-blur")).toBe(false);
   });
 
@@ -755,9 +759,25 @@ PY
       const html = toSanitizedMarkdownHtml(
         "[workspace](/concepts/agent-workspace) [hooks](/automation/hooks#session-memory) [telegram](/channels/telegram?tab=setup) [shortlink](/telegram) [openai](/openai) [images](/images) [groups](/groups) [camera](/nodes/camera) [macOS](/platforms/macos) [cliSessions](/cli/sessions) [toolSkills](/tools/skills) [pluginDocs](/plugins/reference/diffs) [prose](/prose) [access](/channels/access-groups)",
       );
-      expect(html).toBe(
-        '<p><a href="https://docs.openclaw.ai/concepts/agent-workspace" rel="noreferrer noopener" target="_blank">workspace</a> <a href="https://docs.openclaw.ai/automation/hooks#session-memory" rel="noreferrer noopener" target="_blank">hooks</a> <a href="https://docs.openclaw.ai/channels/telegram?tab=setup" rel="noreferrer noopener" target="_blank">telegram</a> <a href="https://docs.openclaw.ai/telegram" rel="noreferrer noopener" target="_blank">shortlink</a> <a href="https://docs.openclaw.ai/openai" rel="noreferrer noopener" target="_blank">openai</a> <a href="https://docs.openclaw.ai/images" rel="noreferrer noopener" target="_blank">images</a> <a href="https://docs.openclaw.ai/groups" rel="noreferrer noopener" target="_blank">groups</a> <a href="https://docs.openclaw.ai/nodes/camera" rel="noreferrer noopener" target="_blank">camera</a> <a href="https://docs.openclaw.ai/platforms/macos" rel="noreferrer noopener" target="_blank">macOS</a> <a href="https://docs.openclaw.ai/cli/sessions" rel="noreferrer noopener" target="_blank">cliSessions</a> <a href="https://docs.openclaw.ai/tools/skills" rel="noreferrer noopener" target="_blank">toolSkills</a> <a href="https://docs.openclaw.ai/plugins/reference/diffs" rel="noreferrer noopener" target="_blank">pluginDocs</a> <a href="https://docs.openclaw.ai/prose" rel="noreferrer noopener" target="_blank">prose</a> <a href="https://docs.openclaw.ai/channels/access-groups" rel="noreferrer noopener" target="_blank">access</a></p>\n',
+      const hrefs = Array.from(htmlFragment(html).querySelectorAll("a"), (link) =>
+        link.getAttribute("href"),
       );
+      expect(hrefs).toEqual([
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/concepts/agent-workspace.md",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/automation/hooks.md#session-memory",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/telegram.md?tab=setup",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/cli/sessions.md",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/skills.md",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/plugins/reference/diffs.md",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/prose.md",
+        "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/access-groups.md",
+      ]);
     });
 
     it("keeps app and resource routes instead of treating them as docs roots", () => {

@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/matrix",
   "version": "2026.8.1",
-  "description": "OpenClaw Matrix channel plugin for rooms and direct messages.",
+  "description": "PASO Matrix channel plugin for rooms and direct messages.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

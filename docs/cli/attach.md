@@ -1,7 +1,7 @@
 ---
 summary: "CLI reference for `openclaw attach` (launch Claude Code with a scoped Gateway MCP grant)"
 read_when:
-  - You want Claude Code to use OpenClaw Gateway MCP tools
+  - You want Claude Code to use PASO Gateway MCP tools
   - You need a temporary session-bound MCP grant for an external harness
 title: "Attach CLI"
 ---
@@ -52,6 +52,6 @@ rejected.
 Target resolution uses the same [session target error matrix](/cli/tui#session-target-errors)
 as `openclaw tui`.
 
-The bearer token is passed through environment variables, not argv. OpenClaw launches Claude Code with `--strict-mcp-config --mcp-config <path>` so ambient Claude MCP servers do not join the attached session. Normal launches (without `--print-config`) revoke the grant when the Claude Code process exits.
+The bearer token is passed through environment variables, not argv. PASO launches Claude Code with `--strict-mcp-config --mcp-config <path>` so ambient Claude MCP servers do not join the attached session. Normal launches (without `--print-config`) revoke the grant when the Claude Code process exits.
 
 See also: [Control UI URLs](/web/urls), [Devices](/cli/devices), [Gateway CLI](/cli/gateway), [MCP CLI](/cli/mcp), and [ACP CLI](/cli/acp).

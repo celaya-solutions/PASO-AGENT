@@ -1,6 +1,6 @@
 # @openclaw/diffs
 
-Read-only diff viewer plugin for **OpenClaw** agents.
+Read-only diff viewer plugin for **PASO** agents.
 
 ## Install
 
@@ -121,13 +121,13 @@ Explicit tool parameters still win over these defaults.
 
 ## Docs
 
-- https://docs.openclaw.ai/tools/diffs
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/diffs.md
 
 ## Package
 
 - Plugin id: `diffs`
 - Package: `@openclaw/diffs`
-- Minimum OpenClaw host: `2026.4.30`
+- Minimum PASO host: `2026.4.30`
 
 Security options:
 
@@ -180,10 +180,10 @@ Use the `diffs` tool in `file` mode for this before and after input. After it re
 Path: README.md
 
 Before:
-OpenClaw supports plugins.
+PASO supports plugins.
 
 After:
-OpenClaw supports plugins and hosted diff views.
+PASO supports plugins and hosted diff views.
 ```
 
 Do both:

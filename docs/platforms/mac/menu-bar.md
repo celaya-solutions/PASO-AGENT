@@ -63,7 +63,7 @@ Single-Gateway setups keep the existing menu unchanged. With two or more Gateway
 
 ## Status row text (menu)
 
-- With two or more Gateways, the connection label appends the primary Gateway's catalog display name, such as `OpenClaw Active — Mac Studio`.
+- With two or more Gateways, the connection label appends the primary Gateway's catalog display name, such as `PASO Active — Mac Studio`.
 - While work is active: `<Session role> · <activity label>` (`"\(roleLabel) · \(activity.label)"` in `MenuContentView`), where role label is `Main` or `Other`.
 - When idle: falls back to the health summary.
 

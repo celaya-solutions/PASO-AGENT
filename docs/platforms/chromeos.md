@@ -1,7 +1,7 @@
 ---
-summary: "Run the OpenClaw Gateway on ChromeOS inside a Crostini Linux container"
+summary: "Run the PASO Gateway on ChromeOS inside a Crostini Linux container"
 read_when:
-  - Installing OpenClaw on a Chromebook or ChromeOS device
+  - Installing PASO on a Chromebook or ChromeOS device
   - Debugging missing provider keys or a Gateway that is gone after a reboot
 title: "ChromeOS"
 ---
@@ -32,7 +32,7 @@ Run every command below inside that Terminal.
 1. Install via the installer script (it installs a supported Node for you):
 
    ```bash
-   curl -fsSL https://openclaw.ai/install.sh | bash
+   curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
    ```
 
 2. Onboard and install the service:
@@ -52,10 +52,10 @@ Full server guidance lives in the [Linux guide](/platforms/linux) and the
 
 ## Prefer the native install over Docker
 
-On a single user Chromebook, use the native npm install (the installer script,
-or `npm i -g openclaw@latest --allow-scripts=openclaw` on npm 12 or npm
-11.16+) rather than [Docker](/install/docker). On npm 11.15 and earlier, omit
-`--allow-scripts=openclaw`.
+On a single-user Chromebook, use the native PASO source installer from the
+quick path above rather than [Docker](/install/docker). The lowercase
+`openclaw` package on npm is the upstream framework compatibility package, not
+a PASO release.
 
 Docker works inside Crostini, but Docker in Crostini adds friction: if you use
 the Claude Code CLI as your model runtime, it has to be installed and logged in
@@ -65,13 +65,13 @@ filesystem directly, so a Docker image rebuild cannot wipe it.
 
 ## Node version
 
-The Node version available in a Crostini container may be below OpenClaw's
-minimum. OpenClaw requires Node 22.22.3+, Node 24.15+, or Node 25.9+; Node 26
+The Node version available in a Crostini container may be below PASO's
+minimum. PASO requires Node 22.22.3+, Node 24.15+, or Node 25.9+; Node 26
 is the recommended default. The installer script detects a missing or
 unsupported Node version and provisions a supported release automatically.
 
-If you installed Node yourself before OpenClaw, upgrade it **before** installing
-OpenClaw:
+If you installed Node yourself before PASO, upgrade it **before** installing
+PASO:
 
 ```bash
 node -v

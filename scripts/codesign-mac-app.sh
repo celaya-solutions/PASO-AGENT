@@ -4,8 +4,8 @@ set -euo pipefail
 APP_BUNDLE="dist/OpenClaw.app"
 IDENTITY="${SIGN_IDENTITY:-}"
 SIGNING_VARIANT="${OPENCLAW_MAC_SIGNING_VARIANT:-standard}"
-ELEVATION_IDENTITY="Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)"
-ELEVATION_TEAM_ID="FWJYW4S8P8"
+LEGACY_ELEVATION_IDENTITY="Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)"
+LEGACY_ELEVATION_TEAM_ID="FWJYW4S8P8"
 TIMESTAMP_MODE="${CODESIGN_TIMESTAMP:-auto}"
 CODESIGN_TIMESTAMP_RETRY_ATTEMPTS="${CODESIGN_TIMESTAMP_RETRY_ATTEMPTS:-8}"
 CODESIGN_TIMESTAMP_RETRY_DELAY_SECONDS="${CODESIGN_TIMESTAMP_RETRY_DELAY_SECONDS:-5}"
@@ -26,6 +26,7 @@ Usage: scripts/codesign-mac-app.sh [app-bundle]
 Env:
   SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"
   OPENCLAW_MAC_SIGNING_VARIANT=standard|elevation-host
+  OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING=1  # upstream compatibility tests only
   ALLOW_ADHOC_SIGNING=1
   CODESIGN_TIMESTAMP=auto|on|off
   CODESIGN_TIMESTAMP_RETRY_ATTEMPTS=8
@@ -45,7 +46,7 @@ case "$SIGNING_VARIANT" in
 esac
 
 if [[ "$SIGNING_VARIANT" == "elevation-host" && -z "$IDENTITY" ]]; then
-  IDENTITY="$ELEVATION_IDENTITY"
+  IDENTITY="$LEGACY_ELEVATION_IDENTITY"
 fi
 if [[ "$SIGNING_VARIANT" == "elevation-host" && "$DISABLE_LIBRARY_VALIDATION" == "1" ]]; then
   echo "ERROR: Elevation host signing forbids DISABLE_LIBRARY_VALIDATION=1." >&2
@@ -53,6 +54,10 @@ if [[ "$SIGNING_VARIANT" == "elevation-host" && "$DISABLE_LIBRARY_VALIDATION" ==
 fi
 if [[ "$SIGNING_VARIANT" == "elevation-host" && "$SKIP_TEAM_ID_CHECK" == "1" ]]; then
   echo "ERROR: Elevation host signing forbids SKIP_TEAM_ID_CHECK=1." >&2
+  exit 1
+fi
+if [[ "$SIGNING_VARIANT" == "elevation-host" && "${OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING:-0}" != "1" ]]; then
+  echo "ERROR: PASO legacy upstream elevation signing is disabled; this profile is verification-only." >&2
   exit 1
 fi
 
@@ -387,15 +392,15 @@ verify_elevation_signature() {
 
   local actual_team
   actual_team="$(team_id_for "$APP_BUNDLE")"
-  if [[ "$actual_team" != "$ELEVATION_TEAM_ID" ]]; then
-    echo "ERROR: Elevation host requires TeamIdentifier=$ELEVATION_TEAM_ID, got '${actual_team:-not set}'." >&2
+  if [[ "$actual_team" != "$LEGACY_ELEVATION_TEAM_ID" ]]; then
+    echo "ERROR: Legacy elevation host requires TeamIdentifier=$LEGACY_ELEVATION_TEAM_ID, got '${actual_team:-not set}'." >&2
     exit 1
   fi
 
   local authority
   authority="$(codesign_metadata_value "$APP_BUNDLE" Authority)"
-  if [[ "$authority" != "$ELEVATION_IDENTITY" ]]; then
-    echo "ERROR: Elevation host requires '$ELEVATION_IDENTITY', got '${authority:-not set}'." >&2
+  if [[ "$authority" != "$LEGACY_ELEVATION_IDENTITY" ]]; then
+    echo "ERROR: Legacy elevation host requires '$LEGACY_ELEVATION_IDENTITY', got '${authority:-not set}'." >&2
     exit 1
   fi
 

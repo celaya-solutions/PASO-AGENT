@@ -1,6 +1,6 @@
 # @openclaw/diffs-language-pack
 
-Official extended syntax highlighting pack for the OpenClaw Diffs plugin.
+Official extended syntax highlighting pack for the PASO Diffs plugin.
 
 The base `@openclaw/diffs` plugin ships a curated language set. Install this package when you want the full Shiki language catalog available in rendered diff viewers and diff image/PDF output.
 
@@ -20,11 +20,11 @@ Install `@openclaw/diffs` first, then install this language pack. The language p
 
 ## Docs
 
-- https://docs.openclaw.ai/tools/diffs
-- https://docs.openclaw.ai/plugins/reference/diffs-language-pack
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/diffs.md
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/plugins/reference/diffs-language-pack.md
 
 ## Package
 
 - Plugin id: `diffs-language-pack`
 - Package: `@openclaw/diffs-language-pack`
-- Minimum OpenClaw host: `2026.5.27`
+- Minimum PASO host: `2026.5.27`

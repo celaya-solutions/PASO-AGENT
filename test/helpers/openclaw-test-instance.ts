@@ -73,8 +73,10 @@ const GATEWAY_ENTRYPOINT_PREPARE_TIMEOUT_MS = 120_000;
 const COMMAND_TIMEOUT_MS = 30_000;
 const LOG_TAIL_MAX_BYTES = 256 * 1024;
 const GATEWAY_MIGRATION_CONVERGENCE_MAX_RESTARTS = 1;
-const GATEWAY_MIGRATION_CONVERGENCE_REFUSAL_PREFIX =
-  "OpenClaw plugin migration inputs changed during startup convergence;";
+const GATEWAY_MIGRATION_CONVERGENCE_REFUSAL_PREFIXES = [
+  "PASO plugin migration inputs changed during startup convergence;",
+  "OpenClaw plugin migration inputs changed during startup convergence;",
+] as const;
 const GATEWAY_MIGRATION_CONVERGENCE_RESTART_MARKER =
   "[openclaw-test-instance] restarting gateway after migration convergence refusal\n";
 const entrypointPromises = new Map<string, Promise<string[]>>();
@@ -152,7 +154,9 @@ function isGatewayMigrationConvergenceRefusal(
     signal === null &&
     stderr
       .split(/\r?\n/u)
-      .some((line) => line.startsWith(GATEWAY_MIGRATION_CONVERGENCE_REFUSAL_PREFIX))
+      .some((line) =>
+        GATEWAY_MIGRATION_CONVERGENCE_REFUSAL_PREFIXES.some((prefix) => line.startsWith(prefix)),
+      )
   );
 }
 

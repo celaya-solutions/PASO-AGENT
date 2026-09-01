@@ -183,8 +183,8 @@ describe("dependency guard workflow", () => {
     const runStep = workflowStep(detectSteps, 1, "dependency guard bounded comment run step");
     const script = readFileSync("scripts/github/dependency-guard.mjs", "utf8");
 
-    expect(runStep.env?.OPENCLAW_SECURITY_TEAM_SLUG).toBe("openclaw-secops");
-    expect(runStep.env?.OPENCLAW_SECURITY_APPROVERS).toBe("vincentkoc,steipete,joshavant");
+    expect(runStep.env?.OPENCLAW_SECURITY_TEAM_SLUG).toBe("");
+    expect(runStep.env?.OPENCLAW_SECURITY_APPROVERS).toBe("celaya-solutions");
     expect(workflow).toContain("scripts/github/dependency-guard.mjs");
     expect(script).toContain('"dependencies-changed"');
     expect(script).not.toContain('"blocked: dependencies"');
@@ -211,7 +211,7 @@ describe("dependency guard workflow", () => {
     expect(script).toContain('"overrides"');
     expect(script).toContain('"packageManager"');
     expect(script).toContain("/allow-dependencies-change");
-    expect(script).toContain("openclaw-secops");
+    expect(script).toContain("@celaya-solutions");
     expect(script).toContain("securityApproverSet");
     expect(guardSources).toContain("/memberships/");
     expect(guardSources).toContain("isCommentNewerThan");
@@ -267,15 +267,13 @@ describe("dependency guard workflow", () => {
 
   it("requires secops review for future workflow or guard changes", () => {
     const codeowners = readFileSync(CODEOWNERS, "utf8");
+    expect(codeowners).toContain("/.github/workflows/dependency-guard.yml @celaya-solutions");
     expect(codeowners).toContain(
-      "/.github/workflows/dependency-guard.yml @openclaw/openclaw-secops",
+      "/test/scripts/dependency-guard-workflow.test.ts @celaya-solutions",
     );
-    expect(codeowners).toContain(
-      "/test/scripts/dependency-guard-workflow.test.ts @openclaw/openclaw-secops",
-    );
-    expect(codeowners).toContain("/scripts/github/dependency-guard.mjs @openclaw/openclaw-secops");
-    expect(codeowners).toContain("/package-lock.json @openclaw/openclaw-secops");
-    expect(codeowners).toContain("/extensions/*/package-lock.json @openclaw/openclaw-secops");
-    expect(codeowners).toContain("/pnpm-lock.yaml @openclaw/openclaw-secops");
+    expect(codeowners).toContain("/scripts/github/dependency-guard.mjs @celaya-solutions");
+    expect(codeowners).toContain("/package-lock.json @celaya-solutions");
+    expect(codeowners).toContain("/extensions/*/package-lock.json @celaya-solutions");
+    expect(codeowners).toContain("/pnpm-lock.yaml @celaya-solutions");
   });
 });

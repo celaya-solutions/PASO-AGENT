@@ -1,12 +1,12 @@
 ---
-summary: "Updating OpenClaw safely (global install or source), plus rollback strategy"
+summary: "Updating PASO safely (global install or source), plus rollback strategy"
 read_when:
-  - Updating OpenClaw
+  - Updating PASO
   - Something breaks after an update
 title: "Updating"
 ---
 
-Keep OpenClaw up to date.
+Keep PASO up to date.
 
 For Docker, Podman, and Kubernetes image replacements, see
 [Upgrading container images](/install/docker#upgrading-container-images). The
@@ -19,7 +19,9 @@ backup.
 
 ## Recommended: `openclaw update`
 
-Detects your install type (npm, pnpm, Bun, or git), fetches the latest version, runs `openclaw doctor`, and restarts the gateway.
+Detects whether the active install is a PASO git checkout or an upstream npm,
+pnpm, or Bun compatibility package, updates through the matching path, runs
+`openclaw doctor`, and restarts the gateway.
 
 ```bash
 openclaw update
@@ -38,15 +40,17 @@ openclaw update --dry-run   # preview without applying
 `--dry-run` to preview planned actions, `--json` for structured results, or
 `openclaw update status --json` to inspect channel and availability state.
 
-`--channel beta` prefers the beta npm dist-tag, but falls back to stable/latest
-when the beta tag is missing or its version is older than the latest stable
-release. Use `--tag beta` for a one-off package update pinned to the raw npm
-beta dist-tag instead.
+For a PASO source checkout, `--channel beta` selects the latest beta tag from
+the verified PASO git origin and falls back to the latest stable PASO tag when
+needed. On an upstream compatibility package install, it uses the upstream npm
+`beta` dist-tag and may fall back to upstream `latest`. `--tag beta` is a
+one-off upstream package selection; it does not select a PASO git release.
 
-`--channel extended-stable` is package-only, and installation remains
-foreground-only. OpenClaw reads the public npm `extended-stable` selector,
-verifies the selected exact package, and installs that exact version. Missing
-or inconsistent registry data fails closed; it never falls back to `latest`.
+`--channel extended-stable` belongs only to the upstream OpenClaw compatibility
+package, and installation remains foreground-only. The compatible updater reads
+the public npm `extended-stable` selector, verifies the selected exact package,
+and installs that exact version. Missing or inconsistent registry data fails
+closed; it never falls back to `latest`.
 If the selected version is older than the installed version, the normal
 downgrade confirmation still applies. The CLI persists the channel after a
 successful core update; a direct
@@ -55,15 +59,15 @@ update `update.channel`, but a final extended-stable package version still
 checks only the verified `extended-stable` selector for update availability.
 That direct command is for npm 12 or npm 11.16+. On npm 11.15 and earlier,
 omit `--allow-scripts=openclaw`.
-After the core swap, eligible official npm plugins with bare/default or
-`latest` intent converge to that exact core version. Exact pins and explicit
+After an upstream package swap, eligible upstream framework npm plugins with
+bare/default or `latest` intent converge to that exact core version. Exact pins and explicit
 non-`latest` tags, third-party plugins, and non-npm sources remain unchanged.
 Version-bound runtime plugins converge to the base release cohort when the
 core is a correction release (for example, `YYYY.M.P-2` uses plugin
 `YYYY.M.P`).
-Catalog installs created by current OpenClaw versions retain that default
-intent. Older records that contain only an exact version remain pinned because
-OpenClaw cannot safely distinguish an old automatic pin from a user pin; run
+Current install records retain that default intent. Older records that contain
+only an exact version remain pinned because the compatible runtime cannot
+safely distinguish an old automatic pin from a user pin; run
 `openclaw plugins update @openclaw/name` once on the extended-stable channel
 to opt that plugin back into exact-core tracking.
 
@@ -73,8 +77,8 @@ not a self-contained package artifact. Use `openclaw update --channel dev` to
 switch to the supported checkout and build flow. Other explicit package specs
 keep their package-manager behavior.
 
-After a beta core update, eligible official npm plugins follow the exact installed
-beta version, including one-off `--tag` updates from a stable installation.
+After an upstream beta package update, eligible upstream framework npm plugins
+follow the exact installed beta version, including one-off `--tag` updates from a stable installation.
 For managed plugins, a missing beta release is a warning, not a failure: the
 core update can still succeed while a plugin falls back to its recorded
 default/latest release.
@@ -104,7 +108,7 @@ and protected or unknown artifacts remain. It is not a substitute for a
 [Update cleanup](/cli/update#update-cleanup) for eligibility, JSON output, and
 resuming interrupted deletion.
 
-## Switch between npm and git installs
+## Move an upstream package install to PASO source
 
 Installer-driven switches verify the replacement before the working owner is retired. Source wrappers are published atomically; same-path npm shim transitions use an identity-checked backup that is restored on failure, so a failed candidate leaves the previous command runnable. The `openclaw update` command prints its final success result only after post-core convergence and requested restart health checks succeed.
 
@@ -122,15 +126,17 @@ If an older target does not support preserving the service definition, automatic
 recovery stops and reports the error; inspect the service before restarting it
 manually.
 
-Use channels to change the install type. The updater keeps your state, config,
-credentials, and workspace in `~/.openclaw`; it only changes which OpenClaw
-code install the CLI and gateway use.
+Use the dev channel to move an upstream compatibility package install onto the
+verified PASO git checkout. The updater keeps state, config, credentials, and
+the workspace in `~/.openclaw`; it changes only the code that owns the CLI and
+Gateway. A PASO source checkout does not switch back to the upstream npm
+package when stable or beta is selected.
 
 ```bash
-# npm package install -> editable git checkout
+# Upstream compatibility package -> PASO source checkout
 openclaw update --channel dev
 
-# git checkout -> npm package install
+# PASO source checkout -> latest stable PASO git tag
 openclaw update --channel stable
 ```
 
@@ -141,19 +147,22 @@ openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` ensures a git checkout, builds it, and installs the global CLI from that
-checkout. The `stable`, `extended-stable`, and `beta` channels use package
-installs. Extended-stable is rejected on a git checkout without mutating or
-converting it. If the gateway is already installed, `openclaw update` refreshes
-the service metadata and restarts it unless you pass `--no-restart`.
+`dev` ensures a PASO git checkout, builds it, and installs the global CLI from
+that checkout. On PASO source installs, stable and beta stay on git and select
+verified fork tags; extended-stable is rejected without mutating or converting
+the checkout. Existing upstream package installs keep using their package
+manager for stable and beta until explicitly moved to PASO source. If the
+Gateway is already installed, `openclaw update` refreshes the service metadata
+and restarts it unless you pass `--no-restart`.
 
 Dev updates build the complete runtime, including plugins and the Control UI,
 without generating TypeScript declarations. Preflight still validates the
 candidate, and the final checkout is rebuilt after checkout or rebase. Ordinary
 `pnpm build` and package builds continue to generate declarations.
 
-For package installs with a managed Gateway service, `openclaw update` targets
-the package root used by that service. If the shell `openclaw` command comes
+For upstream compatibility package installs with a managed Gateway service,
+`openclaw update` targets the package root used by that service. If the shell
+`openclaw` command comes
 from a different install, the updater prints both roots and the managed
 service's Node path, and checks that Node version against the target release's
 `engines.node` requirement before replacing the package.
@@ -218,27 +227,28 @@ instead — it manages the checkout, build, and gateway restart for you.
 ## Alternative: re-run the installer
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
 ```
 
-Add `--no-onboard` to skip onboarding. To force a specific install type, pass
-`--install-method git --no-onboard` or `--install-method npm --no-onboard`.
+Add `--no-onboard` to skip onboarding. PASO source installs use the `git` method.
 
-If `openclaw update` fails after the npm package install phase, re-run the
-installer instead. It does not call the updater; it runs the global package
-install directly and can recover a partially updated npm install.
+If you intentionally use the upstream framework npm package and `openclaw update` fails after its package-install phase, re-run the installer with the npm compatibility method. This is not a PASO source update.
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method npm
 ```
 
 Pin the recovery to a specific version or dist-tag with `--version`:
 
 ```bash
-curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method npm --version <version-or-dist-tag>
 ```
 
-## Alternative: manual npm, pnpm, or bun
+## Alternative: upstream compatibility package recovery
+
+The package-manager commands in this section install the upstream lowercase
+`openclaw` package, not PASO. Use them only to repair an install that you
+intentionally keep on the upstream compatibility package.
 
 The npm command below is for npm 12 or npm 11.16+. On npm 11.15 and earlier,
 omit `--allow-scripts=openclaw`.
@@ -280,42 +290,42 @@ openclaw gateway status --deep --json
 openclaw doctor --lint --json
 ```
 
-When `openclaw update` manages a global npm install, it installs the target
+When `openclaw update` manages an upstream compatibility npm install, it installs the target
 into a temporary npm prefix first. The candidate package validates the host
-Node version during `preinstall`; only then does OpenClaw verify the packaged
+Node version during `preinstall`; only then does the updater verify the packaged
 `dist` inventory and swap the clean package tree into the real global prefix. A
 packed completion guard is omitted from the expected inventory and removed only
 after `preinstall` succeeds, so skipped lifecycle scripts also fail before the
 swap. The updater probes the owning npm before mutation. On npm 11.15 and
 earlier it omits the unsupported lifecycle-policy flag. On npm 12 and npm
-11.16+, it approves only the candidate OpenClaw lifecycle; transitive
+11.16+, it approves only the candidate upstream OpenClaw package lifecycle; transitive
 dependency scripts remain unapproved.
 This avoids npm overlaying a new package onto stale files from the old one. If
-the install command fails, OpenClaw retries once with `--omit=optional`, which
+the install command fails, PASO retries once with `--omit=optional`, which
 helps hosts where native optional dependencies cannot compile.
 
-OpenClaw-managed npm update and plugin-update commands also clear npm's
+Compatibility-package update and plugin-update commands also clear npm's
 `min-release-age` supply-chain quarantine (or the older `before` config key)
 for the child npm process. That policy exists for general protection, but an
-explicit OpenClaw update means "install the selected release now."
+explicit package update means "install the selected upstream release now."
 
 ```bash
 pnpm add -g --allow-build=openclaw openclaw@latest
 ```
 
-If pnpm 11 installed OpenClaw 2026.7.1, run that manual command once. That
+If pnpm 11 installed the upstream compatibility package at 2026.7.1, run that manual command once. That
 release predates pnpm 11's isolated global-package layout, so its updater can
 mistake another npm installation for the running CLI. Later releases retain
 pnpm ownership and follow the replacement package root during updates. They
 also use the owning manager's reported global bin directory and stop before
 mutation when the available pnpm command reports another global root,
-or when the invoking package is orphaned or not the only active OpenClaw
+or when the invoking package is orphaned or not the only active compatibility
 install there.
 
 pnpm 12 retains the `global/v11` layout; the layout number does not need to match
 the pnpm CLI major version.
 
-If OpenClaw shares a pnpm global install group with another package, the
+If the compatibility package shares a pnpm global install group with another package, the
 automatic updater stops before changing the group. Update the original
 comma-separated group manually so its sibling packages and build policy stay
 intact.
@@ -324,20 +334,21 @@ intact.
 bun add -g --trust openclaw@latest
 ```
 
-`--trust` allows OpenClaw's lifecycle scripts. The canonical `openclaw update`
-path applies the same OpenClaw-only Bun trust when it owns the install.
+`--trust` allows the upstream package's lifecycle scripts. The canonical
+`openclaw update` path applies the same package-only Bun trust when it owns the
+compatibility install.
 
 ### Advanced npm install topics
 
 <AccordionGroup>
   <Accordion title="Read-only package tree">
-    OpenClaw treats packaged global installs as read-only at runtime, even when the global package directory is writable by the current user. Plugin package installs live in OpenClaw-owned npm/git roots under the user config directory, and Gateway startup does not mutate the OpenClaw package tree.
+    The compatible runtime treats upstream packaged global installs as read-only, even when the global package directory is writable by the current user. Plugin package installs live in user-owned npm/git roots under the config directory, and Gateway startup does not mutate the upstream compatibility package tree.
 
-    Some Linux npm setups install global packages under root-owned directories such as `/usr/lib/node_modules/openclaw`. OpenClaw supports that layout because plugin install/update commands write outside that global package directory.
+    Some Linux npm setups install global packages under root-owned directories such as `/usr/lib/node_modules/openclaw`. The compatible runtime supports that layout because plugin install/update commands write outside that global package directory.
 
   </Accordion>
   <Accordion title="Hardened systemd units">
-    Give OpenClaw write access to its config/state roots so explicit plugin installs, plugin updates, and doctor cleanup can persist their changes:
+    Give PASO write access to its config/state roots so explicit plugin installs, plugin updates, and doctor cleanup can persist their changes:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
@@ -345,7 +356,7 @@ path applies the same OpenClaw-only Bun trust when it owns the install.
 
   </Accordion>
   <Accordion title="Disk-space preflight">
-    Before package updates and explicit plugin installs, OpenClaw tries a best-effort disk-space check for the target volume. Low space produces a warning with the checked path, but does not block the update because filesystem quotas, snapshots, and network volumes can change after the check. The actual package-manager install and post-install verification remain authoritative.
+    Before package updates and explicit plugin installs, PASO tries a best-effort disk-space check for the target volume. Low space produces a warning with the checked path, but does not block the update because filesystem quotas, snapshots, and network volumes can change after the check. The actual package-manager install and post-install verification remain authoritative.
   </Accordion>
 </AccordionGroup>
 
@@ -370,18 +381,18 @@ Recorded failures on that page include typed **Check status** and **Retry
 update** actions when the connected Gateway supports them. See [Update
 troubleshooting](/install/update-troubleshooting) for reason codes, guided
 recovery, CLI fallbacks, and diagnostics to collect.
-For a `dev` git install, opening this page refreshes the tracked upstream and
+For a `dev` git install, opening this page refreshes the verified PASO origin and
 shows whether the checkout is current, ahead, diverged, unavailable, or a
 specific number of commits behind. It also shows exact and relative build,
 verified install, and last-commit times. Existing checkouts show an unknown
 install time until their next verified successful update.
 
-| Channel           | Behavior                                                                                                                                                            |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `stable`          | After a built-in delay with deterministic jitter for a spread rollout, announces an update campaign.                                                                |
-| `extended-stable` | Checks for a read-only update hint on startup and every 24 hours when `checkOnStart` is enabled. Never applies automatically.                                       |
-| `beta`            | Checks on a built-in interval and announces an update campaign as soon as a newer release is available.                                                             |
-| `dev`             | With `auto.enabled`, git installs check hourly. When upstream commits are available, the Gateway announces an update campaign pinned to the exact announced commit. |
+| Channel           | Behavior                                                                                                                                                               |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stable`          | After a built-in delay with deterministic jitter for a spread rollout, announces an update campaign.                                                                   |
+| `extended-stable` | Checks for a read-only update hint on startup and every 24 hours when `checkOnStart` is enabled. Never applies automatically.                                          |
+| `beta`            | Checks on a built-in interval and announces an update campaign as soon as a newer release is available.                                                                |
+| `dev`             | With `auto.enabled`, git installs check hourly. When PASO origin commits are available, the Gateway announces an update campaign pinned to the exact announced commit. |
 
 ### Update campaigns
 
@@ -397,7 +408,7 @@ An admin can use **Hold 1 h** once to postpone the campaign and shift its hard
 deadline, or choose **Update now** from the sidebar update card or
 **Settings → Updates**. For a `dev` git install, the campaign installs the exact
 commit it announced. The displayed list previews up to five commits from that
-fixed target and does not move if upstream `main` advances during the countdown.
+fixed target and does not move if PASO `origin/main` advances during the countdown.
 
 Every failed apply ends the campaign so the UI does not remain on
 **Updating…**. Failures after a managed-service handoff starts are also recorded
@@ -443,8 +454,7 @@ In the signed macOS app, a local app-owned Gateway changes that card to
 app runs `openclaw update --tag <app-version> --json`, restarts its Gateway,
 and verifies health in a setup-style progress window. The window appears only
 when that managed Gateway needs update, repair, or installation; app-only updates relaunch
-directly into the app. Failure details stay visible with Retry, [Update guide](/install/updating), and
-[Discord](https://discord.gg/clawd) actions. The app never uses this coordinated
+directly into the app. Failure details stay visible with Retry and the [Update guide](/install/updating). The app never uses this coordinated
 path for a remote or externally managed Gateway, never downgrades a newer
 Gateway, and never overrides an `extended-stable` channel pin.
 
@@ -488,7 +498,7 @@ openclaw health
 
 Rollback has two layers:
 
-1. Reinstall older OpenClaw code while keeping the current state.
+1. Reinstall older PASO code while keeping the current state.
 2. Restore pre-update state only when the older code cannot use a migrated
    config or database.
 
@@ -506,7 +516,7 @@ mkdir -p ~/Backups/openclaw
 openclaw backup create --output ~/Backups/openclaw --verify
 ```
 
-The archive manifest records the OpenClaw version and the source paths included
+The archive manifest records the PASO version and the source paths included
 in the backup. The archive can contain credentials, auth profiles, and channel
 state, so store it with owner-only permissions and the same protection as the
 live state directory. See [Backup](/cli/backup) for included and intentionally
@@ -525,7 +535,7 @@ RAM requirement or migration time. Check free space on both the system temporary
 volume and the state volume. See [Session SQLite migration](/cli/doctor#session-sqlite-migration)
 for staging and memory details.
 
-### Roll back a package install
+### Roll back an upstream compatibility package install
 
 List published versions, then preview and install the known-good version:
 
@@ -544,7 +554,7 @@ channel is `extended-stable`, use
 be combined with the `extended-stable` selector.
 
 Package updates stage and verify the candidate before activation. If the
-filesystem swap or command-shim replacement fails, OpenClaw restores the old
+filesystem swap or command-shim replacement fails, PASO restores the old
 package automatically. After a successful swap, a later Gateway health failure
 reports the previous version and manual rollback instructions instead of
 automatically replacing the package again.
@@ -565,8 +575,8 @@ openclaw gateway restart
 For a pnpm-owned install, use
 `pnpm add -g --allow-build=openclaw openclaw@<known-good-version>` instead. For
 a Bun-owned install, use
-`bun add -g --trust openclaw@<known-good-version>`; `--trust` allows OpenClaw's
-lifecycle scripts. During incident recovery, prevent an enabled auto-updater
+`bun add -g --trust openclaw@<known-good-version>`; `--trust` allows the
+upstream package's lifecycle scripts. During incident recovery, prevent an enabled auto-updater
 from immediately applying a newer release by setting
 `OPENCLAW_NO_AUTO_UPDATE=1` in the Gateway environment.
 
@@ -600,7 +610,7 @@ an older commit.
 
 ### Downgrading across the session SQLite migration
 
-Before starting an older file-backed OpenClaw release, use the current CLI to
+Before starting an older file-backed PASO release, use the current CLI to
 restore archived legacy transcript artifacts:
 
 ```bash
@@ -653,7 +663,8 @@ openclaw doctor --lint --json
 - Run `openclaw doctor` again and read the output carefully.
 - For `openclaw update --channel dev` on source checkouts, the updater auto-bootstraps `pnpm` when needed. If you see a pnpm/corepack bootstrap error, install `pnpm` manually (or re-enable `corepack`) and rerun the update.
 - Check: [Troubleshooting](/gateway/troubleshooting)
-- Ask in Discord: [https://discord.gg/clawd](https://discord.gg/clawd)
+- File a PASO issue with sanitized details: [GitHub issues](https://github.com/celaya-solutions/PASO-AGENT/issues)
+- For general help, contact [hello@celayasolutions.com](mailto:hello@celayasolutions.com)
 
 ## Related
 

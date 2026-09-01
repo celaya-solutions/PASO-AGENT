@@ -1,13 +1,13 @@
 ---
-summary: "Run OpenClaw with Ollama (cloud and local models)"
+summary: "Run PASO with Ollama (cloud and local models)"
 read_when:
-  - You want to run OpenClaw with cloud or local models via Ollama
+  - You want to run PASO with cloud or local models via Ollama
   - You need Ollama setup and configuration guidance
   - You want Ollama vision models for image understanding
 title: "Ollama"
 ---
 
-OpenClaw talks to Ollama's native API (`/api/chat`), not the OpenAI-compatible
+PASO talks to Ollama's native API (`/api/chat`), not the OpenAI-compatible
 `/v1` endpoint. Three modes are supported:
 
 | Mode          | What it uses                                                                     |
@@ -31,7 +31,7 @@ OpenAI-SDK-style examples, but new config should use `baseUrl`.
 
 <AccordionGroup>
   <Accordion title="Local and LAN hosts">
-    Loopback, private-network, `.local`, and bare-hostname Ollama URLs do not need a real bearer token. OpenClaw uses the `ollama-local` marker for these.
+    Loopback, private-network, `.local`, and bare-hostname Ollama URLs do not need a real bearer token. PASO uses the `ollama-local` marker for these.
   </Accordion>
   <Accordion title="Remote and Ollama Cloud hosts">
     Public remote hosts and `https://ollama.com` require a real credential: `OLLAMA_API_KEY`, an auth profile, or the provider's `apiKey`. For direct hosted use, prefer the `ollama-cloud` provider.
@@ -64,12 +64,12 @@ OpenAI-SDK-style examples, but new config should use `baseUrl`.
 
         Select **Ollama**, then pick a mode: **Cloud + Local**, **Cloud only**, or **Local only**.
 
-        On a fresh guided setup, OpenClaw first checks the default or configured
+        On a fresh guided setup, PASO first checks the default or configured
         Ollama host. Automatic discovery considers only models already loaded in
         memory, as reported by `/api/ps`, with tool support and at least 16K of
         context confirmed by `/api/show`. An eligible model installed on disk but
         not loaded is not an automatic candidate. The selected route still needs
-        a real completion before OpenClaw saves it; discovery never pulls or
+        a real completion before PASO saves it; discovery never pulls or
         loads an idle model.
 
         To use an installed but idle model in desktop Model Setup, choose
@@ -148,7 +148,7 @@ OpenAI-SDK-style examples, but new config should use `baseUrl`.
 Ollama host — this is Ollama's hybrid flow and the mode to pick during setup
 when you want both.
 
-OpenClaw prompts for the base URL, discovers local models, and checks
+PASO prompts for the base URL, discovers local models, and checks
 `ollama signin` status. When signed in, it suggests hosted defaults
 (`kimi-k2.5:cloud`, `minimax-m2.7:cloud`, `glm-5.1:cloud`, `glm-5.2:cloud`). If
 not signed in, setup stays local-only until you run `ollama signin`.
@@ -163,14 +163,14 @@ openclaw models set ollama-cloud/kimi-k2.5:cloud
 The cloud model list shown during `openclaw onboard` is populated live from
 `https://ollama.com/api/tags`, capped at 500 entries, so the picker reflects
 the current hosted catalog. If `ollama.com` is unreachable or returns no
-models at setup time, OpenClaw falls back to its hardcoded suggested list so
+models at setup time, PASO falls back to its hardcoded suggested list so
 onboarding still completes.
 
 ## Model discovery (implicit provider)
 
 When `OLLAMA_API_KEY` (or an auth profile) is set and neither
 `models.providers.ollama` nor another custom provider with `api: "ollama"` is
-defined, OpenClaw discovers models from `http://127.0.0.1:11434`:
+defined, PASO discovers models from `http://127.0.0.1:11434`:
 
 | Behavior             | Detail                                                                                                                                                                                                                                                                                        |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -178,7 +178,7 @@ defined, OpenClaw discovers models from `http://127.0.0.1:11434`:
 | Capability detection | Best-effort `/api/show` reads `contextWindow`, `num_ctx` Modelfile parameters, and capabilities (vision/tools/thinking)                                                                                                                                                                       |
 | Vision models        | A `vision` capability from `/api/show` marks the model image-capable (`input: ["text", "image"]`)                                                                                                                                                                                             |
 | Reasoning detection  | Uses the `thinking` capability from `/api/show` when available; falls back to a name heuristic (`r1`, `reason`, `reasoning`, `think`) when Ollama omits capabilities. `glm-5.2:cloud` and `deepseek-v4-flash\|pro:cloud` are always treated as reasoning regardless of reported capabilities. |
-| Token limits         | `maxTokens` defaults to OpenClaw's Ollama max-token cap                                                                                                                                                                                                                                       |
+| Token limits         | `maxTokens` defaults to PASO's Ollama max-token cap                                                                                                                                                                                                                                           |
 | Costs                | All costs are `0`                                                                                                                                                                                                                                                                             |
 
 ```bash
@@ -200,7 +200,7 @@ discovery; list that custom provider's models manually (see
 `http://127.0.0.2:11434` keep ambient local discovery eligible.
 
 You can use a full ref such as `ollama/<pulled-model>:latest` without a
-hand-written `models.json` entry; OpenClaw resolves it live. For signed-in
+hand-written `models.json` entry; PASO resolves it live. For signed-in
 hosts, selecting an unlisted `ollama/<model>:cloud` ref validates that exact
 model with `/api/show` and adds it to the runtime catalog only if Ollama
 confirms metadata — typos still fail as unknown models.
@@ -242,7 +242,7 @@ error instead of silently falling back to another configured model.
 
 Isolated cron jobs add one local safety check before starting the agent turn:
 if the selected model resolves to a local/private-network/`.local` Ollama
-provider and `/api/tags` is unreachable, OpenClaw records that run as
+provider and `/api/tags` is unreachable, PASO records that run as
 `skipped` with the model in the error text. This endpoint check is cached for
 5 minutes per host, so repeated cron jobs against a stopped daemon do not all
 launch failing requests.
@@ -368,7 +368,7 @@ hosts and remain subject to normal node pairing/command policy.
 ## Vision and image description
 
 The bundled Ollama plugin registers Ollama as an image-capable
-media-understanding provider, so OpenClaw can route explicit image-description
+media-understanding provider, so PASO can route explicit image-description
 requests and configured image-model defaults through local or hosted Ollama
 vision models.
 
@@ -380,9 +380,9 @@ openclaw infer image describe --file ./photo.jpg --model ollama/qwen2.5vl:7b --j
 
 `--model` must be a full `<provider/model>` ref; when set, `infer image
 describe` tries that model first instead of skipping description for models
-that already support native vision. If the call fails, OpenClaw can continue
+that already support native vision. If the call fails, PASO can continue
 through `agents.defaults.imageModel.fallbacks`; file/URL preparation errors
-fail before fallback is attempted. Use `infer image describe` for OpenClaw's
+fail before fallback is attempted. Use `infer image describe` for PASO's
 image-understanding flow and configured `imageModel`; use `infer model run
 --file` for a raw multimodal probe with a custom prompt.
 
@@ -469,7 +469,7 @@ explicitly:
 }
 ```
 
-OpenClaw rejects image-description requests for models not marked
+PASO rejects image-description requests for models not marked
 image-capable. With implicit discovery, this comes from `/api/show`'s vision
 capability.
 
@@ -482,7 +482,7 @@ capability.
     ```
 
     <Tip>
-    If `OLLAMA_API_KEY` is set, you can omit `apiKey` in the provider entry; OpenClaw fills it in for availability checks.
+    If `OLLAMA_API_KEY` is set, you can omit `apiKey` in the provider entry; PASO fills it in for availability checks.
     </Tip>
 
   </Tab>
@@ -610,7 +610,7 @@ Replace model IDs with exact names from `ollama list` or
     }
     ```
 
-    `contextTokens` caps OpenClaw's active-input budget; `params.num_ctx` sets
+    `contextTokens` caps PASO's active-input budget; `params.num_ctx` sets
     Ollama's request context. Keep them aligned when hardware cannot run the
     model's full advertised context.
 
@@ -731,7 +731,7 @@ Replace model IDs with exact names from `ollama list` or
     }
     ```
 
-    OpenClaw strips the active provider prefix (falling back to a bare
+    PASO strips the active provider prefix (falling back to a bare
     `ollama/` prefix) before calling Ollama, so `ollama-large/qwen3.5:27b`
     reaches Ollama as `qwen3.5:27b`.
 
@@ -805,7 +805,7 @@ Replace model IDs with exact names from `ollama list` or
 ```
 
 Custom provider ids work the same way: for a ref using the active provider
-prefix, such as `ollama-spark/qwen3:32b`, OpenClaw strips that prefix before
+prefix, such as `ollama-spark/qwen3:32b`, PASO strips that prefix before
 calling Ollama, sending `qwen3:32b`.
 
 For slow local models, prefer provider-scoped tuning before raising the whole
@@ -841,7 +841,7 @@ model when first-turn load time is the bottleneck.
 # Ollama daemon visible to this machine
 curl http://127.0.0.1:11434/api/tags
 
-# OpenClaw catalog and selected model
+# PASO catalog and selected model
 openclaw models list --provider ollama
 openclaw models status
 
@@ -852,12 +852,12 @@ openclaw infer model run \
 ```
 
 For remote hosts, replace `127.0.0.1` with the `baseUrl` host. If `curl`
-works but OpenClaw does not, check whether the Gateway runs on a different
+works but PASO does not, check whether the Gateway runs on a different
 machine, container, or service account.
 
 ## Ollama Web Search
 
-OpenClaw bundles **Ollama Web Search** as a `web_search` provider.
+PASO bundles **Ollama Web Search** as a `web_search` provider.
 
 | Property    | Detail                                                                                                                                                     |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -901,7 +901,7 @@ For direct hosted search through Ollama Cloud:
 }
 ```
 
-For a self-hosted host, OpenClaw first tries the local `/api/experimental/web_search`
+For a self-hosted host, PASO first tries the local `/api/experimental/web_search`
 proxy, then falls back to the hosted `/api/web_search` path on the same host; a
 signed-in local daemon normally answers through the local proxy. Direct
 `https://ollama.com` calls always use the hosted `/api/web_search` endpoint.
@@ -940,7 +940,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     This mode may not support streaming and tool calling simultaneously; you
     may need `params: { streaming: false }` on the model.
 
-    OpenClaw injects `options.num_ctx` by default in this mode so Ollama does
+    PASO injects `options.num_ctx` by default in this mode so Ollama does
     not silently fall back to a 4096-token context. If your proxy rejects
     unknown `options` fields, disable it:
 
@@ -963,9 +963,9 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
   </Accordion>
 
   <Accordion title="Context windows">
-    For auto-discovered models, OpenClaw uses the context window `/api/show`
+    For auto-discovered models, PASO uses the context window `/api/show`
     reports, including larger `PARAMETER num_ctx` values from custom
-    Modelfiles; otherwise it falls back to OpenClaw's default Ollama context
+    Modelfiles; otherwise it falls back to PASO's default Ollama context
     window.
 
     Per-model `contextWindow` declares native window metadata, and per-model
@@ -974,7 +974,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     `/api/chat` requests set `options.num_ctx` from a positive `params.num_ctx`
     first, then from the effective model `contextTokens` when present. Local
     discovery normally caps `contextTokens` at 32,768 (or the model's smaller
-    native window), so OpenClaw can override a smaller Modelfile context even
+    native window), so PASO can override a smaller Modelfile context even
     without an explicit `params.num_ctx`. Invalid, zero, negative, or non-finite
     `params.num_ctx` values are ignored. Only when neither value is available
     does Ollama choose its own model, Modelfile, `OLLAMA_CONTEXT_LENGTH`, or
@@ -993,7 +993,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     `temperature`, `repeat_penalty`, `presence_penalty`, `frequency_penalty`,
     `stop`, `num_batch`, `num_gpu`, `main_gpu`, `use_mmap`, and `num_thread`.
     A few keys (`format`, `keep_alive`, `truncate`, `shift`) are forwarded as
-    top-level request fields instead of nested `options`. OpenClaw only
+    top-level request fields instead of nested `options`. PASO only
     forwards these Ollama request keys, so runtime-only params such as
     `streaming` are never sent to Ollama. Use `params.think` (or
     `params.thinking`) to set top-level `think`; `false` disables API-level
@@ -1030,7 +1030,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
   </Accordion>
 
   <Accordion title="Thinking control">
-    OpenClaw forwards thinking as Ollama expects it: top-level `think`, not
+    PASO forwards thinking as Ollama expects it: top-level `think`, not
     `options.think`. Auto-discovered models whose `/api/show` reports a
     `thinking` capability expose `/think low`, `/think medium`, `/think high`,
     and `/think max`; non-thinking models expose only `/think off`.
@@ -1057,7 +1057,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     ```
 
     Per-model `params.think`/`params.thinking` can disable or force API
-    thinking for a specific model. OpenClaw preserves that explicit config
+    thinking for a specific model. PASO preserves that explicit config
     when the active run only has the implicit `off` default; a non-off
     runtime command such as `/think medium` still overrides it. A truthy
     thinking request is never sent to a model explicitly marked
@@ -1087,7 +1087,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     one `input` request when possible.
 
     When `proxy.enabled=true`, embedding requests to the exact host-local
-    loopback origin derived from the configured `baseUrl` use OpenClaw's
+    loopback origin derived from the configured `baseUrl` use PASO's
     guarded direct path instead of the managed forward proxy. The configured
     hostname must itself be `localhost` or a loopback IP literal — DNS names
     that merely resolve to loopback still use the managed proxy path. LAN,
@@ -1164,7 +1164,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     `ollama.service` right after WSL2 startup, and SIGTERM from systemd rather
     than the Linux OOM killer.
 
-    OpenClaw logs a startup warning when it detects WSL2, `ollama.service`
+    PASO logs a startup warning when it detects WSL2, `ollama.service`
     enabled with `Restart=always`, and visible CUDA markers.
 
     Mitigation:
@@ -1229,7 +1229,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
 
   </Accordion>
 
-  <Accordion title="Remote host works with curl but not OpenClaw">
+  <Accordion title="Remote host works with curl but not PASO">
     Verify from the same machine and runtime that runs the Gateway:
 
     ```bash
@@ -1316,7 +1316,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
   <Accordion title="Large-context model is too slow or runs out of memory">
     Many models advertise contexts larger than your hardware can run
     comfortably. Native requests forward the effective `contextTokens` unless
-    `params.num_ctx` overrides it. Cap both OpenClaw's budget and Ollama's request
+    `params.num_ctx` overrides it. Cap both PASO's budget and Ollama's request
     context for predictable first-token latency:
 
     ```json5
@@ -1339,7 +1339,7 @@ For full setup and behavior, see [Ollama Web Search](/tools/ollama-search).
     }
     ```
 
-    Lower the model entry's `contextTokens` if OpenClaw sends too much prompt. Lower
+    Lower the model entry's `contextTokens` if PASO sends too much prompt. Lower
     `params.num_ctx` if Ollama's runtime context is too large for the machine.
     Lower `maxTokens` if generation runs too long.
 

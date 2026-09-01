@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw LongCat provider plugin."
+summary: "PASO LongCat provider plugin."
 read_when:
   - You are installing, configuring, or auditing the longcat plugin
 title: "LongCat plugin"
@@ -7,7 +7,7 @@ title: "LongCat plugin"
 
 # LongCat plugin
 
-OpenClaw LongCat provider plugin.
+PASO LongCat provider plugin.
 
 ## Distribution
 

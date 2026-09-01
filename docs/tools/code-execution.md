@@ -134,7 +134,7 @@ Use code_execution to calculate the 7-day moving average for these numbers: ...
 ```
 
 ```text
-Use x_search to find posts mentioning OpenClaw this week, then use code_execution to count them by day.
+Use x_search to find posts mentioning PASO this week, then use code_execution to count them by day.
 ```
 
 ```text
@@ -150,7 +150,7 @@ exception), so the agent can self-correct:
 {
   "error": "missing_xai_api_key",
   "message": "code_execution needs xAI credentials. Run `openclaw onboard --auth-choice xai-oauth` to sign in with Grok, run `openclaw onboard --auth-choice xai-api-key`, set `XAI_API_KEY` in the Gateway environment, or configure `plugins.entries.xai.config.webSearch.apiKey`.",
-  "docs": "https://docs.openclaw.ai/tools/code-execution"
+  "docs": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/code-execution.md"
 }
 ```
 

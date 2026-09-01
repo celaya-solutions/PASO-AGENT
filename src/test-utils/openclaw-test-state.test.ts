@@ -1,4 +1,4 @@
-// Tests isolated OpenClaw test-state setup and cleanup behavior.
+// Tests isolated PASO test-state setup and cleanup behavior.
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";

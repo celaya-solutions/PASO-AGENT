@@ -485,7 +485,7 @@ describe("resolveChannelSetupSelectionContributions", () => {
         "Approve with: openclaw pairing approve <channel> <code>",
         'Open/public DMs require dmPolicy="open" plus allowFrom=["*"].',
         'For multi-user DMs, isolate sessions with: openclaw config set session.dmScope "per-channel-peer" (or "per-account-channel-peer" for multi-account channels).',
-        "Docs: https://docs.openclaw.ai/channels/pairing",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         "",
         "bad\\nid: Blurb\\nline",
       ].join("\n"),
@@ -561,7 +561,9 @@ describe("resolveChannelSetupSelectionContributions", () => {
     if (typeof docsLink !== "function") {
       throw new Error("Expected docs link formatter");
     }
-    expect(docsLink("/channels/zalo", "Docs")).toBe("https://docs.openclaw.ai/channels/zalo");
+    expect(docsLink("/channels/zalo", "Docs")).toBe(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
     expect(lines).toEqual(["Zalo\\nBot — Setup\\nhelp"]);
   });
 

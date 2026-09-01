@@ -1,5 +1,5 @@
 #!/usr/bin/env -S node --import tsx
-// Openclaw Npm Postpublish Verify script supports OpenClaw repository automation.
+// Openclaw Npm Postpublish Verify script supports PASO repository automation.
 
 import { createPublicKey, verify as verifySignature } from "node:crypto";
 import {
@@ -239,7 +239,7 @@ type NpmProvenanceStatement = {
 };
 
 const NPM_PROVENANCE_PREDICATE_TYPE = "https://slsa.dev/provenance/v1";
-const NPM_PROVENANCE_REPOSITORY = "https://github.com/openclaw/openclaw";
+const NPM_PROVENANCE_REPOSITORY = "https://github.com/celaya-solutions/PASO-AGENT";
 const NPM_PROVENANCE_WORKFLOW_PATH = ".github/workflows/openclaw-npm-release.yml";
 const NPM_PROVENANCE_CERTIFICATE_ISSUER = "https://token.actions.githubusercontent.com";
 const NPM_PROVENANCE_BUILDER_ID = "https://github.com/actions/runner/github-hosted";
@@ -361,7 +361,7 @@ function resolveNpmProvenanceVerificationPolicy(
     statement.predicate?.runDetails?.builder?.id !== NPM_PROVENANCE_BUILDER_ID
   ) {
     throw new Error(
-      `npm provenance attestation does not bind ${version} to the trusted OpenClaw GitHub release workflow.`,
+      `npm provenance attestation does not bind ${version} to the trusted PASO GitHub release workflow.`,
     );
   }
 

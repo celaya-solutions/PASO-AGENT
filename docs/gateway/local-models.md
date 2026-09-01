@@ -1,5 +1,5 @@
 ---
-summary: "Run OpenClaw on local LLMs (LM Studio, vLLM, LiteLLM, custom OpenAI endpoints)"
+summary: "Run PASO on local LLMs (LM Studio, vLLM, LiteLLM, custom OpenAI endpoints)"
 read_when:
   - You want to serve models from your own GPU box
   - You are wiring LM Studio or an OpenAI-compatible proxy
@@ -21,11 +21,11 @@ Aim for **2+ maxed-out Mac Studios or an equivalent GPU rig (~$30k+)** for a com
 | ---------------------------------------------------- | --------------------------------------------------------------------------- |
 | [ds4](/providers/ds4)                                | Local DeepSeek V4 Flash on macOS Metal with OpenAI-compatible tool calls    |
 | [LM Studio](/providers/lmstudio)                     | First-time local setup, GUI loader, native Responses API                    |
-| LiteLLM / OAI-proxy / custom OpenAI-compatible proxy | You front another model API and need OpenClaw to treat it as OpenAI         |
+| LiteLLM / OAI-proxy / custom OpenAI-compatible proxy | You front another model API and need PASO to treat it as OpenAI             |
 | MLX / vLLM / SGLang                                  | High-throughput self-hosted serving with an OpenAI-compatible HTTP endpoint |
 | [Ollama](/providers/ollama)                          | CLI workflow, model library, hands-off systemd service                      |
 
-Use `api: "openai-responses"` when the backend supports it (LM Studio does). Otherwise use `api: "openai-completions"`. If `api` is omitted on a custom provider with a `baseUrl`, OpenClaw defaults to `openai-completions`.
+Use `api: "openai-responses"` when the backend supports it (LM Studio does). Otherwise use `api: "openai-completions"`. If `api` is omitted on a custom provider with a `baseUrl`, PASO defaults to `openai-completions`.
 
 <Warning>
 **WSL2 + Ollama + NVIDIA/CUDA:** the official Ollama Linux installer enables a systemd service with `Restart=always`. On WSL2 GPU setups, autostart can reload the last model during boot and pin host memory, causing repeated VM restarts. See [WSL2 crash loop](/providers/ollama#troubleshooting).
@@ -175,14 +175,14 @@ Set `input: ["text", "image"]` on local or proxied vision models so image attach
 Use `models.providers.<id>.timeoutSeconds` for slow local/remote model servers before raising `agents.defaults.timeoutSeconds`. The provider timeout covers connect, headers, body streaming, and the total guarded-fetch abort for model HTTP requests only - if the agent/run timeout is lower, raise that too, since the provider timeout cannot extend the whole run.
 
 <Note>
-For custom OpenAI-compatible providers, a non-secret local marker such as `apiKey: "ollama-local"` is accepted when `baseUrl` resolves to loopback, a private LAN, `.local`, or a bare hostname - OpenClaw treats it as a valid local credential instead of reporting a missing key. Use a real value for any provider that accepts a public hostname.
+For custom OpenAI-compatible providers, a non-secret local marker such as `apiKey: "ollama-local"` is accepted when `baseUrl` resolves to loopback, a private LAN, `.local`, or a bare hostname - PASO treats it as a valid local credential instead of reporting a missing key. Use a real value for any provider that accepts a public hostname.
 </Note>
 
 Behavior notes for local/proxied `/v1` backends:
 
-- OpenClaw treats these as proxy-style OpenAI-compatible routes, not native OpenAI endpoints.
+- PASO treats these as proxy-style OpenAI-compatible routes, not native OpenAI endpoints.
 - Native-OpenAI-only request shaping does not apply: no `service_tier`, no Responses `store`, no OpenAI reasoning-compat payload shaping, no prompt-cache hints.
-- Hidden OpenClaw attribution headers (`originator`, `version`, `User-Agent`) are not injected on custom proxy URLs.
+- Hidden PASO attribution headers (`originator`, `version`, `User-Agent`) are not injected on custom proxy URLs.
 
 Compat declarations are only for the custom endpoint described by this provider row. Catalog-known routes use provider-owned capabilities instead; see the [custom-provider capability guide](/gateway/config-tools#custom-provider-capability-declarations).
 
@@ -190,8 +190,8 @@ Compat overrides for stricter OpenAI-compatible backends:
 
 - **String-only content**: some servers accept only string `messages[].content`, not structured content-part arrays. Set `models.providers.<provider>.models[].compat.requiresStringContent: true`.
 - **Strict message keys**: if the server rejects message entries with more than `role`/`content`, set `compat.strictMessageKeys: true`.
-- **Bracketed tool text**: some local models emit standalone bracketed tool requests as text, like `[tool_name]` followed by JSON and `[END_TOOL_REQUEST]`. OpenClaw promotes those to real tool calls only when the name exactly matches a registered tool for the turn; otherwise it stays as hidden, unsupported text.
-- **Unstructured tool-call-looking text**: if a model emits JSON/XML/ReAct-style text that looks like a tool call but wasn't a structured invocation, OpenClaw leaves it as text and logs a warning with the run id, provider/model, detected pattern, and tool name when available. That is provider/model incompatibility, not a completed tool run.
+- **Bracketed tool text**: some local models emit standalone bracketed tool requests as text, like `[tool_name]` followed by JSON and `[END_TOOL_REQUEST]`. PASO promotes those to real tool calls only when the name exactly matches a registered tool for the turn; otherwise it stays as hidden, unsupported text.
+- **Unstructured tool-call-looking text**: if a model emits JSON/XML/ReAct-style text that looks like a tool call but wasn't a structured invocation, PASO leaves it as text and logs a warning with the run id, provider/model, detected pattern, and tool name when available. That is provider/model incompatibility, not a completed tool run.
 - **Forcing tool use**: if tools show up as assistant text (raw JSON/XML/ReAct, or an empty `tool_calls` array), first confirm the server's chat template/parser supports tool calls. If the parser only works when tool use is forced, override the default proxy value of `tool_choice: "auto"` per model:
 
   ```json5
@@ -269,14 +269,14 @@ If the model loads cleanly but full agent turns misbehave, work top-down: confir
 
 4. **Disable tools entirely as a last resort** by setting `models.providers.<provider>.models[].compat.supportsTools: false` for that model - the agent then runs without tool calls.
 
-5. **Past that, the bottleneck is upstream.** If the backend still fails only on larger OpenClaw runs after lean mode and `supportsTools: false`, the remaining issue is usually the model or server itself - context window, GPU memory, kv-cache eviction, or a backend bug - not OpenClaw's transport layer.
+5. **Past that, the bottleneck is upstream.** If the backend still fails only on larger PASO runs after lean mode and `supportsTools: false`, the remaining issue is usually the model or server itself - context window, GPU memory, kv-cache eviction, or a backend bug - not PASO's transport layer.
 
 ## Troubleshooting
 
 - **Gateway can't reach the proxy?** `curl http://127.0.0.1:1234/v1/models`.
 - **LM Studio model unloaded?** Reload; cold start is a common "hanging" cause.
-- **Local server says `terminated`, `ECONNRESET`, or closes the stream mid-turn?** OpenClaw records a low-cardinality `model.call.error.failureKind` plus the OpenClaw process RSS/heap snapshot in diagnostics. For LM Studio/Ollama memory pressure, match that timestamp against the server log or a macOS crash/jetsam log to confirm whether the model server was killed.
-- **Context errors?** OpenClaw derives context-window preflight thresholds from the detected model window or the per-model `models.providers.<provider>.models[].contextTokens` cap, warning below 20% with an **8k** floor and hard-blocking below 10% with a **4k** floor. Lower that model entry's `contextTokens` or raise the server/model context limit.
+- **Local server says `terminated`, `ECONNRESET`, or closes the stream mid-turn?** PASO records a low-cardinality `model.call.error.failureKind` plus the PASO process RSS/heap snapshot in diagnostics. For LM Studio/Ollama memory pressure, match that timestamp against the server log or a macOS crash/jetsam log to confirm whether the model server was killed.
+- **Context errors?** PASO derives context-window preflight thresholds from the detected model window or the per-model `models.providers.<provider>.models[].contextTokens` cap, warning below 20% with an **8k** floor and hard-blocking below 10% with a **4k** floor. Lower that model entry's `contextTokens` or raise the server/model context limit.
 - **`messages[].content ... expected a string`?** Add `compat.requiresStringContent: true` on that model entry.
 - **`validation.keys`, or "message entries only allow `role` and `content`"?** Add `compat.strictMessageKeys: true` on that model entry.
 - **Direct `/v1/chat/completions` calls work, but `openclaw infer model run --local` fails on Gemma or another local model?** Check the provider URL, model ref, auth marker, and server logs first - `model run` skips agent tools entirely. If `model run` succeeds but larger agent turns fail, reduce the tool surface with `localModelLean` or `compat.supportsTools: false`.

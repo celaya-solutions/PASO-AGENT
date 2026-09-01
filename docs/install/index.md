@@ -1,8 +1,7 @@
 ---
-summary: "Install OpenClaw - desktop app downloads, installer script, npm/pnpm/bun, from source, Docker, and more"
+summary: "Install PASO from its source repository, with optional Docker and cloud deployment paths"
 read_when:
   - You need an install method other than the Getting Started quickstart
-  - You want to download the Windows Hub or macOS desktop app instead of the CLI
   - You want to deploy to a cloud platform
   - You need to update, migrate, or uninstall
 title: "Install"
@@ -11,38 +10,23 @@ title: "Install"
 ## System requirements
 
 - **Node 22.22.3+, 24.15+, or 25.9+** - Node 26 is recommended; the installer provisions Node 26 on macOS and Node 24 LTS on Linux when Node is missing.
-- **macOS, Linux, or Windows** - Windows users can start with the native Windows Hub app, the PowerShell CLI installer, or a WSL2 Gateway. See [Windows](/platforms/windows).
+- **macOS, Linux, or Windows** - Windows users can use the PowerShell source installer or a WSL2 Gateway. See [Windows](/platforms/windows).
 - `pnpm` is only needed if you build from source.
-
-## Download the desktop app
-
-Prefer a normal app download over the CLI? OpenClaw ships desktop companions:
-
-- **Windows**: the [Windows Hub](/platforms/windows#recommended-windows-hub) companion app — a signed installer you download and run like any Windows app, with setup, tray status, chat, and node mode:
-  - [OpenClawCompanion-Setup-x64.exe](https://github.com/openclaw/openclaw-windows-node/releases/latest/download/OpenClawCompanion-Setup-x64.exe)
-  - [OpenClawCompanion-Setup-arm64.exe](https://github.com/openclaw/openclaw-windows-node/releases/latest/download/OpenClawCompanion-Setup-arm64.exe)
-  - All Hub releases: [Windows Hub releases page](https://github.com/openclaw/openclaw-windows-node/releases/latest)
-- **macOS**: the [macOS menu bar app](/platforms/macos) — download the `OpenClaw-<version>.dmg` (preferred) or `.zip` asset from [OpenClaw GitHub releases](https://github.com/openclaw/openclaw/releases), then install and launch **OpenClaw.app**. See the [macOS app page](/platforms/macos) for details, including what to do when the newest release ships no macOS asset.
-
-Both desktop apps can provision a local Gateway during first-run setup, or connect to an existing remote Gateway.
 
 ## Recommended: installer script
 
-The fastest way to install. It detects your OS, installs Node if needed, installs OpenClaw, and launches onboarding.
-
-<Note>
-Windows desktop users can also install the native [Windows Hub](/platforms/windows#recommended-windows-hub) companion app, which includes setup, tray status, chat, node mode, and local MCP mode.
-</Note>
+The PASO installers clone and build the Celaya Solutions Research source repository. They detect your OS, install Node if needed, install PASO, and launch onboarding.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
     ```bash
-    curl -fsSL https://openclaw.ai/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+      | bash -s -- --install-method git --version main
     ```
   </Tab>
   <Tab title="Windows (PowerShell)">
     ```powershell
-    iwr -useb https://openclaw.ai/install.ps1 | iex
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
 </Tabs>
@@ -52,12 +36,13 @@ To install without running onboarding:
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
     ```bash
-    curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+      | bash -s -- --install-method git --version main --no-onboard
     ```
   </Tab>
   <Tab title="Windows (PowerShell)">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -NoOnboard
     ```
   </Tab>
 </Tabs>
@@ -68,23 +53,25 @@ For all flags and CI/automation options, see [Installer internals](/install/inst
 
 ### Local prefix installer (`install-cli.sh`)
 
-Use this when you want OpenClaw and Node kept under a local prefix such as
+Use this when you want PASO and Node kept under a local prefix such as
 `~/.openclaw`, without depending on a system-wide Node install:
 
 ```bash
-curl -fsSL https://openclaw.ai/install-cli.sh | bash
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh \
+  | bash -s -- --install-method git --version main
 ```
 
-It supports npm installs by default, plus git-checkout installs under the same
-prefix flow. Full reference: [Installer internals](/install/installer#install-clish).
+It also supports the framework's npm compatibility package. Full reference:
+[Installer internals](/install/installer#install-clish).
 
-Already installed? Switch between package and git installs with
-`openclaw update --channel dev` and `openclaw update --channel stable`. See
-[Updating](/install/updating#switch-between-npm-and-git-installs).
+Already using the upstream compatibility package? `openclaw update --channel
+dev` can migrate that install to the PASO source checkout. Once installed from
+PASO source, stable, beta, and dev updates stay on the verified PASO git origin.
+See [Updating](/install/updating#move-an-upstream-package-install-to-paso-source).
 
-### npm, pnpm, or bun
+### Framework compatibility package
 
-If you already manage Node yourself:
+The lowercase `openclaw` package is the upstream framework package, not a PASO release. Use it only when you intentionally want framework compatibility instead of the Celaya Solutions Research source checkout:
 
 <Tabs>
   <Tab title="npm">
@@ -100,8 +87,8 @@ If you already manage Node yourself:
 
     <Note>
     npm 12 blocks unapproved package lifecycle scripts by default. The
-    `--allow-scripts=openclaw` option explicitly allows OpenClaw's `preinstall`
-    and `postinstall` steps; without it, npm reports them as `blocked because
+    `--allow-scripts=openclaw` option explicitly allows the upstream OpenClaw
+    package's `preinstall` and `postinstall` steps; without it, npm reports them as `blocked because
     they are not covered by allowScripts`.
 
     npm 11.16 accepts the option but otherwise only warns that the scripts are
@@ -113,9 +100,10 @@ If you already manage Node yourself:
     </Note>
 
     <Note>
-    The hosted installer clears npm freshness filters such as `min-release-age`
-    for the OpenClaw package install. If you install manually with npm, your own
-    npm policy still applies.
+    When you explicitly select its npm compatibility method, the hosted
+    installer clears npm freshness filters such as `min-release-age` for the
+    upstream OpenClaw package install. If you install manually with npm, your
+    own npm policy still applies.
     </Note>
 
   </Tab>
@@ -137,8 +125,9 @@ If you already manage Node yourself:
     ```
 
     <Note>
-    `--trust` allows OpenClaw's package lifecycle scripts for this install. Bun
-    1.4 or newer can also run OpenClaw's CLI, local agent, and Gateway. Node
+    `--trust` allows the upstream OpenClaw package's lifecycle scripts for this
+    compatibility install. Bun 1.4 or newer can also run the compatible CLI,
+    local agent, and Gateway. Node
     remains the primary runtime, so the plain `openclaw` executable keeps its
     Node shebang. `bun run --bun` forces the Bun runtime, while
     `--daemon-runtime bun` installs the managed Gateway under Bun.
@@ -152,8 +141,8 @@ If you already manage Node yourself:
 For contributors or anyone who wants to run from a local checkout:
 
 ```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
+git clone https://github.com/celaya-solutions/PASO-AGENT.git
+cd PASO-AGENT
 corepack enable
 pnpm install && pnpm build && pnpm ui:build
 pnpm add --global "openclaw@link:$PWD"
@@ -172,7 +161,7 @@ Or skip the global install and use `pnpm openclaw ...` from inside the repo. See
 ### Install from the GitHub main checkout
 
 ```bash
-curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
+curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
 ```
 
 ### Containers and package managers
@@ -211,7 +200,7 @@ If you want managed startup after install:
 
 ## Hosting and deployment
 
-Deploy OpenClaw on a cloud server or VPS. See [Linux server](/vps) for the full
+Deploy PASO on a cloud server or VPS. See [Linux server](/vps) for the full
 provider picker (DigitalOcean, Hetzner, Hostinger, Fly.io, GCP, Azure, Railway,
 Northflank, Oracle Cloud, Raspberry Pi, and more), deploy declaratively on
 [Render](/install/render), or try the experimental [Cloudflare Containers](/install/cloudflare)
@@ -245,13 +234,13 @@ template.
     Create, verify, and restore state archives.
   </Card>
   <Card title="Updating" href="/install/updating" icon="refresh-cw">
-    Keep OpenClaw up to date.
+    Keep PASO up to date.
   </Card>
   <Card title="Migrating" href="/install/migrating" icon="arrow-right">
     Move to a new machine.
   </Card>
   <Card title="Uninstall" href="/install/uninstall" icon="trash-2">
-    Remove OpenClaw completely.
+    Remove PASO completely.
   </Card>
 </CardGroup>
 

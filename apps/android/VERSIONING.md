@@ -1,4 +1,10 @@
-# OpenClaw Android Versioning
+# PASO Android Versioning
+
+> **PASO Google Play publishing is not configured.** The current application
+> ID, certificate, and encrypted signing repository belong to upstream
+> OpenClaw and remain only for compatibility. Release commands fail closed
+> while `ReleaseSigning.json` has `releaseEnabled: false`; do not upload to the
+> upstream listing.
 
 Android release builds use pinned app metadata instead of auto-bumping `build.gradle.kts`.
 
@@ -56,7 +62,7 @@ Recommended workflow:
    emulators.
 7. Run `pnpm android:release:archive` to produce the signed phone Play AAB, Wear AAB, and third-party APK.
 8. Run `pnpm android:release:upload` to upload metadata, screenshots, the phone AAB, and the Wear AAB to their phone and `wear:` tracks in one atomic Google Play edit.
-9. For a regular final or correction OpenClaw release, let `OpenClaw Release Publish` dispatch the protected `Android Release` workflow. It builds the signed third-party APK from the exact tag and attaches the verified APK, checksum manifest, and GitHub provenance before the release draft can publish. Before tagging a correction with its own package version, increment the pinned `versionCode`; the workflow verifies it is higher than the preceding final or correction APK. A same-commit fallback correction reuses the base release's verified APK and adds provenance for the correction tag.
+9. For a regular final or correction PASO release, let `PASO Release Publish` dispatch the protected `Android Release` workflow. It builds the signed third-party APK from the exact tag and attaches the verified APK, checksum manifest, and GitHub provenance before the release draft can publish. Before tagging a correction with its own package version, increment the pinned `versionCode`; the workflow verifies it is higher than the preceding final or correction APK. A same-commit fallback correction reuses the base release's verified APK and adds provenance for the correction tag.
 10. Complete production rollout manually in Google Play Console when needed.
 
 If `pnpm android:release:upload` fails, stop at that failure. Do not continue by
@@ -84,7 +90,7 @@ refs/openclaw/mobile-releases/android/2026.6.10-2026061008
 
 These refs are intentionally outside `refs/tags/*` and `refs/heads/*`. They do
 not appear on GitHub release or tag pages, and they do not participate in the
-core OpenClaw release machinery.
+core PASO release machinery.
 
 `pnpm android:release:upload` checks the ref before uploading the Play build and
 records it only after the atomic phone and Wear Play edit commits. Existing refs are

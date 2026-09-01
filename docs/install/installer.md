@@ -1,23 +1,23 @@
 ---
 summary: "How the installer scripts work (install.sh, install-cli.sh, install.ps1), flags, and automation"
 read_when:
-  - You want to understand `openclaw.ai/install.sh`
+  - You want to understand the PASO source installers
   - You want to automate installs (CI / headless)
   - You want to install from a GitHub checkout
 title: "Installer internals"
 ---
 
-OpenClaw ships three installer scripts, served from `openclaw.ai`.
+PASO keeps three installer scripts in the [PASO source repository](https://github.com/celaya-solutions/PASO-AGENT). The commands below load them directly from the fork's `main` branch.
 
-| Script                             | Platform             | What it does                                                                                   |
-| ---------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------- |
-| [`install.sh`](#installsh)         | macOS / Linux / WSL  | Installs Node if needed, installs OpenClaw via npm (default) or git, can run onboarding.       |
-| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Installs Node + OpenClaw into a local prefix (`~/.openclaw`) via npm or git. No root required. |
-| [`install.ps1`](#installps1)       | Windows (PowerShell) | Installs Node if needed, installs OpenClaw via npm (default) or git, can run onboarding.       |
+| Script                             | Platform             | What it does                                                                         |
+| ---------------------------------- | -------------------- | ------------------------------------------------------------------------------------ |
+| [`install.sh`](#installsh)         | macOS / Linux / WSL  | Installs Node if needed, installs PASO from git, and can run onboarding.             |
+| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Installs Node + PASO into a local prefix (`~/.openclaw`) from git. No root required. |
+| [`install.ps1`](#installps1)       | Windows (PowerShell) | Installs Node if needed, installs PASO from git, and can run onboarding.             |
 
 All three support Node **22.22.3+, 24.15+, or 25.9+** with a WAL-reset-safe linked SQLite library. When Node is missing, `install.sh` provisions Node 26 through Homebrew on macOS and the supported Node 24 LTS line through NodeSource on Linux. When a supported RPM-owned Node links unsafe SQLite, `install.sh` preserves the distro package and provisions a user-space Node runtime through `install-cli.sh`. The rootless `install-cli.sh` downloads Node 24.19.0 (Node 22.23.2 on ARMv7). On Windows, winget/Chocolatey/Scoop install the supported Node LTS line, and the portable fallback downloads Node 26.
 
-Before changing packages, every installer probes the exact npm executable it will use. npm 11.15 and earlier installs normally; npm 11.16 and later, including npm 12, receives `--allow-scripts` for only the npm-resolved OpenClaw candidate identity. An unreadable npm version stops before package mutation. A remaining `.openclaw-lifecycle-pending` marker or legacy `dist/openclaw-install-guard` makes the install fail instead of reporting a lifecycle-skipped package as successful.
+Before an npm bootstrap or an explicitly selected compatibility-package install, every installer probes the exact npm executable it will use. npm 11.15 and earlier installs normally; npm 11.16 and later, including npm 12, receives `--allow-scripts` only for the resolved upstream OpenClaw compatibility package. An unreadable npm version stops before package mutation. A remaining `.openclaw-lifecycle-pending` marker or legacy `dist/openclaw-install-guard` makes the install fail instead of reporting a lifecycle-skipped package as successful.
 
 Install-method switches verify the replacement before retiring the current owner. Source wrappers use a same-directory atomic replacement; when an npm shim shares that path, the installer moves only an identity-matched source wrapper aside and restores it if npm installation, lifecycle checks, or candidate verification fails. On upgrades, `install.sh` and `install.ps1` run `openclaw doctor --fix`; repair or final verification failure exits nonzero, and the success banner appears only after those steps complete.
 
@@ -47,31 +47,33 @@ checkout-pinned toolchain rather than reusing an older ambient launcher.
 <Tabs>
   <Tab title="install.sh">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+      | bash -s -- --install-method git --version main
     ```
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --help
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --help
     ```
 
   </Tab>
   <Tab title="install-cli.sh">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh \
+      | bash -s -- --install-method git --version main
     ```
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --help
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --help
     ```
 
   </Tab>
   <Tab title="install.ps1">
     ```powershell
-    iwr -useb https://openclaw.ai/install.ps1 | iex
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
     ```
 
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -Tag beta -NoOnboard -DryRun
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -NoOnboard -DryRun
     ```
 
   </Tab>
@@ -98,15 +100,15 @@ Recommended for most interactive installs on macOS/Linux/WSL.
     Supports macOS and Linux (including WSL).
   </Step>
   <Step title="Ensure a supported Node.js runtime">
-    Checks the Node version and linked SQLite library, then installs Node if needed (Node 26 through Homebrew `node` on macOS; Node 24 LTS through NodeSource setup scripts on Linux apt/dnf/yum). On RPM-based Linux, a supported distro Node that links unsafe SQLite remains installed while OpenClaw receives a user-space Node runtime. On macOS, Homebrew is installed only when the installer needs it for Node or Git. Node 22.22.3+, Node 24.15+, and Node 25.9+ are supported; Node 23 is unsupported.
+    Checks the Node version and linked SQLite library, then installs Node if needed (Node 26 through Homebrew `node` on macOS; Node 24 LTS through NodeSource setup scripts on Linux apt/dnf/yum). On RPM-based Linux, a supported distro Node that links unsafe SQLite remains installed while PASO receives a user-space Node runtime. On macOS, Homebrew is installed only when the installer needs it for Node or Git. Node 22.22.3+, Node 24.15+, and Node 25.9+ are supported; Node 23 is unsupported.
     On Alpine/musl Linux, the installer uses apk packages instead of NodeSource and verifies the actual linked SQLite version. Current stable Alpine package streams can provide a new-enough Node with vulnerable system SQLite; when that happens, use an official `node:26-alpine` container or a glibc-based host instead.
   </Step>
   <Step title="Ensure Git">
     Installs Git if missing using the detected package manager, including Homebrew on macOS and apk on Alpine.
   </Step>
-  <Step title="Install OpenClaw">
-    - `npm` method (default): global npm install
-    - `git` method: clone/update repo, install deps with pnpm, build, then install wrapper at `~/.local/bin/openclaw`
+  <Step title="Install PASO">
+    - `git` method (default): clone/update the PASO repository, install dependencies with pnpm, build, then install the compatibility-named wrapper at `~/.local/bin/openclaw`
+    - `npm` method (explicit compatibility option): install the upstream OpenClaw framework package globally; this is not a PASO release
 
   </Step>
   <Step title="Post-install tasks">
@@ -121,12 +123,12 @@ Recommended for most interactive installs on macOS/Linux/WSL.
 
 ### Source checkout detection
 
-If run inside an OpenClaw checkout (`package.json` + `pnpm-workspace.yaml`), the script offers:
+If run inside a PASO checkout (`package.json` + `pnpm-workspace.yaml`), the script offers:
 
-- use checkout (`git`), or
-- use global install (`npm`)
+- use the PASO checkout (`git`), or
+- install the upstream compatibility package globally (`npm`)
 
-If no TTY is available and no install method is set, it defaults to `npm` and warns.
+If no install method is selected, the script defaults to the PASO git source path, including without a TTY.
 
 The script exits with code `2` for invalid method selection or invalid `--install-method` values.
 
@@ -141,34 +143,34 @@ object is unavailable or cannot resolve to a commit.
 ### Examples (install.sh)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="PASO source">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
   <Tab title="Skip onboarding">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --no-onboard
     ```
   </Tab>
   <Tab title="Git install">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
   <Tab title="GitHub main checkout">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
   <Tab title="Dry run">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --dry-run
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --dry-run
     ```
   </Tab>
   <Tab title="Verify after install">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard --verify
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --no-onboard --verify
     ```
   </Tab>
 </Tabs>
@@ -178,11 +180,11 @@ object is unavailable or cannot resolve to a commit.
 
 | Flag                                    | Description                                                             |
 | --------------------------------------- | ----------------------------------------------------------------------- |
-| `--install-method \| --method npm\|git` | Choose install method (default: `npm`)                                  |
-| `--npm`                                 | Shortcut for npm method                                                 |
+| `--install-method \| --method npm\|git` | Choose install method (default: `git`)                                  |
+| `--npm`                                 | Shortcut for the upstream npm compatibility method                      |
 | `--git \| --github`                     | Shortcut for git method                                                 |
-| `--version <version\|dist-tag\|spec>`   | npm version, dist-tag, or package spec (default: `latest`)              |
-| `--beta`                                | Use beta dist-tag if available, else fall back to `latest`              |
+| `--version <ref\|version\|dist-tag>`    | PASO git ref (default: `main`) or upstream npm selector (npm method)    |
+| `--beta`                                | Use the PASO beta git tag, or upstream npm beta selector in npm mode    |
 | `--git-dir \| --dir <path>`             | Checkout directory (default: `~/openclaw`)                              |
 | `--no-git-update`                       | Skip `git pull` for existing checkout                                   |
 | `--no-prompt`                           | Disable prompts                                                         |
@@ -197,20 +199,20 @@ object is unavailable or cannot resolve to a commit.
 
   <Accordion title="Environment variables reference">
 
-| Variable                                          | Description                                                        |
-| ------------------------------------------------- | ------------------------------------------------------------------ |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`                | Install method                                                     |
-| `OPENCLAW_VERSION=latest\|next\|<semver>\|<spec>` | npm version, dist-tag, or package spec                             |
-| `OPENCLAW_BETA=0\|1`                              | Use beta if available                                              |
-| `OPENCLAW_HOME=<path>`                            | Base directory for OpenClaw state and default git/onboarding paths |
-| `OPENCLAW_GIT_DIR=<path>`                         | Checkout directory                                                 |
-| `OPENCLAW_GIT_UPDATE=0\|1`                        | Toggle git updates                                                 |
-| `OPENCLAW_NO_PROMPT=1`                            | Disable prompts                                                    |
-| `OPENCLAW_VERIFY_INSTALL=1`                       | Run the post-install smoke verify                                  |
-| `OPENCLAW_NO_ONBOARD=1`                           | Skip onboarding                                                    |
-| `OPENCLAW_DRY_RUN=1`                              | Dry run mode                                                       |
-| `OPENCLAW_VERBOSE=1`                              | Debug mode                                                         |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`       | npm log level (default: `error`, hides npm deprecation noise)      |
+| Variable                                     | Description                                                    |
+| -------------------------------------------- | -------------------------------------------------------------- |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`           | Install method                                                 |
+| `OPENCLAW_VERSION=main\|latest\|beta\|<ref>` | PASO git ref, or upstream npm selector with the npm method     |
+| `OPENCLAW_BETA=0\|1`                         | Use beta if available                                          |
+| `OPENCLAW_HOME=<path>`                       | Base directory for PASO state and default git/onboarding paths |
+| `OPENCLAW_GIT_DIR=<path>`                    | Checkout directory                                             |
+| `OPENCLAW_GIT_UPDATE=0\|1`                   | Toggle git updates                                             |
+| `OPENCLAW_NO_PROMPT=1`                       | Disable prompts                                                |
+| `OPENCLAW_VERIFY_INSTALL=1`                  | Run the post-install smoke verify                              |
+| `OPENCLAW_NO_ONBOARD=1`                      | Skip onboarding                                                |
+| `OPENCLAW_DRY_RUN=1`                         | Dry run mode                                                   |
+| `OPENCLAW_VERBOSE=1`                         | Debug mode                                                     |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`  | npm log level (default: `error`, hides npm deprecation noise)  |
 
   </Accordion>
 </AccordionGroup>
@@ -223,8 +225,9 @@ object is unavailable or cannot resolve to a commit.
 
 <Info>
 Designed for environments where you want everything under a local prefix
-(default `~/.openclaw`) and no system Node dependency. Supports npm installs
-by default, plus git-checkout installs under the same prefix flow.
+(default `~/.openclaw`) and no system Node dependency. It installs the PASO
+git checkout by default. An explicit npm method installs the upstream OpenClaw
+compatibility package instead.
 </Info>
 
 ### Flow (install-cli.sh)
@@ -238,9 +241,9 @@ by default, plus git-checkout installs under the same prefix flow.
   <Step title="Ensure Git">
     If Git is missing, attempts install via apt/dnf/yum/apk on Linux or Homebrew on macOS.
   </Step>
-  <Step title="Install OpenClaw under prefix">
-    - `npm` method (default): installs under the prefix with npm, then writes wrapper to `<prefix>/bin/openclaw`
-    - `git` method: clones/updates a checkout (default `~/openclaw`) and still writes the wrapper to `<prefix>/bin/openclaw`
+  <Step title="Install PASO under prefix">
+    - `git` method (default): clones/updates the PASO checkout (default `~/openclaw`) and writes the compatibility-named wrapper to `<prefix>/bin/openclaw`
+    - `npm` method (explicit compatibility option): installs the upstream OpenClaw package under the prefix, then writes the wrapper to `<prefix>/bin/openclaw`
 
   </Step>
   <Step title="Verify the installed CLI">
@@ -257,29 +260,29 @@ by default, plus git-checkout installs under the same prefix flow.
 ### Examples (install-cli.sh)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="PASO source">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method git --version main
     ```
   </Tab>
-  <Tab title="Custom prefix + version">
+  <Tab title="Upstream npm compatibility package">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method npm --prefix /opt/openclaw --version latest
     ```
   </Tab>
-  <Tab title="Git install">
+  <Tab title="Custom git directory">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --install-method git --git-dir ~/openclaw
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method git --version main --git-dir ~/paso-agent
     ```
   </Tab>
   <Tab title="Automation JSON output">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method git --version main --json --prefix /opt/paso
     ```
   </Tab>
   <Tab title="Run onboarding">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method git --version main --onboard
     ```
   </Tab>
 </Tabs>
@@ -290,12 +293,12 @@ by default, plus git-checkout installs under the same prefix flow.
 | Flag                                    | Description                                                                     |
 | --------------------------------------- | ------------------------------------------------------------------------------- |
 | `--prefix <path>`                       | Install prefix (default: `~/.openclaw`)                                         |
-| `--install-method \| --method npm\|git` | Choose install method (default: `npm`)                                          |
-| `--npm`                                 | Shortcut for npm method                                                         |
+| `--install-method \| --method npm\|git` | Choose install method (default: `git`)                                          |
+| `--npm`                                 | Shortcut for the upstream npm compatibility method                              |
 | `--git \| --github`                     | Shortcut for git method                                                         |
 | `--git-dir \| --dir <path>`             | Git checkout directory (default: `~/openclaw`)                                  |
 | `--no-git-update`                       | Skip `git pull` for an existing git checkout                                    |
-| `--version <ver>`                       | OpenClaw version or dist-tag (default: `latest`)                                |
+| `--version <ver>`                       | PASO git ref (default: `main`) or upstream npm selector in npm mode             |
 | `--compatible-with <ver>`               | Refuse a CLI that cannot modify config written by `<ver>`                       |
 | `--node-version <ver>`                  | Node version (default: `24.19.0`; `22.23.2` on Linux ARMv7)                     |
 | `--json`                                | Emit NDJSON events                                                              |
@@ -308,17 +311,17 @@ by default, plus git-checkout installs under the same prefix flow.
 
   <Accordion title="Environment variables reference">
 
-| Variable                                    | Description                                                        |
-| ------------------------------------------- | ------------------------------------------------------------------ |
-| `OPENCLAW_PREFIX=<path>`                    | Install prefix                                                     |
-| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Install method                                                     |
-| `OPENCLAW_VERSION=<ver>`                    | OpenClaw version or dist-tag                                       |
-| `OPENCLAW_NODE_VERSION=<ver>`               | Node version                                                       |
-| `OPENCLAW_HOME=<path>`                      | Base directory for OpenClaw state and default git/onboarding paths |
-| `OPENCLAW_GIT_DIR=<path>`                   | Git checkout directory for git installs                            |
-| `OPENCLAW_GIT_UPDATE=0\|1`                  | Toggle git updates for existing checkouts                          |
-| `OPENCLAW_NO_ONBOARD=1`                     | Skip onboarding                                                    |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level (default: `error`)                                   |
+| Variable                                    | Description                                                    |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| `OPENCLAW_PREFIX=<path>`                    | Install prefix                                                 |
+| `OPENCLAW_INSTALL_METHOD=git\|npm`          | Install method                                                 |
+| `OPENCLAW_VERSION=<ver>`                    | PASO git ref, or upstream npm selector with the npm method     |
+| `OPENCLAW_NODE_VERSION=<ver>`               | Node version                                                   |
+| `OPENCLAW_HOME=<path>`                      | Base directory for PASO state and default git/onboarding paths |
+| `OPENCLAW_GIT_DIR=<path>`                   | Git checkout directory for git installs                        |
+| `OPENCLAW_GIT_UPDATE=0\|1`                  | Toggle git updates for existing checkouts                      |
+| `OPENCLAW_NO_ONBOARD=1`                     | Skip onboarding                                                |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | npm log level (default: `error`)                               |
 
   </Accordion>
 </AccordionGroup>
@@ -340,11 +343,11 @@ by default, plus git-checkout installs under the same prefix flow.
     Requires PowerShell 5+.
   </Step>
   <Step title="Ensure a supported Node.js runtime">
-    If missing, attempts install via winget, then Chocolatey, then Scoop. If no package manager is available, the script downloads the official Node.js 26 Windows zip into `%LOCALAPPDATA%\OpenClaw\deps\portable-node` and adds it to the current process and user PATH. Node 22.22.3+, Node 24.15+, and Node 25.9+ are supported; Node 23 is unsupported.
+    If missing, attempts install via winget, then Chocolatey, then Scoop. If no package manager is available, the script downloads the official Node.js 26 Windows zip into `%LOCALAPPDATA%\OpenClaw\deps\portable-node` and adds it to the current process and user PATH. The `OpenClaw` directory is retained as a technical compatibility storage path; the installed product is PASO. Node 22.22.3+, Node 24.15+, and Node 25.9+ are supported; Node 23 is unsupported.
   </Step>
-  <Step title="Install OpenClaw">
-    - `npm` method (default): global npm install using the selected `-Tag`, launched from a writable installer temp directory so shells opened in protected folders such as `C:\` still work
-    - `git` method: clone/update repo, install/build with pnpm, and install wrapper at `%USERPROFILE%\.local\bin\openclaw.cmd`. If Git is missing, the script bootstraps user-local MinGit under `%LOCALAPPDATA%\OpenClaw\deps\portable-git` and adds it to the current process and user PATH.
+  <Step title="Install PASO">
+    - `git` method (default): clone/update the PASO repository, install/build with pnpm, and install the compatibility-named wrapper at `%USERPROFILE%\.local\bin\openclaw.cmd`. If Git is missing, the script bootstraps user-local MinGit under `%LOCALAPPDATA%\OpenClaw\deps\portable-git` and adds it to the current process and user PATH. The `OpenClaw` directory name is retained for storage compatibility.
+    - `npm` method (explicit compatibility option): globally install the upstream OpenClaw framework package using the selected `-Tag`, launched from a writable installer temp directory so shells opened in protected folders such as `C:\` still work
 
   </Step>
   <Step title="Post-install tasks">
@@ -361,29 +364,29 @@ by default, plus git-checkout installs under the same prefix flow.
 ### Examples (install.ps1)
 
 <Tabs>
-  <Tab title="Default">
+  <Tab title="PASO source">
     ```powershell
-    iwr -useb https://openclaw.ai/install.ps1 | iex
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
   <Tab title="Git install">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
   <Tab title="GitHub main checkout">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -Tag main
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
     ```
   </Tab>
   <Tab title="Custom git directory">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -GitDir "C:\openclaw"
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -GitDir "C:\paso-agent"
     ```
   </Tab>
   <Tab title="Dry run">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -DryRun
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -DryRun
     ```
   </Tab>
 </Tabs>
@@ -391,15 +394,15 @@ by default, plus git-checkout installs under the same prefix flow.
 <AccordionGroup>
   <Accordion title="Flags reference">
 
-| Flag                        | Description                                                |
-| --------------------------- | ---------------------------------------------------------- |
-| `-InstallMethod npm\|git`   | Install method (default: `npm`)                            |
-| `-Tag <tag\|version\|spec>` | npm dist-tag, version, or package spec (default: `latest`) |
-| `-GitDir <path>`            | Checkout directory (default: `%USERPROFILE%\openclaw`)     |
-| `-NoOnboard`                | Skip onboarding                                            |
-| `-NoGitUpdate`              | Skip `git pull`                                            |
-| `-DryRun`                   | Print actions only                                         |
-| `-Help`                     | Show usage for downloaded scriptblock invocation           |
+| Flag                        | Description                                             |
+| --------------------------- | ------------------------------------------------------- |
+| `-InstallMethod npm\|git`   | Install method (default: `git`)                         |
+| `-Tag <tag\|version\|spec>` | PASO git ref (default: `main`) or upstream npm selector |
+| `-GitDir <path>`            | Checkout directory (default: `%USERPROFILE%\openclaw`)  |
+| `-NoOnboard`                | Skip onboarding                                         |
+| `-NoGitUpdate`              | Skip `git pull`                                         |
+| `-DryRun`                   | Print actions only                                      |
+| `-Help`                     | Show usage for downloaded scriptblock invocation        |
 
   </Accordion>
 
@@ -431,25 +434,25 @@ If `-InstallMethod git` is used and Git is missing, the script tries a user-loca
 Use non-interactive flags/env vars for predictable runs.
 
 <Tabs>
-  <Tab title="install.sh (non-interactive npm)">
+  <Tab title="install.sh (upstream npm compatibility package)">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-prompt --no-onboard
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method npm --version latest --no-prompt --no-onboard
     ```
   </Tab>
   <Tab title="install.sh (non-interactive git)">
     ```bash
-    OPENCLAW_INSTALL_METHOD=git OPENCLAW_NO_PROMPT=1 \
-      curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+      | bash -s -- --install-method git --version main --no-prompt --no-onboard
     ```
   </Tab>
   <Tab title="install-cli.sh (JSON)">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- --install-method git --version main --json --prefix /opt/paso
     ```
   </Tab>
   <Tab title="install.ps1 (skip onboarding)">
     ```powershell
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -NoOnboard
     ```
   </Tab>
 </Tabs>
@@ -480,7 +483,7 @@ Use non-interactive flags/env vars for predictable runs.
 
     ```powershell
     Set-PSDebug -Trace 1
-    & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main -NoOnboard
     Set-PSDebug -Trace 0
     ```
 

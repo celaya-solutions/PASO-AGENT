@@ -1,4 +1,4 @@
-// Gateway Bench Child script supports OpenClaw repository automation.
+// Gateway Bench Child script supports PASO repository automation.
 import type { ChildProcessWithoutNullStreams } from "node:child_process";
 import {
   inspectManagedProcessGroup,

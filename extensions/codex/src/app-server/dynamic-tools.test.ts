@@ -693,7 +693,7 @@ describe("createCodexDynamicToolBridge", () => {
     expect(payloads).toHaveLength(1);
   });
 
-  it("keeps OpenClaw control-path tools direct while deferring broad tools", () => {
+  it("keeps PASO control-path tools direct while deferring broad tools", () => {
     const bridge = createCodexDynamicToolBridge({
       tools: [
         createTool({ name: "web_search", resultContentSource: "network" }),
@@ -885,7 +885,7 @@ describe("createCodexDynamicToolBridge", () => {
       contentItems: [
         {
           type: "inputText",
-          text: `OpenClaw tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
+          text: `PASO tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
         },
       ],
     });
@@ -898,12 +898,12 @@ describe("createCodexDynamicToolBridge", () => {
         content: [
           {
             type: "text",
-            text: `OpenClaw tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
+            text: `PASO tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
           },
         ],
         details: {
           status: "failed",
-          error: `OpenClaw tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
+          error: `PASO tool is not available for this turn: ${HEARTBEAT_RESPONSE_TOOL_NAME}`,
         },
       },
       isError: true,
@@ -1003,7 +1003,7 @@ describe("createCodexDynamicToolBridge", () => {
     ]);
   });
 
-  it("retains all sanitized details for OpenClaw transcript projection", async () => {
+  it("retains all sanitized details for PASO transcript projection", async () => {
     const mcpAppPreview = {
       kind: "canvas",
       view: { id: "mcp-app-view-1", title: "Nearby food" },
@@ -1340,7 +1340,7 @@ describe("createCodexDynamicToolBridge", () => {
 
     expect(result).toEqual({
       success: false,
-      contentItems: [{ type: "inputText", text: "Unknown OpenClaw tool: fuzzplugin_move_angles" }],
+      contentItems: [{ type: "inputText", text: "Unknown PASO tool: fuzzplugin_move_angles" }],
     });
     expect(result.executionStarted).toBe(false);
     expect(result.executedArguments).toEqual({});
@@ -1493,7 +1493,7 @@ describe("createCodexDynamicToolBridge", () => {
     expect(invalidResult.contentItems).toEqual([
       {
         type: "inputText",
-        text: `Unknown OpenClaw tool: ${testCase.name}`,
+        text: `Unknown PASO tool: ${testCase.name}`,
       },
     ]);
   });
@@ -1692,7 +1692,7 @@ describe("createCodexDynamicToolBridge", () => {
     }
     const text = firstItem.text;
     expect(text.length).toBeLessThanOrEqual(32_000);
-    expect(text).toContain("OpenClaw truncated dynamic tool result");
+    expect(text).toContain("PASO truncated dynamic tool result");
     expect(text).toContain("original 40000 chars");
     expect(text).toContain("rerun with narrower args");
   });
@@ -1789,13 +1789,13 @@ describe("createCodexDynamicToolBridge", () => {
       throw new Error("expected inputText tool result");
     }
     expect(firstItem.text.length).toBeLessThanOrEqual(9_600);
-    expect(firstItem.text).toContain("OpenClaw truncated dynamic tool result");
+    expect(firstItem.text).toContain("PASO truncated dynamic tool result");
   });
 
   it("keeps a whole code point when dynamic tool text crosses the automatic boundary", async () => {
     const maxChars = 16_000;
     const totalChars = 20_000;
-    const noticeText = `...(OpenClaw truncated dynamic tool result: original ${totalChars} chars, weighted budget ${maxChars}; rerun with narrower args.)`;
+    const noticeText = `...(PASO truncated dynamic tool result: original ${totalChars} chars, weighted budget ${maxChars}; rerun with narrower args.)`;
     const textBudget = maxChars - noticeText.length - 1;
     const prefix = "a".repeat(textBudget - 1);
     const longText = `${prefix}😀${"z".repeat(totalChars - prefix.length - 2)}`;
@@ -1852,7 +1852,7 @@ describe("createCodexDynamicToolBridge", () => {
       .map((item) => (item.type === "inputText" && typeof item.text === "string" ? item.text : ""))
       .join("");
     expect(text.length).toBeLessThanOrEqual(16_000);
-    expect(text).toContain("OpenClaw truncated dynamic tool result");
+    expect(text).toContain("PASO truncated dynamic tool result");
     expect(text).toContain("original 20000 chars");
     expect(text).not.toContain("b".repeat(10_000));
   });
@@ -3808,7 +3808,7 @@ describe("createCodexDynamicToolBridge", () => {
     expect(result.sideEffectEvidence).toBeUndefined();
   });
 
-  it("shares replay-safe classification with OpenClaw for read-only dynamic tools", async () => {
+  it("shares replay-safe classification with PASO for read-only dynamic tools", async () => {
     const bridge = createBridgeWithToolResult("web_search", textToolResult("done"));
 
     const result = await bridge.handleToolCall({
@@ -4693,7 +4693,7 @@ describe("createCodexDynamicToolBridge", () => {
     expect(result).toMatchObject({
       success: false,
       diagnosticTerminalReason: "failed",
-      contentItems: [{ type: "inputText", text: "OpenClaw dynamic tool call failed." }],
+      contentItems: [{ type: "inputText", text: "PASO dynamic tool call failed." }],
     });
     expect(onAgentToolResult).toHaveBeenCalledOnce();
   });

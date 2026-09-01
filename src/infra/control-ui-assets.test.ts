@@ -251,7 +251,7 @@ describe("control UI assets helpers (fs-mocked)", () => {
     ).resolves.toEqual({
       ok: false,
       built: false,
-      message: `Missing Control UI assets at ${indexPath}. Reinstall OpenClaw to restore bundled Control UI assets.`,
+      message: `Missing Control UI assets at ${indexPath}. Reinstall PASO to restore bundled Control UI assets.`,
     });
   });
 
@@ -263,7 +263,7 @@ describe("control UI assets helpers (fs-mocked)", () => {
     await expect(ensureControlUiAssetsBuilt(undefined, { root })).resolves.toEqual({
       ok: false,
       built: false,
-      message: `Incomplete Control UI assets at ${indexPath} (missing assets/startup.js). Reinstall OpenClaw to restore bundled Control UI assets.`,
+      message: `Incomplete Control UI assets at ${indexPath} (missing assets/startup.js). Reinstall PASO to restore bundled Control UI assets.`,
     });
     expect(state.runCommandWithTimeout).not.toHaveBeenCalled();
   });

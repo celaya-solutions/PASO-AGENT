@@ -80,12 +80,12 @@ describe("browser extension pairing Gateway URL", () => {
     resetRuntimeCapture();
   });
 
-  it("prints the Store CTA only after native pre-registration is ready", async () => {
+  it("prints the unpacked PASO instructions only after native pre-registration is ready", async () => {
     installMocks.installChromeExtensionBootstrap.mockImplementation(
       async (params: Parameters<typeof installChromeExtensionBootstrap>[0]) => {
         params.onProgress?.("Pre-registered the native host for Chromium.");
         params.onProgress?.(
-          "Native bootstrap is ready. Add OpenClaw from the Chrome Web Store. For development, load unpacked from /stable/openclaw-extension.",
+          "Native bootstrap is ready. In Chrome, open chrome://extensions, enable Developer mode, and load the bundled PASO extension unpacked from /stable/openclaw-extension. The inherited Web Store listing is upstream OpenClaw compatibility, not a PASO release.",
         );
         return {
           platform: "linux",
@@ -123,7 +123,7 @@ describe("browser extension pairing Gateway URL", () => {
     const output = logSpy.mock.calls.map(([message]) => String(message));
     expect(output[0]).toContain("Preparing");
     expect(output.findIndex((message) => message.includes("Pre-registered"))).toBeLessThan(
-      output.findIndex((message) => message.includes("Chrome Web Store")),
+      output.findIndex((message) => message.includes("load the bundled PASO extension")),
     );
     expect(output.at(-1)).toContain("extension identity verified");
   });

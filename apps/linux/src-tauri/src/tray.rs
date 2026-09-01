@@ -203,7 +203,7 @@ pub fn build(
     let start = MenuItem::with_id(app, START_ID, "Start Gateway", false, None::<&str>)?;
     let stop = MenuItem::with_id(app, STOP_ID, "Stop Gateway", false, None::<&str>)?;
     let restart = MenuItem::with_id(app, RESTART_ID, "Restart Gateway", false, None::<&str>)?;
-    let quit = MenuItem::with_id(app, QUIT_ID, "Quit OpenClaw", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, QUIT_ID, "Quit PASO", true, None::<&str>)?;
     let separator_one = PredefinedMenuItem::separator(app)?;
     let separator_two = PredefinedMenuItem::separator(app)?;
     let separator_three = PredefinedMenuItem::separator(app)?;

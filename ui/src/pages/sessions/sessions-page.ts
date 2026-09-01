@@ -78,7 +78,7 @@ import { loadStoredGroupBy, saveStoredGroupBy } from "./page-state.ts";
 import { sessionsPageListQuery, type SessionsRouteData } from "./route.ts";
 import { renderSessions, type SessionsProps, type TranscriptSearchState } from "./view.ts";
 
-const SESSIONS_DOCS_URL = "https://docs.openclaw.ai/concepts/session";
+const SESSIONS_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 type SessionsPageRequestScope = {
   epoch: number;

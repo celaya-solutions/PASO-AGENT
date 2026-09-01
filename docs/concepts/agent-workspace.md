@@ -62,7 +62,7 @@ Older installs may have created `~/openclaw`. Keeping multiple workspace directo
 
 ## Workspace file map
 
-Standard files OpenClaw expects inside the workspace:
+Standard files PASO expects inside the workspace:
 
 <AccordionGroup>
   <Accordion title="AGENTS.md - operating instructions">
@@ -98,7 +98,7 @@ Standard files OpenClaw expects inside the workspace:
 </AccordionGroup>
 
 <Note>
-If a required bootstrap file is missing, OpenClaw injects a "missing file" marker into the session and continues. Optional `USER.md` and `MEMORY.md` files are omitted when absent. Large bootstrap files are truncated when injected; adjust general limits with `agents.defaults.bootstrapMaxChars` (default: `20000`) and `agents.defaults.bootstrapTotalMaxChars` (default: `60000`). `USER.md` keeps its separate 4,000-character cap. `openclaw setup` can recreate missing defaults without overwriting existing files.
+If a required bootstrap file is missing, PASO injects a "missing file" marker into the session and continues. Optional `USER.md` and `MEMORY.md` files are omitted when absent. Large bootstrap files are truncated when injected; adjust general limits with `agents.defaults.bootstrapMaxChars` (default: `20000`) and `agents.defaults.bootstrapTotalMaxChars` (default: `60000`). `USER.md` keeps its separate 4,000-character cap. `openclaw setup` can recreate missing defaults without overwriting existing files.
 </Note>
 
 ## What is NOT in the workspace
@@ -116,7 +116,7 @@ These live under `~/.openclaw/` and should NOT be committed to the workspace rep
 
 If you need to migrate sessions or config, copy them separately and keep them out of version control.
 
-Older OpenClaw releases wrote `openclaw-workspace-state.json`,
+Older PASO releases wrote `openclaw-workspace-state.json`,
 `.openclaw/workspace-state.json`, and `.attested` workspace sidecars. Current
 runtime uses only the shared SQLite database for that state. If Doctor reports
 one of these files, run `openclaw doctor --fix`; Doctor imports valid legacy

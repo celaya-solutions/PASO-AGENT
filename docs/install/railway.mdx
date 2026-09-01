@@ -1,22 +1,18 @@
 ---
-summary: "Deploy OpenClaw on Railway with one-click template"
+summary: "Deploy the PASO source repository on Railway"
 read_when:
-  - Deploying OpenClaw to Railway
-  - You want a one-click cloud deploy with browser-based Control UI
+  - Deploying PASO to Railway
+  - You want a hosted Gateway with browser-based Control UI
 title: "Railway"
 ---
 
-Deploy OpenClaw on Railway with a one-click template and access it through the web Control UI. This is the easiest "no terminal on the server" path: Railway runs the Gateway for you.
+Deploy PASO on Railway from the Celaya Solutions Research source repository and access it through the web Control UI.
 
-## One-click deploy
-
-<a href="https://railway.com/deploy/clawdbot-railway-template" target="_blank" rel="noreferrer">
-  Deploy on Railway
-</a>
+## Deploy from the PASO repository
 
 <Steps>
-  <Step title="Deploy the template">
-    Click **Deploy on Railway** above.
+  <Step title="Create the Railway service">
+    In Railway, choose **New Project → Deploy from GitHub repo** and select [celaya-solutions/PASO-AGENT](https://github.com/celaya-solutions/PASO-AGENT). Railway should detect the repository's `Dockerfile`.
   </Step>
 
 <Step title="Add a volume">
@@ -53,7 +49,7 @@ openclaw doctor --json
 
 ## What you get
 
-- Hosted OpenClaw Gateway + Control UI
+- Hosted PASO Gateway + Control UI
 - Persistent storage via the Railway Volume (`/data`), so `openclaw.json`, shared and per-agent SQLite auth stores, channel/provider state, sessions, and workspace survive redeploys
 
 ## Connect a channel
@@ -81,4 +77,4 @@ for the rollback warnings and activation sequence.
 
 - Set up messaging channels: [Channels](/channels)
 - Configure the Gateway: [Gateway configuration](/gateway/configuration)
-- Keep OpenClaw up to date: [Updating](/install/updating)
+- Keep PASO up to date: [Updating](/install/updating)

@@ -1,4 +1,4 @@
-// OpenClaw tests cover main rescue and audit command behavior.
+// PASO tests cover main rescue and audit command behavior.
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { SystemAgentInferenceUnavailableError } from "./inference-error.js";
@@ -54,7 +54,7 @@ const overview: SystemAgentOverview = {
     error: "offline",
   },
   references: {
-    docsUrl: "https://docs.openclaw.ai",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     sourceUrl: "https://github.com/openclaw/openclaw",
   },
 };
@@ -406,7 +406,7 @@ describe("runSystemAgent", () => {
     expect(lines).not.toContain("stale reply");
   });
 
-  it("starts interactive OpenClaw in the TUI shell", async () => {
+  it("starts interactive PASO in the TUI shell", async () => {
     const { runtime, lines } = createSystemAgentTestRuntime();
     let runInteractiveTuiCalls = 0;
     let onReadyCalls = 0;
@@ -494,7 +494,7 @@ describe("runSystemAgent", () => {
 
     expect(runInteractiveTuiCalls).toBe(0);
     expect(lines.join("\n")).toContain(
-      "OpenClaw needs an interactive TTY. Use --message for one command.",
+      "PASO needs an interactive TTY. Use --message for one command.",
     );
   });
 });

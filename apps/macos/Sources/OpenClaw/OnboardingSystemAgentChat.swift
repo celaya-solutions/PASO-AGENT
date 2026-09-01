@@ -89,7 +89,7 @@ final class SystemAgentOnboardingChatModel {
         await self.requestReply(message: nil, generation: generation)
         if Task.isCancelled, self.requestGeneration == generation {
             self.started = false
-            self.errorMessage = "OpenClaw was interrupted. Restart to try again."
+            self.errorMessage = "PASO was interrupted. Restart to try again."
         }
     }
 
@@ -252,8 +252,8 @@ final class SystemAgentOnboardingChatModel {
             if error is CancellationError || Task.isCancelled {
                 self.started = false
                 self.errorMessage = Task.isCancelled
-                    ? "OpenClaw was interrupted. Restart to try again."
-                    : "The Gateway connection changed. Restart OpenClaw to reconnect."
+                    ? "PASO was interrupted. Restart to try again."
+                    : "The Gateway connection changed. Restart PASO to reconnect."
                 return
             }
             self.errorMessage = error.localizedDescription
@@ -295,7 +295,7 @@ struct SystemAgentOnboardingChatView: View {
                             HStack(spacing: 8) {
                                 ProgressView()
                                     .controlSize(.small)
-                                Text("OpenClaw is working…")
+                                Text("PASO is working…")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -334,7 +334,7 @@ struct SystemAgentOnboardingChatView: View {
                         SecureField("Enter secret…", text: self.$model.input)
                     } else {
                         TextField(
-                            "Reply to OpenClaw… (yes sets everything up)",
+                            "Reply to PASO… (yes sets everything up)",
                             text: self.$model.input)
                     }
                 }

@@ -21,7 +21,7 @@ Availability: iPhone app builds are distributed through Apple channels when enab
 - Queues text messages sent while disconnected in a durable per-gateway outbox (up to 50): queued bubbles show in the transcript, flush in order on reconnect with idempotent retries, remain durable until canonical history confirms the send, retry with backoff before surfacing a retry/delete action, and expire instead of sending after 48 hours offline; reset/forget clears the queue with the cache.
 - Chat is the single text-and-voice surface. Chat actions can open the full Sessions screen without leaving Chat and can show or hide assistant reasoning and tool activity. Tap the microphone for draft dictation, open its menu to record a voice note, or use the inline Talk control for realtime voice; the Talk control animates from live microphone or playback level while listening or speaking.
 - Chat accepts images from the photo picker, camera, Files, paste, and the iOS share sheet. Assistant-generated images render inline from short-lived Gateway artifact URLs, open in a full-screen preview, and remain available after reconnect or history reload without storing image bytes in the transcript cache.
-- **Settings -> OpenClaw** opens a dedicated Gateway settings assistant when the operator connection has `operator.admin` and the Gateway supports `openclaw.chat`. Its setup conversation stays separate from ordinary Chat, redacts secret replies locally, and moves to Chat only after you tap **Open Chat**.
+- **Settings -> PASO** opens a dedicated Gateway settings assistant when the operator connection has `operator.admin` and the Gateway supports `openclaw.chat`. Its setup conversation stays separate from ordinary Chat, redacts secret replies locally, and moves to Chat only after you tap **Open Chat**.
 - Speaks assistant messages on demand: long-press a message in Chat and choose **Listen**. The app plays supported gateway `tts.speak` clips with the configured TTS provider and falls back to on-device speech when gateway audio is unavailable or unplayable. Playback stops on session switch or backgrounding.
 
 ## Session colors
@@ -75,7 +75,7 @@ creation has a token or password auth path.
    other device commands always have one unambiguous owner. iOS may suspend
    these foreground connections after the app enters the background.
 
-4. The official app connects automatically. If **Pending approval** shows a
+4. A compatible signed build connects automatically. If **Pending approval** shows a
    request, review its role and scopes before approving it.
 
    **Settings → Gateway** shows whether the saved operator connection has
@@ -127,8 +127,8 @@ setup, invocation, payload fields, privacy behavior, and troubleshooting.
 
 By default, the Apple Watch companion keeps using the existing iPhone relay and
 does not need a separate Gateway pairing. Pair the Watch with the iPhone in
-Apple's Watch app, install OpenClaw from **Watch app -> My Watch -> Available
-Apps**, then open OpenClaw once on both devices.
+Apple's Watch app, install PASO from **Watch app -> My Watch -> Available
+Apps**, then open PASO once on both devices.
 
 ## Review command approvals
 
@@ -167,7 +167,7 @@ question expires or is cancelled.
 
 Direct mode gives the watch its own signed node identity and Gateway connection.
 Supported node commands continue to work over watch Wi-Fi or cellular while
-OpenClaw is active, even when the paired iPhone is unavailable.
+PASO is active, even when the paired iPhone is unavailable.
 
 Requirements:
 
@@ -178,7 +178,7 @@ Requirements:
   pairing](/gateway/pairing) for endpoint configuration. Loopback, iPhone-only,
   and tailnet-only routes are not independently reachable by the watch.
 - Cellular use requires a cellular-capable Apple Watch with active service.
-- OpenClaw is active on the watch. Apple does not allow ordinary watchOS apps to
+- PASO is active on the watch. Apple does not allow ordinary watchOS apps to
   keep generic WebSocket/TCP connections, so the direct node uses short HTTPS
   polls and reconnects when the app returns to the foreground. See Apple's
   [watchOS low-level networking guidance](https://developer.apple.com/documentation/technotes/tn3135-low-level-networking-on-watchOS).
@@ -187,7 +187,7 @@ Setup:
 
 1. On iPhone, open **Settings -> Apple Watch**.
 2. Tap **Enable Direct Gateway Connection**.
-3. Open OpenClaw on the watch before the short-lived setup code expires.
+3. Open PASO on the watch before the short-lived setup code expires.
 4. Verify the separate Apple Watch row with `openclaw nodes status`.
 
 The setup code contains a short-lived, node-only bootstrap credential; treat it
@@ -204,9 +204,14 @@ Direct watchOS node commands:
 | Device        | `device.info`, `device.status` | Watch identity, battery, thermal, storage, and network. |
 | Notifications | `system.notify`                | While the app is active; requires watch permission.     |
 
-## Relay-backed push for official builds
+## Relay-backed push for upstream production builds
 
-Official distributed iOS builds use an external push relay instead of publishing the raw APNs token to the gateway. Official App Store builds from the public release lane use the hosted relay at `https://ios-push-relay.openclaw.ai`; this base URL is hardcoded for App Store distribution and does not read any override.
+The upstream framework's production iOS distribution uses an external push
+relay instead of publishing the raw APNs token to the gateway. Its App Store
+release lane uses the hosted relay at `https://ios-push-relay.openclaw.ai`;
+this functional compatibility URL is hardcoded for that distribution and does
+not read an override. A locally signed PASO build does not automatically gain
+access to the upstream hosted relay.
 
 Custom relay deployments require a deliberately separate iOS build/deployment path whose relay URL matches the gateway relay URL. The App Store release lane never accepts a custom relay URL. If you're using a custom relay build, set the matching gateway relay URL:
 
@@ -233,11 +238,12 @@ How the flow works:
 - The gateway uses that stored relay handle for `push.test`, background wakes, and wake nudges.
 - If the app later connects to a different gateway or a build with a different relay base URL, it refreshes the relay registration instead of reusing the old binding.
 
-What the gateway does **not** need for this path: no deployment-wide relay token, no direct APNs key for official App Store relay-backed sends.
+What the gateway does **not** need for this path: no deployment-wide relay
+token and no direct APNs key for upstream App Store relay-backed sends.
 
 Expected operator flow:
 
-1. Install the official iOS app.
+1. Install an upstream production build that is eligible for the hosted relay.
 2. Optional: set `gateway.push.apns.relay.baseUrl` on the gateway only when using a deliberately separate custom relay build.
 3. Pair the app to the gateway and let it finish connecting.
 4. The app publishes `push.apns.register` once it has an APNs token, the operator session is connected, and relay registration succeeds.
@@ -256,9 +262,10 @@ Compatibility note:
 
 ## Authentication and trust flow
 
-The relay exists to enforce two constraints direct APNs-on-gateway cannot provide for official iOS builds:
+The relay exists to enforce two constraints direct APNs-on-gateway cannot
+provide for eligible upstream production iOS builds:
 
-- Only genuine OpenClaw iOS builds distributed through Apple can use the hosted relay.
+- Only eligible upstream iOS builds distributed through Apple can use the hosted relay.
 - A gateway can send relay-backed pushes only for iOS devices that paired with that specific gateway.
 
 Hop by hop:
@@ -267,9 +274,12 @@ Hop by hop:
 2. `iOS app -> relay`: the app calls the relay registration endpoints over HTTPS with App Attest proof plus a StoreKit app transaction JWS. The relay validates the bundle ID, App Attest proof, and Apple distribution proof, and requires the official/production distribution path — this is what blocks local Xcode/dev builds from using the hosted relay, since a local build cannot satisfy the official Apple distribution proof.
 3. `gateway identity delegation`: before relay registration, the app fetches the paired gateway identity from `gateway.identity.get` and includes it in the relay registration payload. The relay returns a relay handle and a registration-scoped send grant delegated to that gateway identity.
 4. `gateway -> relay`: the gateway stores the relay handle and send grant from `push.apns.register`. On `push.test`, reconnect wakes, and wake nudges, the gateway signs the send request with its own device identity; the relay verifies both the stored send grant and the gateway signature against the delegated gateway identity from registration. Another gateway cannot reuse that stored registration, even if it somehow obtains the handle.
-5. `relay -> APNs`: the relay owns the production APNs credentials and the raw APNs token for the official build. The gateway never stores the raw APNs token for relay-backed official builds; the relay sends the final push to APNs on behalf of the paired gateway.
+5. `relay -> APNs`: the relay owns the production APNs credentials and the raw APNs token for the eligible build. The gateway never stores the raw APNs token for relay-backed upstream builds; the relay sends the final push to APNs on behalf of the paired gateway.
 
-Why this design was created: to keep production APNs credentials out of user gateways, avoid storing raw official-build APNs tokens on the gateway, allow hosted relay usage only for official OpenClaw iOS builds, and prevent one gateway from sending wake pushes to iOS devices owned by a different gateway.
+Why this design was created: to keep production APNs credentials out of user
+gateways, avoid storing raw production-build APNs tokens on the gateway, limit
+hosted relay usage to eligible upstream iOS builds, and prevent one gateway
+from sending wake pushes to iOS devices owned by a different gateway.
 
 Local/manual builds remain on direct APNs. If you are testing those builds without the relay, the gateway still needs direct APNs credentials:
 
@@ -318,9 +328,9 @@ The app keeps a registry of every gateway it has paired with, so you can switch 
 
 ## Computer Use relationship
 
-The iOS app is a mobile node surface, not a Codex Computer Use backend. Codex Computer Use and `cua-driver mcp` control a local macOS desktop through MCP tools; the iOS app exposes iPhone capabilities through OpenClaw node commands such as `camera.*`, `screen.*`, `location.*`, and `talk.*`.
+The iOS app is a mobile node surface, not a Codex Computer Use backend. Codex Computer Use and `cua-driver mcp` control a local macOS desktop through MCP tools; the iOS app exposes iPhone capabilities through PASO node commands such as `camera.*`, `screen.*`, `location.*`, and `talk.*`.
 
-Agents can still operate the iOS app through OpenClaw by invoking node commands, but those calls go through the gateway node protocol and follow iOS foreground/background limits. Use [Codex Computer Use](/plugins/codex-computer-use) for local desktop control and this page for iOS node capabilities.
+Agents can still operate the iOS app through PASO by invoking node commands, but those calls go through the gateway node protocol and follow iOS foreground/background limits. Use [Codex Computer Use](/plugins/codex-computer-use) for local desktop control and this page for iOS node capabilities.
 
 ## Voice wake + talk mode
 
@@ -338,7 +348,7 @@ Agents can still operate the iOS app through OpenClaw by invoking node commands,
 - Watch shows no iPhone state: confirm the iPhone reports `watchPaired: true`
   and `watchAppInstalled: true` in `watch.status`. If pairing is false, pair the
   Watch in Apple's Watch app. If installation is false, install the companion
-  from **My Watch -> Available Apps**. After either change, open OpenClaw on the
+  from **My Watch -> Available Apps**. After either change, open PASO on the
   Watch once; immediate reachability still requires both apps to be running,
   while queued updates can arrive later in the background.
 - Reconnect fails after reinstall: the Keychain pairing token was cleared; re-pair the node.

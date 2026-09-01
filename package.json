@@ -7,17 +7,20 @@
       "agent": 19
     }
   },
-  "description": "Multi-channel AI gateway with extensible messaging integrations",
-  "keywords": [],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "description": "PASO, a multi-channel AI agent by Celaya Solutions Research",
+  "keywords": [
+    "paso",
+    "ai-agent"
+  ],
+  "homepage": "https://github.com/celaya-solutions/PASO-AGENT#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT/issues"
   },
   "license": "MIT",
-  "author": "OpenClaw Foundation (https://openclaw.org)",
+  "author": "Celaya Solutions Research <hello@celayasolutions.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git"
+    "url": "git+https://github.com/celaya-solutions/PASO-AGENT.git"
   },
   "bin": {
     "openclaw": "openclaw.mjs"

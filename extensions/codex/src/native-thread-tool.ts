@@ -64,7 +64,7 @@ const ForkParamsSchema = Type.Object(
     attach: Type.Optional(
       Type.Boolean({
         default: true,
-        description: "Attach the fork to this OpenClaw session for its next turn.",
+        description: "Attach the fork to this PASO session for its next turn.",
       }),
     ),
   },
@@ -375,9 +375,7 @@ export function createCodexThreadsTool(options: CodexThreadsToolOptions): AnyAge
           );
           assertThreadMayBeArchived(current, threadId);
           if (await options.bindingStore.hasOtherThreadOwner(threadId, identity)) {
-            throw new Error(
-              "cannot archive a native Codex thread owned by another OpenClaw session",
-            );
+            throw new Error("cannot archive a native Codex thread owned by another PASO session");
           }
           await assertCodexArchiveDescendantsUnowned({
             bindingStore: options.bindingStore,
@@ -420,7 +418,7 @@ export function createCodexThreadsTool(options: CodexThreadsToolOptions): AnyAge
 
       const attach = asBoolean(params.attach) ?? true;
       if (attach && !session) {
-        throw new Error("cannot attach a Codex fork without an active OpenClaw session");
+        throw new Error("cannot attach a Codex fork without an active PASO session");
       }
       if (attach && session?.modelSelectionLocked) {
         throw new ModelSelectionLockedError();

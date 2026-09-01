@@ -280,7 +280,7 @@ mod native_browser_tests {
         let output = Command::new("node")
             .args(["-e", runner, &initialization_script])
             .output()
-            .expect("Node is required by the OpenClaw workspace");
+            .expect("Node is required by the PASO workspace");
         assert!(
             output.status.success(),
             "native auth handoff failed: {}",
@@ -498,7 +498,7 @@ impl DesktopState {
             .map_err(|_| "Installer lock is unavailable.".to_string())?;
         installer::install(app, channel)?;
         let cli = OpenClawCli::discover().map_err(|error| {
-            format!("OpenClaw is installed, but the CLI could not be found: {error}")
+            format!("PASO is installed, but the CLI could not be found: {error}")
         })?;
         *self.inner.cli.lock().expect("CLI mutex poisoned") = Some(cli.clone());
 
@@ -507,9 +507,9 @@ impl DesktopState {
         let repair_error = match cli.output(["doctor", "--fix", "--non-interactive"]) {
             Ok(output) if !output.status.success() => Some(
                 cli::output_tail(&output.stderr)
-                    .unwrap_or_else(|| format!("OpenClaw repair exited with {}", output.status)),
+                    .unwrap_or_else(|| format!("PASO repair exited with {}", output.status)),
             ),
-            Err(error) => Some(format!("OpenClaw repair could not start: {error}")),
+            Err(error) => Some(format!("PASO repair could not start: {error}")),
             _ => None,
         };
         if let Some(error) = repair_error {
@@ -526,20 +526,20 @@ impl DesktopState {
             .navigation
             .lock()
             .map_err(|_| {
-                "OpenClaw is installed, but preparing the Gateway dashboard failed: \
+                "PASO is installed, but preparing the Gateway dashboard failed: \
                  Dashboard navigation lock is unavailable."
                     .to_string()
             })?
             .mark_onboarding_pending();
         let ready = gateway::ensure_ready(&cli).map_err(|error| {
-            format!("OpenClaw is installed, but connecting to the Gateway failed: {error}")
+            format!("PASO is installed, but connecting to the Gateway failed: {error}")
         })?;
         app.state::<gateway_ws::GatewayClient>()
             .configure(app, ready.gateway_ws.clone());
         let navigated = self
             .navigate_local(app, &ready.dashboard_url, false, None, true, true)
             .map_err(|error| {
-                format!("OpenClaw is installed, but opening the Gateway dashboard failed: {error}")
+                format!("PASO is installed, but opening the Gateway dashboard failed: {error}")
             })?;
         self.update_tray(&ready.snapshot);
         if navigated {
@@ -840,7 +840,7 @@ impl DesktopState {
         }
         // Notifications are a doorbell only; approval stays in the dashboard or CLI.
         for request in diff.new {
-            notify::notify(app, "OpenClaw", &request.notification_body());
+            notify::notify(app, "PASO", &request.notification_body());
         }
     }
 
@@ -1435,7 +1435,7 @@ fn main() {
             }
         })
         .build(tauri::generate_context!())
-        .expect("OpenClaw desktop app failed");
+        .expect("PASO desktop app failed");
     app.run(|app, event| {
         #[cfg(target_os = "linux")]
         if matches!(event, tauri::RunEvent::Exit) {

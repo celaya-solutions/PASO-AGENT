@@ -578,11 +578,11 @@ class ShellScreenLogicTest {
       stableOverviewRecentRows(
         previousRows =
           listOf(
-            RecentSessionListItem(key = "main", title = "Main session", source = "OpenClaw", metadata = "1h"),
+            RecentSessionListItem(key = "main", title = "Main session", source = "PASO", metadata = "1h"),
           ),
         candidateRows =
           listOf(
-            RecentSessionListItem(key = "main", title = "Main session", source = "OpenClaw", metadata = ""),
+            RecentSessionListItem(key = "main", title = "Main session", source = "PASO", metadata = ""),
           ),
       )
 
@@ -595,12 +595,12 @@ class ShellScreenLogicTest {
       stableOverviewRecentRows(
         previousRows =
           listOf(
-            RecentSessionListItem(key = "main", title = "Main session", source = "OpenClaw", metadata = "1h"),
+            RecentSessionListItem(key = "main", title = "Main session", source = "PASO", metadata = "1h"),
             RecentSessionListItem(key = "discord", title = "Discord", source = "Discord", metadata = "2h"),
           ),
         candidateRows =
           listOf(
-            RecentSessionListItem(key = "main", title = "Main session", source = "OpenClaw", metadata = "1h"),
+            RecentSessionListItem(key = "main", title = "Main session", source = "PASO", metadata = "1h"),
             RecentSessionListItem(key = "cron", title = "Cron", source = "Cron", metadata = "4h"),
           ),
       )
@@ -672,7 +672,7 @@ class ShellScreenLogicTest {
 
     assertEquals("Scout", overviewAgentName(agents = agents, defaultAgentId = "scout"))
     assertEquals("Main", overviewAgentName(agents = agents, defaultAgentId = null))
-    assertEquals("OpenClaw", overviewAgentName(agents = emptyList(), defaultAgentId = null))
+    assertEquals("PASO", overviewAgentName(agents = emptyList(), defaultAgentId = null))
   }
 
   @Test
@@ -692,7 +692,7 @@ class ShellScreenLogicTest {
         defaultAgentId = "emoji",
       ),
     )
-    assertEquals("OC", overviewAgentBadgeText(agents = emptyList(), defaultAgentId = null))
+    assertEquals("P", overviewAgentBadgeText(agents = emptyList(), defaultAgentId = null))
   }
 
   @Test
@@ -750,9 +750,9 @@ class ShellScreenLogicTest {
     assertEquals("Telegram", sessionSourceLabel("agent:main:telegram:direct:584667058"))
     assertEquals("Discord", sessionSourceLabel("agent:main:discord:channel:1001"))
     assertEquals("Slack", sessionSourceLabel("agent:main:slack:channel:C123"))
-    assertEquals("OpenClaw", sessionSourceLabel("agent:main:node-android"))
-    assertEquals("OpenClaw", sessionSourceLabel("agent:main:main"))
-    assertEquals("OpenClaw", sessionSourceLabel("Daily standup"))
+    assertEquals("PASO", sessionSourceLabel("agent:main:node-android"))
+    assertEquals("PASO", sessionSourceLabel("agent:main:main"))
+    assertEquals("PASO", sessionSourceLabel("Daily standup"))
   }
 
   @Test

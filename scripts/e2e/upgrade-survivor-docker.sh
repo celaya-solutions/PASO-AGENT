@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs the packed OpenClaw tarball over dirty old-user state. When
+# Installs the packed PASO tarball over dirty old-user state. When
 # OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC is set, installs that published
 # baseline first and upgrades it to the selected candidate.
 set -euo pipefail
@@ -209,7 +209,7 @@ if [ "${OPENCLAW_UPGRADE_SURVIVOR_PUBLISHED_BASELINE:-0}" = "1" ]; then
     CANDIDATE_SPEC="/tmp/openclaw-current.tgz"
   elif [[ "$CANDIDATE_RAW" == *.tgz ]]; then
     if [ ! -f "$CANDIDATE_RAW" ]; then
-      echo "OpenClaw candidate tarball does not exist: $CANDIDATE_RAW" >&2
+      echo "PASO candidate tarball does not exist: $CANDIDATE_RAW" >&2
       exit 1
     fi
     PACKAGE_TGZ="$(docker_e2e_prepare_package_tgz upgrade-survivor "$CANDIDATE_RAW")"

@@ -15,7 +15,7 @@ struct OpenClawLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.center) {
                     VStack(alignment: .leading, spacing: 1) {
-                        Text("OPENCLAW")
+                        Text("PASO")
                             .font(OpenClawActivityType.eyebrow)
                             .foregroundStyle(OpenClawActivityStyle.coral)
                         self.statusText(state: state)
@@ -52,7 +52,7 @@ struct OpenClawLiveActivity: Widget {
         HStack(spacing: 10) {
             self.agentAvatar(context: context, state: state)
             VStack(alignment: .leading, spacing: 2) {
-                Text("OpenClaw")
+                Text("PASO")
                     .font(OpenClawActivityType.subheadBold)
                     .lineLimit(1)
                 self.statusText(state: state)
@@ -122,7 +122,7 @@ struct OpenClawLiveActivity: Widget {
     private static func initials(_ name: String) -> String {
         let words = name.split(whereSeparator: \.isWhitespace)
         let value = words.prefix(2).compactMap(\.first).map(String.init).joined()
-        return value.isEmpty ? "OC" : value.uppercased()
+        return value.isEmpty ? "P" : value.uppercased()
     }
 
     @ViewBuilder

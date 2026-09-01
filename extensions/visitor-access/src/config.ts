@@ -15,7 +15,10 @@ export const visitorConfigSchema = z.strictObject({
     .max(128)
     .regex(/^[a-zA-Z0-9_-]+$/),
   apiToken: z.string().min(1),
-  policyName: z.string().trim().min(1).max(200).default("Visitors (openclaw-managed)"),
+  loginUrl: z.url().refine((value) => new URL(value).protocol === "https:", {
+    message: "loginUrl must use https",
+  }),
+  policyName: z.string().trim().min(1).max(200),
   defaultTtlDays: z.number().int().min(0).max(3650).nullable().default(14),
   maxVisitors: z.number().int().min(1).max(500).default(50),
 });

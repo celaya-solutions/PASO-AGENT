@@ -1,5 +1,5 @@
 ---
-summary: "Install OpenClaw declaratively with Nix"
+summary: "Use the upstream nix-openclaw module as a framework-compatibility install"
 read_when:
   - You want reproducible, rollback-able installs
   - You're already using Nix/NixOS/Home Manager
@@ -7,10 +7,10 @@ read_when:
 title: "Nix"
 ---
 
-Install OpenClaw declaratively with **[nix-openclaw](https://github.com/openclaw/nix-openclaw)**, the first-party, batteries-included Home Manager module.
+The **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** Home Manager module is maintained by the upstream OpenClaw project. It packages that framework, not a PASO source release, and is not maintained by Celaya Solutions Research. Use it only when you intentionally want an upstream compatibility install.
 
 <Info>
-The [nix-openclaw](https://github.com/openclaw/nix-openclaw) repo is the source of truth for Nix installation. This page is a quick overview.
+The external [nix-openclaw](https://github.com/openclaw/nix-openclaw) repository is the source of truth for its own Nix module. PASO's supported install path is the [source installer](/install#recommended-installer-script).
 </Info>
 
 ## What you get
@@ -50,7 +50,7 @@ See the [nix-openclaw README](https://github.com/openclaw/nix-openclaw) for full
 
 ## Nix-mode runtime behavior
 
-When `OPENCLAW_NIX_MODE=1` is set (automatic with nix-openclaw), OpenClaw enters a deterministic mode for Nix-managed installs. Other Nix packages can set the same mode; nix-openclaw is the first-party reference.
+When `OPENCLAW_NIX_MODE=1` is set (automatic with nix-openclaw), the compatible runtime enters a deterministic mode for Nix-managed installs. Other Nix packages can set the same technical compatibility flag; nix-openclaw is an upstream reference, not a PASO-owned distribution.
 
 You can also set it manually:
 
@@ -74,7 +74,7 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### Config and state paths
 
-OpenClaw reads JSON5 config from `OPENCLAW_CONFIG_PATH` and stores mutable data in `OPENCLAW_STATE_DIR`. Under Nix, set these explicitly to Nix-managed locations so runtime state and config stay out of the immutable store.
+PASO reads JSON5 config from `OPENCLAW_CONFIG_PATH` and stores mutable data in `OPENCLAW_STATE_DIR`. Under Nix, set these explicitly to Nix-managed locations so runtime state and config stay out of the immutable store.
 
 | Variable               | Default                                 |
 | ---------------------- | --------------------------------------- |

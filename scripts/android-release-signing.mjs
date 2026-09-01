@@ -118,6 +118,8 @@ function readManifest(manifestPath) {
   const value = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const parsed = isRecord(value) ? value : {};
   const manifest = {
+    releaseEnabled: parsed.releaseEnabled === true,
+    releaseOwner: requireString(parsed.releaseOwner, "releaseOwner"),
     signingRepo: requireString(parsed.signingRepo, "signingRepo"),
     signingBranch: requireString(parsed.signingBranch, "signingBranch"),
     assetPath: requireString(parsed.assetPath, "assetPath"),
@@ -330,6 +332,8 @@ function validateMaterializedSigning(materializedDir) {
 function writePlan(manifest, options) {
   const materializedDir = resolveMaterializedDir(manifest, options);
   process.stdout.write(`Android release signing plan
+Release enabled: ${manifest.releaseEnabled ? "yes" : "no"}
+Release owner: ${manifest.releaseOwner}
 Signing repo: ${manifest.signingRepo}
 Signing branch: ${manifest.signingBranch}
 Signing assets: ${manifest.assetPath}
@@ -465,6 +469,10 @@ try {
 
   if (options.mode === "plan") {
     writePlan(manifest, options);
+  } else if (!manifest.releaseEnabled) {
+    throw new Error(
+      "PASO Android publishing is disabled. The checked-in manifest is retained only for upstream OpenClaw compatibility; configure Celaya-owned signing before enabling it.",
+    );
   } else if (options.mode === "check") {
     validateMaterializedSigning(resolveMaterializedDir(manifest, options));
     process.stdout.write("Android release signing materialization is valid.\n");

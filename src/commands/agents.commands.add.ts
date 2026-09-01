@@ -215,7 +215,7 @@ export async function agentsAddCommand(
     ? { ...runtime, log: (...args) => runtime.error(...args) }
     : runtime;
   try {
-    await prompter.intro("Add OpenClaw agent");
+    await prompter.intro("Add PASO agent");
     const name =
       nameInput ??
       (await prompter.text({
@@ -479,7 +479,7 @@ export async function agentsAddCommand(
         await prompter.note(
           [
             "Routing unchanged. Add bindings when you're ready.",
-            "Docs: https://docs.openclaw.ai/concepts/multi-agent",
+            "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           ].join("\n"),
           "Routing",
         );

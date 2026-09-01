@@ -115,8 +115,8 @@ describe("google web search provider", () => {
         throw new Error("Expected tool definition");
       }
 
-      await expect(tool.execute({ query: "OpenClaw docs" })).resolves.toEqual({
-        docs: "https://docs.openclaw.ai/tools/web",
+      await expect(tool.execute({ query: "PASO docs" })).resolves.toEqual({
+        docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         error: "missing_gemini_api_key",
         message:
           "web_search (gemini) needs an API key. Set GEMINI_API_KEY in the Gateway environment, configure plugins.entries.google.config.webSearch.apiKey, or reuse models.providers.google.apiKey. If you do not want to configure a search API key, use web_fetch for a specific URL or the browser tool for interactive pages.",
@@ -155,7 +155,7 @@ describe("google web search provider", () => {
       searchConfig: { provider: "gemini" },
     });
 
-    await tool?.execute({ query: "OpenClaw docs" });
+    await tool?.execute({ query: "PASO docs" });
 
     expect(getGeminiFetchUrl(mockFetch)).toBe(
       "https://generativelanguage.googleapis.com/proxy/v1beta/models/gemini-2.5-flash:generateContent",
@@ -170,7 +170,7 @@ describe("google web search provider", () => {
       "X-Goog-Api-Key": "operator-value",
     });
 
-    await tool?.execute({ query: "OpenClaw operator headers" });
+    await tool?.execute({ query: "PASO operator headers" });
 
     expect(getFetchHeaders(mockFetch)).toMatchObject({
       "content-type": "application/json",
@@ -184,10 +184,10 @@ describe("google web search provider", () => {
     const mockFetch = installGeminiFetch();
 
     await createGeminiToolWithHeaders({ "X-Routing-Target": "staging" })?.execute({
-      query: "OpenClaw header cache partition",
+      query: "PASO header cache partition",
     });
     await createGeminiToolWithHeaders({ "X-Routing-Target": "production" })?.execute({
-      query: "OpenClaw header cache partition",
+      query: "PASO header cache partition",
     });
 
     const postCalls = mockFetch.mock.calls.filter(([, init]) => typeof init?.body === "string");
@@ -263,10 +263,10 @@ describe("google web search provider", () => {
     const mockFetch = installGeminiFetch();
 
     await createGeminiToolWithHeaders({ "X-Goog-Api-Key": "operator-one" })?.execute({
-      query: "OpenClaw provider-owned header cache",
+      query: "PASO provider-owned header cache",
     });
     await createGeminiToolWithHeaders({ "x-goog-api-key": "operator-two" })?.execute({
-      query: "OpenClaw provider-owned header cache",
+      query: "PASO provider-owned header cache",
     });
 
     const postCalls = mockFetch.mock.calls.filter(([, init]) => typeof init?.body === "string");
@@ -280,9 +280,9 @@ describe("google web search provider", () => {
     await createGeminiToolWithHeaders({
       "X-Routing-Target": "stale",
       "x-routing-target": "production",
-    })?.execute({ query: "OpenClaw case-colliding header cache" });
+    })?.execute({ query: "PASO case-colliding header cache" });
     await createGeminiToolWithHeaders({ "X-Routing-Target": "production" })?.execute({
-      query: "OpenClaw case-colliding header cache",
+      query: "PASO case-colliding header cache",
     });
 
     const postCalls = mockFetch.mock.calls.filter(([, init]) => typeof init?.body === "string");
@@ -294,7 +294,7 @@ describe("google web search provider", () => {
     const mockFetch = installGeminiFetch();
     const tool = createGeminiToolWithHeaders({ "X-Optional-Metadata": " \t " });
 
-    await tool?.execute({ query: "OpenClaw empty operator header" });
+    await tool?.execute({ query: "PASO empty operator header" });
 
     expect(getFetchHeaders(mockFetch)["x-optional-metadata"]).toBe("");
   });
@@ -303,7 +303,7 @@ describe("google web search provider", () => {
     const mockFetch = installGeminiFetch();
     const tool = createGeminiToolWithHeaders({ "Bad Header": "value" });
 
-    await expect(tool?.execute({ query: "OpenClaw malformed header" })).rejects.toThrow(
+    await expect(tool?.execute({ query: "PASO malformed header" })).rejects.toThrow(
       'plugins.entries.google.config.webSearch.headers["Bad Header"] is not a valid HTTP header',
     );
     expect(mockFetch).not.toHaveBeenCalled();
@@ -324,7 +324,7 @@ describe("google web search provider", () => {
     const mockFetch = installGeminiFetch();
     const tool = createGeminiToolWithHeaders({ [name]: "configured-value" });
 
-    await expect(tool?.execute({ query: `OpenClaw rejects ${name}` })).rejects.toThrow(
+    await expect(tool?.execute({ query: `PASO rejects ${name}` })).rejects.toThrow(
       `plugins.entries.google.config.webSearch.headers["${name}"] uses a reserved or framing HTTP header`,
     );
     expect(mockFetch).not.toHaveBeenCalled();
@@ -341,7 +341,7 @@ describe("google web search provider", () => {
     });
 
     await expect(
-      tool?.execute({ query: "OpenClaw unresolved header SecretRef" }),
+      tool?.execute({ query: "PASO unresolved header SecretRef" }),
     ).rejects.toMatchObject({
       name: "UnresolvedSecretInputError",
       path: 'plugins.entries.google.config.webSearch.headers["X-Gateway-Token"]',
@@ -420,7 +420,7 @@ describe("google web search provider", () => {
       searchConfig: { provider: "gemini" },
     });
 
-    await expect(tool?.execute({ query: "OpenClaw docs" })).rejects.toThrow(
+    await expect(tool?.execute({ query: "PASO docs" })).rejects.toThrow(
       "Gemini API error: malformed JSON response",
     );
   });
@@ -448,7 +448,7 @@ describe("google web search provider", () => {
       searchConfig: { provider: "gemini" },
     });
 
-    await expect(tool?.execute({ query: "OpenClaw docs" })).rejects.toThrow(
+    await expect(tool?.execute({ query: "PASO docs" })).rejects.toThrow(
       "Gemini API error: malformed JSON response",
     );
   });
@@ -489,7 +489,7 @@ describe("google web search provider", () => {
       );
       const tool = createGeminiToolWithHeaders({});
 
-      await expect(tool?.execute({ query: "OpenClaw empty answer" })).rejects.toThrow(
+      await expect(tool?.execute({ query: "PASO empty answer" })).rejects.toThrow(
         `Gemini search returned no final answer${reason}.`,
       );
     },
@@ -524,7 +524,7 @@ describe("google web search provider", () => {
     );
     const tool = createGeminiToolWithHeaders({});
 
-    await expect(tool?.execute({ query: "OpenClaw malformed answer" })).rejects.toThrow(
+    await expect(tool?.execute({ query: "PASO malformed answer" })).rejects.toThrow(
       "Gemini API error: malformed JSON response",
     );
   });
@@ -546,7 +546,7 @@ describe("google web search provider", () => {
     );
     const tool = createGeminiToolWithHeaders({});
 
-    await expect(tool?.execute({ query: "OpenClaw bounded reason" })).rejects.toThrow(
+    await expect(tool?.execute({ query: "PASO bounded reason" })).rejects.toThrow(
       `Gemini search returned no final answer (${"X".repeat(119)}…).`,
     );
   });
@@ -565,7 +565,7 @@ describe("google web search provider", () => {
       const tool = createGeminiToolWithHeaders({});
 
       await expect(
-        tool?.execute({ query: `OpenClaw partial answer with ${parts.length} parts` }),
+        tool?.execute({ query: `PASO partial answer with ${parts.length} parts` }),
       ).resolves.toMatchObject({
         content: expect.stringContaining("Partial answer"),
       });
@@ -597,7 +597,7 @@ describe("google web search provider", () => {
     });
 
     await expect(
-      tool?.execute({ query: "OpenClaw cancelled docs" }, { signal: controller.signal }),
+      tool?.execute({ query: "PASO cancelled docs" }, { signal: controller.signal }),
     ).rejects.toBe(reason);
     expect(mockFetch).not.toHaveBeenCalled();
   });
@@ -629,7 +629,7 @@ describe("google web search provider", () => {
       },
       searchConfig: { provider: "gemini" },
     });
-    const query = "OpenClaw late-cancel Gemini cache";
+    const query = "PASO late-cancel Gemini cache";
 
     await expect(tool?.execute({ query }, { signal: controller.signal })).rejects.toBe(reason);
     await tool?.execute({ query });
@@ -655,7 +655,7 @@ describe("google web search provider", () => {
         searchConfig: { provider: "gemini" },
       });
 
-      await tool?.execute({ query: "OpenClaw provider key fallback" });
+      await tool?.execute({ query: "PASO provider key fallback" });
 
       expect(getFetchHeaders(mockFetch)["x-goog-api-key"]).toBe("AIza-provider-test");
       expect(getFetchHeaders(mockFetch)["x-goog-api-client"]).toMatch(/^openclaw\//u);
@@ -690,7 +690,7 @@ describe("google web search provider", () => {
         searchConfig: { provider: "gemini" },
       });
 
-      await tool?.execute({ query: "OpenClaw plugin key precedence" });
+      await tool?.execute({ query: "PASO plugin key precedence" });
 
       expect(getFetchHeaders(mockFetch)["x-goog-api-key"]).toBe("AIza-plugin-test");
       expect(getFetchHeaders(mockFetch)["x-goog-api-client"]).toMatch(/^openclaw\//u);
@@ -714,7 +714,7 @@ describe("google web search provider", () => {
       searchConfig: { provider: "gemini" },
     });
 
-    await tool?.execute({ query: "OpenClaw provider baseUrl fallback" });
+    await tool?.execute({ query: "PASO provider baseUrl fallback" });
 
     expect(getGeminiFetchUrl(mockFetch)).toBe(
       "https://generativelanguage.googleapis.com/provider/v1beta/models/gemini-2.5-flash:generateContent",
@@ -749,7 +749,7 @@ describe("google web search provider", () => {
       searchConfig: { provider: "gemini" },
     });
 
-    await tool?.execute({ query: "OpenClaw plugin baseUrl precedence" });
+    await tool?.execute({ query: "PASO plugin baseUrl precedence" });
 
     expect(getGeminiFetchUrl(mockFetch)).toBe(
       "https://generativelanguage.googleapis.com/plugin/v1beta/models/gemini-2.5-flash:generateContent",
@@ -976,7 +976,7 @@ describe("google web search provider", () => {
     });
 
     await tool?.execute({
-      query: "OpenClaw release notes",
+      query: "PASO release notes",
       date_after: "2026-04-01",
       date_before: "2026-04-30",
     });
@@ -1010,12 +1010,12 @@ describe("google web search provider", () => {
 
     await expect(
       tool?.execute({
-        query: "OpenClaw release notes",
+        query: "PASO release notes",
         freshness: "week",
         date_after: "2026-04-01",
       }),
     ).resolves.toEqual({
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       error: "conflicting_time_filters",
       message:
         "freshness and date_after/date_before cannot be used together. Use either freshness (day/week/month/year) or a date range (date_after/date_before), not both.",

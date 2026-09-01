@@ -1,5 +1,5 @@
 ---
-summary: "Optional Docker-based setup and onboarding for OpenClaw"
+summary: "Optional Docker-based setup and onboarding for PASO"
 read_when:
   - You want a containerized gateway instead of local installs
   - You are validating the Docker flow
@@ -16,7 +16,7 @@ Hosting multiple users? See [Multi-tenant hosting](/gateway/multi-tenant-hosting
 ## Prerequisites
 
 - Docker Desktop (or Docker Engine) + Docker Compose v2
-- At least 6 GB RAM for a local source image build; pre-built images avoid this build requirement
+- At least 6 GB RAM for the PASO source image build
 - Enough disk for images and logs
 - On a VPS/public host, review [Security hardening for network exposure](/gateway/security), especially the Docker `DOCKER-USER` firewall chain
 
@@ -30,21 +30,7 @@ Hosting multiple users? See [Multi-tenant hosting](/gateway/multi-tenant-hosting
     ./scripts/docker/setup.sh
     ```
 
-    This builds the gateway image locally as `openclaw:local`. To use a pre-built image instead:
-
-    ```bash
-    export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
-    ./scripts/docker/setup.sh
-    ```
-
-    Pre-built images are published first to the [GitHub Container Registry](https://github.com/openclaw/openclaw/pkgs/container/openclaw). GHCR is the primary registry for release automation, pinned deployments, and provenance checks. The same release publishes a Docker Hub mirror at `openclaw/openclaw`:
-
-    ```bash
-    export OPENCLAW_IMAGE="openclaw/openclaw:latest"
-    ./scripts/docker/setup.sh
-    ```
-
-    Use `ghcr.io/openclaw/openclaw` or `openclaw/openclaw` and avoid unofficial mirrors, which don't share OpenClaw's release timing or retention policy. Version-specific tags include releases such as `2026.2.26` and prereleases such as `2026.2.26-beta.1`. Stable releases move `latest` and `main`; trailing-month Gateway releases move only `extended-stable`. Variants include `slim`, `main-slim`, `extended-stable-slim`, `latest-browser`, `main-browser`, and `extended-stable-browser`. The default images bundle the `codex` and `diagnostics-otel` plugins. A `-browser` variant also ships with Chromium baked in, useful for the [sandboxed browser](/gateway/sandboxing#sandboxed-browser) tool without a first-run Playwright install.
+    This builds the PASO gateway image locally as `openclaw:local`. PASO does not currently advertise a pre-built container registry image. Images published under `ghcr.io/openclaw/openclaw` or `openclaw/openclaw` are upstream framework artifacts, not PASO releases.
 
   </Step>
 
@@ -52,8 +38,8 @@ Hosting multiple users? See [Multi-tenant hosting](/gateway/multi-tenant-hosting
     On offline hosts, transfer and load the image first:
 
     ```bash
-    docker load -i openclaw-image.tar
-    export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
+    docker load -i paso-agent-image.tar
+    export OPENCLAW_IMAGE="openclaw:local"
     ./scripts/docker/setup.sh --offline
     ```
 
@@ -163,7 +149,7 @@ Run `docker compose` from the repo root. If you enabled `OPENCLAW_EXTRA_MOUNTS` 
 
 ### Upgrading container images
 
-When you replace the OpenClaw image but keep the same mounted state/config, the
+When you replace the PASO image but keep the same mounted state/config, the
 new gateway runs startup-safe upgrade migrations and plugin convergence before
 readiness. Routine image upgrades should not require a separate
 `openclaw doctor --fix` pass.
@@ -223,7 +209,7 @@ Optional variables accepted by `scripts/docker/setup.sh` (and, for the gateway c
 
 After changing `.env` or Compose environment settings, run `docker compose up -d openclaw-gateway` to recreate the gateway with the new values. `docker compose restart` does not apply environment changes.
 
-The official image ships no Homebrew. During onboarding, OpenClaw hides brew-only skill dependency installers in a Linux container without `brew`; provide those dependencies through a custom image or install manually. Use `OPENCLAW_IMAGE_APT_PACKAGES` for Debian-packaged dependencies and `OPENCLAW_IMAGE_PIP_PACKAGES` for Python dependencies (runs `python3 -m pip install --break-system-packages` at build time, so pin versions and use only indexes you trust).
+The source-built PASO image ships no Homebrew. During onboarding, PASO hides brew-only skill dependency installers in a Linux container without `brew`; provide those dependencies through a custom image or install manually. Use `OPENCLAW_IMAGE_APT_PACKAGES` for Debian-packaged dependencies and `OPENCLAW_IMAGE_PIP_PACKAGES` for Python dependencies (runs `python3 -m pip install --break-system-packages` at build time, so pin versions and use only indexes you trust).
 
 If Docker reports `ResourceExhausted`, `cannot allocate memory`, or aborts during `tsdown`, increase the Docker builder memory limit or retry with smaller explicit heaps:
 
@@ -250,7 +236,7 @@ source and runtime output are pruned.
 
 For example, these commands build separate, multi-architecture standalone
 FakeCo gateway images for ClickClack, Slack, and Microsoft Teams. ClawRouter is
-already part of the root OpenClaw runtime, so the ClickClack image selects only
+already part of the root PASO runtime, so the ClickClack image selects only
 `clickclack`. The explicit empty browser argument keeps the default image free
 of Chromium:
 
@@ -294,9 +280,9 @@ docker buildx imagetools inspect \
 
 These images are for standalone OCI-based gateways and generic Docker users.
 Crabhelm-managed gateways do not consume them: that delivery path builds a
-separate x86_64 appliance archive containing an OpenClaw npm tarball and pins
+separate x86_64 appliance archive containing a PASO npm tarball and pins
 the Node, archive, and manifest digests. Build that appliance independently
-from the same landed OpenClaw source.
+from the same landed PASO source.
 
 To test bundled plugin source against a packaged image, mount one plugin source directory over its packaged source path, e.g. `OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`. That overrides the matching compiled `/app/dist/extensions/synology-chat` bundle for the same plugin id.
 
@@ -311,7 +297,7 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-Official prebuilt images already bundle `diagnostics-otel`; install `clawhub:@openclaw/diagnostics-otel` yourself only if you removed it. To enable export, allow and enable the `diagnostics-otel` plugin in config, then set `diagnostics.otel.enabled=true` (see the full example in [OpenTelemetry export](/gateway/opentelemetry)). Collector auth headers go through `diagnostics.otel.headers`, not Docker environment variables.
+The PASO source image bundles `diagnostics-otel`; install `clawhub:@openclaw/diagnostics-otel` yourself only if you removed it. To enable export, allow and enable the `diagnostics-otel` plugin in config, then set `diagnostics.otel.enabled=true` (see the full example in [OpenTelemetry export](/gateway/opentelemetry)). Collector auth headers go through `diagnostics.otel.headers`, not Docker environment variables.
 
 Prometheus metrics reuse the already-published Gateway port. Install `clawhub:@openclaw/diagnostics-prometheus`, enable the `diagnostics-prometheus` plugin, then scrape:
 
@@ -371,12 +357,12 @@ Using your own Compose file or `docker run`? Add the same mapping yourself, e.g.
 
 ### Claude CLI backend in Docker
 
-The official image does not pre-install Claude Code. Install and log in inside the container's `node` user, then persist that container home so image upgrades don't erase the binary or auth state.
+The source-built PASO image does not pre-install Claude Code. Install and log in inside the container's `node` user, then persist that container home so image upgrades don't erase the binary or auth state.
 
 For a new install, enable a persistent `/home/node` volume before running setup:
 
 ```bash
-export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
+export OPENCLAW_IMAGE="openclaw:local"
 export OPENCLAW_HOME_VOLUME="openclaw_home"
 ./scripts/docker/setup.sh
 ```
@@ -400,7 +386,7 @@ docker compose -f docker-compose.yml -f docker-compose.extra.yml run --rm \
 ```
 
 The native installer writes `claude` to `/home/node/.local/bin/claude`. The
-OpenClaw image includes `/home/node/.local/bin` on `PATH`, so the bundled
+PASO image includes `/home/node/.local/bin` on `PATH`, so the bundled
 Anthropic plugin resolves it without an adapter config override.
 
 Log in and verify from the same persisted home:
@@ -451,7 +437,7 @@ That mounted config directory holds:
 
 The auth-profile secret directory stores the local encryption key for OAuth-backed auth profile token material. Keep it with your Docker host state, but separate from `OPENCLAW_CONFIG_DIR`.
 
-Installed downloadable plugins store package state under the mounted OpenClaw home, so install records and package roots survive container replacement; gateway startup does not regenerate bundled-plugin dependency trees.
+Installed downloadable plugins store package state under the mounted PASO home, so install records and package roots survive container replacement; gateway startup does not regenerate bundled-plugin dependency trees.
 
 For full VM persistence details, see [Docker VM Runtime - What persists where](/install/docker-vm-runtime#what-persists-where).
 
@@ -464,7 +450,7 @@ Existing copies downloaded with `curl` are not automatically uninstalled. Remove
 the `source ~/.clawdock/clawdock-helpers.sh` line from your shell startup file
 (`~/.zshrc` or `~/.bashrc`), then start a new shell. If you sourced a checkout copy
 from `scripts/clawdock/` or the older `scripts/shell-helpers/` path, remove that
-source line instead. Keep your OpenClaw state, credentials, workspace, project
+source line instead. Keep your PASO state, credentials, workspace, project
 `.env`, and volumes.
 
 Run commands from the directory containing your `docker-compose.yml`. **Keep the
@@ -500,7 +486,7 @@ needed. See [Manual flow](/install/docker#manual-flow) for setup and extra mount
 Start the gateway before using the shell or CLI commands. For a custom host port,
 adjust the printed dashboard URL as described in [Containerized gateway](/install/docker#containerized-gateway).
 Use [Health checks](/install/docker#health-checks) to verify the gateway and
-[Update OpenClaw](/install/docker-vm-runtime#update-openclaw) for image updates.
+[Update PASO](/install/docker-vm-runtime#update-paso) for image updates.
 
 Token setup belongs to the [Docker setup flow](/install/docker#containerized-gateway).
 If you need the Control UI token, read `OPENCLAW_GATEWAY_TOKEN` privately from the
@@ -522,7 +508,7 @@ does not reveal the full token.
     ./scripts/docker/setup.sh
     ```
 
-    The script mounts `docker.sock` only after sandbox prerequisites pass. If sandbox setup can't complete, it resets `agents.defaults.sandbox.mode` to `off`. Codex code mode is disabled for turns where the OpenClaw sandbox is active (see [Sandboxing § Docker backend](/gateway/sandboxing#docker-backend)); never mount the host Docker socket into agent sandbox containers.
+    The script mounts `docker.sock` only after sandbox prerequisites pass. If sandbox setup can't complete, it resets `agents.defaults.sandbox.mode` to `off`. Codex code mode is disabled for turns where the PASO sandbox is active (see [Sandboxing § Docker backend](/gateway/sandboxing#docker-backend)); never mount the host Docker socket into agent sandbox containers.
 
   </Accordion>
 
@@ -564,7 +550,7 @@ does not reveal the full token.
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
     ```
 
-    The same mismatch can show up as `blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)` followed by `plugin present but blocked` — the process uid and the mounted plugin directory owner disagree. Prefer running as the default uid 1000 and fixing the bind mount ownership. Only chown `/path/to/openclaw-config/npm` to `root:root` if you intentionally run OpenClaw as root long term.
+    The same mismatch can show up as `blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)` followed by `plugin present but blocked` — the process uid and the mounted plugin directory owner disagree. Prefer running as the default uid 1000 and fixing the bind mount ownership. Only chown `/path/to/openclaw-config/npm` to `root:root` if you intentionally run PASO as root long term.
 
   </Accordion>
 
@@ -595,8 +581,8 @@ does not reveal the full token.
     1. **Persist `/home/node`**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
     2. **Bake system deps**: `export OPENCLAW_IMAGE_APT_PACKAGES="git curl jq"`
     3. **Bake Python deps**: `export OPENCLAW_IMAGE_PIP_PACKAGES="requests==2.32.5 humanize==4.14.0"`
-    4. **Bake Playwright Chromium**: `export OPENCLAW_INSTALL_BROWSER=1`, or use the official `-browser` image tag
-    5. **Persist browser downloads and caches**: use `OPENCLAW_HOME_VOLUME` or `OPENCLAW_EXTRA_MOUNTS`. OpenClaw auto-detects the image's Playwright-managed Chromium on Linux.
+    4. **Bake Playwright Chromium**: `export OPENCLAW_INSTALL_BROWSER=1` before building the local image
+    5. **Persist browser downloads and caches**: use `OPENCLAW_HOME_VOLUME` or `OPENCLAW_EXTRA_MOUNTS`. PASO auto-detects the image's Playwright-managed Chromium on Linux.
 
   </Accordion>
 
@@ -611,15 +597,20 @@ does not reveal the full token.
 
 ### Image contents and security scanning
 
-Runtime images contain production Node.js dependencies only. Release builds pin the base image by digest and apply current Debian security updates with `apt-get dist-upgrade`; the `-browser` variant installs the Chromium version pinned by its Playwright release.
+PASO runtime images built from this repository contain production Node.js dependencies only. The Dockerfile pins its base image by digest and applies current Debian security updates with `apt-get dist-upgrade`; a browser-enabled local build installs the Chromium version pinned by its Playwright release.
 
 Scanner totals can include Debian findings that the distribution marks `wont-fix`. To rebuild locally against current base and package metadata, run `docker build --pull -t openclaw:local .`.
 
-### Weekly image refreshes
+### Refreshing a local image
 
-The `latest*`, `main*`, and `extended-stable*` moving tags are rebuilt weekly from the same tagged release source so they pick up current OS security updates between OpenClaw releases. Stable and extended-stable refreshes remain separate, and beta images are not rebuilt on this schedule.
+Pull the reviewed PASO source revision you want, then rebuild with fresh base-image metadata:
 
-Each refresh also publishes a dated tag such as `2026.8.1-r20260820` (plus `-slim` and `-browser` variants). Plain version tags and dated `-rYYYYMMDD` tags are immutable; pin either form when you do not want a deployment to follow a moving tag.
+```bash
+git pull --ff-only
+docker build --pull -t openclaw:local .
+```
+
+Pin the PASO Git commit used for a production build so you can reproduce it later.
 
 ### Running on a VPS?
 
@@ -664,7 +655,7 @@ For npm installs without a source checkout, see [Sandboxing § Images and setup]
 
 <AccordionGroup>
   <Accordion title="Image missing or sandbox container not starting">
-    Build the sandbox image with [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh) (source checkout) or the inline `docker build` command from [Sandboxing § Images and setup](/gateway/sandboxing#images-and-setup) (npm install), or set `agents.defaults.sandbox.docker.image` to your custom image. Containers are auto-created per session on demand.
+    Build the sandbox image with [`scripts/sandbox-setup.sh`](https://github.com/celaya-solutions/PASO-AGENT/blob/main/scripts/sandbox-setup.sh) (source checkout) or the inline `docker build` command from [Sandboxing § Images and setup](/gateway/sandboxing#images-and-setup) (npm install), or set `agents.defaults.sandbox.docker.image` to your custom image. Containers are auto-created per session on demand.
   </Accordion>
 
   <Accordion title="Permission errors in sandbox">
@@ -672,11 +663,11 @@ For npm installs without a source checkout, see [Sandboxing § Images and setup]
   </Accordion>
 
   <Accordion title="Custom tools not found in sandbox">
-    OpenClaw runs commands with `sh -lc` (login shell), which sources `/etc/profile` and may reset PATH. Set `docker.env.PATH` to prepend your custom tool paths, or add a script under `/etc/profile.d/` in your Dockerfile.
+    PASO runs commands with `sh -lc` (login shell), which sources `/etc/profile` and may reset PATH. Set `docker.env.PATH` to prepend your custom tool paths, or add a script under `/etc/profile.d/` in your Dockerfile.
   </Accordion>
 
   <Accordion title="OOM-killed during image build (exit 137)">
-    A local source image build needs at least 6 GB RAM. Use a larger machine class or a pre-built image and retry.
+    A local source image build needs at least 6 GB RAM. Use a larger machine class or the documented explicit heap overrides and retry.
   </Accordion>
 
   <Accordion title="Unauthorized or pairing required in Control UI">
@@ -707,5 +698,5 @@ For npm installs without a source checkout, see [Sandboxing § Images and setup]
 
 - [Install Overview](/install) — all installation methods
 - [Podman](/install/podman) — Podman alternative to Docker
-- [Updating](/install/updating) — keeping OpenClaw up to date
+- [Updating](/install/updating) — keeping PASO up to date
 - [Configuration](/gateway/configuration) — gateway configuration after install

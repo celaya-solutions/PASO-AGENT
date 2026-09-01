@@ -1,5 +1,5 @@
 ---
-summary: "Connect OpenClaw agents to Buzz rooms."
+summary: "Connect PASO agents to Buzz rooms."
 read_when:
   - You are installing, configuring, or auditing the buzz plugin
 title: "Buzz plugin"
@@ -7,7 +7,7 @@ title: "Buzz plugin"
 
 # Buzz plugin
 
-Connect OpenClaw agents to Buzz rooms.
+Connect PASO agents to Buzz rooms.
 
 ## Distribution
 

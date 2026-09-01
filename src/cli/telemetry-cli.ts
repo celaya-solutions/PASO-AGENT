@@ -13,6 +13,7 @@ const TELEMETRY_REASON_LABELS = {
   "automated-environment": "disabled in an automated environment (CI is set)",
   "do-not-track": "disabled by DO_NOT_TRACK",
   "config-disabled": "disabled in configuration",
+  "endpoint-unconfigured": "no telemetry endpoint is configured",
   "never-asked": "consent has not been requested",
   "update-disabled": "update checks are disabled",
 } satisfies Record<ReturnType<typeof resolveTelemetryStatus>["reason"], string>;
@@ -21,7 +22,9 @@ async function showTelemetry(options: { json?: boolean }): Promise<void> {
   const config = getRuntimeConfig({ skipPluginValidation: true });
   const telemetry = resolveTelemetryStatus(config);
   const request =
-    telemetry.reason === "update-disabled" || telemetry.reason === "automated-environment"
+    !telemetry.endpoint ||
+    telemetry.reason === "update-disabled" ||
+    telemetry.reason === "automated-environment"
       ? null
       : {
           method: telemetry.enabled ? "POST" : "GET",
@@ -47,7 +50,7 @@ async function showTelemetry(options: { json?: boolean }): Promise<void> {
 
   defaultRuntime.log(`Feature stats: ${telemetry.enabled ? "enabled" : "disabled"}`);
   defaultRuntime.log(`Reason: ${TELEMETRY_REASON_LABELS[telemetry.reason]}`);
-  defaultRuntime.log(`Endpoint: ${telemetry.endpoint}`);
+  defaultRuntime.log(`Endpoint: ${telemetry.endpoint ?? "not configured"}`);
   defaultRuntime.log(
     `Last ping: ${telemetry.lastPingAt ? new Date(telemetry.lastPingAt).toISOString() : "never"}`,
   );
@@ -86,7 +89,7 @@ export function registerTelemetryCli(program: Command): void {
 
   telemetry
     .command("show")
-    .description("Show exactly what the daily update request sends")
+    .description("Show exactly what the configured telemetry request sends")
     .option("--json", "Print the request and payload as JSON")
     .action(async (options: { json?: boolean }) =>
       runCommandWithRuntime(defaultRuntime, () => showTelemetry(options)),

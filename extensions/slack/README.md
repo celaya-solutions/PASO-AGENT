@@ -1,11 +1,11 @@
-# OpenClaw Slack
+# PASO Slack
 
-Official OpenClaw channel plugin for Slack channels, DMs, commands, and app events.
+Official PASO channel plugin for Slack channels, DMs, commands, and app events.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/slack
 ```
 
-Configure the Slack app credentials and allowed workspaces/channels in OpenClaw. The plugin lets agents receive Slack events and reply through the configured Slack app.
+Configure the Slack app credentials and allowed workspaces/channels in PASO. The plugin lets agents receive Slack events and reply through the configured Slack app.

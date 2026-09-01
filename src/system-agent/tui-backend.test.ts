@@ -1,4 +1,4 @@
-// OpenClaw TUI backend tests cover rescue status integration with the TUI backend.
+// PASO TUI backend tests cover rescue status integration with the TUI backend.
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import * as preparedModelCatalog from "../agents/prepared-model-catalog.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
@@ -57,7 +57,7 @@ const overview: SystemAgentOverview = {
     error: "offline",
   },
   references: {
-    docsUrl: "https://docs.openclaw.ai",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     sourceUrl: "https://github.com/openclaw/openclaw",
   },
 };
@@ -155,7 +155,7 @@ describe("runSystemAgentTui", () => {
     expect(runChannelsAdd).not.toHaveBeenCalled();
   });
 
-  it("runs OpenClaw inside the shared TUI shell", async () => {
+  it("runs PASO inside the shared TUI shell", async () => {
     let runTuiCalls = 0;
     let runTuiOptions: unknown;
     const verified = await createVerifiedTuiOptions(

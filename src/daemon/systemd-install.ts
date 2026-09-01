@@ -110,7 +110,7 @@ function sanitizeSystemdUnitBackupContent(params: {
   if (params.fileManagedKeys.size === 0) {
     return params.content;
   }
-  // Backups should not retain file-managed secrets that OpenClaw moved into the
+  // Backups should not retain file-managed secrets that PASO moved into the
   // generated EnvironmentFile during this rewrite.
   const sanitizedLines: string[] = [];
   for (const rawLine of params.content.split("\n")) {

@@ -17,7 +17,7 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
-    "required": ["accountId", "appId", "apiToken"],
+    "required": ["accountId", "appId", "apiToken", "loginUrl", "policyName"],
     "properties": {
       "accountId": {
         "type": "string",
@@ -38,11 +38,16 @@
         "minLength": 1,
         "description": "Resolved Cloudflare API token with Access policy read and write permissions."
       },
+      "loginUrl": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https://",
+        "description": "Public HTTPS login URL for the configured Access application."
+      },
       "policyName": {
         "type": "string",
         "minLength": 1,
         "maxLength": 200,
-        "default": "Visitors (openclaw-managed)",
         "description": "Exact name of the only policy this plugin may manage."
       },
       "defaultTtlDays": {

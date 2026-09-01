@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/amazon-bedrock-mantle-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Amazon Bedrock Mantle provider plugin for OpenAI-compatible model routing.",
+  "description": "PASO Amazon Bedrock Mantle provider plugin for OpenAI-compatible model routing.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

@@ -45,7 +45,7 @@ import "../../styles/profile.css";
 import { renderIdentitySection } from "./identity-section.ts";
 import { userProfileAvatarUrl } from "./profile-avatar-url.ts";
 
-const PROFILE_DOCS_URL = "https://docs.openclaw.ai/concepts/user-model";
+const PROFILE_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 function toIdentityErrorMessage(error: unknown): string {
   return formatUiError(error, t("profilePage.identity.profileUnavailable"));
@@ -449,9 +449,7 @@ export class ProfilePage extends OpenClawLightDomElement {
     if (textAvatar) {
       return html`<span class="profile-hero__avatar-text">${textAvatar}</span>`;
     }
-    return html`<span class="profile-hero__avatar-mascot" aria-hidden="true"
-      >${icons.lobster}</span
-    >`;
+    return html`<span class="profile-hero__avatar-mascot" aria-hidden="true">${icons.spark}</span>`;
   }
 
   private renderHero() {
@@ -462,7 +460,7 @@ export class ProfilePage extends OpenClawLightDomElement {
         <div class="profile-hero__name">${name}</div>
         <div class="profile-hero__handle">
           <span>@${agentId}</span>
-          <span class="profile-hero__badge">OpenClaw</span>
+          <span class="profile-hero__badge">PASO</span>
         </div>
       </section>
     `);

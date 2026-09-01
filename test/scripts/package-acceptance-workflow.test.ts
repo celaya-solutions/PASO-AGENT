@@ -91,7 +91,7 @@ const FULL_RELEASE_CHILD_DISPATCHES = [
     jobName: "release_checks_independent",
     kind: "release-checks",
     nonceSuffix: "-release-checks-independent",
-    runName: "OpenClaw Release Checks",
+    runName: "PASO Release Checks",
     stepName: "Dispatch release checks independent phase",
     workflow: "openclaw-release-checks.yml",
   },
@@ -99,7 +99,7 @@ const FULL_RELEASE_CHILD_DISPATCHES = [
     jobName: "release_checks_candidate",
     kind: "release-checks",
     nonceSuffix: "-release-checks-candidate",
-    runName: "OpenClaw Release Checks",
+    runName: "PASO Release Checks",
     stepName: "Dispatch release checks candidate phase",
     workflow: "openclaw-release-checks.yml",
   },
@@ -115,8 +115,8 @@ const FULL_RELEASE_CHILD_DISPATCHES = [
     jobName: "performance",
     kind: "performance",
     nonceSuffix: "",
-    runName: "OpenClaw Performance",
-    stepName: "Dispatch OpenClaw Performance",
+    runName: "PASO Performance",
+    stepName: "Dispatch PASO Performance",
     workflow: "openclaw-performance.yml",
   },
 ] as const;
@@ -208,12 +208,16 @@ type Workflow = {
   };
   env?: Record<string, string>;
   jobs?: Record<string, WorkflowJob>;
+  name?: string;
   on?: {
     workflow_call?: {
       inputs?: Record<string, unknown>;
     };
     workflow_dispatch?: {
       inputs?: Record<string, unknown>;
+    };
+    workflow_run?: {
+      workflows?: string[];
     };
   };
   permissions?: Record<string, string>;
@@ -1221,7 +1225,7 @@ function runOpenClawNpmTrustedRefGuard(overrides: Record<string, string>) {
   const job = workflowJob(OPENCLAW_NPM_RELEASE_WORKFLOW, "validate_publish_request");
   const script = workflowStep(job, "Require trusted workflow ref for publish").run;
   if (!script) {
-    throw new Error("Expected OpenClaw npm trusted ref guard");
+    throw new Error("Expected PASO npm trusted ref guard");
   }
   const binDir = tempDirs.make("openclaw-npm-trusted-ref-");
   const ghPath = `${binDir}/gh`;
@@ -1377,7 +1381,7 @@ function preflightProducerFixtureEnv(params: ProtectedPreflightConsumerParams) {
 
 function runReleasePublishPreflightConsumerGuard(params: ProtectedPreflightConsumerParams) {
   const job = workflowJob(RELEASE_PUBLISH_WORKFLOW, "resolve_release_target");
-  const script = workflowStep(job, "Download OpenClaw npm preflight manifest").run;
+  const script = workflowStep(job, "Download PASO npm preflight manifest").run;
   if (!script) {
     throw new Error("Expected release publish preflight consumer guard");
   }
@@ -1432,7 +1436,7 @@ function runOpenClawNpmPreflightConsumerGuard(params: ProtectedPreflightConsumer
   const job = workflowJob(OPENCLAW_NPM_RELEASE_WORKFLOW, "publish_openclaw_npm");
   const script = workflowStep(job, "Verify preflight run metadata").run;
   if (!script) {
-    throw new Error("Expected OpenClaw npm preflight consumer guard");
+    throw new Error("Expected PASO npm preflight consumer guard");
   }
   const workdir = tempDirs.make("openclaw-npm-preflight-consumer-");
   const binDir = resolve(workdir, "bin");
@@ -1503,7 +1507,7 @@ cat >/dev/null
         headBranch: params.preflightHeadBranch,
         headSha: params.preflightHeadSha,
         url: "https://github.com/openclaw/openclaw/actions/runs/111",
-        workflowName: "OpenClaw NPM Release",
+        workflowName: "PASO NPM Release",
       }),
       MOCK_RELEASE_SHA: "d".repeat(40),
       MOCK_REMOTE_TAG_SHA: params.liveTagSha ?? params.currentWorkflowSha,
@@ -1738,12 +1742,25 @@ function runReleaseChecksSummary(params: {
 }
 
 describe("package acceptance workflow", () => {
+  it("uses PASO workflow names while retaining explicit legacy postpublish trigger support", () => {
+    const npmWorkflow = readWorkflow(OPENCLAW_NPM_RELEASE_WORKFLOW);
+    const releasePublishWorkflow = readWorkflow(RELEASE_PUBLISH_WORKFLOW);
+    const postpublish = readWorkflow(".github/workflows/plugin-clawhub-postpublish.yml");
+
+    expect(npmWorkflow.name).toBe("PASO NPM Release");
+    expect(releasePublishWorkflow.name).toBe("PASO Release Publish");
+    expect(postpublish.on?.workflow_run?.workflows).toEqual([
+      "PASO Release Publish",
+      "OpenClaw Release Publish",
+    ]);
+  });
+
   it("forwards Plugin SDK acknowledgement through the canonical publish dispatch", () => {
     const workflow = readWorkflow(RELEASE_PUBLISH_WORKFLOW);
     const input = workflow.on?.workflow_dispatch?.inputs?.plugin_sdk_api_acknowledgement;
     const resolveJob = workflowJob(RELEASE_PUBLISH_WORKFLOW, "resolve_release_target");
-    const downloadPreflight = workflowStep(resolveJob, "Download OpenClaw npm preflight manifest");
-    const validateEvidence = workflowStep(resolveJob, "Validate OpenClaw npm preflight manifest");
+    const downloadPreflight = workflowStep(resolveJob, "Download PASO npm preflight manifest");
+    const validateEvidence = workflowStep(resolveJob, "Validate PASO npm preflight manifest");
     const publishJob = workflowJob(RELEASE_PUBLISH_WORKFLOW, "publish");
     const dispatch = releasePublishOrchestration(publishJob);
 
@@ -2053,7 +2070,7 @@ describe("package acceptance workflow", () => {
     });
     expect(mismatchedName.status).toBe(1);
     expect(mismatchedName.stderr).toContain(
-      "SHA-pinned release-publish tag does not match the OpenClaw npm workflow SHA",
+      "SHA-pinned release-publish tag does not match the PASO npm workflow SHA",
     );
 
     const moved = runOpenClawNpmTrustedRefGuard({
@@ -2063,7 +2080,7 @@ describe("package acceptance workflow", () => {
     });
     expect(moved.status).toBe(1);
     expect(moved.stderr).toContain(
-      "SHA-pinned release-publish tag does not resolve to the OpenClaw npm workflow SHA",
+      "SHA-pinned release-publish tag does not resolve to the PASO npm workflow SHA",
     );
   });
 
@@ -2396,11 +2413,11 @@ describe("package acceptance workflow", () => {
     const publishOrchestration = releasePublishOrchestration(publishJob);
 
     for (const stepName of [
-      "Download OpenClaw npm preflight manifest",
+      "Download PASO npm preflight manifest",
       "Resolve full release validation run",
       "Download full release validation manifest",
       "Download trusted release validation tooling",
-      "Validate OpenClaw npm preflight manifest",
+      "Validate PASO npm preflight manifest",
       "Validate full release validation manifest",
     ]) {
       expect(workflowStep(resolveJob, stepName).if).toContain(
@@ -3260,7 +3277,7 @@ printf 'core_failed=%s\n' "$failed"
       "Artifact-backed Telegram E2E requires the complete prerelease plugin registry tuple.",
     );
     expect(npmTelegramWorkflow).toContain(
-      "Prerelease plugin registry inputs require an artifact-backed OpenClaw package.",
+      "Prerelease plugin registry inputs require an artifact-backed PASO package.",
     );
     expect(npmTelegramWorkflow).toContain(
       'expected_registry_suffix="-${PREPUBLISH_PLUGIN_REGISTRY_ARTIFACT_RUN_ID}-${PREPUBLISH_PLUGIN_REGISTRY_ARTIFACT_RUN_ATTEMPT}"',
@@ -3484,7 +3501,7 @@ printf 'core_failed=%s\n' "$failed"
     const releaseChecksWorkflow = readFileSync(RELEASE_CHECKS_WORKFLOW, "utf8");
     const performanceJob = workflowStep(
       workflowJob(FULL_RELEASE_VALIDATION_WORKFLOW, "performance"),
-      "Dispatch OpenClaw Performance",
+      "Dispatch PASO Performance",
     ).run;
 
     expect(workflow).toContain("TARGET_SHA: ${{ needs.resolve_target.outputs.sha }}");
@@ -3549,7 +3566,7 @@ printf 'core_failed=%s\n' "$failed"
     const workflow = readFileSync(FULL_RELEASE_VALIDATION_WORKFLOW, "utf8");
     const performanceStep = workflowStep(
       workflowJob(FULL_RELEASE_VALIDATION_WORKFLOW, "performance"),
-      "Dispatch OpenClaw Performance",
+      "Dispatch PASO Performance",
     );
     const summaryStep = workflowStep(
       workflowJob(FULL_RELEASE_VALIDATION_WORKFLOW, "summary"),
@@ -3928,8 +3945,8 @@ describe("package artifact reuse", () => {
     expect(workflow).toContain(
       "OPENCLAW_ALLOW_FROZEN_TARGET_SCENARIO_OMISSIONS: ${{ inputs.allow_frozen_target_scenario_omissions && '1' || '0' }}",
     );
-    expect(workflow).toContain("Download current-run OpenClaw Docker E2E package");
-    expect(workflow).toContain("Download previous-run OpenClaw Docker E2E package");
+    expect(workflow).toContain("Download current-run PASO Docker E2E package");
+    expect(workflow).toContain("Download previous-run PASO Docker E2E package");
     expect(workflow).toContain(
       "needs.validate_selected_ref.outputs.package_artifact_present == 'true'",
     );
@@ -4376,7 +4393,7 @@ describe("package artifact reuse", () => {
     expect(binderCheckouts.map(({ uses, with: inputs }) => ({ inputs, uses }))).toEqual([
       {
         inputs: {
-          repository: "openclaw/openclaw",
+          repository: "${{ github.repository }}",
           ref: "main",
           "fetch-depth": 1,
           path: ".release-harness",
@@ -4397,7 +4414,7 @@ describe("package artifact reuse", () => {
       RUN_ATTEMPT: "${{ github.run_attempt }}",
       RUN_ID: "${{ github.run_id }}",
     });
-    expect(workflowRevision.run).toContain('repository !== "openclaw/openclaw"');
+    expect(workflowRevision.run).toContain("^[A-Za-z0-9_.-]+\\/[A-Za-z0-9_.-]+$");
     expect(workflowRevision.run).toContain("job.workflow_repository !== repository");
     expect(workflowRevision.run).toContain("job.workflow_sha");
     expect(workflowRevision.run).toContain('"fetch"');
@@ -6312,7 +6329,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       });
       expect(result.status, contextRef).toBe(1);
       expect(result.stderr).toContain(
-        "target_context_ref must be a canonical OpenClaw release branch or tag.",
+        "target_context_ref must be a canonical PASO release branch or tag.",
       );
     }
 
@@ -6482,7 +6499,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(runtimePairValidation).toContain(
       'node --import tsx trusted-suite-validator/scripts/validate-qa-runtime-pair-summary.mts "${validator_args[@]}"',
     );
-    const coreRestartRun = workflowStep(laneJob, "Run OpenClaw core restart proof").run;
+    const coreRestartRun = workflowStep(laneJob, "Run PASO core restart proof").run;
     expect(coreRestartRun).toContain("--scenario gateway-restart-inflight-run");
     expect(coreRestartRun).toContain('--output-dir ".artifacts/qa-e2e/openclaw-core-restart"');
     const trustedValidatorCheckout = workflowStep(
@@ -7007,7 +7024,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       "does not match ${identity_kind}",
       "is not reachable from release context branch",
       "does not match release tag",
-      "target_context_ref must be a canonical OpenClaw release branch or tag.",
+      "target_context_ref must be a canonical PASO release branch or tag.",
     ]);
     expect(npmTelegramJob.name).toBe("Run package Telegram E2E");
     expect(npmTelegramJob.needs).toEqual(["resolve_target", "evidence_reuse"]);
@@ -7124,7 +7141,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expectTextToIncludeAll(workflow, [
       "Published-package Telegram E2E:",
       "Package Telegram E2E: deferred by \\`skip_package_telegram_e2e\\`",
-      "Package Telegram E2E: OpenClaw Release Checks Package Acceptance",
+      "Package Telegram E2E: PASO Release Checks Package Acceptance",
       "Package Telegram E2E: focused rerun requires \\`release_package_spec\\` or \\`npm_telegram_package_spec\\`",
     ]);
     expect(releaseDocs).toContain(
@@ -7217,7 +7234,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       "Array.isArray(manifest.corePackageTarballs)",
       "manifest.corePackageTarballs === undefined",
       "package artifact tarball set does not match preflight manifest",
-      "package candidate manifest does not match the OpenClaw tarball",
+      "package candidate manifest does not match the PASO tarball",
       "Package Telegram artifact SHA-256 differs from package_sha256.",
       "package candidate digest mismatch",
       "Package Telegram artifact tarball differs from package_file_name.",
@@ -7355,7 +7372,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
 
     expect(result.status).toBe(1);
     expect(result.stderr).toContain(
-      "Prerelease plugin registry inputs require an artifact-backed OpenClaw package.",
+      "Prerelease plugin registry inputs require an artifact-backed PASO package.",
     );
   });
 
@@ -8241,7 +8258,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(result.status, result.stderr).toBe(0);
   });
 
-  it("accepts tag-matched frozen release branches in OpenClaw npm preflight", () => {
+  it("accepts tag-matched frozen release branches in PASO npm preflight", () => {
     const preflight = workflowJob(OPENCLAW_NPM_RELEASE_WORKFLOW, "preflight_openclaw_npm");
     const metadata = workflowStep(preflight, "Validate release metadata");
 
@@ -8262,12 +8279,28 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     const releaseDocs = readFileSync("docs/reference/RELEASING.md", "utf8");
     const releaseSkill = readFileSync(RELEASE_MAINTAINER_SKILL, "utf8");
 
+    expect(releaseWorkflow).toContain("Stable PASO publish requires an explicit windows_node_tag.");
     expect(releaseWorkflow).toContain(
-      "Stable OpenClaw publish requires an explicit windows_node_tag.",
+      "Stable PASO publish requires candidate-approved windows_node_installer_digests.",
     );
     expect(releaseWorkflow).toContain(
-      "Stable OpenClaw publish requires candidate-approved windows_node_installer_digests.",
+      "PASO_WINDOWS_NODE_REPOSITORY: ${{ vars.PASO_WINDOWS_NODE_REPOSITORY }}",
     );
+    expect(releaseWorkflow).toContain(
+      "PASO_WINDOWS_SIGNER_SUBJECT: ${{ vars.PASO_WINDOWS_SIGNER_SUBJECT }}",
+    );
+    expect(releaseWorkflow).toContain(
+      "PASO_WINDOWS_SIGNER_THUMBPRINT: ${{ vars.PASO_WINDOWS_SIGNER_THUMBPRINT }}",
+    );
+    expect(releaseWorkflow).toContain('--repo "${PASO_WINDOWS_NODE_REPOSITORY}"');
+    expect(releaseWorkflow).toContain(
+      "Stable PASO publish requires PASO_WINDOWS_SIGNER_SUBJECT to identify Celaya Solutions",
+    );
+    expect(releaseWorkflow).toContain(
+      "Stable PASO publish requires PASO_WINDOWS_SIGNER_THUMBPRINT to be an exact 40-character certificate thumbprint",
+    );
+    expect(releaseWorkflow).toContain("from ${windows_repository}@${WINDOWS_NODE_TAG}");
+    expect(releaseWorkflow).not.toContain("--repo openclaw/openclaw-windows-node");
     expect(releaseWorkflow).toContain("promote_windows_release_assets()");
     expect(releaseWorkflow).toContain("dispatch_workflow windows-node-release.yml");
     expect(releaseWorkflow).toContain("verify_windows_release_asset_contract");
@@ -8318,7 +8351,20 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(windowsWorkflow).not.toContain("default: latest");
     expect(windowsWorkflow).toContain("expected_installer_digests:");
     expect(windowsWorkflow).toContain("expected_installer_digests must contain exactly");
-    expect(windowsWorkflow).toContain("must be an explicit openclaw-windows-node release tag");
+    expect(windowsWorkflow).toContain("must be an explicit PASO Windows source release tag");
+    expect(windowsWorkflow).toContain(
+      "PASO_WINDOWS_NODE_REPOSITORY: ${{ vars.PASO_WINDOWS_NODE_REPOSITORY }}",
+    );
+    expect(windowsWorkflow).toContain(
+      "PASO_WINDOWS_SIGNER_SUBJECT: ${{ vars.PASO_WINDOWS_SIGNER_SUBJECT }}",
+    );
+    expect(windowsWorkflow).toContain(
+      "PASO_WINDOWS_SIGNER_THUMBPRINT: ${{ vars.PASO_WINDOWS_SIGNER_THUMBPRINT }}",
+    );
+    expect(windowsWorkflow).toContain("Windows promotion is restricted to the PASO repository");
+    expect(windowsWorkflow).toContain(
+      "PASO_WINDOWS_NODE_REPOSITORY must be owned by celaya-solutions",
+    );
     expect(windowsWorkflow).toContain("$installerPatterns = @(");
     expect(windowsWorkflow).toContain("Every matched installer is signature-checked");
     expect(windowsWorkflow).toContain("Get-ChildItem -LiteralPath dist -File");
@@ -8326,7 +8372,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       "Downloaded Windows source asset does not match pinned digest",
     );
     expect(windowsWorkflow).toContain(
-      "--repo openclaw/openclaw-windows-node --json tagName,isDraft,isPrerelease,assets,url",
+      "--repo $env:PASO_WINDOWS_NODE_REPOSITORY --json tagName,isDraft,isPrerelease,assets,url",
     );
     expect(windowsWorkflow).toContain(
       "Windows source release must contain exactly one required asset",
@@ -8334,10 +8380,14 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(windowsWorkflow).toContain(
       "Windows source release asset digest does not match the pinned digest",
     );
+    expect(windowsWorkflow).toContain("$expectedSignerSubject = $env:PASO_WINDOWS_SIGNER_SUBJECT");
     expect(windowsWorkflow).toContain(
-      "CN=OpenClaw Foundation, O=OpenClaw Foundation, L=Mill Valley, S=California, C=US",
+      "$expectedSignerThumbprint = ($env:PASO_WINDOWS_SIGNER_THUMBPRINT",
     );
     expect(windowsWorkflow).toContain("has unexpected signer subject");
+    expect(windowsWorkflow).toContain("has unexpected signer thumbprint");
+    expect(windowsWorkflow).not.toContain("--repo openclaw/openclaw-windows-node");
+    expect(windowsWorkflow).not.toContain("CN=OpenClaw Foundation, O=OpenClaw Foundation");
     expect(windowsWorkflow).toContain("OpenClawCompanion-SHA256SUMS.txt");
     expect(windowsWorkflow).toContain("Verify promoted release asset contract");
     expect(windowsWorkflow).toContain(
@@ -8373,7 +8423,16 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(androidWorkflow).toContain(
       "actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1",
     );
-    expect(androidWorkflow).toContain("repositories: apps-signing");
+    expect(androidWorkflow).toContain("repositories: ${{ vars.PASO_ANDROID_SIGNING_REPOSITORY }}");
+    expect(androidWorkflow).toContain("Require PASO-owned Android signing");
+    expect(androidWorkflow).toContain(
+      "PASO_ANDROID_SIGNING_OWNER: ${{ vars.PASO_ANDROID_SIGNING_OWNER }}",
+    );
+    expect(androidWorkflow).toContain(
+      "PASO_ANDROID_SIGNING_REPOSITORY: ${{ vars.PASO_ANDROID_SIGNING_REPOSITORY }}",
+    );
+    expect(androidWorkflow).toContain('ReleaseSigning.json").releaseEnabled === true');
+    expect(androidWorkflow).not.toContain("repository: openclaw/apps-signing");
     expect(androidWorkflow).toContain("permission-contents: read");
     expect(androidWorkflow).toContain("--mode materialize");
     expect(androidWorkflow).not.toContain("APPS_SIGNING_DEPLOY_KEY");
@@ -8432,7 +8491,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
 
     expect(releaseWorkflow).toContain("promote_android_release_asset()");
     expect(releaseWorkflow).toContain("is_android_release()");
-    expect(androidWorkflow).toContain("requires a final or correction OpenClaw release tag");
+    expect(androidWorkflow).toContain("requires a final or correction PASO release tag");
     expect(androidWorkflow).toContain("previous_version_code");
     expect(androidWorkflow).toContain("must exceed ${previous_tag} versionCode");
     expect(androidWorkflow).toContain("standalone channel bootstrap");
@@ -8454,7 +8513,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
     expect(promoteAndroidCall).toBeGreaterThan(createDraftCall);
     expect(releaseWorkflow).toContain("finalize_github_release:");
 
-    expect(androidDocs).toContain("github.com/openclaw/openclaw/releases");
+    expect(androidDocs).toContain("github.com/celaya-solutions/PASO-AGENT/releases");
     expect(androidDocs).not.toContain("releases/latest/download/OpenClaw-Android.apk");
     expect(androidDocs).toContain("gh attestation verify OpenClaw-Android.apk");
     expect(androidDocs).toContain('--source-ref "refs/tags/${release_tag}"');
@@ -8481,7 +8540,7 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       "if ($stableRelease -and $sourceRelease.isPrerelease)",
     );
     const rejectUnexpectedTargetAssetsIndex = windowsWorkflow.indexOf(
-      "Target OpenClaw release contains unexpected OpenClawCompanion assets before upload",
+      "Target PASO release contains unexpected OpenClawCompanion compatibility assets before upload",
     );
     const uploadAssetsIndex = windowsWorkflow.indexOf("gh release upload $env:RELEASE_TAG");
 
@@ -8566,6 +8625,27 @@ printf '%s\\n' "$DEEPSEEK_API_KEY" "$DEEPINFRA_API_KEY"`,
       ],
     ] as const) {
       expect(workflowJob(workflowPath, publishJobName).environment, workflowPath).toBe(environment);
+    }
+
+    for (const [workflowPath, publishJobName] of [
+      [PLUGIN_NPM_RELEASE_WORKFLOW, "trusted_publisher_preflight"],
+      [PLUGIN_NPM_RELEASE_WORKFLOW, "publish_plugins_npm"],
+      [OPENCLAW_NPM_RELEASE_WORKFLOW, "publish_openclaw_npm"],
+    ] as const) {
+      const pasoPublishGuard = workflowStep(
+        workflowJob(workflowPath, publishJobName),
+        "Require PASO legacy npm publishing configuration",
+      );
+      expect(pasoPublishGuard.env, workflowPath).toEqual({
+        PASO_LEGACY_NPM_PUBLISH_ENABLED: "${{ vars.PASO_LEGACY_NPM_PUBLISH_ENABLED }}",
+        PASO_NPM_PUBLISH_REPOSITORY: "${{ vars.PASO_NPM_PUBLISH_REPOSITORY }}",
+      });
+      expectTextToIncludeAll(pasoPublishGuard.run, [
+        '"$GITHUB_REPOSITORY" != "celaya-solutions/PASO-AGENT"',
+        '"$PASO_LEGACY_NPM_PUBLISH_ENABLED" != "true"',
+        '"$PASO_NPM_PUBLISH_REPOSITORY" != "$GITHUB_REPOSITORY"',
+        "only after Celaya Solutions controls the npm trusted-publisher routes",
+      ]);
     }
 
     const clawHubApproval = workflowJob(
@@ -9322,7 +9402,7 @@ wait_for_run plugin-clawhub-new.yml 123 "${expectedSha}" || status=$?
     expect(performancePublishPath.reduce((total, timeout) => total + timeout, 0)).toBe(280);
     const performanceParent = workflowJob(FULL_RELEASE_VALIDATION_WORKFLOW, "performance");
     expect(performanceParent["timeout-minutes"]).toBe(15);
-    expect(workflowStep(performanceParent, "Dispatch OpenClaw Performance").run).toContain(
+    expect(workflowStep(performanceParent, "Dispatch PASO Performance").run).toContain(
       "-f publish_reports=false",
     );
     for (const [pathName, path] of [

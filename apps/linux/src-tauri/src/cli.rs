@@ -26,7 +26,7 @@ pub enum CliError {
 impl fmt::Display for CliError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Missing => write!(formatter, "OpenClaw CLI not found"),
+            Self::Missing => write!(formatter, "PASO CLI not found"),
             Self::Environment(message)
             | Self::Spawn(message)
             | Self::CommandFailed(message)
@@ -78,7 +78,7 @@ impl OpenClawCli {
             return Ok(());
         }
         Err(CliError::Spawn(format!(
-            "OpenClaw CLI exited with {}",
+            "PASO CLI exited with {}",
             output.status
         )))
     }
@@ -104,11 +104,11 @@ impl OpenClawCli {
         command.stdout(Stdio::piped()).stderr(Stdio::piped());
         let child = command.spawn().map_err(|error| {
             self.available.store(false, Ordering::Release);
-            CliError::Spawn(format!("Failed to run OpenClaw CLI: {error}"))
+            CliError::Spawn(format!("Failed to run PASO CLI: {error}"))
         })?;
-        child.wait_with_output().map_err(|error| {
-            CliError::Spawn(format!("Failed to read OpenClaw CLI output: {error}"))
-        })
+        child
+            .wait_with_output()
+            .map_err(|error| CliError::Spawn(format!("Failed to read PASO CLI output: {error}")))
     }
 
     pub fn json<T, I, S>(&self, args: I) -> Result<(T, Output), CliError>
@@ -123,11 +123,11 @@ impl OpenClawCli {
         if !output.status.success() {
             let message = output_tail(&output.stderr)
                 .or_else(|| output_tail(&output.stdout))
-                .unwrap_or_else(|| format!("OpenClaw CLI exited with {}", output.status));
+                .unwrap_or_else(|| format!("PASO CLI exited with {}", output.status));
             return Err(CliError::CommandFailed(message));
         }
         let value = serde_json::from_slice(&output.stdout).map_err(|error| {
-            CliError::InvalidJson(format!("OpenClaw CLI returned invalid JSON: {error}"))
+            CliError::InvalidJson(format!("PASO CLI returned invalid JSON: {error}"))
         })?;
         Ok((value, output))
     }

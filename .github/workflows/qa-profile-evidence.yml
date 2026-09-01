@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: OpenClaw branch, tag, or SHA to run
+        description: PASO branch, tag, or SHA to run
         required: true
         default: main
         type: string
@@ -33,7 +33,7 @@ on:
   workflow_call:
     inputs:
       ref:
-        description: OpenClaw branch, tag, or SHA to run
+        description: PASO branch, tag, or SHA to run
         required: true
         type: string
       trusted_ref:
@@ -79,7 +79,7 @@ on:
         description: Whether the QA profile command exited successfully
         value: ${{ jobs.aggregate_qa_profile.outputs.qa_passed }}
       target_sha:
-        description: Resolved OpenClaw SHA that produced the evidence
+        description: Resolved PASO SHA that produced the evidence
         value: ${{ jobs.aggregate_qa_profile.outputs.target_sha }}
       trusted_reason:
         description: Trust reason accepted before the secret-bearing QA job
@@ -120,14 +120,17 @@ jobs:
           script: |
             const job = JSON.parse(process.env.JOB_CONTEXT ?? "{}");
             const callerWorkflowRef = process.env.CALLER_WORKFLOW_REF ?? "";
+            const repository = "celaya-solutions/PASO-AGENT";
             const calledWorkflowRef =
-              "openclaw/openclaw/.github/workflows/qa-profile-evidence.yml@refs/heads/main";
+              `${repository}/.github/workflows/qa-profile-evidence.yml@refs/heads/main`;
+            const callerWorkflowPrefix = `${repository}/.github/workflows/`;
             const trustedMainCaller =
               callerWorkflowRef !== calledWorkflowRef &&
-              /^openclaw\/openclaw\/.github\/workflows\/[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
-                callerWorkflowRef,
+              callerWorkflowRef.startsWith(callerWorkflowPrefix) &&
+              /^[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
+                callerWorkflowRef.slice(callerWorkflowPrefix.length),
               ) &&
-              job.workflow_repository === "openclaw/openclaw" &&
+              job.workflow_repository === repository &&
               job.workflow_ref === calledWorkflowRef;
             if (context.actor === "github-actions[bot]") {
               core.setOutput("authorized", trustedMainCaller ? "true" : "false");
@@ -196,7 +199,7 @@ jobs:
           NODE
 
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout selected ref
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -308,14 +311,17 @@ jobs:
           script: |
             const job = JSON.parse(process.env.JOB_CONTEXT ?? "{}");
             const callerWorkflowRef = process.env.CALLER_WORKFLOW_REF ?? "";
+            const repository = "celaya-solutions/PASO-AGENT";
             const calledWorkflowRef =
-              "openclaw/openclaw/.github/workflows/qa-profile-evidence.yml@refs/heads/main";
+              `${repository}/.github/workflows/qa-profile-evidence.yml@refs/heads/main`;
+            const callerWorkflowPrefix = `${repository}/.github/workflows/`;
             const trustedMainCaller =
               callerWorkflowRef !== calledWorkflowRef &&
-              /^openclaw\/openclaw\/.github\/workflows\/[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
-                callerWorkflowRef,
+              callerWorkflowRef.startsWith(callerWorkflowPrefix) &&
+              /^[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
+                callerWorkflowRef.slice(callerWorkflowPrefix.length),
               ) &&
-              job.workflow_repository === "openclaw/openclaw" &&
+              job.workflow_repository === repository &&
               job.workflow_ref === calledWorkflowRef;
             if (context.actor === "github-actions[bot]") {
               if (!trustedMainCaller) {
@@ -337,12 +343,12 @@ jobs:
             }
 
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout trusted QA harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: openclaw/openclaw
+          repository: celaya-solutions/PASO-AGENT
           ref: main
           fetch-depth: 1
           persist-credentials: false
@@ -476,14 +482,17 @@ jobs:
           script: |
             const job = JSON.parse(process.env.JOB_CONTEXT ?? "{}");
             const callerWorkflowRef = process.env.CALLER_WORKFLOW_REF ?? "";
+            const repository = "celaya-solutions/PASO-AGENT";
             const calledWorkflowRef =
-              "openclaw/openclaw/.github/workflows/qa-profile-evidence.yml@refs/heads/main";
+              `${repository}/.github/workflows/qa-profile-evidence.yml@refs/heads/main`;
+            const callerWorkflowPrefix = `${repository}/.github/workflows/`;
             const trustedMainCaller =
               callerWorkflowRef !== calledWorkflowRef &&
-              /^openclaw\/openclaw\/.github\/workflows\/[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
-                callerWorkflowRef,
+              callerWorkflowRef.startsWith(callerWorkflowPrefix) &&
+              /^[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
+                callerWorkflowRef.slice(callerWorkflowPrefix.length),
               ) &&
-              job.workflow_repository === "openclaw/openclaw" &&
+              job.workflow_repository === repository &&
               job.workflow_ref === calledWorkflowRef;
             if (context.actor === "github-actions[bot]") {
               if (!trustedMainCaller) {
@@ -505,12 +514,12 @@ jobs:
             }
 
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout trusted QA harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: openclaw/openclaw
+          repository: celaya-solutions/PASO-AGENT
           ref: main
           fetch-depth: 1
           persist-credentials: false
@@ -786,14 +795,17 @@ jobs:
           script: |
             const job = JSON.parse(process.env.JOB_CONTEXT ?? "{}");
             const callerWorkflowRef = process.env.CALLER_WORKFLOW_REF ?? "";
+            const repository = "celaya-solutions/PASO-AGENT";
             const calledWorkflowRef =
-              "openclaw/openclaw/.github/workflows/qa-profile-evidence.yml@refs/heads/main";
+              `${repository}/.github/workflows/qa-profile-evidence.yml@refs/heads/main`;
+            const callerWorkflowPrefix = `${repository}/.github/workflows/`;
             const trustedMainCaller =
               callerWorkflowRef !== calledWorkflowRef &&
-              /^openclaw\/openclaw\/.github\/workflows\/[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
-                callerWorkflowRef,
+              callerWorkflowRef.startsWith(callerWorkflowPrefix) &&
+              /^[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
+                callerWorkflowRef.slice(callerWorkflowPrefix.length),
               ) &&
-              job.workflow_repository === "openclaw/openclaw" &&
+              job.workflow_repository === repository &&
               job.workflow_ref === calledWorkflowRef;
             if (context.actor === "github-actions[bot]") {
               if (!trustedMainCaller) {
@@ -815,12 +827,12 @@ jobs:
             }
 
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout trusted QA harness
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: openclaw/openclaw
+          repository: celaya-solutions/PASO-AGENT
           ref: main
           fetch-depth: 1
           persist-credentials: false

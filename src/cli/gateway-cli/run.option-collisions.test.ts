@@ -1953,7 +1953,7 @@ describe("gateway run option collisions", () => {
   it("does not park launchd for a nonrepairable shared-state schema", async () => {
     startGatewayServer.mockRejectedValueOnce(
       new Error(
-        "OpenClaw state database /tmp/openclaw.sqlite has a noncanonical agent database registry schema that cannot be repaired automatically.",
+        "PASO state database /tmp/openclaw.sqlite has a noncanonical agent database registry schema that cannot be repaired automatically.",
       ),
     );
 

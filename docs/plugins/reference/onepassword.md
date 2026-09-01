@@ -12,7 +12,7 @@ title: "Onepassword plugin"
 ## Distribution
 
 - Package: `@openclaw/onepassword`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

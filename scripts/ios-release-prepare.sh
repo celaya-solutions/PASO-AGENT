@@ -134,7 +134,7 @@ if [[ -z "${TEAM_ID}" ]]; then
 fi
 
 if [[ "${TEAM_ID}" != "${CANONICAL_TEAM_ID}" ]]; then
-  echo "iOS App Store release must use canonical OpenClaw Team ID ${CANONICAL_TEAM_ID}; got ${TEAM_ID}." >&2
+  echo "iOS App Store compatibility release must use canonical upstream OpenClaw Team ID ${CANONICAL_TEAM_ID}; got ${TEAM_ID}." >&2
   exit 1
 fi
 

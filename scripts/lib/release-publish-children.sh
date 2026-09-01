@@ -561,7 +561,7 @@ resolve_clawhub_release_plan() {
   clawhub_plan_path="${CLAWHUB_PLAN_PATH}"
   test -s "${clawhub_plan_path}"
 
-  echo "Resolved OpenClaw release ClawHub dispatch plan:"
+  echo "Resolved PASO release ClawHub dispatch plan:"
   cat "${clawhub_plan_path}"
 
   clawhub_workflow_ref="$(jq -r '.clawHubWorkflowRef' "${clawhub_plan_path}")"
@@ -923,7 +923,7 @@ upload_dependency_evidence_release_asset() {
     --dir "${download_dir}"
 
   if [[ ! -d "${download_dir}/dependency-evidence" ]]; then
-    echo "Dependency evidence is missing from OpenClaw npm preflight artifact." >&2
+    echo "Dependency evidence is missing from PASO npm preflight artifact." >&2
     find "${download_dir}" -maxdepth 2 -type f -print >&2 || true
     exit 1
   fi
@@ -1155,7 +1155,7 @@ verify_published_release() {
 }
 
 append_release_proof_to_github_release() {
-  local release_version proof_file notes_file metadata_file evidence_path tarball integrity telegram_line clawhub_line clawhub_bootstrap_line clawhub_runtime_state_path android_line windows_line
+  local release_version proof_file notes_file metadata_file evidence_path tarball integrity telegram_line clawhub_line clawhub_bootstrap_line clawhub_runtime_state_path android_line windows_line windows_repository evidence_repository
 
   release_version="${RELEASE_TAG#v}"
   proof_file="${RUNNER_TEMP}/release-verification.md"
@@ -1178,9 +1178,19 @@ append_release_proof_to_github_release() {
   clawhub_bootstrap_line="$(jq -r '.proofLines.bootstrap' "${clawhub_runtime_state_path}")"
   windows_line=""
   if [[ -n "${windows_node_run_id// }" ]]; then
-    windows_line="- Windows Hub promotion: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${windows_node_run_id} from openclaw/openclaw-windows-node@${WINDOWS_NODE_TAG}"
+    windows_repository="${PASO_WINDOWS_NODE_REPOSITORY:-}"
+    if [[ ! "${windows_repository}" =~ ^celaya-solutions/[A-Za-z0-9_.-]+$ ]]; then
+      echo "PASO_WINDOWS_NODE_REPOSITORY must name a Celaya Solutions repository." >&2
+      exit 1
+    fi
+    windows_line="- PASO Windows promotion: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${windows_node_run_id} from ${windows_repository}@${WINDOWS_NODE_TAG}"
   fi
   android_line="${android_release_note}"
+  evidence_repository="${PASO_RELEASE_EVIDENCE_REPOSITORY:-}"
+  if [[ -n "${evidence_repository// }" && ! "$evidence_repository" =~ ^celaya-solutions/[A-Za-z0-9_.-]+$ ]]; then
+    echo "PASO_RELEASE_EVIDENCE_REPOSITORY must name a Celaya Solutions repository." >&2
+    exit 1
+  fi
   proof_label="full release validation"
   proof_run_id="${FULL_RELEASE_VALIDATION_RUN_ID}"
   if [[ "${RELEASE_EVIDENCE_MODE}" == "authorized-beta-focused-v1" ]]; then
@@ -1193,6 +1203,7 @@ append_release_proof_to_github_release() {
     RELEASE_TAG="${RELEASE_TAG}" \
     RELEASE_SHA="${TARGET_SHA}" \
     RELEASE_REPO="${GITHUB_REPOSITORY}" \
+    RELEASE_EVIDENCE_REPO="${evidence_repository}" \
     RELEASE_TARBALL="${tarball}" \
     RELEASE_INTEGRITY="${integrity}" \
     RELEASE_PUBLISH_RUN_ID="${GITHUB_RUN_ID}" \
@@ -1221,7 +1232,11 @@ const section = [
   `- registry tarball: ${process.env.RELEASE_TARBALL}`,
   `- integrity: \`${process.env.RELEASE_INTEGRITY}\``,
   `- release SHA: \`${process.env.RELEASE_SHA}\``,
-  `- full release CI report: https://github.com/openclaw/releases/blob/main/evidence/${process.env.RELEASE_VERSION}/release-evidence.md`,
+  ...(process.env.RELEASE_EVIDENCE_REPO
+    ? [
+        `- full release CI report: https://github.com/${process.env.RELEASE_EVIDENCE_REPO}/blob/main/evidence/${process.env.RELEASE_VERSION}/release-evidence.md`,
+      ]
+    : ["- full release CI report: separate PASO evidence repository not configured"]),
   `- release publish: https://github.com/${process.env.RELEASE_REPO}/actions/runs/${process.env.RELEASE_PUBLISH_RUN_ID}`,
   `- npm preflight: https://github.com/${process.env.RELEASE_REPO}/actions/runs/${process.env.PREFLIGHT_RUN_ID}`,
   `- ${process.env.RELEASE_VALIDATION_LABEL}: https://github.com/${process.env.RELEASE_REPO}/actions/runs/${process.env.RELEASE_VALIDATION_RUN_ID}`,
@@ -1232,7 +1247,7 @@ const section = [
   // have no core npm run of their own to cite.
   ...(process.env.OPENCLAW_NPM_RUN_ID
     ? [
-        `- OpenClaw npm publish: https://github.com/${process.env.RELEASE_REPO}/actions/runs/${process.env.OPENCLAW_NPM_RUN_ID}`,
+        `- PASO npm publish: https://github.com/${process.env.RELEASE_REPO}/actions/runs/${process.env.OPENCLAW_NPM_RUN_ID}`,
       ]
     : []),
   process.env.TELEGRAM_LINE,

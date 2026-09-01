@@ -366,7 +366,7 @@ async function resolveCodexAppServerClientStartContext(
   }
   if (preparedAuth?.kind === "profile" && !preparedAuth.store.profiles[preparedAuth.profileId]) {
     throw new Error(
-      `Prepared Codex auth profile "${preparedAuth.profileId}" was not found. Select an existing OpenAI profile or sign in again with OpenClaw, then retry.`,
+      `Prepared Codex auth profile "${preparedAuth.profileId}" was not found. Select an existing OpenAI profile or sign in again with PASO, then retry.`,
     );
   }
   if (preparedAuth?.kind === "api-key" && !preparedApiKey) {
@@ -1393,7 +1393,7 @@ export function captureExclusiveSharedCodexAppServerClient(
     }
     const generation = entry.leaseGeneration;
     const assertExclusive = () => {
-      // A sibling can resume native children without OpenClaw's thread queue.
+      // A sibling can resume native children without PASO's thread queue.
       // Even a completed intervening lease invalidates this configuration proof.
       if (
         state.clients.get(key) !== entry ||

@@ -15,7 +15,7 @@ enum AppleReviewDemoMode {
 }
 
 enum ScreenshotFixtureMode {
-    static let gatewayName = "OpenClaw Gateway"
+    static let gatewayName = "PASO Gateway"
     static let gatewayAddress = "Gateway on local network"
     static let gatewayID = "screenshot-fixture-gateway"
 }
@@ -55,7 +55,7 @@ struct LocalChatFixture {
             AgentSummary(
                 id: "main",
                 name: "Main",
-                identity: ["emoji": AnyCodable("OC")],
+                identity: ["emoji": AnyCodable("P")],
                 workspace: "Apple Review Demo",
                 workspacegit: false,
                 model: ["provider": AnyCodable("demo"), "model": AnyCodable("local-demo")],
@@ -69,7 +69,7 @@ struct LocalChatFixture {
         sessionKey: "main",
         defaultAgentID: "main",
         sessionIDPrefix: "screenshot-fixture",
-        displayName: "Molty",
+        displayName: "PASO",
         subject: "Mobile command center",
         modelProvider: "openai",
         modelID: "gpt-5.6-sol",
@@ -81,16 +81,16 @@ struct LocalChatFixture {
                 provider: "anthropic",
                 contextWindow: 200_000),
         ],
-        responsePrefix: "OpenClaw is connected to your gateway.",
+        responsePrefix: "PASO is connected to your gateway.",
         seedMessages: ProcessInfo.processInfo.arguments.contains("--openclaw-empty-chat-fixture")
             ? []
             : ["Ready when you are. I can check a project, coordinate an agent, or prepare the next step."],
         agents: [
             AgentSummary(
                 id: "main",
-                name: "Molty",
+                name: "PASO",
                 identity: ["emoji": AnyCodable("M")],
-                workspace: "OpenClaw",
+                workspace: "PASO",
                 workspacegit: false,
                 model: ["provider": AnyCodable("openai"), "model": AnyCodable("gpt-5.6-sol")],
                 agentruntime: ["kind": AnyCodable("gateway")],
@@ -101,7 +101,7 @@ struct LocalChatFixture {
                 id: "research",
                 name: "Research",
                 identity: ["emoji": AnyCodable("RS")],
-                workspace: "OpenClaw",
+                workspace: "PASO",
                 workspacegit: false,
                 model: ["provider": AnyCodable("openai"), "model": AnyCodable("gpt-5.6-sol")],
                 agentruntime: ["kind": AnyCodable("gateway")],
@@ -112,7 +112,7 @@ struct LocalChatFixture {
                 id: "automation",
                 name: "Automation",
                 identity: ["emoji": AnyCodable("AU")],
-                workspace: "OpenClaw",
+                workspace: "PASO",
                 workspacegit: false,
                 model: ["provider": AnyCodable("openai"), "model": AnyCodable("gpt-5.6-sol")],
                 agentruntime: ["kind": AnyCodable("gateway")],

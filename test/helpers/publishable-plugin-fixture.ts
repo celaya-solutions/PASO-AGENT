@@ -40,7 +40,7 @@ export function writePublishablePluginFixture(
     type: "module",
     repository: {
       type: "git",
-      url: "https://github.com/openclaw/openclaw",
+      url: "https://github.com/celaya-solutions/PASO-AGENT",
     },
     ...(options.dependency
       ? { dependencies: { [options.dependency.packageName]: options.dependency.version } }

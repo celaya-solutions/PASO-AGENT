@@ -788,7 +788,7 @@ describe("openclaw launcher", () => {
     expect(result.stderr).toContain("missing dist/entry.(m)js");
     expect(result.stderr).toContain("unbuilt source tree or GitHub source archive");
     expect(result.stderr).toContain("pnpm install && pnpm build");
-    expect(result.stderr).toContain("github:openclaw/openclaw#<ref>");
+    expect(result.stderr).toContain("github:celaya-solutions/PASO-AGENT#<ref>");
   });
 
   it("respawns source-checkout launchers without inherited NODE_COMPILE_CACHE", async () => {

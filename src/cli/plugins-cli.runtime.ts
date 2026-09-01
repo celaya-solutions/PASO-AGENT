@@ -904,7 +904,7 @@ function formatPinnedMarketplaceRefreshFailure(payload: MarketplaceRefreshPayloa
 const MARKETPLACE_GATEWAY_RESTART_GUIDANCE =
   'The running Gateway could not refresh its marketplace catalog. Run "openclaw gateway restart" to apply the current catalog state.';
 
-/** List entries from the configured OpenClaw marketplace feed. */
+/** List entries from the configured PASO marketplace feed. */
 export async function runPluginMarketplaceEntriesCommand(
   opts: PluginMarketplaceEntriesOptions,
 ): Promise<void> {
@@ -962,7 +962,7 @@ export async function runPluginMarketplaceEntriesCommand(
   defaultRuntime.log(lines.join("\n"));
 }
 
-/** Refresh the configured OpenClaw marketplace feed snapshot. */
+/** Refresh the configured PASO marketplace feed snapshot. */
 export async function runPluginMarketplaceRefreshCommand(
   opts: PluginMarketplaceRefreshOptions,
 ): Promise<void> {

@@ -273,7 +273,7 @@ internal fun OnboardingErrorCode.nativeTextOrNull(): NativeText? {
     OnboardingErrorCode.SetupCodeMissing -> nativeText("Enter the setup code from openclaw qr.")
     OnboardingErrorCode.SetupCodeRejected -> nativeText("Setup code was not accepted. Generate a fresh code with openclaw qr.")
     OnboardingErrorCode.InvalidSetupQr ->
-      nativeText("That QR code is not an OpenClaw setup QR. Generate a fresh code with openclaw qr, then try again.")
+      nativeText("That QR code is not a PASO setup QR. Generate a fresh code with openclaw qr, then try again.")
     OnboardingErrorCode.ManualTokenLooksLikeSetupCode ->
       nativeText("That looks like a setup code. Go back and choose Setup Gateway, then Use setup code.")
     OnboardingErrorCode.ImageReadFailed ->
@@ -320,7 +320,7 @@ private const val GATEWAY_CONNECT_SETTLING_MS = 2_500L
 private const val GATEWAY_CONNECT_TIMEOUT_MS = 20_000L
 private const val NODE_APPROVAL_REFRESH_OBSERVE_TIMEOUT_MS = 750L
 private const val NODE_APPROVAL_AUTO_REFRESH_MS = 2_000L
-private const val ANDROID_SETUP_GUIDE_URL = "https://docs.openclaw.ai/platforms/android"
+private const val ANDROID_SETUP_GUIDE_URL = "https://github.com/celaya-solutions/PASO-AGENT"
 private val OnboardingHorizontalPadding = 24.dp
 private val OnboardingTopPadding = 12.dp
 private val OnboardingBottomPadding = 20.dp
@@ -1086,8 +1086,8 @@ internal fun WelcomeScreen(
       ) {
         OnboardingHeroTopSpacer(afterHeader = false)
         OnboardingIntroHero(
-          title = nativeString("Welcome to OpenClaw"),
-          subtitle = nativeString("Turn this device into a secure OpenClaw node for chat, voice, camera, and device tools."),
+          title = nativeString("Welcome to PASO"),
+          subtitle = nativeString("Turn this device into a secure PASO node for chat, voice, camera, and device tools."),
           mark = { WelcomeLogo(mood = mascotMood, announceLogo = true) },
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -1119,7 +1119,7 @@ private fun WelcomeLogo(
   ) {
     Box(modifier = Modifier.fillMaxSize().padding(12.dp), contentAlignment = Alignment.Center) {
       OpenClawMascot(
-        contentDescription = if (announceLogo) nativeString("OpenClaw logo") else null,
+        contentDescription = if (announceLogo) nativeString("PASO logo") else null,
         modifier = Modifier.fillMaxSize(),
         mood = mood,
       )
@@ -1180,7 +1180,7 @@ private fun WelcomeChecklist() {
     Column(verticalArrangement = Arrangement.spacedBy(13.dp)) {
       WelcomeChecklistRow(icon = Icons.Default.Link, text = nativeString("Connect to your Gateway"))
       WelcomeChecklistRow(icon = Icons.Default.Security, text = nativeString("Choose device permissions"))
-      WelcomeChecklistRow(icon = Icons.Default.CheckCircle, text = nativeString("Use OpenClaw from your phone"))
+      WelcomeChecklistRow(icon = Icons.Default.CheckCircle, text = nativeString("Use PASO from your phone"))
     }
   }
 }
@@ -1204,7 +1204,7 @@ private fun SecurityNotice() {
       Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(text = nativeString("Security notice"), style = ClawTheme.type.section, color = ClawTheme.colors.text)
         Text(
-          text = nativeString("The connected OpenClaw agent can use device capabilities you enable. Continue only if you trust the Gateway and agent you connect to."),
+          text = nativeString("The connected PASO agent can use device capabilities you enable. Continue only if you trust the Gateway and agent you connect to."),
           style = ClawTheme.type.body,
           color = ClawTheme.colors.textMuted,
         )
@@ -1250,7 +1250,7 @@ internal fun GatewaySetupScreen(
         OnboardingHeroTopSpacer(afterHeader = true)
         OnboardingIntroHero(
           title = nativeString("Connect Gateway"),
-          subtitle = nativeString("Scan a QR code or use the setup code from your OpenClaw Gateway."),
+          subtitle = nativeString("Scan a QR code or use the setup code from your PASO Gateway."),
           mark = { GatewayLogo() },
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -1302,7 +1302,7 @@ private fun GatewayPrerequisites(onOpenSetupGuide: () -> Unit) {
     )
     GatewayPrerequisiteRow(
       title = nativeString("Access to the Gateway device"),
-      body = nativeString("Have a terminal open on the device running OpenClaw."),
+      body = nativeString("Have a terminal open on the device running PASO."),
     )
     GatewayPrerequisiteRow(
       title = nativeString("Phone can reach the Gateway"),
@@ -2174,7 +2174,7 @@ private fun copyGatewayDiagnostic(
   diagnosticText: String,
 ) {
   val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-  clipboard.setPrimaryClip(ClipData.newPlainText("OpenClaw gateway diagnostic", diagnosticText))
+  clipboard.setPrimaryClip(ClipData.newPlainText("PASO gateway diagnostic", diagnosticText))
   Toast.makeText(context, nativeString("Details copied"), Toast.LENGTH_SHORT).show()
 }
 
@@ -2227,7 +2227,7 @@ private fun NodeApprovalScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-          text = nativeString("Gateway pairing is complete. Approve this phone as a node so OpenClaw can use the device capabilities you enable."),
+          text = nativeString("Gateway pairing is complete. Approve this phone as a node so PASO can use the device capabilities you enable."),
           style = ClawTheme.type.body,
           color = ClawTheme.colors.textMuted,
           textAlign = TextAlign.Center,
@@ -2459,7 +2459,7 @@ private fun PermissionSetupScreen(
         }
         item {
           Text(
-            text = nativeString("Only enable access you are comfortable letting OpenClaw use while this phone is connected. You can change these later in Android Settings."),
+            text = nativeString("Only enable access you are comfortable letting PASO use while this phone is connected. You can change these later in Android Settings."),
             style = ClawTheme.type.body,
             color = ClawTheme.colors.textMuted,
             textAlign = TextAlign.Center,
@@ -2623,11 +2623,11 @@ internal enum class GatewayRecoveryUiState(
   ),
   Pairing(
     title = nativeText("Pairing Gateway"),
-    message = nativeText("Approval is in progress.\nOpenClaw will reconnect automatically."),
+    message = nativeText("Approval is in progress.\nPASO will reconnect automatically."),
   ),
   Finishing(
     title = nativeText("Connecting Gateway"),
-    message = nativeText("OpenClaw is checking gateway and node access."),
+    message = nativeText("PASO is checking gateway and node access."),
   ),
   TakingLonger(
     title = nativeText("Still connecting"),
@@ -2689,7 +2689,7 @@ internal fun gatewayRecoveryDiagnosticText(
 ): String =
   // Diagnostic labels are UI copy; values stay verbatim so copied evidence matches gateway state.
   listOf(
-    localizeLabel("OpenClaw Android gateway diagnostic"),
+    localizeLabel("PASO Android gateway diagnostic"),
     "${localizeLabel("Gateway")}: $gatewayName",
     "${localizeLabel("Status")}: $statusText",
     "${localizeLabel("Gateway paired")}: $gatewayPaired",
@@ -2860,7 +2860,7 @@ internal fun recoveryGatewayDetail(
         "Gateway approval is pending. Run openclaw devices list on the gateway host, approve this phone, then retry.",
       )
   } else if (gatewayConnectionProblem?.isPairingRequired == true && gatewayConnectionProblem.canAutoRetry) {
-    nativeString("Gateway approval is in progress. OpenClaw will retry automatically.")
+    nativeString("Gateway approval is in progress. PASO will retry automatically.")
   } else if (gatewayConnectionProblem != null) {
     recoveryGatewayAuthDetail(gatewayConnectionProblem)
   } else if (nodeCapabilityApproval == GatewayNodeCapabilityApproval.Loading) {
@@ -2868,7 +2868,7 @@ internal fun recoveryGatewayDetail(
   } else if (statusText.contains("operator offline", ignoreCase = true)) {
     nativeString("Gateway paired. Waiting for operator access.")
   } else if (gatewayStatusLooksLikePairing(statusText)) {
-    nativeString("Gateway approval is in progress. OpenClaw will retry automatically.")
+    nativeString("Gateway approval is in progress. PASO will retry automatically.")
   } else {
     remoteAddress?.takeIf { it.isNotBlank() } ?: nativeString("Gateway unreachable")
   }
@@ -2902,10 +2902,10 @@ private fun recoveryGatewayProtocolMismatchDetail(gatewayConnectionProblem: Gate
   val summary =
     when {
       clientMax != null && expected != null && clientMax < expected ->
-        nativeString("This app is older than the Gateway. Update OpenClaw on this device, then retry.")
+        nativeString("This app is older than the Gateway. Update PASO on this device, then retry.")
       clientMin != null && expected != null && clientMin > expected ->
-        nativeString("The Gateway is older than this app. Update OpenClaw on the Gateway host, then retry.")
-      else -> nativeString("The app and Gateway use incompatible protocol versions. Update OpenClaw on both, then retry.")
+        nativeString("The Gateway is older than this app. Update PASO on the Gateway host, then retry.")
+      else -> nativeString("The app and Gateway use incompatible protocol versions. Update PASO on both, then retry.")
     }
   return protocolMismatchVersions(clientMin, clientMax, expected)?.let { nativeString("\$summary \$details", summary, it) } ?: summary
 }
@@ -3037,7 +3037,7 @@ private fun copyApprovalCommand(
   command: String,
 ) {
   val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-  clipboard.setPrimaryClip(ClipData.newPlainText("OpenClaw pairing approval command", command))
+  clipboard.setPrimaryClip(ClipData.newPlainText("PASO pairing approval command", command))
   Toast.makeText(context, nativeString("Approval command copied"), Toast.LENGTH_SHORT).show()
 }
 
@@ -3046,7 +3046,7 @@ private fun copyGatewayCommand(
   command: String,
 ) {
   val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-  clipboard.setPrimaryClip(ClipData.newPlainText("OpenClaw gateway command", command))
+  clipboard.setPrimaryClip(ClipData.newPlainText("PASO gateway command", command))
   Toast.makeText(context, nativeString("Command copied"), Toast.LENGTH_SHORT).show()
 }
 
@@ -3300,7 +3300,7 @@ private fun rememberPermissionState(
       PermissionRowModel(PermissionRowId.Calendar, nativeText("Calendar"), nativeText("Read and update events"), Icons.Default.CalendarMonth, calendarGranted) {
         request(*requiredCalendarPermissions.toTypedArray())
       },
-      PermissionRowModel(PermissionRowId.Notifications, nativeText("Notifications"), nativeText("Show OpenClaw alerts"), Icons.Default.Notifications, notificationsGranted) {
+      PermissionRowModel(PermissionRowId.Notifications, nativeText("Notifications"), nativeText("Show PASO alerts"), Icons.Default.Notifications, notificationsGranted) {
         if (Build.VERSION.SDK_INT >= 33) request(Manifest.permission.POST_NOTIFICATIONS)
       },
       PermissionRowModel(PermissionRowId.NotificationListener, nativeText("Notification listener"), nativeText("Read selected app notifications"), Icons.Default.Sensors, notificationListenerGranted) {

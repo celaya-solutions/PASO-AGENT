@@ -114,7 +114,7 @@ export function validateReleaseValidationCampaignArtifact(
     throw new Error(`Campaign artifact stable train ${stableTrain} does not match ${tag}`);
   }
   const releaseUrl = requireString(artifact.releaseUrl, "releaseUrl");
-  const expectedReleaseUrl = `https://github.com/openclaw/openclaw/releases/tag/${tag}`;
+  const expectedReleaseUrl = `https://github.com/celaya-solutions/PASO-AGENT/releases/tag/${tag}`;
   if (releaseUrl !== expectedReleaseUrl) {
     throw new Error(`Campaign artifact release URL must be ${expectedReleaseUrl}`);
   }
@@ -157,7 +157,7 @@ export function validateReleaseValidationCampaignArtifact(
     throw new Error("Campaign artifact guidance main SHA does not match the workflow checkout");
   }
   const title = requireString(artifact.title, "title");
-  const expectedTitle = `OpenClaw ${parsedTag.displayVersion} beta feedback`;
+  const expectedTitle = `PASO ${parsedTag.displayVersion} beta feedback`;
   if (title !== expectedTitle) {
     throw new Error(`Campaign artifact title must be ${expectedTitle}`);
   }
@@ -308,7 +308,7 @@ export async function runReleaseValidationCampaignPublish({
     repo,
     name: CAMPAIGN_LABEL,
     color: CAMPAIGN_LABEL_COLOR,
-    description: "Canonical OpenClaw release-validation campaign",
+    description: "Canonical PASO release-validation campaign",
   });
   await ensureLabel({
     github,

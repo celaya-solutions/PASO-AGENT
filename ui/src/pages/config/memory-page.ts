@@ -58,7 +58,7 @@ import type { ConfigRouteData } from "./route-data.ts";
 /** Explicit-off sentinel; resolveSlotSelection maps it to an `off` selection. */
 const MEMORY_SLOT_OFF = "none";
 const MEMORY_SLOT_PATH = ["plugins", "slots", "memory"];
-const DREAMING_DOCS_URL = "https://docs.openclaw.ai/concepts/dreaming";
+const DREAMING_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 type GatewayClient = NonNullable<ApplicationContext["gateway"]["snapshot"]["client"]>;
 

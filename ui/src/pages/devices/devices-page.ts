@@ -48,7 +48,7 @@ import { PollController } from "../../lit/poll-controller.ts";
 import { SubscriptionsController } from "../../lit/subscriptions-controller.ts";
 import { renderDevices } from "./view.ts";
 
-const DEVICES_DOCS_URL = "https://docs.openclaw.ai/nodes";
+const DEVICES_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 export type DevicesRouteData = {
   // Client identity alone cannot distinguish provider replacement or reconnect epochs.

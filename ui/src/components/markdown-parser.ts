@@ -306,7 +306,7 @@ export function createMarkdownParser(): MarkdownItParser {
           continue;
         }
         // Only trim linkify-generated autolinks, not explicit markdown links
-        // like [OpenClaw中文](https://docs.openclaw.ai) where CJK in display
+        // like [OpenClaw中文](https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs) where CJK in display
         // text is intentional and href must not be rewritten.
         if (token.markup !== "linkify") {
           continue;

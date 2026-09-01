@@ -1,14 +1,14 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "OpenClaw",
-  "description": "Self-hosted gateway that connects Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more to AI coding agents. Run one Gateway process on your own machine and message your AI assistant from anywhere.",
+  "name": "PASO",
+  "description": "PASO is a self-hosted AI agent by Celaya Solutions Research. Connect messaging channels to one gateway you control.",
   "theme": "mint",
   "icons": {
     "library": "lucide"
   },
   "logo": {
-    "light": "/assets/pixel-lobster.svg",
-    "dark": "/assets/pixel-lobster.svg"
+    "light": "/assets/paso-mark.svg",
+    "dark": "/assets/paso-mark.svg"
   },
   "fonts": {
     "body": {
@@ -18,11 +18,11 @@
       "family": "DM Sans"
     }
   },
-  "favicon": "/assets/pixel-lobster.svg",
+  "favicon": "/assets/paso-mark.svg",
   "colors": {
-    "primary": "#D84A31",
-    "dark": "#E05540",
-    "light": "#F5654A"
+    "primary": "#E8590C",
+    "dark": "#FAF9F7",
+    "light": "#E8590C"
   },
   "styling": {
     "codeblocks": {
@@ -36,18 +36,13 @@
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/openclaw/openclaw",
+        "href": "https://github.com/celaya-solutions/PASO-AGENT",
         "icon": "github"
       },
       {
-        "label": "Releases",
-        "href": "https://github.com/openclaw/openclaw/releases",
-        "icon": "package"
-      },
-      {
-        "label": "Discord",
-        "href": "https://discord.com/invite/clawd",
-        "icon": "discord"
+        "label": "Contact",
+        "href": "mailto:hello@celayasolutions.com",
+        "icon": "mail"
       }
     ]
   },
@@ -506,15 +501,23 @@
     },
     {
       "source": "/clawd",
-      "destination": "/start/openclaw"
+      "destination": "/start/personal-assistant"
     },
     {
       "source": "/start/clawd",
-      "destination": "/start/openclaw"
+      "destination": "/start/personal-assistant"
     },
     {
       "source": "/start/clawd/",
-      "destination": "/start/openclaw"
+      "destination": "/start/personal-assistant"
+    },
+    {
+      "source": "/start/openclaw",
+      "destination": "/start/personal-assistant"
+    },
+    {
+      "source": "/start/why-openclaw",
+      "destination": "/start/why-paso"
     },
     {
       "source": "/start/pairing",
@@ -1138,7 +1141,7 @@
                 "pages": [
                   "index",
                   "start/showcase",
-                  "start/why-openclaw",
+                  "start/why-paso",
                   "concepts/features"
                 ]
               },
@@ -1154,7 +1157,7 @@
               {
                 "group": "Guides",
                 "pages": [
-                  "start/openclaw",
+                  "start/personal-assistant",
                   "start/teams",
                   "start/wizard-cli-reference",
                   "start/wizard-cli-automation"
@@ -1885,8 +1888,7 @@
                   "web/dashboards",
                   "web/dashboard-architecture",
                   "web/webchat",
-                  "web/tui",
-                  "web/lobster"
+                  "web/tui"
                 ]
               }
             ]
@@ -2113,7 +2115,7 @@
             "tab": "Release & CI",
             "groups": [
               {
-                "group": "Release notes",
+                "group": "Release notes and compatibility history",
                 "pages": [
                   "releases/index",
                   "releases/2026.8.1",
@@ -2181,7 +2183,7 @@
                 ]
               },
               {
-                "group": "Community and meta",
+                "group": "Project",
                 "pages": [
                   "start/lore",
                   "start/hubs",

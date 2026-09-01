@@ -5,7 +5,7 @@ import * as pluginRuntime from "../plugins/runtime.js";
 import { createPluginRecord } from "../plugins/status.test-helpers.js";
 import { readConfigMachineState } from "../state/config-machine-state.js";
 import { closeOpenClawStateDatabaseForTest } from "../state/openclaw-state-db.js";
-import { setTestEnvValue } from "../test-utils/env.js";
+import { deleteTestEnvValue, setTestEnvValue } from "../test-utils/env.js";
 import { useMockHttp } from "../test-utils/mock-http.js";
 import {
   createOpenClawTestState,
@@ -94,7 +94,7 @@ describe("anonymous telemetry", () => {
         DO_NOT_TRACK: undefined,
         OPENCLAW_NIX_MODE: undefined,
         OPENCLAW_NO_AUTO_UPDATE: undefined,
-        OPENCLAW_TELEMETRY_ENDPOINT: undefined,
+        OPENCLAW_TELEMETRY_ENDPOINT: TELEMETRY_URL,
       },
     });
     installPluginRegistry(
@@ -366,6 +366,7 @@ describe("anonymous telemetry", () => {
   });
 
   it("never sends a request from an automated environment", async () => {
+    deleteTestEnvValue("OPENCLAW_TELEMETRY_ENDPOINT");
     setTestEnvValue("CI", "true");
 
     await expect(
@@ -392,6 +393,25 @@ describe("anonymous telemetry", () => {
     ).resolves.toEqual({ version: "2026.8.24" });
 
     expect(mockHttp.requests()).toHaveLength(1);
+  });
+
+  it("sends nothing when PASO has no operator-configured endpoint", async () => {
+    deleteTestEnvValue("OPENCLAW_TELEMETRY_ENDPOINT");
+
+    await expect(
+      checkTelemetryUpdate(createFeatureConfig(), {
+        surface: "gateway",
+        fetchImpl: globalThis.fetch,
+        nowMs: NOW,
+      }),
+    ).resolves.toBeNull();
+
+    expect(mockHttp.requests()).toHaveLength(0);
+    expect(resolveTelemetryStatus(createFeatureConfig())).toMatchObject({
+      enabled: false,
+      reason: "endpoint-unconfigured",
+      endpoint: null,
+    });
   });
 
   it("never sends a request for Nix-managed installations", async () => {

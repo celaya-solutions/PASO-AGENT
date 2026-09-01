@@ -30,7 +30,7 @@ spec:
             - -c
             - |
               # Seed-if-missing: the PVC copy owns config after first boot so edits made
-              # through OpenClaw (onboard, channels add, doctor --fix, Control UI) survive
+              # through PASO (onboard, channels add, doctor --fix, Control UI) survive
               # restarts. ConfigMap edits need an explicit reseed (see docs/install/kubernetes.md).
               [ -f /home/node/.openclaw/openclaw.json ] || cp /config/openclaw.json /home/node/.openclaw/openclaw.json
               mkdir -p /home/node/.openclaw/workspace
@@ -52,8 +52,8 @@ spec:
               mountPath: /config
       containers:
         - name: gateway
-          # Bump this immutable versioned tag when upgrading OpenClaw.
-          image: ghcr.io/openclaw/openclaw:2026.7.1-2-slim
+          # Build this PASO fork locally or replace with your private-registry digest.
+          image: paso-agent:local
           imagePullPolicy: IfNotPresent
           command:
             - node

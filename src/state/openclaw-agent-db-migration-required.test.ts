@@ -23,8 +23,18 @@ describe("agent database media migration error classification", () => {
   it("does not classify similar operator guidance as the migration error", () => {
     expect(
       findOpenClawAgentDatabaseMediaMigrationRequiredError(
-        new Error("OpenClaw agent database is outdated; run openclaw doctor --fix to migrate it."),
+        new Error("PASO agent database is outdated; run openclaw doctor --fix to migrate it."),
       ),
     ).toBeUndefined();
+  });
+
+  it("recognizes the legacy producer message during mixed-version upgrades", () => {
+    expect(
+      findOpenClawAgentDatabaseMediaMigrationRequiredError(
+        new Error(
+          "OpenClaw agent database /tmp/openclaw-agent.sqlite uses schema version 14; run openclaw doctor --fix to migrate persisted media before using it.",
+        ),
+      ),
+    ).toMatchObject({ pathname: "/tmp/openclaw-agent.sqlite", schemaVersion: 14 });
   });
 });

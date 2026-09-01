@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-// Release Beta Verifier script supports OpenClaw repository automation.
+// Release Beta Verifier script supports PASO repository automation.
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -78,7 +78,9 @@ type WorkflowRunSummary = {
   };
 };
 
-const DEFAULT_REPO = "openclaw/openclaw";
+const DEFAULT_REPO = "celaya-solutions/PASO-AGENT";
+const PASO_NPM_RELEASE_WORKFLOW_NAME = "PASO NPM Release";
+const LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME = "OpenClaw NPM Release";
 const DEFAULT_CLAWHUB_REGISTRY = "https://clawhub.ai";
 const CLAWHUB_BOOTSTRAP_WORKFLOW_PATH = ".github/workflows/plugin-clawhub-new.yml";
 const CLAWHUB_BOOTSTRAP_READBACK_FILE = "clawhub-bootstrap-readback.json";
@@ -612,6 +614,7 @@ function verifyWorkflowRun(params: {
   label: string;
   repo: string;
   expectedWorkflowName: string;
+  legacyWorkflowNames?: readonly string[];
   expectedHeadBranch?: string;
   allowedHeadBranches?: string[];
   advisory?: boolean;
@@ -631,7 +634,11 @@ function verifyWorkflowRun(params: {
     throw new Error(`${params.label}: workflow run returned an unsupported JSON shape.`);
   }
   const workflowName = normalizeOptionalString(run.workflowName);
-  if (workflowName !== params.expectedWorkflowName) {
+  const acceptedWorkflowNames = new Set([
+    params.expectedWorkflowName,
+    ...(params.legacyWorkflowNames ?? []),
+  ]);
+  if (!acceptedWorkflowNames.has(workflowName ?? "")) {
     throw new Error(
       `${params.label}: run ${params.id} workflow is ${workflowName ?? "<missing>"}, expected ${params.expectedWorkflowName}.`,
     );
@@ -1433,9 +1440,11 @@ export async function verifyBetaRelease(
     workflowRuns.push(
       verifyWorkflowRun({
         id: args.workflowRuns.openclawNpm,
-        label: "OpenClaw NPM Release",
+        label: PASO_NPM_RELEASE_WORKFLOW_NAME,
         repo: args.repo,
-        expectedWorkflowName: "OpenClaw NPM Release",
+        expectedWorkflowName: PASO_NPM_RELEASE_WORKFLOW_NAME,
+        // Historical release evidence may retain the exact pre-rename display name.
+        legacyWorkflowNames: [LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME],
         expectedHeadBranch: args.workflowRef,
         rerunFailed: false,
       }),

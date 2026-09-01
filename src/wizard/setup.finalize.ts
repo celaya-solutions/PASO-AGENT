@@ -618,8 +618,8 @@ export async function finalizeSetupWizard(
           await prompter.note(
             [
               t("common.docs"),
-              "https://docs.openclaw.ai/gateway/health",
-              "https://docs.openclaw.ai/gateway/troubleshooting",
+              "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+              "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
             ].join("\n"),
             t("wizard.finalize.healthCheckHelp"),
           );
@@ -635,8 +635,8 @@ export async function finalizeSetupWizard(
         await prompter.note(
           [
             t("common.docs"),
-            "https://docs.openclaw.ai/gateway/health",
-            "https://docs.openclaw.ai/gateway/troubleshooting",
+            "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+            "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           ].join("\n"),
           t("wizard.finalize.healthCheckHelp"),
         );
@@ -921,7 +921,8 @@ export async function finalizeSetupWizard(
             `  ${formatCliCommand("openclaw configure --section web")}`,
             "",
             t("wizard.finalize.webSearchGetKey", {
-              url: entry?.signupUrl ?? "https://docs.openclaw.ai/tools/web",
+              url:
+                entry?.signupUrl ?? "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
             }),
             t("wizard.finalize.webDocs"),
           ].join("\n"),

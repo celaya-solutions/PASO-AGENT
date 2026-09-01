@@ -107,7 +107,10 @@ export function registerGoogleMeetCli(params: {
   const root = params.program
     .command("googlemeet")
     .description("Google Meet participant utilities")
-    .addHelpText("after", () => `\nDocs: https://docs.openclaw.ai/plugins/google-meet\n`);
+    .addHelpText(
+      "after",
+      () => `\nDocs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs\n`,
+    );
 
   const auth = root.command("auth").description("Google Meet OAuth helpers");
 

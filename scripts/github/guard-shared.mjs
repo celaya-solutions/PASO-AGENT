@@ -163,6 +163,9 @@ export function createGuardApproverChecks({
     if (explicitSecurityApprovers.has(normalizedLogin)) {
       return true;
     }
+    if (!securityTeamSlug) {
+      return false;
+    }
     if (membershipCache.has(normalizedLogin)) {
       return membershipCache.get(normalizedLogin);
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/env -S node --import tsx
-// OpenClaw release ClawHub plan CLI emits release workflow routing as JSON.
+// PASO release ClawHub plan CLI emits release workflow routing as JSON.
 
 import { pathToFileURL } from "node:url";
 import {

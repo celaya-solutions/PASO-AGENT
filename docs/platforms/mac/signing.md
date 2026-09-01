@@ -7,7 +7,7 @@ title: "macOS signing"
 
 # mac signing (debug builds)
 
-[`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) builds a staged app, calls [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh), and verifies the signed worker before replacing `dist/OpenClaw.app`. TCC permissions are tied to the bundle ID and code signature; keeping both stable (and the app at a fixed path) across rebuilds keeps macOS from forgetting TCC grants (notifications, accessibility, screen recording, mic, speech).
+[`scripts/package-mac-app.sh`](https://github.com/celaya-solutions/PASO-AGENT/blob/main/scripts/package-mac-app.sh) builds a staged app, calls [`scripts/codesign-mac-app.sh`](https://github.com/celaya-solutions/PASO-AGENT/blob/main/scripts/codesign-mac-app.sh), and verifies the signed worker before replacing `dist/OpenClaw.app`. TCC permissions are tied to the bundle ID and code signature; keeping both stable (and the app at a fixed path) across rebuilds keeps macOS from forgetting TCC grants (notifications, accessibility, screen recording, mic, speech).
 
 - Debug bundle identifier defaults to `ai.openclaw.mac.debug` (override with `BUNDLE_ID=...`).
 - Node: `>=22.22.3 <23`, `>=24.15.0 <25`, or `>=25.9.0` (repo `package.json` `engines`). The packager also builds the Control UI (`pnpm ui:build`).

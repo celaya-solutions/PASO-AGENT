@@ -1,6 +1,6 @@
 {
   "fill" : {
-    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+    "automatic-gradient" : "extended-srgb:0.05490,0.06275,0.08235,1.00000"
   },
   "groups" : [
     {
@@ -9,9 +9,9 @@
           "image-name" : "openclaw-mac.png",
           "name" : "openclaw-mac",
           "position" : {
-            "scale" : 1.07,
+            "scale" : 1,
             "translation-in-points" : [
-              -2,
+              0,
               0
             ]
           }

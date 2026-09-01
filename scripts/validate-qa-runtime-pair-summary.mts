@@ -378,7 +378,7 @@ export function validateQaRuntimePairReport(
   }
   if (
     typeof reportMarkdown !== "string" ||
-    !reportMarkdown.startsWith("# OpenClaw Runtime Parity Report") ||
+    !/^# (?:PASO|OpenClaw) Runtime Parity Report\b/u.test(reportMarkdown) ||
     !reportMarkdown.includes(`- Verdict: ${counts.skipped === 0 ? "pass" : "fail"}`) ||
     scenarios.some((scenario) => {
       const heading = `\n### ${formatRuntimePairReportValue(scenario.name)}\n`;

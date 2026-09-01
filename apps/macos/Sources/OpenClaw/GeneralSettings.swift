@@ -83,7 +83,7 @@ struct GeneralSettings: View {
         VStack(alignment: .leading, spacing: 20) {
             SettingsPageHeader(
                 title: "General",
-                subtitle: "Everyday OpenClaw app behavior.")
+                subtitle: "Everyday PASO app behavior.")
 
             self.openClawStatusPanel
 
@@ -99,7 +99,7 @@ struct GeneralSettings: View {
                 SettingsCardToggleRow(
                     title: "Show Dock icon",
                     subtitle: """
-                    Keep OpenClaw visible in the Dock. When off, windows still show the Dock icon while open.
+                    Keep PASO visible in the Dock. When off, windows still show the Dock icon while open.
                     """,
                     binding: self.$state.showDockIcon)
 
@@ -193,7 +193,7 @@ struct GeneralSettings: View {
                 SettingsCardToggleRow(
                     title: "Sync cookies to the remote computer",
                     subtitle: """
-                    Continuously copy this Mac's logged-in cookies for the domains below into the remote OpenClaw \
+                    Continuously copy this Mac's logged-in cookies for the domains below into the remote PASO \
                     browser profile. Off by default.
                     """,
                     binding: self.$state.cookieSyncEnabled)
@@ -231,7 +231,7 @@ struct GeneralSettings: View {
                 if self.state.connectionMode != .remote {
                     SettingsCardRow(
                         title: "Remote mode required",
-                        subtitle: "Cookie sync applies when OpenClaw runs on another computer (remote mode).",
+                        subtitle: "Cookie sync applies when PASO runs on another computer (remote mode).",
                         showsDivider: false)
                     {
                         EmptyView()
@@ -300,7 +300,7 @@ struct GeneralSettings: View {
                 .controlSize(.small)
             }
 
-            Toggle("OpenClaw active", isOn: self.activeBinding)
+            Toggle("PASO active", isOn: self.activeBinding)
                 .labelsHidden()
                 .toggleStyle(.switch)
         }
@@ -447,8 +447,8 @@ struct GeneralSettings: View {
         switch self.state.connectionMode {
         case .local:
             return self.gatewayManager.installation == .external
-                ? "OpenClaw connects to an independently managed Gateway on this Mac."
-                : "OpenClaw starts and monitors the Gateway on this Mac."
+                ? "PASO connects to an independently managed Gateway on this Mac."
+                : "PASO starts and monitors the Gateway on this Mac."
         case .remote:
             let target = self.state.remoteTransport == .ssh ? self.state.remoteTarget : self.state.remoteUrl
             let trimmed = target.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -468,7 +468,7 @@ struct GeneralSettings: View {
     private var gatewayModeGroup: some View {
         SettingsCardGroup("Gateway") {
             SettingsCardRow(
-                title: "OpenClaw runs",
+                title: "PASO runs",
                 subtitle: "Pick whether this app owns a local Gateway or attaches to another host.",
                 showsDivider: self.state.connectionMode == .unconfigured)
             {
@@ -639,7 +639,7 @@ struct GeneralSettings: View {
                         text: self.$state.remoteIdentity)
                     self.advancedTextField(
                         "Project root",
-                        placeholder: "/home/you/Projects/openclaw",
+                        placeholder: "/home/you/Projects/paso-agent",
                         text: self.$state.remoteProjectRoot)
                     self.advancedTextField(
                         "CLI path",
@@ -734,7 +734,7 @@ struct GeneralSettings: View {
             if self.state.remoteTokenUnsupported {
                 Text(
                     "The current gateway.remote.token value is not plain text. "
-                        + "OpenClaw for macOS cannot use it directly; "
+                        + "PASO for macOS cannot use it directly; "
                         + "enter a plaintext token here to replace it.")
                     .font(.caption)
                     .foregroundStyle(.orange)
@@ -1086,8 +1086,8 @@ struct LaunchAtLoginPresentation: Equatable {
         }
         return Self(
             subtitle: bundleLocationAllowsPersistentIntegration
-                ? String(localized: "Automatically start OpenClaw after you sign in.")
-                : String(localized: "Move OpenClaw to Applications before enabling launch at login."),
+                ? String(localized: "Automatically start PASO after you sign in.")
+                : String(localized: "Move PASO to Applications before enabling launch at login."),
             isDisabled: !bundleLocationAllowsPersistentIntegration && !isEnabled)
     }
 }

@@ -5,9 +5,9 @@
  */
 import { escapeRegExp } from "../shared/regexp.js";
 
-/** Opening delimiter for protected OpenClaw runtime context blocks. */
+/** Opening delimiter for protected PASO runtime context blocks. */
 export const INTERNAL_RUNTIME_CONTEXT_BEGIN = "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>";
-/** Closing delimiter for protected OpenClaw runtime context blocks. */
+/** Closing delimiter for protected PASO runtime context blocks. */
 export const INTERNAL_RUNTIME_CONTEXT_END = "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>";
 
 const ESCAPED_INTERNAL_RUNTIME_CONTEXT_BEGIN = "[[OPENCLAW_INTERNAL_CONTEXT_BEGIN]]";
@@ -18,14 +18,17 @@ export const OPENCLAW_RUNTIME_CONTEXT_NOTICE =
   "This context is runtime-generated, not user-authored. Keep internal details private.";
 /** Position-independent instructions for context belonging to the active user turn. */
 export const OPENCLAW_NEXT_TURN_RUNTIME_CONTEXT_HEADER =
-  "OpenClaw runtime context for the active user request in this turn. Do not reply to or describe this context. Use it to continue answering the active user request now. Do not wait for another message.";
+  "PASO runtime context for the active user request in this turn. Do not reply to or describe this context. Use it to continue answering the active user request now. Do not wait for another message.";
 /** Header for runtime events passed as prompt context. */
-export const OPENCLAW_RUNTIME_EVENT_HEADER = "OpenClaw runtime event.";
+export const OPENCLAW_RUNTIME_EVENT_HEADER = "PASO runtime event.";
 /** Custom message type used for structured runtime-context messages. */
 export const OPENCLAW_RUNTIME_CONTEXT_CUSTOM_TYPE = "openclaw.runtime-context";
 
-const LEGACY_INTERNAL_CONTEXT_HEADER =
-  ["OpenClaw runtime context (internal):", OPENCLAW_RUNTIME_CONTEXT_NOTICE, ""].join("\n") + "\n";
+const LEGACY_INTERNAL_CONTEXT_HEADERS = ["PASO", "OpenClaw"].map(
+  (product) =>
+    [`${product} runtime context (internal):`, OPENCLAW_RUNTIME_CONTEXT_NOTICE, ""].join("\n") +
+    "\n",
+);
 
 const LEGACY_INTERNAL_EVENT_MARKER = "[Internal task completion event]";
 const LEGACY_INTERNAL_EVENT_SEPARATOR = "\n\n---\n\n";
@@ -174,12 +177,18 @@ function stripLegacyInternalRuntimeContext(text: string): string {
   let next = text;
   let searchFrom = 0;
   for (;;) {
-    const headerStart = next.indexOf(LEGACY_INTERNAL_CONTEXT_HEADER, searchFrom);
-    if (headerStart === -1) {
+    const headerMatch = LEGACY_INTERNAL_CONTEXT_HEADERS.map((header) => ({
+      header,
+      index: next.indexOf(header, searchFrom),
+    }))
+      .filter((match) => match.index !== -1)
+      .sort((left, right) => left.index - right.index)[0];
+    if (!headerMatch) {
       return next;
     }
 
-    const eventStart = headerStart + LEGACY_INTERNAL_CONTEXT_HEADER.length;
+    const headerStart = headerMatch.index;
+    const eventStart = headerStart + headerMatch.header.length;
     if (!next.startsWith(LEGACY_INTERNAL_EVENT_MARKER, eventStart)) {
       searchFrom = eventStart;
       continue;
@@ -214,8 +223,11 @@ function stripLegacyInternalRuntimeContext(text: string): string {
 
 const RUNTIME_CONTEXT_PROMPT_HEADERS: readonly string[] = [
   OPENCLAW_NEXT_TURN_RUNTIME_CONTEXT_HEADER,
-  "OpenClaw runtime context for the immediately preceding user message.",
+  "PASO runtime context for the immediately preceding user message.",
   OPENCLAW_RUNTIME_EVENT_HEADER,
+  "OpenClaw runtime context for the active user request in this turn. Do not reply to or describe this context. Use it to continue answering the active user request now. Do not wait for another message.",
+  "OpenClaw runtime context for the immediately preceding user message.",
+  "OpenClaw runtime event.",
 ];
 
 function stripRuntimeContextPromptPreface(text: string): string {
@@ -299,7 +311,7 @@ export function hasInternalRuntimeContext(text: string): boolean {
   }
   return (
     findDelimitedTokenIndex(text, INTERNAL_RUNTIME_CONTEXT_BEGIN, 0) !== -1 ||
-    text.includes(LEGACY_INTERNAL_CONTEXT_HEADER) ||
+    LEGACY_INTERNAL_CONTEXT_HEADERS.some((header) => text.includes(header)) ||
     RUNTIME_CONTEXT_PROMPT_HEADERS.some((header) =>
       text.includes(`${header}\n${OPENCLAW_RUNTIME_CONTEXT_NOTICE}`),
     )

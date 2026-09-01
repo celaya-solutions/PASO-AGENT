@@ -56,17 +56,25 @@ function truncateTaskStatusText(value: string, maxChars: number): string {
 function stripInlineLeakedInternalContext(value: string): string {
   // Completion text can accidentally include hidden runtime context; strip it before status output.
   const beginIndex = value.indexOf(INTERNAL_RUNTIME_CONTEXT_BEGIN);
+  const runtimeContextHeaders = [
+    "PASO runtime context (internal):",
+    // Keep recognizing the predecessor header in persisted task output.
+    "OpenClaw runtime context (internal):",
+  ];
   if (
     beginIndex !== -1 &&
     (value.includes(INTERNAL_RUNTIME_CONTEXT_END) ||
-      value.includes("OpenClaw runtime context (internal):") ||
+      runtimeContextHeaders.some((header) => value.includes(header)) ||
       value.includes("[Internal task completion event]"))
   ) {
     return value.slice(0, beginIndex);
   }
-  const legacyHeaderIndex = value.indexOf("OpenClaw runtime context (internal):");
+  const legacyHeaderIndex = runtimeContextHeaders
+    .map((header) => value.indexOf(header))
+    .filter((index) => index !== -1)
+    .sort((left, right) => left - right)[0];
   if (
-    legacyHeaderIndex !== -1 &&
+    legacyHeaderIndex !== undefined &&
     (value.includes("Keep internal details private.") ||
       value.includes("[Internal task completion event]"))
   ) {

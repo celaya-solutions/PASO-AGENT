@@ -3,7 +3,7 @@
  * Verifies deterministic choices, collision numbering, and fallback suffixes.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createCrustaceanSlug, createSessionSlug } from "./session-slug.js";
+import { createPathSlug, createSessionSlug } from "./session-slug.js";
 
 const randomMocks = vi.hoisted(() => ({
   generateSecureInt: vi.fn(),
@@ -24,9 +24,9 @@ describe("session slug", () => {
     expect(slug).toBe("amber-atlas");
   });
 
-  it("generates a crustacean-themed slug for worktrees", () => {
+  it("generates a path-themed slug for worktrees", () => {
     randomMocks.generateSecureInt.mockReturnValue(0);
-    expect(createCrustaceanSlug()).toBe("amber-barnacle");
+    expect(createPathSlug()).toBe("amber-arroyo");
   });
 
   it("adds a numeric suffix when the base slug is taken", () => {

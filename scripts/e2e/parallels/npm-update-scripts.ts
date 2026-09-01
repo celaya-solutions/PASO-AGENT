@@ -1,4 +1,4 @@
-// Npm Update Scripts script supports OpenClaw repository automation.
+// Npm Update Scripts script supports PASO repository automation.
 import { posixAgentWorkspaceScript, windowsAgentWorkspaceScript } from "./agent-workspace.ts";
 import { shellQuote } from "./host-command.ts";
 import {
@@ -27,8 +27,14 @@ interface NpmUpdateScriptInput {
 }
 
 const windowsStalePostSwapImportRegex = String.raw`node_modules\\openclaw\\dist\\[^\\]+-[A-Za-z0-9_-]+\.js`;
-const startupMigrationRestartPrefix =
-  "OpenClaw plugin migration inputs changed during startup convergence;";
+const startupMigrationRestartPrefixes = [
+  "PASO plugin migration inputs changed during startup convergence;",
+  "OpenClaw plugin migration inputs changed during startup convergence;",
+] as const;
+const windowsStartupMigrationRestartPatterns = `@(${startupMigrationRestartPrefixes.map(psSingleQuote).join(", ")})`;
+const posixStartupMigrationRestartGrepArgs = startupMigrationRestartPrefixes
+  .map((prefix) => `-e ${shellQuote(prefix)}`)
+  .join(" ");
 const macosGuestPath =
   "/opt/homebrew/bin:/opt/homebrew/opt/node/bin:/usr/local/bin:/usr/local/sbin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin";
 const macosOpenClawCommand = '"$OPENCLAW_BIN"';
@@ -194,7 +200,7 @@ function Write-CurrentGatewayLog {
 }
 function Test-CurrentGatewayStartupMigrationRefusal {
   if (-not (Test-Path $script:gatewayLogPath)) { return $false }
-  return Select-String -Path $script:gatewayLogPath -SimpleMatch ${psSingleQuote(startupMigrationRestartPrefix)} -Quiet
+  return Select-String -Path $script:gatewayLogPath -SimpleMatch -Pattern ${windowsStartupMigrationRestartPatterns} -Quiet
 }
 function Wait-OpenClawGateway {
   $deadline = (Get-Date).AddSeconds(180)
@@ -326,7 +332,7 @@ wait_for_gateway() {
     if ! kill -0 "$gateway_pid" 2>/dev/null; then
       if wait "$gateway_pid"; then gateway_exit_status=0; else gateway_exit_status=$?; fi
       if [ "$gateway_exit_status" -le 128 ] && [ "$gateway_restart_count" -eq 0 ]; then
-        if tail -c +"$((gateway_launch_log_offset + 1))" "$gateway_log" 2>/dev/null | grep -F -- ${shellQuote(startupMigrationRestartPrefix)} >/dev/null; then
+        if tail -c +"$((gateway_launch_log_offset + 1))" "$gateway_log" 2>/dev/null | grep -F ${posixStartupMigrationRestartGrepArgs} -- >/dev/null; then
           gateway_restart_count=1
           echo "gateway exited after startup migration convergence refusal; restarting once"
           start_openclaw_gateway
@@ -489,7 +495,7 @@ wait_for_gateway() {
     if ! kill -0 "$gateway_pid" 2>/dev/null; then
       if wait "$gateway_pid"; then gateway_exit_status=0; else gateway_exit_status=$?; fi
       if [ "$gateway_exit_status" -le 128 ] && [ "$gateway_restart_count" -eq 0 ]; then
-        if tail -c +"$((gateway_launch_log_offset + 1))" "$gateway_log" 2>/dev/null | grep -F -- ${shellQuote(startupMigrationRestartPrefix)} >/dev/null; then
+        if tail -c +"$((gateway_launch_log_offset + 1))" "$gateway_log" 2>/dev/null | grep -F ${posixStartupMigrationRestartGrepArgs} -- >/dev/null; then
           gateway_restart_count=1
           echo "gateway exited after startup migration convergence refusal; restarting once"
           start_openclaw_gateway

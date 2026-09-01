@@ -44,14 +44,14 @@ afterEach(() => {
 describe("renderChatAvatar", () => {
   it("renders assistant fallback, blob image, and text avatars", () => {
     const defaultAvatar = renderAvatar(["assistant"]);
-    expect(defaultAvatar?.getAttribute("src")).toBe("/apple-touch-icon.png");
+    expect(defaultAvatar?.getAttribute("src")).toBe("/favicon.svg");
     expect(defaultAvatar?.classList.contains("chat-avatar--logo")).toBe(true);
 
     const remoteAvatar = renderAvatar([
       "assistant",
       { avatar: "https://example.com/avatar.png", name: "Val" },
     ]);
-    expect(remoteAvatar?.getAttribute("src")).toBe("/apple-touch-icon.png");
+    expect(remoteAvatar?.getAttribute("src")).toBe("/favicon.svg");
     expect(remoteAvatar?.classList.contains("chat-avatar--logo")).toBe(true);
 
     const blobAvatar = renderAvatar(["assistant", { avatar: "blob:managed-image", name: "Val" }]);
@@ -82,7 +82,7 @@ describe("renderChatAvatar", () => {
       "session-token",
     ]);
 
-    expect(avatar?.getAttribute("src")).toBe("/apple-touch-icon.png");
+    expect(avatar?.getAttribute("src")).toBe("/favicon.svg");
     expect(avatar?.classList.contains("chat-avatar--logo")).toBe(true);
   });
 

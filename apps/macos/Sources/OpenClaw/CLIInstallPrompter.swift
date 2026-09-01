@@ -81,7 +81,7 @@ final class CLIInstallPrompter {
         {
             guard confirmStable else { return target }
             let alert = NSAlert()
-            alert.messageText = "Install OpenClaw CLI?"
+            alert.messageText = "Install PASO CLI?"
             alert.informativeText = "The app-managed local Gateway needs an external CLI runtime."
             alert.addButton(withTitle: "Install CLI")
             alert.addButton(withTitle: "Not Now")
@@ -111,9 +111,9 @@ final class CLIInstallPrompter {
     {
         let channels = [suggested] + CLIInstaller.Channel.allCases.filter { $0 != suggested }
         let alert = NSAlert()
-        alert.messageText = "Choose OpenClaw CLI channel"
+        alert.messageText = "Choose PASO CLI channel"
         alert.informativeText =
-            "This is an unreleased OpenClaw build. " +
+            "This is an unreleased PASO build. " +
             "Stable and Beta use published builds and are usually quick. " +
             "Dev (Git main) downloads and builds from source, so it can take several minutes " +
             "and needs several gigabytes free."
@@ -167,9 +167,9 @@ final class CLIInstallPrompter {
                     return false
                 }
             }
-            await status.set("Starting OpenClaw Gateway…")
+            await status.set("Starting PASO Gateway…")
             if !showCompletionAlert {
-                self.logger.info("managed CLI repair: Starting OpenClaw Gateway…")
+                self.logger.info("managed CLI repair: Starting PASO Gateway…")
             }
             let activation = await CLIInstaller.activateLocalGateway()
             if case .failed = activation { activated = false } else { activated = true }
@@ -185,11 +185,11 @@ final class CLIInstallPrompter {
             }
             let message = switch activation {
             case .ready:
-                "OpenClaw Gateway is ready."
+                "PASO Gateway is ready."
             case .deferred:
-                "OpenClaw is installed. The Gateway will start when This Mac is active and resumed."
+                "PASO is installed. The Gateway will start when This Mac is active and resumed."
             case .failed:
-                "OpenClaw was installed, but the Gateway did not start. Open Settings to retry."
+                "PASO was installed, but the Gateway did not start. Open Settings to retry."
             }
             await status.set(message)
             if !showCompletionAlert {

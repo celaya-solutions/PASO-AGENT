@@ -11,9 +11,8 @@ import type {
 import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../../lib/external-link.ts";
 import { formatCountdown } from "../../lib/format.ts";
 
-const MOBILE_PAIRING_DOCS_URL =
-  "https://docs.openclaw.ai/channels/pairing#pair-from-the-control-ui-recommended";
-const NODE_PAIRING_DOCS_URL = "https://docs.openclaw.ai/gateway/pairing#one-paste-node-pairing";
+const MOBILE_PAIRING_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
+const NODE_PAIRING_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 const PAIRING_ACCESS_OPTIONS = [
   ["full", "devices.pairing.fullAccess", "devices.pairing.fullAccessHint"],
   ["limited", "devices.pairing.limitedAccess", "devices.pairing.limitedAccessHint"],

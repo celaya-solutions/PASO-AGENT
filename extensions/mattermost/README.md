@@ -1,6 +1,6 @@
-# Mattermost OpenClaw channel
+# Mattermost PASO channel
 
-Official OpenClaw channel plugin for Mattermost.
+Official PASO channel plugin for Mattermost.
 
 ## Install
 
@@ -10,4 +10,4 @@ openclaw plugins install @openclaw/mattermost
 
 ## Docs
 
-See `docs/channels/mattermost.md` in the OpenClaw repository, or the published docs at `https://docs.openclaw.ai/channels/mattermost`.
+See `docs/channels/mattermost.md` in the PASO repository, or the published docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/mattermost.md`.

@@ -111,19 +111,19 @@ describe("resolveGatewayProfileSuffix", () => {
 
 describe("resolveGatewayServiceDescription", () => {
   it("returns default description when no profile", () => {
-    expect(resolveGatewayServiceDescription({ env: {} })).toBe("OpenClaw Gateway");
+    expect(resolveGatewayServiceDescription({ env: {} })).toBe("PASO Gateway");
   });
 
   it("includes profile when set", () => {
     expect(resolveGatewayServiceDescription({ env: { OPENCLAW_PROFILE: "work" } })).toBe(
-      "OpenClaw Gateway (profile: work)",
+      "PASO Gateway (profile: work)",
     );
   });
 
   it("ignores legacy install-time version metadata", () => {
     expect(
       resolveGatewayServiceDescription({ env: { OPENCLAW_SERVICE_VERSION: "2026.1.10" } }),
-    ).toBe("OpenClaw Gateway");
+    ).toBe("PASO Gateway");
   });
 
   it("prefers explicit description override", () => {

@@ -1,13 +1,13 @@
 ---
 summary: "How session ownership and presence work when several people operate one agent"
 read_when:
-  - You share one OpenClaw agent with other operators
+  - You share one PASO agent with other operators
   - You want to hand a session to another person or agent, or filter sessions by owner
   - You are deciding whether one shared agent provides enough isolation
 title: "Multi-user mode"
 ---
 
-Multi-user mode lets several trusted people operate the same OpenClaw agent. It adds session ownership, participant history, live presence, and owner filtering so a team can tell who started work, who is responsible for it now, and who has been involved.
+Multi-user mode lets several trusted people operate the same PASO agent. It adds session ownership, participant history, live presence, and owner filtering so a team can tell who started work, who is responsible for it now, and who has been involved.
 
 ## Trust boundary
 
@@ -60,7 +60,7 @@ The Control UI keeps ownership and presence visually distinct:
 
 When several people watch the same session, the transcript also shows a live typing indicator above the composer. Someone typing in the Control UI streams their draft text into the indicator bubble as they type; other typists show a three-dot bubble. Drafts are ephemeral presence: they are never persisted, never enter the session transcript or the model's context, and fade a moment after the typist pauses or sends.
 
-When the loaded session list contains fewer than two distinct owner identities and no session has recorded outside participants, OpenClaw hides all ownership and owner-filter chrome. A single-user gateway therefore looks unchanged.
+When the loaded session list contains fewer than two distinct owner identities and no session has recorded outside participants, PASO hides all ownership and owner-filter chrome. A single-user gateway therefore looks unchanged.
 
 ## People cards
 
@@ -96,7 +96,7 @@ Catalog listings and progress updates recheck current session visibility for eac
 
 Turn sender attribution is best-effort. Steering can merge input into an active turn, so the transcript cannot always represent each person's contribution as a separate turn. Participant history records that an actor prompted the session, not which words were theirs.
 
-Participant identity is separate from a display name and from authorization. An authenticated Gateway profile, an OpenClaw agent, and a remote sender remain distinct even when their IDs match. Channel plugins supply the remote identity domain and identifier kind when they can prove them. Otherwise, OpenClaw retains an unresolved observation; it does not guess a profile from a sender ID, local account label, or UUID shape. Profile merges resolve through the existing profile aliases. An accepted input updates an already retained current profile row, or a retained alias when no current row exists, even at the 32-record admission bound. Historical rows keep their raw IDs; this does not rewrite transcripts or other agent databases.
+Participant identity is separate from a display name and from authorization. An authenticated Gateway profile, a PASO agent, and a remote sender remain distinct even when their IDs match. Channel plugins supply the remote identity domain and identifier kind when they can prove them. Otherwise, PASO retains an unresolved observation; it does not guess a profile from a sender ID, local account label, or UUID shape. Profile merges resolve through the existing profile aliases. An accepted input updates an already retained current profile row, or a retained alias when no current row exists, even at the 32-record admission bound. Historical rows keep their raw IDs; this does not rewrite transcripts or other agent databases.
 
 Profile participation records accepted externally authored input, including accepted steering into an active turn and session-targeted interactive input. Synthetic runs, internal messages, and bot or ambient work do not establish personal profile activity. A participant record is an aggregate, not an exact replay-safe lifetime input count. Reset preserves the logical session's participants; deleting the session removes them even when transcript archives are retained.
 
@@ -106,7 +106,7 @@ The schema-18 migration preserves historical membership and recorded contributio
 
 New transcript messages keep qualified sender identity separate from display names. Only qualified profile senders get profile portraits, person Activity links, or recognition as the signed-in person, and only their messages clear that profile's typing indicator. A matching channel sender ID is not enough. Write hooks can redact sender identity, but cannot replace it with another trusted identity. Suggestion attribution identifies the suggestion's author rather than the operator who accepts it.
 
-Older or otherwise unqualified messages retain their saved text and sender labels, with initials instead of inferred profile portraits and no person Activity link. OpenClaw does not rewrite those messages or reconstruct their authors from UUIDs, profile lookups, or participant history. This can remove profile presentation from an older message that really was profile-authored, because it did not record enough evidence to establish that fact. Transcript attribution, participant aggregates, and creator-based access decisions remain separate contracts; attribution and participation never grant session access.
+Older or otherwise unqualified messages retain their saved text and sender labels, with initials instead of inferred profile portraits and no person Activity link. PASO does not rewrite those messages or reconstruct their authors from UUIDs, profile lookups, or participant history. This can remove profile presentation from an older message that really was profile-authored, because it did not record enough evidence to establish that fact. Transcript attribution, participant aggregates, and creator-based access decisions remain separate contracts; attribution and participation never grant session access.
 
 GitHub-backed sign-in through Cloudflare Access or Tailscale Serve automatically verifies the person's GitHub account under **Settings → Profile → Identity**. Public `Co-authored-by` credit remains a separate **Git co-author credit** toggle, on by default for verified accounts. Attribution uses that preference plus the durable profile participant records described above, not display names or the four-person facepile projection. See [User model](/concepts/user-model#gateway-profile-and-github-credit) for privacy, eligibility, bounds, account changes, and disabling future credit.
 

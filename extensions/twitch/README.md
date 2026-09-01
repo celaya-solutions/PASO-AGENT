@@ -1,6 +1,6 @@
 # @openclaw/twitch
 
-Twitch channel plugin for OpenClaw.
+Twitch channel plugin for PASO.
 
 ## Install (local checkout)
 
@@ -80,7 +80,7 @@ Multi-account config (advanced):
 
 ## Full documentation
 
-See https://docs.openclaw.ai/channels/twitch for:
+See https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/twitch.md for:
 
 - Token refresh setup
 - Access control patterns

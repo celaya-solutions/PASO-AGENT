@@ -2,12 +2,12 @@
 summary: "LongCat API setup for LongCat-2.0"
 title: "LongCat"
 read_when:
-  - You want to use LongCat-2.0 with OpenClaw
+  - You want to use LongCat-2.0 with PASO
   - You need the LongCat API key or model limits
 ---
 
 [LongCat](https://longcat.ai) provides a hosted API for LongCat-2.0, a
-reasoning model built for coding and agentic workloads. OpenClaw provides the
+reasoning model built for coding and agentic workloads. PASO provides the
 official LongCat plugin for LongCat's OpenAI-compatible endpoint.
 
 | Property   | Value                              |
@@ -64,12 +64,12 @@ openclaw onboard --non-interactive --accept-risk --skip-health \
 
 ## Reasoning behavior
 
-LongCat exposes binary thinking control. OpenClaw maps enabled thinking levels
+LongCat exposes binary thinking control. PASO maps enabled thinking levels
 to `thinking: { type: "enabled" }` and `/think off` to
 `thinking: { type: "disabled" }`. LongCat does not currently document
-`reasoning_effort`, so OpenClaw does not send it.
+`reasoning_effort`, so PASO does not send it.
 
-LongCat returns reasoning in `reasoning_content`. OpenClaw preserves that field
+LongCat returns reasoning in `reasoning_content`. PASO preserves that field
 when replaying assistant tool-call turns so multi-turn agent sessions retain
 the provider's expected message shape.
 
@@ -84,7 +84,7 @@ and your billing records are authoritative.
 
 The `longcat` provider targets LongCat's hosted API. For the open weights on
 [Hugging Face](https://huggingface.co/meituan-longcat/LongCat-2.0), serve the
-model through an OpenAI-compatible runtime and use OpenClaw's existing
+model through an OpenAI-compatible runtime and use PASO's existing
 [vLLM](/providers/vllm) or [SGLang](/providers/sglang) provider instead.
 
 Keep the runtime's exact model identifier in the self-hosted provider catalog;

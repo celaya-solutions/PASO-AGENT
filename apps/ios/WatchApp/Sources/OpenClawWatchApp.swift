@@ -271,7 +271,7 @@ extension WatchInboxStore {
             appSnapshot: WatchAppSnapshotMessage(
                 gatewayStatus: OpenClawWatchAppStatus(code: .gatewayConnected),
                 gatewayConnected: true,
-                agentName: "Molty",
+                agentName: "PASO",
                 agentAvatarURL: nil,
                 agentAvatarText: "M",
                 sessionKey: "watch-screenshot-session",
@@ -288,7 +288,7 @@ extension WatchInboxStore {
                         text: "What's on deck?",
                         timestampMs: sentAtMs - 90000),
                     WatchChatItem(
-                        id: "watch-screenshot-molty-chat",
+                        id: "watch-screenshot-paso-chat",
                         role: "assistant",
                         text: "Gateway is online and ready.",
                         timestampMs: sentAtMs - 30000),

@@ -88,7 +88,7 @@ Disable the feature entirely with **Settings → General → Quick Chat**; the s
 
 ## Launch and debugging
 
-- Manual: Lobster menu -> "Open Chat".
+- Manual: PASO menu-bar icon -> "Open Chat".
 - Auto-open for testing:
 
   ```bash

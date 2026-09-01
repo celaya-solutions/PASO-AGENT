@@ -2,7 +2,7 @@
 summary: "Nodes: pairing, capabilities, permissions, and CLI helpers for camera/screen/device/notifications/system and the macOS widget panel"
 read_when:
   - Pairing iOS/watchOS/Android nodes to a gateway
-  - Enabling isolated OpenClaw session hosting on a paired node
+  - Enabling isolated PASO session hosting on a paired node
   - Using node camera or screen capture for agent context
   - Presenting a hosted widget on a Mac
   - Adding new node commands or CLI helpers
@@ -84,8 +84,8 @@ Use a **node host** when your Gateway runs on one machine and you want commands 
 Approval note:
 
 - Approval-backed node runs bind exact request context. The exec path prepares a canonical `systemRunPlan` before approval; once granted, the gateway forwards that stored plan, not any later caller-edited command/cwd/session fields, and re-validates the working directory before running.
-- For direct shell/runtime file executions, OpenClaw also best-effort binds one concrete local file operand and denies the run if that file changes before execution.
-- If OpenClaw cannot identify exactly one concrete local file for an interpreter/runtime command, approval-backed execution is denied instead of pretending full runtime coverage. Use sandboxing, separate hosts, or an explicit trusted allowlist/full workflow for broader interpreter semantics.
+- For direct shell/runtime file executions, PASO also best-effort binds one concrete local file operand and denies the run if that file changes before execution.
+- If PASO cannot identify exactly one concrete local file for an interpreter/runtime command, approval-backed execution is denied instead of pretending full runtime coverage. Use sandboxing, separate hosts, or an explicit trusted allowlist/full workflow for broader interpreter semantics.
 
 ### Gateway deployments that cannot host nodes
 
@@ -94,7 +94,7 @@ A Gateway can remain healthy for browser users while node hosting is unavailable
 - **Machine authentication:** Tailscale identity headers do not authenticate node-role connections. In `gateway.auth.mode: "trusted-proxy"`, a new node also cannot supply the proxy's user identity headers. To use a shared token, switch to token mode and configure `gateway.auth.token` with a SecretRef; trusted-proxy mode rejects mixed token configuration. A trusted-proxy Gateway can use `gateway.auth.password` only for clean loopback/direct callers. See [trusted-proxy mixed token configuration](/gateway/trusted-proxy-auth#mixed-token-configuration).
 - **Node onboarding URL:** With `gateway.bind: "loopback"`, configure Tailscale Serve, `gateway.remote.url`, or `plugins.entries.device-pair.config.publicUrl` before minting a join code. Otherwise `openclaw devices join-code` reports: `Gateway is only bound to loopback. Set gateway.bind=lan, enable tailscale serve, or configure plugins.entries.device-pair.config.publicUrl.`
 - **Node onboarding plugin:** Join codes and `openclaw connect` require the bundled `device-pair` plugin. If it is disabled or excluded by plugin policy, set `plugins.entries.device-pair.enabled: true`, make sure `device-pair` is allowed, and restart the Gateway.
-- **Device session runtime:** Paired-device runners support the embedded OpenClaw runtime and explicitly authorized Codex `remote-exec`; ACPX routes cannot dispatch to a paired device. Codex requires `codex.exec-server.stdio.v1` in `gateway.nodes.commands.allow` plus its normal pairing and invocation approvals. Runtime policy belongs on provider/model routes, not the ignored whole-agent runtime keys. Multi-agent rosters must also set `agents.ownership: "explicit"`. See [Codex paired-device placement](/plugins/codex-harness#run-codex-on-a-paired-device) and [runtime policy](/gateway/config-agents#runtime-policy).
+- **Device session runtime:** Paired-device runners support the embedded PASO runtime and explicitly authorized Codex `remote-exec`; ACPX routes cannot dispatch to a paired device. Codex requires `codex.exec-server.stdio.v1` in `gateway.nodes.commands.allow` plus its normal pairing and invocation approvals. Runtime policy belongs on provider/model routes, not the ignored whole-agent runtime keys. Multi-agent rosters must also set `agents.ownership: "explicit"`. See [Codex paired-device placement](/plugins/codex-harness#run-codex-on-a-paired-device) and [runtime policy](/gateway/config-agents#runtime-policy).
 - **Edge routing:** When a reverse proxy or access edge fronts the Gateway, the node must satisfy edge auth on the join request, its main Gateway WebSocket, and the worker WebSocket. Keep WebSocket upgrade enabled for `/__openclaw__/worker`. You can instead exempt `/j/*` and `/__openclaw__/worker` from edge identity auth because both routes enforce their own short-lived credentials. See [worker protocol](/gateway/protocol#worker-role-and-closed-protocol).
 
 For a Cloudflare Access-fronted Gateway:
@@ -109,7 +109,7 @@ For a Cloudflare Access-fronted Gateway:
    openclaw connect https://gateway.example/j/<code> --service
    ```
 
-The canonical node connection keys are `gateway.cloudflareAccess.clientId` and `gateway.cloudflareAccess.clientSecret`; both accept SecretInput values. The environment fallback above persists those keys as env SecretRefs, not copied plaintext. For installed nodes, OpenClaw stores the environment values in the managed service environment file rather than inline in launchd, systemd, or Task Scheduler definitions. Resolved values are bound to the configured Gateway origin and are not followed across redirects. OpenClaw rejects the pair before resolution on plaintext `http://` or `ws://` routes; credential-free loopback and private-network plaintext behavior is unchanged.
+The canonical node connection keys are `gateway.cloudflareAccess.clientId` and `gateway.cloudflareAccess.clientSecret`; both accept SecretInput values. The environment fallback above persists those keys as env SecretRefs, not copied plaintext. For installed nodes, PASO stores the environment values in the managed service environment file rather than inline in launchd, systemd, or Task Scheduler definitions. Resolved values are bound to the configured Gateway origin and are not followed across redirects. PASO rejects the pair before resolution on plaintext `http://` or `ws://` routes; credential-free loopback and private-network plaintext behavior is unchanged.
 
 ### Start a node host (foreground)
 
@@ -224,7 +224,7 @@ plugin. OAuth MCP servers are not supported by this node-hosted v1 path.
 
 Current node hosts declare the built-in `mcp.tools.call.v1` command family during
 their initial pairing even when no MCP server is configured. A node paired on an
-older OpenClaw version may request a one-time command-surface upgrade after the
+older PASO version may request a one-time command-surface upgrade after the
 node host is updated. Adding, removing, or filtering servers after that does not
 require re-pairing because the approved command family is unchanged. Restart
 `openclaw node run` or `openclaw node restart` to apply node MCP config changes;
@@ -243,7 +243,7 @@ including node-hosted MCP tools, with
 
 ### Node-hosted skills
 
-Install skills under the node machine's active OpenClaw skills directory,
+Install skills under the node machine's active PASO skills directory,
 `~/.openclaw/skills` by default. `OPENCLAW_HOME`, `OPENCLAW_STATE_DIR`, and
 `OPENCLAW_CONFIG_PATH` move that active profile. `OPENCLAW_STATE_DIR` takes
 precedence for skills; otherwise, `skills/` is beside the path printed by
@@ -266,7 +266,7 @@ not node skill locators; runtimes without the normal read tool can instead run
 `cat SKILL.md` through `exec host=node node=<node-id>` with the advertised
 `node://.../skills/<name>` directory as `workdir`. Referenced files and binaries
 use the same exec target and workdir. The node host resolves that locator against
-its active OpenClaw state directory, so relative paths resolve on the node rather
+its active PASO state directory, so relative paths resolve on the node rather
 than the Gateway machine. The publishing node must have approved `system.run`,
 and the agent's exec policy must allow `host=node`; otherwise the skill stays
 out of that agent's snapshot.
@@ -397,7 +397,7 @@ the node pairing upgrade when those commands first appear.
 A native node host with the Claude CLI available also advertises
 `anthropic.claude.terminal.resume.v1`. Eligible CLI and Desktop rows can open
 `claude --resume <session-id>` in the operator terminal on their owning host.
-This is a takeover of the native session; unlike OpenClaw adoption, it does not
+This is a takeover of the native session; unlike PASO adoption, it does not
 fork the Claude session first.
 
 The catalog combines valid Claude CLI project-index records with a bounded
@@ -427,7 +427,7 @@ when people must not share access to files, credentials, or tools. See
 [Multi-user mode](/concepts/multi-user).
 
 A Gateway-local Claude CLI row can be adopted from the normal Chat composer:
-OpenClaw imports bounded visible history, resumes with `--fork-session` on the
+PASO imports bounded visible history, resumes with `--fork-session` on the
 first turn, and leaves the source transcript untouched.
 
 A headless node host can opt into the same continuation flow:
@@ -447,7 +447,7 @@ is enabled and the `claude` executable resolves on that node. The Gateway cannot
 enable it remotely. The command also passes through the node's existing exec
 approval policy. When all three Claude commands are advertised and permitted by
 the Gateway's node command policy, a Claude CLI
-row on that node becomes continuable: OpenClaw imports bounded history, binds
+row on that node becomes continuable: PASO imports bounded history, binds
 the adopted session to the node and its catalog-reported working directory, and
 runs each one-shot `claude -p` turn there. The first turn still uses
 `--fork-session`, preserving the source transcript.
@@ -458,9 +458,9 @@ Gateway transcript, and reject attachments and images. Claude Desktop rows and
 nodes that do not advertise the run command remain view-only. The macOS app
 node does not advertise this command yet, so its rows remain view-only.
 
-### Host OpenClaw sessions
+### Host PASO sessions
 
-The macOS menu bar app and the headless node host can opt into full OpenClaw
+The macOS menu bar app and the headless node host can opt into full PASO
 session hosting with the same node-local setting:
 
 ```json5
@@ -492,7 +492,7 @@ while its receipt still matches the Gateway's current build.
 You can also enroll and enable a service host in one step with
 `openclaw connect --service --session-host`. In Control UI New Session, a
 write-scoped operator selects a Gateway project or folder and then either a
-specific paired device or **Auto**. OpenClaw creates a
+specific paired device or **Auto**. PASO creates a
 session-owned managed worktree on the Gateway, dispatches it with the exact
 `deviceId` or `autoDevice: true`, and sends the first turn only after the chosen
 device placement becomes active. New Session does not bind `execNode` or browse
@@ -506,9 +506,9 @@ requires the exact durable receipt and current node authority.
 
 Node hosts must support the current private worker-supervisor dialect before
 they can host sessions. An older connected host remains visible but disabled in
-the session picker. Update OpenClaw on that device and reconnect it; for a
+the session picker. Update PASO on that device and reconnect it; for a
 headless node, run `openclaw update` followed by `openclaw node restart`. The
-Gateway does not fall back to the node's local OpenClaw package or an older
+Gateway does not fall back to the node's local PASO package or an older
 supervisor dialect.
 
 This setting enables supervised session turns on the paired device, including
@@ -519,7 +519,7 @@ for a durable slot; while all slots are occupied, the node remains available
 for status and cancellation but is not selected for a new session turn.
 
 The picker derives every device row from `environments.list`. Every selected
-runtime requires an available, connected paired session host. OpenClaw worker
+runtime requires an available, connected paired session host. PASO worker
 turns additionally require valid exact worker slots with at least one free
 slot. Codex paired-device execution launches its exec-server directly, so it
 does not consume or require a worker slot; instead, its required command must
@@ -538,7 +538,7 @@ arrives. Local remains selectable; cached worker slots never authorize a new
 remote session.
 
 Choose **Auto** to let the Gateway select an eligible paired,
-connected session host. For OpenClaw worker turns, it selects the host with the
+connected session host. For PASO worker turns, it selects the host with the
 most available worker slots and breaks ties by device ID. Runtimes that do not
 consume worker slots choose the eligible host with the lowest device ID instead.
 If a selected host disconnects, reaches capacity, or otherwise becomes
@@ -586,7 +586,7 @@ for the Control UI behavior and storage sources.
 
 #### Isolate hosted worker sessions in containers
 
-By default, hosted OpenClaw worker sessions run directly on the paired node.
+By default, hosted PASO worker sessions run directly on the paired node.
 Set `nodeHost.workerRuns.isolation` to `"container"` on that node to run each
 worker inside its own container instead:
 
@@ -611,7 +611,7 @@ back to an unisolated worker.
 Container isolation is supported on Linux and macOS node hosts; Windows is
 unsupported because native Windows paths cannot be mounted at their original
 paths inside the container. The node must have a working Docker-compatible
-container engine. OpenClaw tries the `docker` CLI first, including Docker-backed
+container engine. PASO tries the `docker` CLI first, including Docker-backed
 OrbStack installations, and then `podman`. The selected engine and daemon are
 checked when the node host starts and again before each container is created.
 If the platform is unsupported, neither engine works, or the daemon changes,
@@ -633,7 +633,7 @@ Each worker container receives only two host bind mounts: its verified worker
 bundle root is read-only, and its assigned session workspace is read-write.
 Both are mounted at their original absolute host paths so the sealed bundle
 and workspace descriptor remain valid; the session workspace is also the
-container working directory. OpenClaw passes only the existing frozen,
+container working directory. PASO passes only the existing frozen,
 non-secret worker environment allowlist and adds no other host mounts.
 Container isolation protects the rest of the host filesystem and separates
 the worker process, but the worker can still modify its assigned workspace
@@ -645,7 +645,7 @@ to reach the Gateway worker WebSocket endpoint. A Gateway address such as
 container when used by the worker; configure a Gateway address reachable from
 the container network instead. If a Gateway requires a custom certificate
 authority, `NODE_EXTRA_CA_CERTS` must point to a certificate already inside
-the mounted bundle or session workspace; OpenClaw will not mount another host
+the mounted bundle or session workspace; PASO will not mount another host
 path for it. Browser assignments that require access to host-only browser
 state are not supported in container-isolated sessions.
 
@@ -913,7 +913,7 @@ Add `sms.send` separately only when the node should also be able to send message
 Low-level invoke:
 
 ```bash
-openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from OpenClaw"}'
+openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from PASO"}'
 ```
 
 Notes:
@@ -1005,7 +1005,7 @@ Nodes may include a `permissions` map in `node.list` / `node.describe`, keyed by
 
 ## Headless node host (cross-platform)
 
-OpenClaw can run a **headless node host** (no UI) that connects to the Gateway WebSocket and exposes `system.run` / `system.which`. This is useful on Linux/Windows or for running a minimal node alongside a server.
+PASO can run a **headless node host** (no UI) that connects to the Gateway WebSocket and exposes `system.run` / `system.which`. This is useful on Linux/Windows or for running a minimal node alongside a server.
 
 Start it:
 

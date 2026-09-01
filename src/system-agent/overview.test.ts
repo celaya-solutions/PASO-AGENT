@@ -1,4 +1,4 @@
-// OpenClaw overview tests cover summary output for rescue diagnostics.
+// PASO overview tests cover summary output for rescue diagnostics.
 import { describe, expect, it } from "vitest";
 import type { ConfigFileSnapshot, OpenClawConfig } from "../config/config.js";
 import {
@@ -19,7 +19,7 @@ function createOverview(defaultModel?: string): SystemAgentOverview {
       hash: null,
     },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
     agents: [{ id: "main", isDefault: true, ...(defaultModel ? { model: defaultModel } : {}) }],
@@ -102,7 +102,7 @@ describe("loadSystemAgentOverview", () => {
       'Next: run "gateway status" or "restart gateway"',
     );
     const startup = formatSystemAgentStartupMessage(overview);
-    expect(startup).toContain("Hi, I'm OpenClaw — caretaker");
+    expect(startup).toContain("Hi, I'm PASO — caretaker");
     expect(startup).toContain("Model: openai/gpt-5.2");
     expect(startup).toContain("Gateway: not reachable");
     expect(startup).not.toContain("`gateway status`");

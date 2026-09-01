@@ -19,7 +19,7 @@ export function createParallelFreeWebSearchProviderBase() {
     envVars: [],
     placeholder: "(no key needed)",
     signupUrl: "https://parallel.ai",
-    docsUrl: "https://docs.openclaw.ai/tools/parallel-search",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     credentialPath: "",
     ...createWebSearchProviderContractFields({
       credentialPath: "",

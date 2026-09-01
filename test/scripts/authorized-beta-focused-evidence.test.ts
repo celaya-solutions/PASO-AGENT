@@ -145,7 +145,7 @@ function runFocusedValidatorLogProbe(outcome: "flagged" | "legacy" | "unrelated"
   const producerSha = "a".repeat(40);
   const producerRef = "release-publish/aaaaaaaaaaaa-1";
   const producer: AuthorizedBetaFocusedProducerIdentity = {
-    repository: "openclaw/openclaw",
+    repository: "celaya-solutions/PASO-AGENT",
     runId: "123",
     runAttempt: 1,
     workflowPath: ".github/workflows/authorized-beta-focused-validation.yml",
@@ -319,10 +319,14 @@ function runFocusedValidatorLogProbe(outcome: "flagged" | "legacy" | "unrelated"
   writeFileSync(join(trustedRoot, "authorized-beta-focused-policy.json"), JSON.stringify(policy));
   writeFileSync(artifactPath, JSON.stringify(evidence));
   const apiResponses = [
-    ...runs.map((run) => [`repos/openclaw/openclaw/actions/runs/${run.id}`, run] as const),
-    ...jobs.map((job) => [`repos/openclaw/openclaw/actions/jobs/${job.id}`, job] as const),
+    ...runs.map(
+      (run) => [`repos/celaya-solutions/PASO-AGENT/actions/runs/${run.id}`, run] as const,
+    ),
+    ...jobs.map(
+      (job) => [`repos/celaya-solutions/PASO-AGENT/actions/jobs/${job.id}`, job] as const,
+    ),
     [
-      `repos/openclaw/openclaw/git/ref/tags/${producerRef}`,
+      `repos/celaya-solutions/PASO-AGENT/git/ref/tags/${producerRef}`,
       { object: { type: "commit", sha: producerSha } },
     ] as const,
   ];
@@ -339,7 +343,7 @@ function runFocusedValidatorLogProbe(outcome: "flagged" | "legacy" | "unrelated"
       'if [ "$command" = api ] && [ "${route%/logs}" != "$route" ]; then',
       '  if [ "$1" = --allow-escape-sequences ]; then',
       `    printf '["api","%s","--allow-escape-sequences"]\\n' "$route" >> '${callsPath}'`,
-      `    if [ "$route" = 'repos/openclaw/openclaw/actions/jobs/${focused.ciTargetLogJobId}/logs' ] && [ '${outcome}' != flagged ]; then`,
+      `    if [ "$route" = 'repos/celaya-solutions/PASO-AGENT/actions/jobs/${focused.ciTargetLogJobId}/logs' ] && [ '${outcome}' != flagged ]; then`,
       `      if [ '${outcome}' = legacy ]; then`,
       "        printf 'unknown flag: --allow-escape-sequences\\r\\n\\r\\nUsage: gh api <endpoint> [flags]\\r\\n' >&2",
       "      else",
@@ -548,7 +552,7 @@ function resolveFocusedProducer(
         FOCUSED_RELEASE_EVIDENCE_RUN_ATTEMPT: "2",
         FOCUSED_RELEASE_EVIDENCE_RUN_ID: "123",
         GITHUB_OUTPUT: outputPath,
-        GITHUB_REPOSITORY: "openclaw/openclaw",
+        GITHUB_REPOSITORY: "celaya-solutions/PASO-AGENT",
         MOCK_RUN_JSON: JSON.stringify(run),
         MOCK_TAG_JSON: JSON.stringify(tag),
         MOCK_TAG_MISSING: String(options.missingTag ?? false),
@@ -795,11 +799,11 @@ describe("authorized beta focused evidence", () => {
     const { calls, policy, result } = runFocusedValidatorLogProbe(outcome);
     const ciLogArgs = [
       "api",
-      `repos/openclaw/openclaw/actions/jobs/${policy.focusedProof.ciTargetLogJobId}/logs`,
+      `repos/celaya-solutions/PASO-AGENT/actions/jobs/${policy.focusedProof.ciTargetLogJobId}/logs`,
     ];
     const pluginLogArgs = [
       "api",
-      `repos/openclaw/openclaw/actions/jobs/${policy.focusedProof.pluginTargetLogJobId}/logs`,
+      `repos/celaya-solutions/PASO-AGENT/actions/jobs/${policy.focusedProof.pluginTargetLogJobId}/logs`,
     ];
     const flaggedCiLogArgs = [...ciLogArgs, "--allow-escape-sequences"];
     const flaggedPluginLogArgs = [...pluginLogArgs, "--allow-escape-sequences"];
@@ -1104,7 +1108,7 @@ describe("authorized beta focused evidence", () => {
       [
         `import { digestAuthorizedBetaFocusedPolicy, readAuthorizedBetaFocusedPolicy, validateAuthorizedBetaFocusedArtifactShape } from ${JSON.stringify(pathToFileURL(validatorPath).href)};`,
         `const policy = readAuthorizedBetaFocusedPolicy();`,
-        `const producer = { repository: "openclaw/openclaw", runId: "123", runAttempt: 1, workflowPath: ".github/workflows/authorized-beta-focused-validation.yml", workflowFullRef: "refs/tags/release-publish/aaaaaaaaaaaa-1", workflowRef: "release-publish/aaaaaaaaaaaa-1", workflowSha: "a".repeat(40) };`,
+        `const producer = { repository: "celaya-solutions/PASO-AGENT", runId: "123", runAttempt: 1, workflowPath: ".github/workflows/authorized-beta-focused-validation.yml", workflowFullRef: "refs/tags/release-publish/aaaaaaaaaaaa-1", workflowRef: "release-publish/aaaaaaaaaaaa-1", workflowSha: "a".repeat(40) };`,
         `const inventory = { eligibilityPlanDigest: policy.eligibilityPlanDigest, ...policy.inventory };`,
         `const evidence = { schema: "openclaw.authorized-beta-focused-evidence.v1", mode: policy.mode, policySha256: digestAuthorizedBetaFocusedPolicy(policy), releaseTag: policy.releaseTag, candidate: { sha: policy.candidateSha, parentSha: policy.baseCandidateSha, treeSha: policy.candidateTreeSha, packageProjectionSha256: policy.packageProjectionSha256, changedPaths: policy.changedPaths }, producer, historical: { frvRunId: policy.historicalFrv.runId, frvRunAttempt: policy.historicalFrv.runAttempt, releaseChecksRunId: policy.historicalFrv.releaseChecksRunId, performanceRunId: policy.historicalFrv.performanceRunId }, focused: { ciRunId: policy.focusedProof.ciRunId, ciJobId: policy.focusedProof.ciSuccessJobId, pluginRunId: policy.focusedProof.pluginRunId, pluginJobId: policy.focusedProof.pluginSuccessJobId, reviewedHeadSha: policy.reviewedHeadSha }, inventory };`,
         `validateAuthorizedBetaFocusedArtifactShape(evidence, policy, producer, inventory);`,
@@ -1123,7 +1127,7 @@ describe("authorized beta focused evidence", () => {
   it("accepts the exact artifact shape and rejects inventory drift", () => {
     const policy = readAuthorizedBetaFocusedPolicy();
     const producer: AuthorizedBetaFocusedProducerIdentity = {
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       runId: "123",
       runAttempt: 1,
       workflowPath: ".github/workflows/authorized-beta-focused-validation.yml",

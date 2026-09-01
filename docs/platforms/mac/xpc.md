@@ -1,11 +1,11 @@
 ---
-summary: "macOS IPC architecture for OpenClaw app, gateway node transport, and PeekabooBridge"
+summary: "macOS IPC architecture for PASO app, gateway node transport, and PeekabooBridge"
 read_when:
   - Editing IPC contracts or menu bar app IPC
 title: "macOS IPC"
 ---
 
-# OpenClaw macOS IPC architecture
+# PASO macOS IPC architecture
 
 A local Unix socket connects the node host service to the macOS app for exec approvals and `system.run`. An `openclaw-mac` debug CLI (`apps/macos/Sources/OpenClawMacCLI`) exists for discovery/connect checks; agent actions still flow through the Gateway WebSocket and `node.invoke`. The node-backed `computer.act` path runs embedded Peekaboo automation in-process; standalone Peekaboo clients use PeekabooBridge.
 

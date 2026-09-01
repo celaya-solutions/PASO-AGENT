@@ -1,12 +1,12 @@
-# OpenClaw Arcee AI Provider
+# PASO Arcee AI Provider
 
-Official OpenClaw provider plugin for Arcee AI.
+Official PASO provider plugin for Arcee AI.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/arcee-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/arcee> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/arcee.md> for setup and configuration.

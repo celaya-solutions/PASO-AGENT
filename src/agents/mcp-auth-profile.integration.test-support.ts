@@ -1,4 +1,4 @@
-// Fresh-process fixture: value imports stay outside OpenClaw until each scenario demands them.
+// Fresh-process fixture: value imports stay outside PASO until each scenario demands them.
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createServer, type IncomingHttpHeaders } from "node:http";

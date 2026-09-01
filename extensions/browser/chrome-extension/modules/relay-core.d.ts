@@ -2,6 +2,8 @@
 // it can load unbundled in Chrome). Kept in sync with relay-core.js.
 
 export const OPENCLAW_TAB_GROUP_TITLE: string;
+export const OPENCLAW_TAB_GROUP_TITLES: readonly string[];
+export function isOpenClawTabGroupTitle(title: unknown): boolean;
 export const ACCESS_MODE_ALL: "all";
 export const ACCESS_MODE_SELECTED: "selected";
 export function parsePairingString(raw: unknown): {

@@ -76,7 +76,7 @@ export const LAZY_ADDITIVE_STATE_INDEXES = [
 export const OPENCLAW_SQLITE_BUSY_TIMEOUT_MS = 5_000;
 /** User-facing guide for schema refusals; lives here so error sites avoid import cycles. */
 export const OPENCLAW_DATABASE_SCHEMA_DOCS_URL =
-  "https://docs.openclaw.ai/reference/database-schemas";
+  "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 /** Open shared SQLite database handle plus WAL maintenance lifecycle. */
 export type OpenClawStateDatabase = {

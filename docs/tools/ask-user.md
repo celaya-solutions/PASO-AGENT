@@ -31,7 +31,7 @@ You can answer from any supported conversation surface:
 - A plain-text reply works on any channel. Reply with a number, an option label,
   or your own answer. For multi-select questions, separate choices with commas.
 
-OpenClaw always enables a free-text **Other** answer. The agent must not add an
+PASO always enables a free-text **Other** answer. The agent must not add an
 `Other` option to the authored option list.
 
 Never answer `ask_user` with a credential. When the agent needs an API key it

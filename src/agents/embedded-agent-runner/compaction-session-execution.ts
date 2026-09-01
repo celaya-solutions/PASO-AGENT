@@ -204,9 +204,9 @@ export async function executePreparedCompactionSession(runtime: PreparedCompacti
         extensionFactories,
       });
       await resourceLoader.reload();
-      // DefaultResourceLoader.reload() rehydrates settings from disk and can drop OpenClaw
+      // DefaultResourceLoader.reload() rehydrates settings from disk and can drop PASO
       // compaction overrides applied in createPreparedEmbeddedAgentSettingsManager — same
-      // rehydration also restores OpenClaw runtime's auto-compaction (openclaw#75799), so re-apply
+      // rehydration also restores PASO runtime's auto-compaction (openclaw#75799), so re-apply
       // both guards. effectiveModel.baseUrl matches the surrounding scope so
       // auth-profile-injected baseUrls reach the endpoint-class detector.
       applyAgentCompactionSettingsFromConfig({
@@ -240,7 +240,7 @@ export async function executePreparedCompactionSession(runtime: PreparedCompacti
         },
       });
       // The session runtime treats `tools` as a name allowlist during session creation. Pass the
-      // exact OpenClaw-managed registrations so custom tools survive startup.
+      // exact PASO-managed registrations so custom tools survive startup.
       const sessionToolAllowlist = toSessionToolAllowlist(collectRegisteredToolNames(customTools));
 
       const providerStreamFn = resolveCompactionProviderStream({

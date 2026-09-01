@@ -48,7 +48,7 @@ function createParams(sessionFile: string, workspaceDir: string): EmbeddedRunAtt
   return params;
 }
 
-/** Keeps native Codex bindings reusable while omitting OpenClaw tools and search. */
+/** Keeps native Codex bindings reusable while omitting PASO tools and search. */
 function withPersistentCodexTestToolPolicy(
   params: EmbeddedRunAttemptParams,
 ): EmbeddedRunAttemptParams {
@@ -362,7 +362,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       expect(readStringValue(threadStartParams.developerInstructions) ?? "").toContain(
         "context-engine system",
       );
-      expectRequestInputTextContains(harness, "OpenClaw assembled context for this turn:");
+      expectRequestInputTextContains(harness, "PASO assembled context for this turn:");
       expectRequestInputTextContains(harness, `[${summaryRole}]\n${summary}`);
       expectRequestInputTextContains(harness, "[assistant]\nACK: existing context");
       expectRequestInputTextContains(
@@ -620,7 +620,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
 
     const firstRun = runCodexAppServerAttempt(firstParams);
     await firstHarness.waitForMethod("turn/start");
-    expectRequestInputTextContains(firstHarness, "OpenClaw assembled context for this turn:");
+    expectRequestInputTextContains(firstHarness, "PASO assembled context for this turn:");
     expectRequestInputTextContains(firstHarness, "bootstrap-only context");
     await firstHarness.completeTurn();
     await firstRun;
@@ -646,7 +646,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "turn/start",
     ]);
     const secondInputText = getRequestInputTextAt(firstHarness, 1);
-    expect(secondInputText).not.toContain("OpenClaw assembled context for this turn:");
+    expect(secondInputText).not.toContain("PASO assembled context for this turn:");
     expect(secondInputText).not.toContain("bootstrap-only context");
     expect(secondInputText).toBe("hello");
     const projectionLogs = info.mock.calls.filter(
@@ -761,7 +761,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "turn/start",
     ]);
     const inputText = getRequestInputText(harness);
-    expect(inputText).not.toContain("OpenClaw assembled context for this turn:");
+    expect(inputText).not.toContain("PASO assembled context for this turn:");
     expect(inputText).not.toContain("already bootstrapped context");
     expect(inputText).toBe("hello");
 
@@ -843,7 +843,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "turn/start",
     ]);
     const inputText = getRequestInputText(harness);
-    expect(inputText).toContain("OpenClaw assembled context for this turn:");
+    expect(inputText).toContain("PASO assembled context for this turn:");
     expect(inputText).toContain("reprojected context");
 
     await harness.completeTurn("completed", "thread-fresh");
@@ -932,7 +932,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "turn/start",
     ]);
     const inputText = getRequestInputText(harness);
-    expect(inputText).not.toContain("OpenClaw assembled context for this turn:");
+    expect(inputText).not.toContain("PASO assembled context for this turn:");
     expect(inputText).not.toContain("previous stale-bootstrap request");
     expect(inputText).not.toContain("previous stale-bootstrap answer");
     expect(inputText).not.toContain("Current user request:");
@@ -980,7 +980,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "turn/start",
     ]);
     const inputText = getRequestInputText(harness);
-    expect(inputText).toContain("OpenClaw assembled context for this turn:");
+    expect(inputText).toContain("PASO assembled context for this turn:");
     expect(inputText).toContain("previous per-turn request");
     expect(inputText).toContain("previous per-turn answer");
     expect(inputText).toContain("Current user request:");
@@ -1034,7 +1034,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "thread/start",
       "turn/start",
     ]);
-    expectRequestInputTextContains(harness, "OpenClaw assembled context for this turn:");
+    expectRequestInputTextContains(harness, "PASO assembled context for this turn:");
     expectRequestInputTextContains(harness, "new epoch context");
 
     await harness.notify({
@@ -1122,7 +1122,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "thread/start",
       "turn/start",
     ]);
-    expectRequestInputTextContains(harness, "OpenClaw assembled context for this turn:");
+    expectRequestInputTextContains(harness, "PASO assembled context for this turn:");
     expectRequestInputTextContains(harness, "policy changed context");
 
     await harness.notify({
@@ -1227,7 +1227,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
         "thread/start",
         "turn/start",
       ]);
-      expectRequestInputTextContains(harness, "OpenClaw assembled context for this turn:");
+      expectRequestInputTextContains(harness, "PASO assembled context for this turn:");
       expectRequestInputTextContains(harness, "native-disabled context");
 
       await harness.notify({
@@ -1293,7 +1293,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
       "thread/start",
       "turn/start",
     ]);
-    expectRequestInputTextContains(harness, "OpenClaw assembled context for this turn:");
+    expectRequestInputTextContains(harness, "PASO assembled context for this turn:");
     expectRequestInputTextContains(harness, "per-turn context");
 
     await harness.notify({
@@ -1679,7 +1679,7 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
     expect(result.assistantTexts).toContain("final answer");
   });
 
-  it("fails first-turn Codex context overflow instead of falling back to OpenClaw compaction", async () => {
+  it("fails first-turn Codex context overflow instead of falling back to PASO compaction", async () => {
     const sessionFile = path.join(tempDir, "session.jsonl");
     const workspaceDir = path.join(tempDir, "workspace");
     const compact = vi.fn<ContextEngine["compact"]>(async () => ({
@@ -1810,8 +1810,8 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
     params.currentInboundContext = {
       text: [
         "Conversation context (chronological, selected for current message):",
-        "#6474 Sun 2026-05-10 22:22 GMT+5:30 [reply target] OpenClaw: anchor REPLYCTX this is the old message",
-        "#6498 Sun 2026-05-10 22:22 GMT+5:30 OpenClaw: filler REPLYCTX 23",
+        "#6474 Sun 2026-05-10 22:22 GMT+5:30 [reply target] PASO: anchor REPLYCTX this is the old message",
+        "#6498 Sun 2026-05-10 22:22 GMT+5:30 PASO: filler REPLYCTX 23",
       ].join("\n"),
     };
 
@@ -1819,9 +1819,9 @@ describe("runCodexAppServerAttempt context-engine lifecycle", () => {
     await harness.waitForMethod("turn/start");
 
     const inputText = getRequestInputText(harness);
-    expect(inputText).toContain("OpenClaw assembled context for this turn:");
+    expect(inputText).toContain("PASO assembled context for this turn:");
     expect(inputText).toContain("Current user request:\nhello");
-    expect(inputText).toContain("[reply target] OpenClaw: anchor REPLYCTX");
+    expect(inputText).toContain("[reply target] PASO: anchor REPLYCTX");
     expect(inputText.trim().startsWith("Conversation context (chronological")).toBe(true);
 
     await harness.completeTurn();

@@ -14,7 +14,7 @@ routes, import paths, and schema tables.
 
 ## Load pipeline
 
-At startup, OpenClaw does roughly this:
+At startup, PASO does roughly this:
 
 1. discover candidate plugin roots
 2. read native or compatible bundle manifests and package metadata
@@ -46,7 +46,7 @@ error.
 
 ### Manifest-first behavior
 
-The manifest is the control-plane source of truth. OpenClaw uses it to:
+The manifest is the control-plane source of truth. PASO uses it to:
 
 - identify the plugin
 - discover declared channels/skills/config schema or bundle capabilities
@@ -95,7 +95,7 @@ Request-time runtime preloads that ask for the broad `all` scope still derive
 an explicit effective plugin id set from config, startup planning, configured
 channels, slots, and auto-enable rules
 (`resolveEffectivePluginIds` in `src/plugins/effective-plugin-ids.ts`). If that
-derived set is empty, OpenClaw keeps the scope empty instead of widening to
+derived set is empty, PASO keeps the scope empty instead of widening to
 every discoverable plugin.
 
 Setup discovery prefers descriptor-owned ids such as `setup.providers` and
@@ -245,7 +245,7 @@ Provider plugins have three layers:
   stream wrapping, thinking levels, replay policy, and usage endpoints. See
   [Hook order and usage](#hook-order-and-usage).
 
-OpenClaw still owns the generic agent loop, failover, transcript handling, and
+PASO still owns the generic agent loop, failover, transcript handling, and
 tool policy. These hooks are the extension surface for provider-specific
 behavior without needing a whole custom inference transport.
 
@@ -265,9 +265,9 @@ Describe env-driven channel setup and auth through the owning
 
 ### Hook order and usage
 
-For model/provider plugins, OpenClaw calls hooks in this rough order.
+For model/provider plugins, PASO calls hooks in this rough order.
 The "When to use" column is the quick decision guide.
-Compatibility-only provider fields that OpenClaw no longer calls, such as
+Compatibility-only provider fields that PASO no longer calls, such as
 `ProviderPlugin.capabilities` and `suppressBuiltInModel`, are intentionally not
 listed here.
 
@@ -275,7 +275,7 @@ listed here.
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `catalog`                         | Publish provider config into `models.providers` during `models.json` generation                                | Provider owns a catalog or base URL defaults                                                                                                  |
 | `applyConfigDefaults`             | Apply provider-owned global config defaults during config materialization                                      | Defaults depend on auth mode, env, or provider model-family semantics                                                                         |
-| _(built-in model lookup)_         | OpenClaw tries the normal registry/catalog path first                                                          | _(not a plugin hook)_                                                                                                                         |
+| _(built-in model lookup)_         | PASO tries the normal registry/catalog path first                                                              | _(not a plugin hook)_                                                                                                                         |
 | `normalizeModelId`                | Normalize legacy or preview model-id aliases before lookup                                                     | Provider owns alias cleanup before canonical model resolution                                                                                 |
 | `normalizeTransport`              | Normalize provider-family `api` / `baseUrl` before generic model assembly                                      | Provider owns transport cleanup for custom provider ids in the same transport family                                                          |
 | `normalizeConfig`                 | Normalize `models.providers.<id>` before runtime/provider resolution                                           | Provider needs config cleanup that should live with the owning plugin                                                                         |
@@ -296,7 +296,7 @@ listed here.
 | `resolveTransportTurnState`       | Attach native per-turn headers, metadata, or WebSocket policy                                                  | Provider wants generic transports to send provider-native turn identity or tune WebSocket headers and fallback cool-down                      |
 | `resolveWebSocketSessionPolicy`   | Deprecated compatibility hook for WebSocket policy                                                             | Existing plugins migrate WebSocket fields into `resolveTransportTurnState`                                                                    |
 | `formatApiKey`                    | Auth-profile formatter: stored profile becomes the runtime `apiKey` string                                     | Provider stores extra auth metadata and needs a custom runtime token shape                                                                    |
-| `refreshOAuth`                    | OAuth refresh override for custom refresh endpoints or refresh-failure policy                                  | Provider does not fit the shared OpenClaw refreshers                                                                                          |
+| `refreshOAuth`                    | OAuth refresh override for custom refresh endpoints or refresh-failure policy                                  | Provider does not fit the shared PASO refreshers                                                                                              |
 | `buildAuthDoctorHint`             | Repair hint appended when OAuth refresh fails                                                                  | Provider needs provider-owned auth repair guidance after refresh failure                                                                      |
 | `matchesContextOverflowError`     | Provider-owned context-window overflow matcher                                                                 | Provider has raw overflow errors generic heuristics would miss                                                                                |
 | `classifyFailoverReason`          | Provider-owned failover reason classification                                                                  | Provider can map raw API/transport errors to rate-limit/overload/etc                                                                          |
@@ -320,13 +320,13 @@ listed here.
 Normalization dispatch is hook-specific:
 
 - `normalizeModelId` uses the matched provider hook's non-empty result. If none
-  is returned, OpenClaw applies manifest-declared model-ID normalization; it does
+  is returned, PASO applies manifest-declared model-ID normalization; it does
   not try other providers' normalization hooks.
 - `normalizeTransport` tries the matched provider first. Only if that does not
   change `api` or `baseUrl` and the provider has no `models.providers.<id>` entry
   does it try other transport hooks, stopping at the first change.
 - `normalizeConfig` uses the owning bundled provider's lightweight policy surface
-  first. If that surface has no `normalizeConfig` hook, OpenClaw may call the
+  first. If that surface has no `normalizeConfig` hook, PASO may call the
   matched runtime owner, provided runtime loading is allowed and, when a config
   is supplied, that owner has explicit plugin activation. It never scans other
   providers' hooks or falls through after the owning hook returns no change.
@@ -339,9 +339,9 @@ separate core compatibility backstop.
 
 If the provider needs a fully custom wire protocol or custom request executor,
 that is a different class of extension. These hooks are for provider behavior
-that still runs on OpenClaw's normal inference loop.
+that still runs on PASO's normal inference loop.
 
-`resolveUsageAuth` decides whether OpenClaw should call `fetchUsageSnapshot` or
+`resolveUsageAuth` decides whether PASO should call `fetchUsageSnapshot` or
 fall back to generic credential resolution for usage/status surfaces. Return
 `{ token, accountId?, subscriptionType?, rateLimitTier? }` when the provider
 has a usage credential (the optional plan metadata flows into
@@ -419,7 +419,7 @@ mirroring the list.
   <Accordion title="Pass-through catalog providers">
     OpenRouter, Kilocode, Z.AI, xAI register `catalog` plus
     `resolveDynamicModel` / `prepareDynamicModel` so they can surface upstream
-    model ids ahead of OpenClaw's static catalog.
+    model ids ahead of PASO's static catalog.
   </Accordion>
   <Accordion title="OAuth and usage endpoint providers">
     GitHub Copilot, Gemini CLI, ChatGPT Codex, MiniMax, Xiaomi, z.ai pair
@@ -452,12 +452,12 @@ Plugins can access selected core helpers via `api.runtime`. For TTS:
 
 ```ts
 const clip = await api.runtime.tts.textToSpeech({
-  text: "Hello from OpenClaw",
+  text: "Hello from PASO",
   cfg: api.config,
 });
 
 const result = await api.runtime.tts.textToSpeechTelephony({
-  text: "Hello from OpenClaw",
+  text: "Hello from PASO",
   cfg: api.config,
 });
 
@@ -501,7 +501,7 @@ Notes:
 - Use speech providers for vendor-owned synthesis behavior.
 - Legacy Microsoft `edge` input is normalized to the `microsoft` provider id.
 - The preferred ownership model is company-oriented: one vendor plugin can own
-  text, speech, image, and future media providers as OpenClaw adds those
+  text, speech, image, and future media providers as PASO adds those
   capability contracts.
 
 For image/audio/video understanding, plugins register one typed
@@ -586,7 +586,7 @@ Notes:
 - `extractStructuredWithModel(...)` is the plugin-facing seam for bounded
   provider-owned image-first extraction. Include at least one image input;
   text inputs are supplemental context. Product plugins own their routes and
-  schemas while OpenClaw owns the provider/runtime boundary.
+  schemas while PASO owns the provider/runtime boundary.
 - Uses core media-understanding audio configuration (`tools.media.audio`) and provider fallback order.
 - Returns `{ text: undefined }` when no transcription output is produced (for example skipped/unsupported input).
 
@@ -607,7 +607,7 @@ Notes:
 
 - `provider` and `model` are optional per-run overrides, not persistent session changes.
 - `toolsAlsoAllow` accepts exact, uniquely owned tool names registered by the calling plugin. Core and ambiguous names are rejected. It is additive to the normal profile, but operator allowlists and denies remain authoritative.
-- OpenClaw only honors those override fields for trusted callers.
+- PASO only honors those override fields for trusted callers.
 - For plugin-owned fallback runs, operators must opt in with `plugins.entries.<id>.subagent.allowModelOverride: true`.
 - Use `plugins.entries.<id>.subagent.allowedModels` to restrict trusted plugins to specific canonical `provider/model` targets, or `"*"` to allow any target explicitly.
 - Untrusted plugin subagent runs still work, but override requests are rejected instead of silently falling back.
@@ -624,7 +624,7 @@ const providers = api.runtime.webSearch.listProviders({
 const result = await api.runtime.webSearch.search({
   config: api.config,
   args: {
-    query: "OpenClaw plugin runtime helpers",
+    query: "PASO plugin runtime helpers",
     count: 5,
   },
 });
@@ -644,7 +644,7 @@ Notes:
 ```ts
 const result = await api.runtime.imageGeneration.generate({
   config: api.config,
-  args: { prompt: "A friendly lobster mascot", size: "1024x1024" },
+  args: { prompt: "An abstract orange path-step mark", size: "1024x1024" },
 });
 
 const providers = api.runtime.imageGeneration.listProviders({
@@ -836,7 +836,7 @@ plugin implementation.
 Provider plugins can define model catalogs for inference with
 `registerProvider({ catalog: { run(...) { ... } } })`.
 
-`catalog.run(...)` returns the same shape OpenClaw writes into
+`catalog.run(...)` returns the same shape PASO writes into
 `models.providers`:
 
 - `{ provider }` for one provider entry
@@ -845,7 +845,7 @@ Provider plugins can define model catalogs for inference with
 Use `catalog` when the plugin owns provider-specific model ids, base URL
 defaults, or auth-gated model metadata.
 
-`catalog.order` controls when a plugin's catalog merges relative to OpenClaw's
+`catalog.order` controls when a plugin's catalog merges relative to PASO's
 built-in implicit providers:
 
 - `simple`: plain API-key or env-driven providers
@@ -869,7 +869,7 @@ static catalog rows automatically from `defaultModel`, `models`, and
 Compatibility:
 
 - `discovery` still works as a legacy alias, but emits a deprecation warning
-- if both `catalog` and `discovery` are registered, OpenClaw uses `catalog`
+- if both `catalog` and `discovery` are registered, PASO uses `catalog`
   and emits a warning
 - `augmentModelCatalog` is deprecated; bundled providers should publish
   supplemental rows through `registerModelCatalogProvider`
@@ -938,7 +938,7 @@ Keep plugin dependency trees "pure JS/TS" and avoid packages that require
 `postinstall` builds.
 
 Optional: `openclaw.setupEntry` can point at a lightweight setup-only module.
-When OpenClaw needs setup surfaces for a disabled channel plugin, or
+When PASO needs setup surfaces for a disabled channel plugin, or
 when a channel plugin is enabled but still unconfigured, it loads `setupEntry`
 instead of the full plugin entry. This keeps startup and setup lighter
 when your main plugin entry also wires tools, hooks, or other runtime-only
@@ -1013,7 +1013,7 @@ Useful `openclaw.channel` fields beyond the minimal example:
 - `forceAccountBinding`: require explicit account binding even when only one account exists
 - `preferSessionLookupForAnnounceTarget`: prefer session lookup when resolving announce targets
 
-OpenClaw can also merge **external channel catalogs** (for example, an MPM
+PASO can also merge **external channel catalogs** (for example, an MPM
 registry export). Drop a JSON file at one of:
 
 - `~/.openclaw/mpm/plugins.json`
@@ -1172,7 +1172,7 @@ Recommended sequence:
 5. **Add contract coverage.** Add tests so ownership and registration shape
    stay explicit over time.
 
-This is how OpenClaw stays opinionated without becoming hardcoded to one
+This is how PASO stays opinionated without becoming hardcoded to one
 provider's worldview. See [Adding capabilities](/plugins/adding-capabilities)
 for a concrete file checklist and worked example.
 

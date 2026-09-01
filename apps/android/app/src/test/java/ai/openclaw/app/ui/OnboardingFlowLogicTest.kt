@@ -693,7 +693,7 @@ class OnboardingFlowLogicTest {
   @Test
   fun recoveryGatewayDetailPreservesRetryablePairingGuidance() {
     assertEquals(
-      "Gateway approval is in progress. OpenClaw will retry automatically.",
+      "Gateway approval is in progress. PASO will retry automatically.",
       recoveryGatewayDetail(
         ready = false,
         remoteAddress = null,
@@ -754,7 +754,7 @@ class OnboardingFlowLogicTest {
   @Test
   fun recoveryGatewayAuthDetailPreservesProtocolMismatchGuidance() {
     assertEquals(
-      "This app is older than the Gateway. Update OpenClaw on this device, then retry. (app protocol v4, gateway protocol v5).",
+      "This app is older than the Gateway. Update PASO on this device, then retry. (app protocol v4, gateway protocol v5).",
       recoveryGatewayAuthDetail(protocolMismatchProblem(clientMin = 4, clientMax = 4, expected = 5)),
     )
   }
@@ -762,7 +762,7 @@ class OnboardingFlowLogicTest {
   @Test
   fun recoveryGatewayAuthDetailExplainsOlderGatewayProtocolMismatch() {
     assertEquals(
-      "The Gateway is older than this app. Update OpenClaw on the Gateway host, then retry. (app protocol v6, gateway protocol v5).",
+      "The Gateway is older than this app. Update PASO on the Gateway host, then retry. (app protocol v6, gateway protocol v5).",
       recoveryGatewayAuthDetail(protocolMismatchProblem(clientMin = 6, clientMax = 6, expected = 5)),
     )
     assertEquals(
@@ -774,7 +774,7 @@ class OnboardingFlowLogicTest {
   @Test
   fun recoveryGatewayAuthDetailExplainsIncompatibleProtocolMismatch() {
     assertEquals(
-      "The app and Gateway use incompatible protocol versions. Update OpenClaw on both, then retry. (app protocols v4-v6).",
+      "The app and Gateway use incompatible protocol versions. Update PASO on both, then retry. (app protocols v4-v6).",
       recoveryGatewayAuthDetail(protocolMismatchProblem(clientMin = 4, clientMax = 6, expected = null)),
     )
   }
@@ -839,7 +839,7 @@ class OnboardingFlowLogicTest {
         localizeLabel = { label -> "[$label]" },
       )
 
-    assertTrue(diagnostic.contains("[OpenClaw Android gateway diagnostic]"))
+    assertTrue(diagnostic.contains("[PASO Android gateway diagnostic]"))
     assertTrue(diagnostic.contains("[Gateway]: Home Gateway"))
     assertTrue(diagnostic.contains("[Status]: Gateway closed: token mismatch"))
     assertTrue(diagnostic.contains("[Gateway paired]: false"))

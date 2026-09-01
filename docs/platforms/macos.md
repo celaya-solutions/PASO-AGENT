@@ -1,13 +1,13 @@
 ---
-summary: "Install and use the OpenClaw macOS menu bar app"
+summary: "Install and use the PASO macOS menu bar app"
 read_when:
-  - Installing the macOS app
+  - Building the macOS app
   - Deciding between local and remote Gateway mode on macOS
-  - Looking for macOS app release downloads
+  - Checking macOS app release availability
 title: "macOS app"
 ---
 
-The macOS app is the OpenClaw **menu bar companion**: native tray UI, macOS
+The macOS app is the PASO **menu bar companion**: native tray UI, macOS
 permission prompts, notifications, WebChat, voice input, a hosted-widget panel,
 and Mac-hosted node tools such as `system.run`.
 
@@ -20,21 +20,20 @@ bounded image model and renderer.
 
 Only need the CLI and Gateway? Start with [Getting started](/start/getting-started).
 
-## Download
+## Availability
 
-Get macOS app builds from [OpenClaw GitHub releases](https://github.com/openclaw/openclaw/releases).
-When a release ships macOS app assets, look for:
+No Celaya-signed PASO macOS build is published yet. Build the companion from
+source with [macOS dev setup](/platforms/mac/dev-setup). Do not treat upstream
+OpenClaw app assets or signatures as PASO releases.
 
-- `OpenClaw-<version>.dmg` (preferred)
-- `OpenClaw-<version>.zip`
-
-Some releases only ship CLI, evidence, or Windows assets. If the newest release
-has no macOS app asset, use the newest one that does, or build from source with
-[macOS dev setup](/platforms/mac/dev-setup).
+When Celaya Solutions Research publishes a signed build, it will appear on
+[PASO GitHub releases](https://github.com/celaya-solutions/PASO-AGENT/releases).
+The technical bundle and artifact filenames may retain `OpenClaw.app` and the
+`OpenClaw-` prefix for upgrade compatibility; the installed product is PASO.
 
 ## First run
 
-1. Install and launch **OpenClaw.app**.
+1. Install and launch **PASO** (the technical bundle filename remains `OpenClaw.app` for upgrade compatibility).
 2. Pick **This Mac** for a local Gateway, or connect to a remote Gateway.
 3. For a new local Gateway, wait while the app installs its external CLI runtime
    and starts the Gateway. Connecting to a remote or independently managed local
@@ -42,13 +41,13 @@ has no macOS app asset, use the newest one that does, or build from source with
 4. Establish inference with a live model check. If the app reused a login you
    did not want, **Choose a different AI** on the success banner reopens the
    picker, including the API-key option.
-5. Finish. The app opens the dashboard, where OpenClaw guides the rest of the
+5. Finish. The app opens the dashboard, where PASO guides the rest of the
    setup (memory import, channels, permissions) in one conversation. Grant
    macOS permissions any time from **Settings → Permissions**.
 
 If the app reaches an existing Gateway whose default agent has a configured
 model, it treats that Gateway as already set up, skips provider onboarding and
-OpenClaw, and opens the dashboard. If the Gateway cannot connect or its
+PASO, and opens the dashboard. If the Gateway cannot connect or its
 default agent has no model, inference onboarding remains available for
 recovery.
 
@@ -94,7 +93,7 @@ In the macOS app's embedded dashboard, clicking an external web link opens it in
 
 The titlebar controls follow the app sidebar: while it is expanded, back/forward sit at its right edge next to the sidebar toggle; while it is collapsed, they make way for a search button (opens the command palette) and a new-session button.
 
-Drag the empty header space or title in the docked OpenClaw chat panel to move the app window. Its dock-position and close buttons remain clickable.
+Drag the empty header space or title in the docked PASO chat panel to move the app window. Its dock-position and close buttons remain clickable.
 
 Right-click an external link to choose **Open in Sidebar**, **Open in Default Browser**, or **Copy Link**. Modified clicks and user-activated new-window links from the dashboard continue to open in the default browser; new-window links inside the sidebar open as new sidebar tabs. Regular browser-hosted Control UI pages keep the browser's normal link and context-menu behavior.
 

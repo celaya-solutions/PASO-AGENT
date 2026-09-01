@@ -151,7 +151,7 @@ openclaw_e2e_fixture_plugin_command openclaw -- plugins install "$plugin_dir" --
 openclaw release-upgrade ping >"$PLUGIN_CLI_BEFORE_LOG" 2>&1
 node scripts/e2e/lib/release-scenarios/assertions.mjs assert-file-contains "$PLUGIN_CLI_BEFORE_LOG" "release-upgrade-plugin:pong"
 
-openclaw_e2e_install_package "$CANDIDATE_INSTALL_LOG" "candidate OpenClaw package"
+openclaw_e2e_install_package "$CANDIDATE_INSTALL_LOG" "candidate PASO package"
 package_root="$(openclaw_e2e_package_root)"
 entry="$(openclaw_e2e_package_entrypoint "$package_root")"
 openclaw_e2e_enable_openclaw_cli_timeout

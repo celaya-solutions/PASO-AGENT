@@ -3,28 +3,29 @@ import { describe, expect, it } from "vitest";
 import { isOpenClawManagedMatrixDevice, summarizeMatrixDeviceHealth } from "./device-health.js";
 
 describe("matrix device health", () => {
-  it("detects OpenClaw-managed device names", () => {
+  it("detects PASO-managed device names", () => {
+    expect(isOpenClawManagedMatrixDevice("PASO Gateway")).toBe(true);
+    expect(isOpenClawManagedMatrixDevice("PASO Debug")).toBe(true);
     expect(isOpenClawManagedMatrixDevice("OpenClaw Gateway")).toBe(true);
-    expect(isOpenClawManagedMatrixDevice("OpenClaw Debug")).toBe(true);
     expect(isOpenClawManagedMatrixDevice("Element iPhone")).toBe(false);
     expect(isOpenClawManagedMatrixDevice(null)).toBe(false);
   });
 
-  it("summarizes stale OpenClaw-managed devices separately from the current device", () => {
+  it("summarizes stale PASO-managed devices separately from the current device", () => {
     const summary = summarizeMatrixDeviceHealth([
       {
         deviceId: "du314Zpw3A",
-        displayName: "OpenClaw Gateway",
+        displayName: "PASO Gateway",
         current: true,
       },
       {
         deviceId: "BritdXC6iL",
-        displayName: "OpenClaw Gateway",
+        displayName: "PASO Gateway",
         current: false,
       },
       {
         deviceId: "G6NJU9cTgs",
-        displayName: "OpenClaw Debug",
+        displayName: "PASO Debug",
         current: false,
       },
       {
@@ -39,19 +40,19 @@ describe("matrix device health", () => {
       currentOpenClawDevices: [
         {
           deviceId: "du314Zpw3A",
-          displayName: "OpenClaw Gateway",
+          displayName: "PASO Gateway",
           current: true,
         },
       ],
       staleOpenClawDevices: [
         {
           deviceId: "BritdXC6iL",
-          displayName: "OpenClaw Gateway",
+          displayName: "PASO Gateway",
           current: false,
         },
         {
           deviceId: "G6NJU9cTgs",
-          displayName: "OpenClaw Debug",
+          displayName: "PASO Debug",
           current: false,
         },
       ],

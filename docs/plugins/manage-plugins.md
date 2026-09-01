@@ -1,5 +1,5 @@
 ---
-summary: "Manage OpenClaw plugins from the Control UI or CLI"
+summary: "Manage PASO plugins from the Control UI or CLI"
 read_when:
   - You want to browse, install, enable, or disable plugins in the Control UI
   - You want quick plugin list, install, update, inspect, or uninstall examples
@@ -31,7 +31,7 @@ configured Control UI base path. For example, a base path of `/openclaw` uses
   plugins, offers **Remove**. The tab also lists the configured
   [MCP servers](/cli/mcp) with the same menu-driven enable, disable, and remove
   actions, editing `mcp.servers` in the Gateway configuration.
-- **Discover** is the store: featured plugins included with OpenClaw, official
+- **Discover** is the store: featured plugins included with PASO, official
   external plugins, and a curated connector shelf. Connector cards either add a
   hosted MCP server in one click (GitHub, Notion, Linear, Sentry,
   Home Assistant) or jump into a prefilled ClawHub search. Typing in the search
@@ -39,7 +39,7 @@ configured Control UI base path. For example, a base path of `/openclaw` uses
   ClawHub** section with download counts and source-verification badges.
 
 Included plugins do not need a package install. Their menu action is **Enable**
-or **Disable**. Workboard, for example, is included with OpenClaw and disabled
+or **Disable**. Workboard, for example, is included with PASO and disabled
 by default, so choose **Enable** to turn it on. Bundled plugins cannot be
 removed, only disabled.
 
@@ -79,7 +79,7 @@ openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` is a cold inventory check: what OpenClaw can discover from
+`plugins list` is a cold inventory check: what PASO can discover from
 config, manifests, and the persisted plugin registry. It does not prove an
 already-running Gateway imported the plugin runtime. JSON output includes
 registry diagnostics and each plugin's `dependencyStatus` (whether declared
@@ -101,7 +101,7 @@ are enabled by default; others require `enable` after install.
 
 ## Capability consent
 
-OpenClaw asks you to review an external plugin's declared capabilities before
+PASO asks you to review an external plugin's declared capabilities before
 installing or enabling it. The consent screen identifies the plugin, its
 version and source, artifact integrity, and available trust information. It
 also lists declared channels, providers, tools, hooks, MCP servers, CLI
@@ -126,7 +126,7 @@ replacement with unaccepted capabilities.
 
 Declining an update's capability review leaves the previous plugin enabled
 and unchanged. Repairing a missing or damaged artifact requires a fresh review;
-OpenClaw cannot carry acceptance forward from an artifact it cannot verify.
+PASO cannot carry acceptance forward from an artifact it cannot verify.
 
 Carrying an earlier acceptance forward requires the install record to pin
 artifact integrity, which registry and ClawHub installs provide. Sources
@@ -162,7 +162,7 @@ with `--accept-capabilities`:
 /plugins enable <plugin-id> --accept-capabilities
 ```
 
-Bundled plugins are exempt because they ship with the OpenClaw release rather
+Bundled plugins are exempt because they ship with the PASO release rather
 than arriving as separately installed artifacts. Plugins discovered directly
 in a workspace or through `plugins.load.paths`, without a managed install
 record, cannot persist capability acceptance. Their details in the Control UI
@@ -198,9 +198,9 @@ openclaw plugins install --link ./my-plugin
 ```
 
 Bare package specs install from npm during the launch cutover, unless the
-name matches a bundled or official plugin id, in which case OpenClaw uses
+name matches a bundled or official plugin id, in which case PASO uses
 that local/official copy instead. Use `clawhub:`, `npm:`, `git:`, or
-`npm-pack:` for deterministic source selection. OpenClaw's bundled and official
+`npm-pack:` for deterministic source selection. PASO's bundled and official
 catalog packages are trusted alongside ClawHub packages. New arbitrary npm,
 git, local path/archive, `npm-pack:`, or marketplace sources require
 `--force` in noninteractive installs after you review
@@ -213,7 +213,7 @@ ClawHub, or hook-pack install, use `openclaw plugins update` instead. With
 copied or overwritten.
 
 If a newly installed plugin requires configuration that is not present yet,
-OpenClaw records the install but leaves the plugin disabled. Configure
+PASO records the install but leaves the plugin disabled. Configure
 `plugins.entries.<id>.config`, then run `openclaw plugins enable <id>`. If an
 existing config entry is present but invalid, install fails without rewriting it.
 
@@ -268,14 +268,14 @@ have their stale entries, allow/deny policy, exact load paths, channel config,
 and memory/context slot selections reconciled before the new package/index
 state commits; retained/new children and unrelated plugins are preserved.
 
-If OpenClaw cannot prove exactly one package owner and a complete child list,
+If PASO cannot prove exactly one package owner and a complete child list,
 update and uninstall fail closed without changing package files, config, or the
 installed index. Run `openclaw plugins registry --refresh`, inspect
 `openclaw plugins doctor`, and use `openclaw doctor --fix` for repairable legacy
 index state. If the ambiguity remains, reinstall the package before retrying.
 
 `openclaw plugins update --all` is the bulk maintenance path. It still
-respects ordinary tracked install specs, but trusted official OpenClaw
+respects ordinary tracked install specs, but trusted official PASO
 plugin records sync to the current official catalog target instead of
 staying pinned to a stale exact official package. The canonical channel
 resolver uses both `update.channel` and the installed core version, so an
@@ -327,7 +327,7 @@ for the install instead.
 
 | Source      | Use when                                                                    | Example                                                        |
 | ----------- | --------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| ClawHub     | You want OpenClaw-native discovery, scan summaries, versions, and hints     | `openclaw plugins install clawhub:<package>`                   |
+| ClawHub     | You want PASO-native discovery, scan summaries, versions, and hints         | `openclaw plugins install clawhub:<package>`                   |
 | git         | You want a branch, tag, or commit from a repository                         | `openclaw plugins install git:github.com/<owner>/<repo>@<ref>` |
 | local path  | You are developing or testing a plugin on the same machine                  | `openclaw plugins install --link ./my-plugin`                  |
 | marketplace | You are installing a Claude-compatible marketplace plugin                   | `openclaw plugins install <plugin> --marketplace <source>`     |
@@ -340,7 +340,7 @@ with `plugins install`.
 
 ## Publish plugins
 
-ClawHub is the primary public discovery surface for OpenClaw plugins. Publish
+ClawHub is the primary public discovery surface for PASO plugins. Publish
 there when you want users to find plugin metadata, version history, registry
 scan results, and install hints before they install.
 

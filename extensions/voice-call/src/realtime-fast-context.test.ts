@@ -70,7 +70,7 @@ describe("resolveRealtimeFastContextConsult", () => {
       logger,
       labels: {
         audienceLabel: "caller",
-        contextName: "OpenClaw memory or session context",
+        contextName: "PASO memory or session context",
       },
     });
   });

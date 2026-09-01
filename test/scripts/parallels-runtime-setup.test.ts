@@ -29,12 +29,15 @@ describe("Parallels runtime companion setup", () => {
     expect(installCli).not.toHaveBeenCalled();
   });
 
-  it.each(["2026.8.1", "2026.8.1-beta.2"])(
-    "pins only the reviewed runtime companion to installed candidate %s",
-    async (version) => {
+  it.each([
+    { brand: "PASO", version: "2026.8.1" },
+    { brand: "OpenClaw", version: "2026.8.1-beta.2" },
+  ])(
+    "pins only the reviewed runtime companion to installed $brand candidate $version",
+    async ({ brand, version }) => {
       const readCli = vi.fn((args: string[]) =>
         args[0] === "--version"
-          ? `OpenClaw ${version} (abcdef0)\n`
+          ? `${brand} ${version} (abcdef0)\n`
           : "Options:\n  --accept-capabilities  Accept declared capabilities\n",
       );
       const installCli = vi.fn().mockResolvedValue(undefined);
@@ -65,7 +68,7 @@ describe("Parallels runtime companion setup", () => {
     const installCli = vi.fn();
     await expect(
       installSmokeRuntimeCompanions({ provider: "openai", readCli, installCli }),
-    ).rejects.toThrow("could not resolve installed OpenClaw version");
+    ).rejects.toThrow("could not resolve installed PASO/OpenClaw compatibility version");
     expect(installCli).not.toHaveBeenCalled();
   });
 });

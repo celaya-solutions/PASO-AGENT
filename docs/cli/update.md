@@ -10,10 +10,12 @@ title: "Update"
 
 # `openclaw update`
 
-Update OpenClaw and switch between stable/extended-stable/beta/dev channels.
+Update a PASO source checkout or a supported upstream compatibility package and
+switch between stable/extended-stable/beta/dev channels.
 
-If you installed via **npm/pnpm/bun** (global install, no git metadata),
-updates go through the package-manager flow described in
+If you installed the lowercase upstream `openclaw` package via
+**npm/pnpm/bun** (global install, no git metadata), updates go through the
+compatibility package-manager flow described in
 [Updating](/install/updating).
 
 ## Usage
@@ -75,7 +77,7 @@ changes before modifying the checkout. Use `openclaw update status` to inspect
 the current branch, version, and update availability.
 
 <Note>
-In Nix mode (`OPENCLAW_NIX_MODE=1`), mutating `openclaw update` runs are disabled. Update the Nix source or flake input for this install instead; for nix-openclaw, use the agent-first [Quick Start](https://github.com/openclaw/nix-openclaw#quick-start). `openclaw update status` and `openclaw update --dry-run` remain read-only.
+In Nix mode (`OPENCLAW_NIX_MODE=1`), mutating `openclaw update` runs are disabled. Update the Nix source or flake input for this install instead; for the upstream nix-openclaw compatibility module, use its agent-first [Quick Start](https://github.com/openclaw/nix-openclaw#quick-start). `openclaw update status` and `openclaw update --dry-run` remain read-only.
 </Note>
 
 <Warning>
@@ -101,7 +103,7 @@ openclaw update status --timeout 10
 | `--json`              | `false` | Print machine-readable status JSON. |
 | `--timeout <seconds>` | `3`     | Timeout for checks.                 |
 
-For extended-stable package installs, status performs the same public selector
+For upstream extended-stable compatibility package installs, status performs the same public selector
 and exact-package verification as foreground update. It can report
 `ahead of extended-stable` when the installed version is newer. JSON failures
 include `registry.reason` (`selector_missing`, `selector_query_failed`,
@@ -122,14 +124,14 @@ openclaw update repair --json
 openclaw update repair --accept-capabilities
 ```
 
-| Flag                                             | Description                                                                                                                                                                                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--channel <stable\|extended-stable\|beta\|dev>` | Persist the core update channel before repair. For extended-stable, eligible official npm plugins that follow bare/default or `latest` intent target the exact installed core version. Extended-stable repair is rejected on Git checkouts without changing config. |
-| `--json`                                         | Print machine-readable finalization JSON.                                                                                                                                                                                                                           |
-| `--timeout <seconds>`                            | Timeout for repair steps. Default `1800`.                                                                                                                                                                                                                           |
-| `--yes`                                          | Skip confirmation prompts.                                                                                                                                                                                                                                          |
-| `--accept-capabilities`                          | Accept each plugin's reviewed capability changes while repairing plugin state.                                                                                                                                                                                      |
-| `--no-restart`                                   | Accepted for parity; repair never restarts the Gateway.                                                                                                                                                                                                             |
+| Flag                                             | Description                                                                                                                                                                                                                                                                                                   |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--channel <stable\|extended-stable\|beta\|dev>` | Persist the core update channel before repair. For upstream extended-stable compatibility installs, eligible upstream framework npm plugins that follow bare/default or `latest` intent target the exact installed core version. Extended-stable repair is rejected on Git checkouts without changing config. |
+| `--json`                                         | Print machine-readable finalization JSON.                                                                                                                                                                                                                                                                     |
+| `--timeout <seconds>`                            | Timeout for repair steps. Default `1800`.                                                                                                                                                                                                                                                                     |
+| `--yes`                                          | Skip confirmation prompts.                                                                                                                                                                                                                                                                                    |
+| `--accept-capabilities`                          | Accept each plugin's reviewed capability changes while repairing plugin state.                                                                                                                                                                                                                                |
+| `--no-restart`                                   | Accepted for parity; repair never restarts the Gateway.                                                                                                                                                                                                                                                       |
 
 `update repair` runs `openclaw doctor --fix`, reloads the repaired config and
 install records, syncs tracked plugins for the active update channel, updates
@@ -243,16 +245,19 @@ freshness or dependencies. Those checks run when you apply the update; use
 Switching channels explicitly (`--channel ...`) also keeps the install method
 aligned:
 
-- `dev` -> ensures a git checkout (default `~/openclaw`, or
+- `dev` -> ensures a PASO git checkout (default `~/openclaw`, or
   `$OPENCLAW_HOME/openclaw` when `OPENCLAW_HOME` is set; override with
   `OPENCLAW_GIT_DIR`), updates it, and installs the global CLI from that
   checkout.
-- `stable` -> installs from npm using `latest`.
-- `extended-stable` -> resolves the public npm `extended-stable` selector,
-  verifies the exact selected package, and installs that exact version. It
-  does not fall back to another selector and is rejected for Git checkouts.
-- `beta` -> prefers npm dist-tag `beta`, falling back to `latest` when beta is
-  missing or older than the current stable release.
+- `stable` -> selects the latest stable PASO tag for source checkouts. Existing
+  upstream compatibility package installs stay on the upstream npm `latest`
+  selector.
+- `extended-stable` -> exists only for the upstream compatibility package. It
+  verifies the exact public npm `extended-stable` selection, does not fall back
+  to another selector, and is rejected for PASO git checkouts.
+- `beta` -> selects a PASO beta git tag, falling back to the latest stable PASO
+  tag when needed. Upstream package installs instead use npm `beta`, with their
+  existing fallback to upstream `latest`.
 
 ### Restart handoff
 
@@ -316,7 +321,7 @@ metadata, so the same runtime mismatch stops before package mutation.
 
 On macOS, the post-update check also verifies the LaunchAgent is
 loaded/running for the active profile and the configured loopback port is
-healthy. If the plist is installed but launchd is not supervising it, OpenClaw
+healthy. If the plist is installed but launchd is not supervising it, PASO
 re-bootstraps the LaunchAgent automatically and reruns the health/version/
 channel readiness checks (a fresh bootstrap loads the `RunAtLoad` job directly,
 so recovery does not immediately `kickstart -k` the newly spawned Gateway).
@@ -344,7 +349,7 @@ separately from the CLI update that continues after the Gateway exits:
   and scheduled its own restart so the detached helper can run
   `openclaw update --yes --json` outside the live service process.
 - `ok: false`, `result.reason: "managed-service-handoff-unavailable"`, and
-  `handoff.status: "unavailable"`: OpenClaw could not find a supervising
+  `handoff.status: "unavailable"`: PASO could not find a supervising
   service boundary and durable service identity for a safe handoff (for
   example, systemd handoff requires the `OPENCLAW_SYSTEMD_UNIT` unit identity,
   not just ambient systemd process markers). The response includes
@@ -382,7 +387,7 @@ returns the latest sentinel.
   <Step title="Switch channel">
     Switches to the selected channel (tag or branch).
   </Step>
-  <Step title="Fetch upstream">
+  <Step title="Fetch PASO origin">
     Dev only.
   </Step>
   <Step title="Preflight build (dev only)">
@@ -414,13 +419,13 @@ returns the latest sentinel.
 
 ### Plugin sync details
 
-After a beta core update, eligible official npm plugins with a default/latest
+After an upstream beta package update, eligible upstream framework npm plugins with a default/latest
 catalog target try the exact installed core version. This also applies to a
 one-off `--tag <beta-version>` while the configured channel is stable, including
 when plugin synchronization resumes in a fresh process. Other default-line npm
-and ClawHub plugins on the beta channel try their plugin `@beta` tag.
+and catalog-installed plugins on the beta channel try their plugin `@beta` tag.
 
-If the selected beta plugin release is unavailable, OpenClaw falls back to the
+If the selected beta plugin release is unavailable, PASO falls back to the
 default/latest spec and reports a warning naming the requested and used targets.
 For npm plugins, this also applies when the selected beta package fails install
 validation. These fallback warnings do not fail the core update. Ordinary exact
@@ -433,35 +438,35 @@ If an exact pinned npm plugin update resolves to an artifact whose integrity dif
 </Warning>
 
 <Note>
-Post-update plugin sync failures that are scoped to a managed plugin and that the sync path can route around (for example an unreachable npm registry for a non-essential plugin) are reported as warnings after the core update succeeds. The JSON result keeps top-level update `status: "ok"` and reports `postUpdate.plugins.status: "warning"` with `openclaw update repair` and `openclaw plugins inspect <id> --runtime --json` guidance. Unexpected updater or sync exceptions still fail the update result. Fix the plugin install or update error, then rerun `openclaw update repair`. When a failed update leaves a managed plugin unusable, OpenClaw disables its runtime entry and resets active slots without changing the operator-authored `plugins.allow` or `plugins.deny` policy.
+Post-update plugin sync failures that are scoped to a managed plugin and that the sync path can route around (for example an unreachable npm registry for a non-essential plugin) are reported as warnings after the core update succeeds. The JSON result keeps top-level update `status: "ok"` and reports `postUpdate.plugins.status: "warning"` with `openclaw update repair` and `openclaw plugins inspect <id> --runtime --json` guidance. Unexpected updater or sync exceptions still fail the update result. Fix the plugin install or update error, then rerun `openclaw update repair`. When a failed update leaves a managed plugin unusable, PASO disables its runtime entry and resets active slots without changing the operator-authored `plugins.allow` or `plugins.deny` policy.
 
-After the per-plugin sync step, `openclaw update` runs a mandatory **post-core convergence** pass before the gateway restarts: it repairs missing configured plugin payloads, validates each _active_ tracked install record on disk, and statically verifies its `package.json` is parseable and its declared `openclaw.extensions` entries are loadable. When a package does not declare OpenClaw extensions, the check instead verifies any explicitly declared npm `main`. Failures from this pass, and an invalid config snapshot, return `postUpdate.plugins.status: "error"` and flip the top-level update `status` to `"error"`, so `openclaw update` exits non-zero and the gateway is _not_ restarted with an unverified plugin set. The error includes structured `postUpdate.plugins.warnings[].guidance` lines pointing at `openclaw update repair` and `openclaw plugins inspect <id> --runtime --json`. Disabled plugin entries and records that are not trusted-source-linked official sync targets are skipped here (mirroring the `skipDisabledPlugins` policy used by the missing-payload check), so a stale disabled plugin record cannot block an otherwise valid update.
+After the per-plugin sync step, `openclaw update` runs a mandatory **post-core convergence** pass before the gateway restarts: it repairs missing configured plugin payloads, validates each _active_ tracked install record on disk, and statically verifies its `package.json` is parseable and its declared `openclaw.extensions` entries are loadable. When a package does not declare PASO extensions, the check instead verifies any explicitly declared npm `main`. Failures from this pass, and an invalid config snapshot, return `postUpdate.plugins.status: "error"` and flip the top-level update `status` to `"error"`, so `openclaw update` exits non-zero and the gateway is _not_ restarted with an unverified plugin set. The error includes structured `postUpdate.plugins.warnings[].guidance` lines pointing at `openclaw update repair` and `openclaw plugins inspect <id> --runtime --json`. Disabled plugin entries and records that are not trusted-source-linked official sync targets are skipped here (mirroring the `skipDisabledPlugins` policy used by the missing-payload check), so a stale disabled plugin record cannot block an otherwise valid update.
 
 When the updated Gateway starts, plugin loading is verify-only: startup does not run package managers or mutate dependency trees. Package-manager `update.run` restarts are handed to the CLI managed-service path, so the package swap happens outside the old Gateway process and the service health checks decide whether the update can be reported as complete.
 </Note>
 
 After an extended-stable core update succeeds, post-core plugin integrity and
-convergence target eligible official npm plugins at the exact installed core
-version. For default/`latest` intent, OpenClaw does not query plugin
+convergence target eligible upstream framework npm plugins at the exact installed core
+version. For default/`latest` intent, the updater does not query plugin
 `@extended-stable` or fall back to npm `latest`; it derives the package version
 from the installed core. Explicit version pins, explicit non-`latest` tags,
 third-party packages, and non-npm sources keep their existing intent.
 
-For package-manager installs, `openclaw update` resolves the target package
+For upstream compatibility package-manager installs, `openclaw update` resolves the target package
 version before invoking the package manager. npm global installs use a staged
-install: OpenClaw installs the new package into a temporary npm prefix,
+install: the updater installs the new package into a temporary npm prefix,
 lets the candidate package validate the host Node version during `preinstall`,
 and verifies the packaged `dist` inventory there. A packed completion guard
 stays outside that inventory until `preinstall` succeeds, so package managers
 that skip lifecycle scripts also stop before activation. On npm 12 and newer,
-the updater approves only the candidate OpenClaw lifecycle; transitive
-dependency scripts remain blocked. OpenClaw then swaps the clean package tree
+the updater approves only the candidate upstream package lifecycle; transitive
+dependency scripts remain blocked. It then swaps the clean package tree
 into the real global prefix. If verification fails, post-update doctor, plugin
 sync, and restart work do not run from the suspect tree. Even when the
 installed version already matches the target, the command refreshes the
 global package install, then runs plugin sync, a core-command completion
 refresh, and restart work. This keeps packaged sidecars and channel-owned
-plugin records aligned with the installed OpenClaw build, while leaving full
+plugin records aligned with the installed upstream compatibility build, while leaving full
 plugin-command completion rebuilds to explicit
 `openclaw completion --write-state` runs.
 

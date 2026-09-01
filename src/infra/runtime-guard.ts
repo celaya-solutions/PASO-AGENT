@@ -1,4 +1,4 @@
-// Validates the current runtime against OpenClaw's Node engine floor.
+// Validates the current runtime against PASO's Node engine floor.
 import process from "node:process";
 import { format } from "node:util";
 import { expectDefined } from "@openclaw/normalization-core";
@@ -110,7 +110,7 @@ function detectCurrentRuntimeSqlite(): { available: boolean; version: string | n
   }
 }
 
-/** Returns whether a detected runtime meets OpenClaw's minimum runtime contract. */
+/** Returns whether a detected runtime meets PASO's minimum runtime contract. */
 function runtimeSatisfies(details: RuntimeDetails): boolean {
   if (details.kind === "node") {
     return isSupportedNodeVersion(details.version);
@@ -126,17 +126,17 @@ function runtimeSatisfies(details: RuntimeDetails): boolean {
   return false;
 }
 
-/** Returns whether the current process runtime satisfies OpenClaw's engine contract. */
+/** Returns whether the current process runtime satisfies PASO's engine contract. */
 export function isCurrentRuntimeSupported(): boolean {
   return runtimeSatisfies(detectRuntime());
 }
 
-/** Checks a Node version label against OpenClaw's supported Node version range. */
+/** Checks a Node version label against PASO's supported Node version range. */
 export function isSupportedNodeVersion(version: string | null): boolean {
   return isSupportedOpenClawNodeVersion(version);
 }
 
-/** Checks a Bun version label against OpenClaw's minimum supported release. */
+/** Checks a Bun version label against PASO's minimum supported release. */
 export function isSupportedBunVersion(version: string | null): boolean {
   return isAtLeast(parseSemver(version), MINIMUM_BUN_VERSION);
 }
@@ -212,7 +212,7 @@ export function assertSupportedRuntime(
       : "openclaw requires Node >=22.22.3 <23, >=24.15.0 <25, or >=25.9.0.";
   const retryHint =
     details.kind === "bun"
-      ? "Upgrade Bun or run OpenClaw with a supported Node release."
+      ? "Upgrade Bun or run PASO with a supported Node release."
       : "Upgrade Node and re-run openclaw.";
 
   runtime.error(

@@ -15,14 +15,14 @@ struct QuickChatRecentsTests {
 
         let items = QuickChatRecentMenuLogic.items(
             rows: rows,
-            agentName: "Molty",
+            agentName: "PASO",
             selectedTarget: nil,
             now: now)
 
         #expect(items.count == 6)
         #expect(items[0] == QuickChatRecentMenuItem(
             id: "new-message",
-            title: "New message to Molty",
+            title: "New message to PASO",
             target: nil,
             isSelected: true))
         #expect(items[1].title == "Session 0 — 2m ago")
@@ -39,7 +39,7 @@ struct QuickChatRecentsTests {
 
         let items = QuickChatRecentMenuLogic.items(
             rows: [row],
-            agentName: "Molty",
+            agentName: "PASO",
             selectedTarget: target,
             now: now)
 

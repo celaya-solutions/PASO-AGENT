@@ -137,7 +137,7 @@ struct ChatAgentAvatar: View {
                 return initials.uppercased()
             }
         }
-        return "OC"
+        return "P"
     }
 
     private var fontSize: CGFloat {

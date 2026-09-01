@@ -608,7 +608,13 @@ ensure
 end
 
 def app_store_signing_manifest
-  JSON.parse(File.read(File.join(ios_root, "Config", "AppStoreSigning.json")))
+  manifest = JSON.parse(File.read(File.join(ios_root, "Config", "AppStoreSigning.json")))
+  unless manifest["releaseEnabled"] == true
+    UI.user_error!(
+      "PASO iOS publishing is disabled. The checked-in signing identity is retained only for upstream OpenClaw compatibility."
+    )
+  end
+  manifest
 end
 
 def app_store_signing_targets
@@ -2123,7 +2129,7 @@ platform :ios do
       api_key: api_key,
       force: true,
       app_version: version_metadata[:short_version],
-      copyright: "2026 OpenClaw",
+      copyright: "2026 Celaya Solutions Research",
       primary_category: "PRODUCTIVITY",
       secondary_category: "UTILITIES",
       metadata_path: metadata_path,

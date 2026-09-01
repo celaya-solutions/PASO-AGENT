@@ -10,7 +10,7 @@ type ConfigSchemaShape<T extends object> = {
 const TelemetryConfigShape = {
   enabled: z.boolean().optional().register(configUiMetadata, {
     label: "Anonymous Feature Statistics",
-    help: "Shares enabled channel and provider names, plugin count, and recent session count with the daily update check. Disabled by default and always disabled when DO_NOT_TRACK=1.",
+    help: "Shares enabled channel and provider names, plugin count, and recent session count with an operator-configured endpoint. PASO has no default endpoint; sharing is disabled by default and always disabled when DO_NOT_TRACK=1.",
   }),
   consentedAt: z.string().datetime().optional().register(configUiMetadata, {
     label: "Feature Statistics Consent Timestamp",

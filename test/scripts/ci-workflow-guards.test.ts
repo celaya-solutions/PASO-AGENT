@@ -61,7 +61,7 @@ const PUBLISH_GENERATED_PR_ACTION = ".github/actions/publish-generated-pr/action
 const SETUP_ANDROID_TOOLCHAIN_ACTION = ".github/actions/setup-android-toolchain/action.yml";
 const MATURITY_SCORECARD_WORKFLOW = ".github/workflows/maturity-scorecard.yml";
 const MATURITY_SCORECARD_WORKFLOW_REF =
-  "openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main";
+  "celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main";
 const OIDC_BOUND_MAIN_REUSABLE_WORKFLOWS = new Set<string>();
 const AMBIGUOUS_MAIN_PUSH_DIAGNOSTIC =
   "::error title=ambiguous main push::github.event.before is zero; refusing to infer a diff base for a created or recreated main branch.";
@@ -773,7 +773,7 @@ function runMaturityInvocationScenario(options: {
       CALLER_WORKFLOW_REF: options.callerWorkflowRef,
       JOB_WORKFLOW_FILE_PATH: MATURITY_SCORECARD_WORKFLOW,
       JOB_WORKFLOW_REF: options.jobWorkflowRef ?? MATURITY_SCORECARD_WORKFLOW_REF,
-      JOB_WORKFLOW_REPOSITORY: "openclaw/openclaw",
+      JOB_WORKFLOW_REPOSITORY: "celaya-solutions/PASO-AGENT",
       PATH: process.env.PATH ?? "",
       PUBLISH_PULL_REQUEST: String(options.publishPullRequest),
     },
@@ -1488,6 +1488,35 @@ describe("ci workflow guards", () => {
     delete workflow.jobs["ci-gate"];
 
     expect(readCiWorkflow()).toEqual(expected);
+  });
+
+  it("keeps renameable workflow display names PASO-owned", () => {
+    const expectedNames = [
+      [
+        ".github/workflows/openclaw-scheduled-live-checks.yml",
+        "PASO Scheduled Live And E2E Checks",
+      ],
+      [
+        ".github/workflows/openclaw-live-and-e2e-checks-reusable.yml",
+        "PASO Live And E2E Checks (Reusable)",
+      ],
+      [
+        ".github/workflows/openclaw-cross-os-release-checks-reusable.yml",
+        "PASO Cross-OS Release Checks (Reusable)",
+      ],
+      [".github/workflows/openclaw-stable-main-closeout.yml", "PASO Stable Main Closeout"],
+      [".github/workflows/openclaw-release-telegram-qa.yml", "PASO Release Telegram QA"],
+    ] as const;
+
+    for (const [workflowPath, expectedName] of expectedNames) {
+      const parsed = parse(readFileSync(workflowPath, "utf8"));
+      expect(parsed.name, workflowPath).toBe(expectedName);
+    }
+
+    const linuxRelease = parse(readFileSync(".github/workflows/linux-app-release.yml", "utf8"));
+    expect(linuxRelease.on.workflow_dispatch.inputs.tag.description).toBe(
+      "Existing PASO release tag to receive Linux companion bundles, for example v2026.7.1",
+    );
   });
 
   it("gates frozen runtime-pair compatibility on the trusted suite outcome", () => {
@@ -5913,9 +5942,9 @@ server.listen(0, "127.0.0.1", () => {
     const workflow = parse(source);
     const steps = workflow.jobs["sync-publish-repo"].steps as WorkflowStep[];
     expect(steps.map(({ name }) => name)).toEqual([
-      "Skip publish sync without token",
+      "Resolve PASO docs sync targets",
       "Checkout source repo",
-      "Checkout ClawHub docs source",
+      "Checkout configured plugin docs source",
       "Prepare Git owner",
       "Setup Node",
       "Clone publish repo",
@@ -5926,22 +5955,22 @@ server.listen(0, "127.0.0.1", () => {
     ]);
     expect(steps[3]).toEqual({
       name: "Prepare Git owner",
-      if: "env.OPENCLAW_DOCS_SYNC_TOKEN != ''",
-      uses: "openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
+      if: "steps.target.outputs.enabled == 'true'",
+      uses: "celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
     });
     expect(steps[1]).toMatchObject({ with: { "fetch-depth": 0 } });
     expect(steps[2]).toMatchObject({
       with: {
-        repository: "openclaw/clawhub",
+        repository: "${{ vars.PASO_CLAWHUB_SOURCE_REPOSITORY }}",
         ref: "main",
         path: "clawhub-source",
         "fetch-depth": 1,
         "persist-credentials": false,
       },
     });
-    expect(steps.slice(1).every((step) => step.if === "env.OPENCLAW_DOCS_SYNC_TOKEN != ''")).toBe(
-      true,
-    );
+    expect(
+      steps.slice(1).every((step) => step.if === "steps.target.outputs.enabled == 'true'"),
+    ).toBe(true);
     expect(source).not.toContain("setup-python");
     expect(workflow.concurrency).toEqual({
       group:
@@ -5968,8 +5997,10 @@ server.listen(0, "127.0.0.1", () => {
     expect(clone).toContain('publish = os.path.join(workspace, "publish")');
     expect(clone).toContain('subprocess.run(["rm", "-rf", publish], check=True)');
     expect(clone).toContain(
-      "https://x-access-token:{os.environ['OPENCLAW_DOCS_SYNC_TOKEN']}@github.com/openclaw/docs.git",
+      "https://x-access-token:{os.environ['PASO_DOCS_SYNC_TOKEN']}@github.com/{os.environ['PASO_DOCS_PUBLISH_REPOSITORY']}.git",
     );
+    expect(source).not.toContain("github.com/openclaw/docs.git");
+    expect(source).not.toContain("repository: openclaw/clawhub");
     const calls = [...`${clone}\n${publish}`.matchAll(/run_git\(([\s\S]*?)\)(?=\n|$)/gu)].map(
       (match) => match[1]!,
     );
@@ -6003,13 +6034,17 @@ server.listen(0, "127.0.0.1", () => {
   });
 
   it("pins plugin publication owners before selected checkout and preserves Git deadlines", () => {
-    const owner = {
+    const upstreamOwner = {
       name: "Prepare Git owner",
       uses: "openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
     };
+    const pasoOwner = {
+      name: "Prepare Git owner",
+      uses: "celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
+    };
     const clawhub = parse(readFileSync(".github/workflows/plugin-clawhub-release.yml", "utf8"));
     const clawhubSteps = clawhub.jobs.preview_plugins_clawhub.steps as WorkflowStep[];
-    expect(clawhubSteps[0]).toEqual(owner);
+    expect(clawhubSteps[0]).toEqual(upstreamOwner);
     expect(clawhubSteps[1]?.name).toBe("Checkout");
     const clawhubBodies = clawhubSteps.map(({ run }) => run ?? "").join("\n");
     expect(clawhubBodies.match(/timeout=120/gu)).toHaveLength(3);
@@ -6025,8 +6060,9 @@ server.listen(0, "127.0.0.1", () => {
       ["publish_plugins_npm", "Checkout trusted publication tooling"],
     ] as const) {
       const steps = npm.jobs[jobName].steps as WorkflowStep[];
-      expect(steps[0], jobName).toEqual(owner);
-      expect(steps[1]?.name, jobName).toBe(checkoutName);
+      const checkoutIndex = steps.findIndex(({ name }) => name === checkoutName);
+      expect(checkoutIndex, jobName).toBeGreaterThan(0);
+      expect(steps[checkoutIndex - 1], jobName).toEqual(pasoOwner);
     }
     const npmBodies = [
       ...npm.jobs.preview_plugins_npm.steps,
@@ -9930,7 +9966,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
       expect(steps.filter((step) => step.name === "Prepare Git owner")).toHaveLength(1);
       expect(steps[ownerIndex]).toEqual({
         name: "Prepare Git owner",
-        uses: "openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
+        uses: "celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
       });
       expect(steps[ownerIndex - 1]?.name).toBe(
         job === "validate_selected_ref"
@@ -10104,7 +10140,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
         type: "string",
       },
       ref: {
-        description: "OpenClaw branch, tag, or SHA containing the maturity score source",
+        description: "PASO branch, tag, or SHA containing the maturity score source",
         required: true,
         type: "string",
       },
@@ -10199,9 +10235,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
       JOB_CONTEXT: "${{ toJSON(job) }}",
     });
     expect(qaAuthorizeStep.with?.script).toContain("callerWorkflowRef !== calledWorkflowRef");
-    expect(qaAuthorizeStep.with?.script).toContain(
-      'job.workflow_repository === "openclaw/openclaw"',
-    );
+    expect(qaAuthorizeStep.with?.script).toContain("job.workflow_repository === repository");
     expect(qaAuthorizeStep.with?.script).toContain("job.workflow_ref === calledWorkflowRef");
     expect(qaAuthorizeStep.with?.script).toContain(
       'core.setOutput("authorized", trustedMainCaller ? "true" : "false")',
@@ -10279,16 +10313,14 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
       expect(permissionStep.with?.script).toContain("getCollaboratorPermissionLevel");
       expect(permissionStep.with?.script).toContain('new Set(["admin", "maintain", "write"])');
       expect(permissionStep.with?.script).toContain("callerWorkflowRef !== calledWorkflowRef");
-      expect(permissionStep.with?.script).toContain(
-        'job.workflow_repository === "openclaw/openclaw"',
-      );
+      expect(permissionStep.with?.script).toContain("job.workflow_repository === repository");
       expect(permissionStep.with?.script).toContain("job.workflow_ref === calledWorkflowRef");
       expect(permissionStep.with?.script).toContain("if (!trustedMainCaller)");
       expect(trustedCheckout).toMatchObject({
         name: "Checkout trusted QA harness",
         uses: CHECKOUT_V6,
         with: {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           ref: "main",
           "fetch-depth": 1,
           "persist-credentials": false,
@@ -10299,7 +10331,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
       );
       expect(checkoutSteps).toHaveLength(1);
       expect(checkoutSteps[0]?.with).toMatchObject({
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         ref: "main",
       });
       expect(restoreTrusted).toMatchObject({
@@ -10571,7 +10603,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
     );
     expect(maturityPermissionStep.with?.script).toContain(`"${MATURITY_SCORECARD_WORKFLOW_REF}"`);
     expect(maturityPermissionStep.with?.script).toContain(
-      'job.workflow_repository === "openclaw/openclaw"',
+      'job.workflow_repository === "celaya-solutions/PASO-AGENT"',
     );
     expect(maturityPermissionStep.with?.script).toContain("job.workflow_ref === calledWorkflowRef");
     expect(workflowStep.env.JOB_CONTEXT).toBe("${{ toJSON(job) }}");
@@ -10631,7 +10663,7 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
       `github.workflow_ref == '${MATURITY_SCORECARD_WORKFLOW_REF}' &&`,
       `needs.validate_selected_ref.outputs.workflow_file_path == '${MATURITY_SCORECARD_WORKFLOW}' &&`,
       `needs.validate_selected_ref.outputs.workflow_ref == '${MATURITY_SCORECARD_WORKFLOW_REF}' &&`,
-      "needs.validate_selected_ref.outputs.workflow_repository == 'openclaw/openclaw' }}",
+      "needs.validate_selected_ref.outputs.workflow_repository == 'celaya-solutions/PASO-AGENT' }}",
     ].join(" ");
     expect(publisherPreflight.needs).toBe("validate_selected_ref");
     expect(publisherPreflight.if).toBe("${{ inputs.publish_pull_request }}");
@@ -11610,7 +11642,11 @@ printf '%s\n' "\${CURL_SUCCESS_IP:-203.0.113.7}"
 it("pins generated publisher and maturity owners before credentials and selected checkout", () => {
   const pinned = {
     name: "Prepare Git owner",
-    uses: "openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
+    uses: "celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
+  };
+  const pasoPinned = {
+    name: "Prepare Git owner",
+    uses: "celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475",
   };
   const action = parse(readFileSync(PUBLISH_GENERATED_PR_ACTION, "utf8"));
   expect(action.runs.steps.map(({ name }: WorkflowStep) => name)).toEqual([
@@ -11621,7 +11657,7 @@ it("pins generated publisher and maturity owners before credentials and selected
   expect(action.runs.steps[0]).toEqual(pinned);
   const steps: WorkflowStep[] = readMaturityScorecardWorkflow().jobs.validate_selected_ref.steps;
   const checkout = steps.findIndex(({ name }) => name === "Checkout selected ref");
-  expect(steps[checkout - 1]).toEqual(pinned);
+  expect(steps[checkout - 1]).toEqual(pasoPinned);
   expect(steps[checkout + 1]?.name).toBe("Validate selected ref");
   const policy = expectDefined(steps[checkout + 1]?.run, "validation body");
   expect(policy).toContain('exec python3 -I -S "$CI_GIT_OWNER" --policy -');
@@ -11678,7 +11714,14 @@ it("pins simple release admission owners before selected checkout and preserves 
     const workflow = parse(readFileSync(entry.file, "utf8"));
     const steps = workflow.jobs[entry.job].steps as WorkflowStep[];
     const checkout = steps.findIndex(({ name }) => name === entry.checkout);
-    expect(steps[checkout - 1]).toEqual(pinned);
+    if (entry.file === ".github/workflows/macos-release.yml") {
+      expect(steps[checkout + 1]).toEqual({
+        name: "Prepare Git owner",
+        uses: "./.github/actions/git-owner",
+      });
+    } else {
+      expect(steps[checkout - 1]).toEqual(pinned);
+    }
     const validation = steps.find(({ name }) => name === entry.validation);
     const body = expectDefined(validation?.run, `${entry.file} admission body`);
     expect(body).not.toMatch(/timeout --|(?:^|\s)git (?:fetch|rev-parse|merge-base)\b/mu);

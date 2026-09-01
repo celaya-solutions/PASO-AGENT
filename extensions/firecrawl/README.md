@@ -1,12 +1,12 @@
-# OpenClaw Firecrawl Plugin
+# PASO Firecrawl Plugin
 
-Official OpenClaw plugin for Firecrawl.
+Official PASO plugin for Firecrawl.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/firecrawl-plugin
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/tools/firecrawl> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/firecrawl.md> for setup and configuration.

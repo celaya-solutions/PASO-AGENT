@@ -25,7 +25,7 @@ const mockGrokProvider = vi.hoisted(() => ({
   pluginId: "xai",
   label: "Grok",
   hint: "Search with xAI",
-  docsUrl: "https://docs.openclaw.ai/tools/web",
+  docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
   requiresCredential: true,
   credentialLabel: "xAI API key",
   placeholder: "xai-...",
@@ -116,7 +116,7 @@ const mockCodexProvider = vi.hoisted(() => ({
   pluginId: "codex",
   label: "Codex Hosted Search",
   hint: "Grounded answers through your Codex app-server account",
-  docsUrl: "https://docs.openclaw.ai/tools/web",
+  docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
   requiresCredential: false,
   credentialLabel: "Codex app-server account",
   placeholder: "",
@@ -469,10 +469,10 @@ describe("runSearchSetupFlow", () => {
     expect(note).toHaveBeenNthCalledWith(
       3,
       [
-        "Secret references enabled — OpenClaw will store a reference instead of the API key.",
+        "Secret references enabled — PASO will store a reference instead of the API key.",
         "Env var: XAI_API_KEY.",
         "Set XAI_API_KEY in the Gateway environment.",
-        "Docs: https://docs.openclaw.ai/tools/web",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Web search",
     );

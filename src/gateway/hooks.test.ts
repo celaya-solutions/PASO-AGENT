@@ -10,6 +10,7 @@ import {
   isHookAgentAllowed,
   normalizeHookDispatchSessionKey,
   resolveEffectiveHookTargetAgentId,
+  resolveHookIdempotencyKey,
   resolveHookSessionKey,
   normalizeAgentPayload,
   normalizeWakePayload,
@@ -41,6 +42,24 @@ const createIMessageAliasPlugin = () => ({
 });
 
 describe("gateway hooks helpers", () => {
+  test("resolves PASO hook idempotency headers before the legacy header", () => {
+    expect(
+      resolveHookIdempotencyKey({
+        payload: { idempotencyKey: "payload" },
+        headers: {
+          "x-paso-idempotency-key": "paso-header",
+          "x-openclaw-idempotency-key": "legacy-header",
+        },
+      }),
+    ).toBe("paso-header");
+    expect(
+      resolveHookIdempotencyKey({
+        payload: {},
+        headers: { "x-openclaw-idempotency-key": "legacy-header" },
+      }),
+    ).toBe("legacy-header");
+  });
+
   const resolveHooksConfigOrThrow = (cfg: OpenClawConfig) => {
     const resolved = resolveHooksConfig(cfg);
     if (!resolved) {
@@ -116,10 +135,11 @@ describe("gateway hooks helpers", () => {
     expect(() => resolveHooksConfig(cfg)).toThrow("hooks.path may not be '/'");
   });
 
-  test("extractHookToken prefers bearer > header", () => {
+  test("extractHookToken prefers bearer, then PASO, then the legacy header", () => {
     const req = {
       headers: {
         authorization: "Bearer top",
+        "x-paso-token": "paso-header",
         "x-openclaw-token": "header",
       },
     } as unknown as IncomingMessage;
@@ -127,14 +147,19 @@ describe("gateway hooks helpers", () => {
     expect(result1).toBe("top");
 
     const req2 = {
-      headers: { "x-openclaw-token": "header" },
+      headers: { "x-paso-token": "paso-header", "x-openclaw-token": "header" },
     } as unknown as IncomingMessage;
     const result2 = extractHookToken(req2);
-    expect(result2).toBe("header");
+    expect(result2).toBe("paso-header");
 
-    const req3 = { headers: {} } as unknown as IncomingMessage;
+    const req3 = {
+      headers: { "x-openclaw-token": "header" },
+    } as unknown as IncomingMessage;
     const result3 = extractHookToken(req3);
-    expect(result3).toBeUndefined();
+    expect(result3).toBe("header");
+
+    const req4 = { headers: {} } as unknown as IncomingMessage;
+    expect(extractHookToken(req4)).toBeUndefined();
   });
 
   test("normalizeWakePayload trims + validates", () => {

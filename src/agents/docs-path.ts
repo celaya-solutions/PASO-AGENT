@@ -1,12 +1,12 @@
 /**
- * Locates local OpenClaw docs/source roots for references shown to agents.
+ * Locates local PASO docs/source roots for references shown to agents.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { resolveOpenClawPackageRoot } from "../infra/openclaw-root.js";
 
-export const OPENCLAW_DOCS_URL = "https://docs.openclaw.ai";
-export const OPENCLAW_SOURCE_URL = "https://github.com/openclaw/openclaw";
+export const OPENCLAW_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
+export const OPENCLAW_SOURCE_URL = "https://github.com/celaya-solutions/PASO-AGENT";
 
 type ResolveOpenClawReferencePathParams = {
   workspaceDir?: string;

@@ -13,7 +13,7 @@ reference for **what to import** and **what you can register**.
 
 <Note>
   This page is for plugin authors using `openclaw/plugin-sdk/*` inside
-  OpenClaw. For external apps, scripts, dashboards, CI jobs, and IDE extensions
+  PASO. For external apps, scripts, dashboards, CI jobs, and IDE extensions
   that want to run agents through the Gateway, use
   [Gateway integrations for external apps](/gateway/external-apps) instead.
 </Note>
@@ -39,7 +39,7 @@ the broader umbrella surface and shared helpers such as
 
 For channel config, publish the channel-owned JSON Schema through
 `openclaw.plugin.json#channelConfigs`. The `plugin-sdk/channel-config-schema`
-subpath is for shared schema primitives and the generic builder. OpenClaw's
+subpath is for shared schema primitives and the generic builder. PASO's
 bundled plugins use `plugin-sdk/bundled-channel-config-schema` for retained
 bundled-channel schemas. That bundled schema subpath is not a pattern for new
 plugins.
@@ -119,14 +119,14 @@ and external URLs. Registering another provider replaces the current provider.
 
 Transcript source providers that share an account namespace with an inbound
 channel declare an `accountOwnership` descriptor with that channel id and a
-canonical account resolver. OpenClaw then
+canonical account resolver. PASO then
 ignores model-selected account ids for same-channel capture, binds the trusted
 inbound account, and records it as the session owner for later lifecycle
-actions. The resolver also selects an omitted account before OpenClaw starts or
+actions. The resolver also selects an omitted account before PASO starts or
 persists live capture. It validates an already-bound trusted account without
 redirecting it and returns an actionable typed error when no unique capable
 account exists. Configured auto-start must supply a nonempty source account or
-resolve one with this descriptor. OpenClaw rejects ambiguous or unresolved ownership before it
+resolve one with this descriptor. PASO rejects ambiguous or unresolved ownership before it
 persists the start or invokes the provider. Provider aliases are lookup names
 only and must not be used for this declaration.
 
@@ -213,7 +213,7 @@ structured entries:
 ```ts
 agentPromptGuidance: [
   "Global command hint.",
-  { text: "Only show this in the main OpenClaw prompt.", surfaces: ["openclaw_main"] },
+  { text: "Only show this in the main PASO prompt.", surfaces: ["openclaw_main"] },
 ];
 ```
 
@@ -391,7 +391,7 @@ Contract notes:
   senders change. Before any requester resolves, no scoped specs are advertised.
 - Unauthenticated requesters on a shared-thread harness still see the advertised
   scoped tools; calling one returns a clean not-connected tool error for that
-  requester. OpenClaw never falls back to another requester's credentials.
+  requester. PASO never falls back to another requester's credentials.
 
 Memory prompt supplement builders receive optional `agentId`,
 `agentSessionKey`, and `sandboxed` context. Memory corpus supplement `search`
@@ -405,13 +405,13 @@ Use `registerMemoryPromptPreparation(...)` when prompt text depends on async
 plugin state. The callback runs once before each full agent prompt and receives
 the same tool, agent, session, and sandbox context as synchronous memory prompt
 builders. Validate the current storage-owner instance before loading persisted
-state, then return only lines for that run. OpenClaw freezes those lines and
+state, then return only lines for that run. PASO freezes those lines and
 hands the immutable result to synchronous prompt assembly. Keep persistence,
 atomic replacement, and owner-removal deletion inside the owning plugin; do not
 poll or read files from a prompt builder.
 
 Telegram interactive handlers can return `{ submitText }` to route text through
-Telegram's normal inbound agent path after the handler succeeds. OpenClaw keeps
+Telegram's normal inbound agent path after the handler succeeds. PASO keeps
 the callback button when inbound policy skips the text or processing fails, so
 the user can retry after the blocking condition changes. This result field is
 Telegram-specific; other channels keep their own interactive result contracts.
@@ -483,7 +483,7 @@ browser-trusted loopback origin; plain HTTP on a LAN host shows the
 secure-context error instead of mounting a panel that cannot authenticate.
 Full third-party-cookie blocking also makes gateway-protected tabs unavailable.
 As with all native plugin surfaces, the frame remains inside the installed
-plugin trust boundary; OpenClaw does not treat installed plugins as mutually
+plugin trust boundary; PASO does not treat installed plugins as mutually
 isolated browser security principals.
 Cookie grants use the browser's hostname boundary, not its port boundary. Do
 not cohost mutually untrusted services on the Gateway hostname, even on other
@@ -575,7 +575,7 @@ Examples of non-Plan consumers:
 Plugins must declare `contracts.agentToolResultMiddleware` for each targeted
 runtime, for example `["openclaw", "codex"]`. Installed plugins without that
 contract, or without explicit enablement, cannot register this middleware; keep
-normal OpenClaw plugin hooks for work that does not need pre-model tool-result
+normal PASO plugin hooks for work that does not need pre-model tool-result
 timing. The old
 embedded-runner-only extension factory registration path has been removed.
 </Accordion>
@@ -583,7 +583,7 @@ embedded-runner-only extension factory registration path has been removed.
 ### Gateway discovery registration
 
 `api.registerGatewayDiscoveryService(...)` lets a plugin advertise the active
-Gateway on a local discovery transport such as mDNS/Bonjour. OpenClaw calls the
+Gateway on a local discovery transport such as mDNS/Bonjour. PASO calls the
 service during Gateway startup when local discovery is enabled, passes the
 current Gateway ports and non-secret TXT hint data, and calls the returned
 `stop` handler during Gateway shutdown.
@@ -645,7 +645,7 @@ api.registerCli(
 
 A root descriptor can also declare `machineOutput({ argv, stdoutIsTTY })` when
 the command reserves stdout for JSON, JSONL, or another machine-readable format
-without relying exclusively on a literal `--json` flag. OpenClaw evaluates this
+without relying exclusively on a literal `--json` flag. PASO evaluates this
 resolver before plugin activation so startup diagnostics can be routed to
 stderr. The resolver must be synchronous, pure, and dependency-light: inspect
 only the supplied raw argv and stdout TTY state. Reuse the same resolver in
@@ -694,7 +694,7 @@ AI CLI backend such as `claude-cli` or `my-cli`.
 - Use `normalizeConfig` when registered static fields need a runtime-aware
   normalization pass.
 - Use `resolveExecutionArgs` for request-scoped argv rewrites that belong to
-  the CLI dialect, such as mapping OpenClaw thinking levels to a native effort
+  the CLI dialect, such as mapping PASO thinking levels to a native effort
   flag. The hook receives `ctx.executionMode`; use `"side-question"` to add
   backend-native isolation flags for ephemeral `/btw` calls. If those flags
   reliably disable native tools for an otherwise always-on CLI, declare
@@ -713,7 +713,7 @@ AI CLI backend such as `claude-cli` or `my-cli`.
   `ctx.toolAvailability.openClaw` names. Declare
   `toolAvailabilityEnforcement: "execution-args"` and enforce the contract in
   final fresh/resume argv, or declare `"prepare-execution"`, enforce it in
-  staged policy, and return `toolAvailabilityEnforced: true`. OpenClaw disables
+  staged policy, and return `toolAvailabilityEnforced: true`. PASO disables
   native tools for runtime caps such as cron `toolsAllow` and fails closed when
   the declared enforcement path is incomplete.
 
@@ -731,10 +731,10 @@ To participate in durable admitted turns, context engines must declare
 `currentTurnFence: "before-current-turn-entry-v1"` and
 `turnAdvancementIdempotency: "atomic-idempotent-v1"` under
 `info.transcriptSemantics`, then implement `commitTurn(...)` as an atomic,
-idempotent write keyed by `advancementKey`. OpenClaw supplies only the inclusive
+idempotent write keyed by `advancementKey`. PASO supplies only the inclusive
 accepted turn, from its admitted user entry through its terminal entry; use the
 `readSessionTranscriptVisibleMessageDelta(...)` cursor API to bootstrap or
-rebuild earlier history. Without the full contract, OpenClaw uses the legacy
+rebuild earlier history. Without the full contract, PASO uses the legacy
 context path for the whole logical turn and its retries, leaves the configured
 engine unchanged, and tries that engine again on the next logical turn.
 
@@ -750,7 +750,7 @@ engine unchanged, and tries that engine again on the next logical turn.
   `runtime.authorizeSearchHits(...)`. The host calls this hook before raw search
   hits reach caller-visible surfaces and supplies the requesting agent, session
   key, and sandbox state. Return only hits the requester may observe. If the hook
-  is absent, OpenClaw fails closed by withholding session-source hits while
+  is absent, PASO fails closed by withholding session-source hits while
   retaining ordinary memory hits. Keep transcript identity and visibility
   policy in the owning memory plugin; callers must not infer authorization from
   paths or duplicate plugin-specific rules.
@@ -798,7 +798,7 @@ Use `cron_reconciled` as the full-snapshot trigger for durable state loaded at
 Gateway startup or scheduler replacement. It is not replayed for a plugin-only
 hot reload. Observation handlers run in parallel, and fire-and-forget
 dispatches can overlap, so consumers must not depend on event completion order.
-Keep OpenClaw as the source of truth for due checks and execution.
+Keep PASO as the source of truth for due checks and execution.
 
 For a single-flight adapter with durable replacement, retry/backoff, and clean
 shutdown, see [Safe external cron projection](/plugins/hooks#safe-external-cron-projection).
@@ -840,9 +840,9 @@ my-plugin/
 
 Facade-loaded bundled plugin public surfaces (`api.ts`, `runtime-api.ts`,
 `index.ts`, `setup-entry.ts`, and similar public entry files) prefer the
-active runtime config snapshot when OpenClaw is already running. If no runtime
+active runtime config snapshot when PASO is already running. If no runtime
 snapshot exists yet, they fall back to the resolved config file on disk.
-Packaged bundled plugin facades should be loaded through OpenClaw's plugin
+Packaged bundled plugin facades should be loaded through PASO's plugin
 facade loaders; direct imports from `dist/extensions/...` bypass the manifest
 and runtime sidecar checks that packaged installs use for plugin-owned code.
 

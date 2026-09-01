@@ -91,7 +91,7 @@ wait_for_log() {
 }
 
 openclaw_e2e_install_package "$INSTALL_LOG"
-echo "Installed the OpenClaw package."
+echo "Installed the PASO package."
 openclaw_prepublish_plugin_registry_start_mounted "$scenario_tmp/registry" plugin_registry_pid '["@openclaw/codex"]'
 command -v openclaw >/dev/null
 package_root="$(openclaw_e2e_package_root)"
@@ -111,7 +111,7 @@ exec 3>"$input_fifo"
 
 wait_for_log "Continue?" 60
 send $'y\r' 0.4
-wait_for_log "Help make OpenClaw better?" 60
+wait_for_log "Help make PASO better?" 60
 send $'\r' 0.4
 wait_for_log "What should we call your first agent?" 60
 send $'\r' 0.4

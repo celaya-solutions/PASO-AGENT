@@ -1,4 +1,4 @@
-// Pure-logic tests for the OpenClaw Chrome extension. Runs under the
+// Pure-logic tests for the PASO Chrome extension. Runs under the
 // extension-browser vitest glob (extensions/browser/**/*.test.ts).
 import { describe, expect, it, vi } from "vitest";
 import {
@@ -8,9 +8,18 @@ import {
   parsePairingString,
   reconnectDelayMs,
   directLoopbackRelayPort,
+  isOpenClawTabGroupTitle,
 } from "./relay-core.js";
 
 const RELAY_SECRET = "a".repeat(64);
+
+describe("isOpenClawTabGroupTitle", () => {
+  it("recognizes PASO and legacy tab groups", () => {
+    expect(isOpenClawTabGroupTitle("PASO")).toBe(true);
+    expect(isOpenClawTabGroupTitle("OpenClaw")).toBe(true);
+    expect(isOpenClawTabGroupTitle("Other")).toBe(false);
+  });
+});
 
 describe("parsePairingString", () => {
   it("parses a valid pairing string the CLI emits", () => {

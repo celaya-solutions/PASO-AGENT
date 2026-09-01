@@ -71,6 +71,21 @@ const requiredBundledPluginPackPaths = listBundledPluginPackArtifacts();
 const requiredStaticExtensionAssetPaths = listStaticExtensionAssetOutputs();
 
 describe("collectAppcastSparkleVersionErrors", () => {
+  it("accepts an explicitly disabled feed with no release items", () => {
+    const xml =
+      "<rss><channel><sparkle:updatesDisabled>true</sparkle:updatesDisabled></channel></rss>";
+
+    expect(collectAppcastSparkleVersionErrors(xml)).toStrictEqual([]);
+  });
+
+  it("rejects a disabled feed that also advertises a release", () => {
+    const xml = `<rss><channel><sparkle:updatesDisabled>true</sparkle:updatesDisabled>${makeItem("2026.6.5", "2606000590")}</channel></rss>`;
+
+    expect(collectAppcastSparkleVersionErrors(xml)).toContain(
+      "appcast.xml cannot contain release items while updates are disabled.",
+    );
+  });
+
   it("accepts legacy 9-digit calver builds before lane-floor cutover", () => {
     const xml = `<rss><channel>${makeItem("2026.2.26", "202602260")}</channel></rss>`;
 
@@ -286,7 +301,7 @@ describe("resolveReleaseNpmCommand", () => {
         existsSync: () => false,
         platform: "win32",
       }),
-    ).toThrow("OpenClaw refuses to shell out to bare npm on Windows");
+    ).toThrow("PASO refuses to shell out to bare npm on Windows");
   });
 });
 

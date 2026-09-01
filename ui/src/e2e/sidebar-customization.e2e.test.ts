@@ -34,31 +34,6 @@ function visibleDrawerButton(page: Page) {
   return page.locator(".topbar-nav-toggle:visible, .chat-pane__nav-toggle:visible").first();
 }
 
-async function expectLobsterOnFooterLedge(sidebar: Locator) {
-  const footer = sidebar.locator(".sidebar-shell__footer");
-  const sprite = footer.locator(".lobster-pet:not(.lobster-pet--passer)").first();
-  await sprite.waitFor();
-
-  await expect
-    .poll(async () => {
-      const [footerBox, spriteBox, borderTopWidth] = await Promise.all([
-        footer.boundingBox(),
-        sprite.boundingBox(),
-        footer.evaluate((element) =>
-          Number.parseFloat(window.getComputedStyle(element).borderTopWidth),
-        ),
-      ]);
-      if (!footerBox || !spriteBox) {
-        return null;
-      }
-      return {
-        bottomOverlap: Math.round(spriteBox.y + spriteBox.height - footerBox.y - borderTopWidth),
-        isAboveFooter: spriteBox.y < footerBox.y,
-      };
-    })
-    .toEqual({ bottomOverlap: 3, isAboveFooter: true });
-}
-
 async function captureUiProof(page: Page, fileName: string) {
   if (!captureUiProofEnabled) {
     return;
@@ -364,7 +339,7 @@ suite.define(() => {
       await expect
         .poll(() => trimmedTextContents(settingsLinks))
         .toEqual([
-          "Ask OpenClaw",
+          "Ask PASO",
           "Approvals",
           "Infrastructure",
           "Advanced",
@@ -496,12 +471,12 @@ suite.define(() => {
       await expect.poll(() => settingsSearch.inputValue()).toBe("");
       await captureSettingsSidebarProof(settingsSidebar, "01g-settings-search-reset.png");
       await holdUiProof(page);
-      await settingsSidebar.getByRole("link", { name: "Ask OpenClaw" }).click();
+      await settingsSidebar.getByRole("link", { name: "Ask PASO" }).click();
       await expect.poll(() => new URL(page.url()).pathname).toBe("/custodian");
       await expect
         .poll(() => page.locator(".shell").getAttribute("class"))
         .not.toContain("shell--onboarding");
-      // Ask OpenClaw is a settings-takeover page (#111686): the settings
+      // Ask PASO is a settings-takeover page (#111686): the settings
       // sidebar owns navigation there, not the app sidebar.
       await expect.poll(() => settingsSidebar.isVisible()).toBe(true);
       await expect.poll(() => sidebar.isVisible()).toBe(false);
@@ -541,11 +516,9 @@ suite.define(() => {
         .not.toContain("Workboard");
       const tasksItem = menu.getByRole("menuitemcheckbox", { name: "Tasks" });
       await expect.poll(() => tasksItem.getAttribute("aria-checked")).toBe("false");
-      // Ask OpenClaw moved to Settings (#111686): custodian is not a sidebar
+      // Ask PASO moved to Settings (#111686): custodian is not a sidebar
       // nav route anymore, so the pin editor does not offer it.
-      await expect
-        .poll(() => menu.getByRole("menuitemcheckbox", { name: "OpenClaw" }).count())
-        .toBe(0);
+      await expect.poll(() => menu.getByRole("menuitemcheckbox", { name: "PASO" }).count()).toBe(0);
       await captureUiProof(page, "02-customize-menu.png");
 
       await tasksItem.click();
@@ -905,7 +878,7 @@ suite.define(() => {
     );
   });
 
-  it("passes failed run outcomes through the desktop and drawer sidebar", async () => {
+  it("keeps the legacy pet out of failed-run desktop and drawer sidebars", async () => {
     await suite.withPage(
       {
         locale: "en-US",
@@ -937,16 +910,10 @@ suite.define(() => {
           },
         });
 
-        const outcome = (locator: Locator) =>
-          locator.evaluate(
-            (element) => (element as HTMLElement & { runOutcome: string }).runOutcome,
-          );
-
         await page.goto(`${suite.server.baseUrl}chat`);
         const sidebar = page.locator("openclaw-app-sidebar");
         const pet = sidebar.locator(".sidebar-shell openclaw-lobster-pet");
-        await expect.poll(() => pet.count()).toBe(1);
-        await expect.poll(() => outcome(pet)).toBe("error");
+        await expect.poll(() => pet.count()).toBe(0);
         await expect.poll(() => page.locator(".topbar").isVisible()).toBe(false);
 
         await page.setViewportSize({ height: 900, width: 900 });
@@ -954,66 +921,26 @@ suite.define(() => {
         await expect.poll(() => drawerButton.isVisible()).toBe(true);
         await drawerButton.click();
         await expect.poll(() => sidebar.isVisible()).toBe(true);
-        await expect.poll(() => pet.count()).toBe(1);
-        await expect.poll(() => outcome(pet)).toBe("error");
+        await expect.poll(() => pet.count()).toBe(0);
       },
     );
   });
 
-  it("keeps the lobster on the footer ledge across desktop and drawer layouts", async () => {
+  it("keeps the footer free of the legacy pet across desktop and drawer layouts", async () => {
     const { context, page } = await openSidebarTestPage();
 
     try {
       const sidebar = page.locator("openclaw-app-sidebar");
       const pet = sidebar.locator("openclaw-lobster-pet");
-      const movement = await pet.evaluate(async (element) => {
-        const lobster = element as HTMLElement & {
-          anchor: "bar";
-          mode: "offline";
-          performAct(act: "scuttle"): void;
-          requestUpdate(): void;
-          updateComplete: Promise<unknown>;
-        };
-        lobster.mode = "offline";
-        await lobster.updateComplete;
-        lobster.anchor = "bar";
-        lobster.setAttribute("data-spot", "bar");
-        lobster.requestUpdate();
-        await lobster.updateComplete;
-
-        const sprite = lobster.querySelector<HTMLElement>(".lobster-pet:not(.lobster-pet--passer)");
-        const before = sprite?.style.getPropertyValue("--lob-x") ?? "";
-        lobster.performAct("scuttle");
-        await lobster.updateComplete;
-        const after = sprite?.style.getPropertyValue("--lob-x") ?? "";
-        return { after, before, spot: lobster.getAttribute("data-spot") };
-      });
-
-      expect(movement.spot).toBe("bar");
-      expect(movement.after).not.toBe(movement.before);
-      expect(Number.parseFloat(movement.after)).toBeGreaterThanOrEqual(18);
-      expect(Number.parseFloat(movement.after)).toBeLessThanOrEqual(50);
-      await expectLobsterOnFooterLedge(sidebar);
-      // startle clears itself after LOBSTER_PET_ACT_DURATION_MS.startle (750ms), so
-      // poking over one round trip and then polling for the class over another can
-      // straddle the entire window on a loaded runner and never observe it. Poke and
-      // read the resulting class in a single in-page step, as the unit test does.
-      const startleClasses = await pet.evaluate(async (element) => {
-        const lobster = element as HTMLElement & { updateComplete: Promise<unknown> };
-        const target = lobster.querySelector<HTMLElement>(".lobster-pet:not(.lobster-pet--passer)");
-        target?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-        target?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
-        await lobster.updateComplete;
-        return target?.getAttribute("class") ?? "";
-      });
-      expect(startleClasses).toContain("lobster-pet--act-startle");
-      await captureUiProof(page, "08-lobster-footer-ledge-desktop.png");
+      await expect.poll(() => sidebar.locator(".sidebar-shell__footer").isVisible()).toBe(true);
+      await expect.poll(() => pet.count()).toBe(0);
+      await captureUiProof(page, "08-paso-footer-desktop.png");
 
       await page.setViewportSize({ height: 900, width: 900 });
       await visibleDrawerButton(page).click();
       await expect.poll(() => sidebar.isVisible()).toBe(true);
-      await expectLobsterOnFooterLedge(sidebar);
-      await captureUiProof(page, "09-lobster-footer-ledge-drawer.png");
+      await expect.poll(() => pet.count()).toBe(0);
+      await captureUiProof(page, "09-paso-footer-drawer.png");
     } finally {
       await context.close();
     }

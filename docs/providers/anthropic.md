@@ -1,36 +1,36 @@
 ---
-summary: "Use Anthropic Claude via API keys or Claude CLI in OpenClaw"
+summary: "Use Anthropic Claude via API keys or Claude CLI in PASO"
 read_when:
-  - You want to use Anthropic models in OpenClaw
+  - You want to use Anthropic models in PASO
   - You want to browse Claude CLI or Claude Desktop sessions across paired computers
 title: "Anthropic"
 ---
 
-Anthropic builds the **Claude** model family. OpenClaw supports two auth routes:
+Anthropic builds the **Claude** model family. PASO supports two auth routes:
 
 - **API key** - direct Anthropic API access with usage-based billing (`anthropic/*` models)
 - **Claude CLI** - reuse an existing Claude Code login on the same host through Anthropic's official Agent SDK
 
 ## Usage and cost tracking
 
-OpenClaw detects the available Anthropic credential and selects the matching usage surface:
+PASO detects the available Anthropic credential and selects the matching usage surface:
 
-- OpenClaw-managed subscription/setup credentials show quota windows and optional extra-usage budget.
-- Native Claude CLI logins stay under Claude's exclusive refresh control, so OpenClaw does not poll their quota endpoint.
+- PASO-managed subscription/setup credentials show quota windows and optional extra-usage budget.
+- Native Claude CLI logins stay under Claude's exclusive refresh control, so PASO does not poll their quota endpoint.
 - `ANTHROPIC_ADMIN_KEY` or `ANTHROPIC_ADMIN_API_KEY` shows 30 days of provider-reported organization cost and Messages API usage in Control UI **Usage**, including daily spend, token/cache totals, top models, and cost categories.
 - An `sk-ant-admin...` credential stored in the Anthropic provider profile is detected as an Admin API key automatically.
 
-Admin API cost history comes from Anthropic's [Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api). It is actual provider billing, separate from OpenClaw's session-derived estimated cost.
+Admin API cost history comes from Anthropic's [Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api). It is actual provider billing, separate from PASO's session-derived estimated cost.
 
 <Warning>
-Claude Code owns its existing login and subscription; OpenClaw does not persist
+Claude Code owns its existing login and subscription; PASO does not persist
 or refresh that login. Agent SDK and `claude -p`
 usage currently draw from the signed-in subscription's limits. API-key auth
 uses separate pay-as-you-go billing and is preferable for shared automation or
 predictable production spend.
 
 Anthropic's current support articles can change this behavior without an
-OpenClaw release:
+PASO release:
 
 - [Claude Code CLI reference](https://code.claude.com/docs/en/cli-usage)
 - [Use the Claude Agent SDK with your Claude plan](https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan)
@@ -85,7 +85,7 @@ OpenClaw release:
 
     <Steps>
       <Step title="Ensure Claude CLI is installed and logged in">
-        OpenClaw runs the installed Claude Code executable through Anthropic's
+        PASO runs the installed Claude Code executable through Anthropic's
         official Agent SDK. Verify that Claude Code is installed and up to date:
 
         ```bash
@@ -100,7 +100,7 @@ OpenClaw release:
         ```
 
         If the installed build is incompatible, update Claude Code and restart
-        OpenClaw so the gateway launches the new binary:
+        PASO so the gateway launches the new binary:
 
         ```bash
         claude update
@@ -113,12 +113,12 @@ OpenClaw release:
         ```
 
         Normal agent turns use the official Agent SDK with the installed,
-        authenticated Claude Code executable. OpenClaw uses a non-secret route
+        authenticated Claude Code executable. PASO uses a non-secret route
         marker and never reads, persists, refreshes, selects, or forwards the
         native login tokens. Claude owns the login and token refresh lifecycle.
         Explicitly selected API-key or token credentials still use protected
-        file-descriptor forwarding. Native-tool approvals remain under OpenClaw
-        control. Schema-valid native calls pass through OpenClaw's canonical
+        file-descriptor forwarding. Native-tool approvals remain under PASO
+        control. Schema-valid native calls pass through PASO's canonical
         tool policy before native approval. Isolated side-question completions
         and paired-node execution retain the supervised CLI path.
 
@@ -139,13 +139,13 @@ OpenClaw release:
     </Note>
 
     <Warning>
-    Claude CLI reuse expects the OpenClaw process to run on the same host as the
+    Claude CLI reuse expects the PASO process to run on the same host as the
     Claude CLI login. Docker installs can persist a container home and log in to
     Claude Code there; see
     [Claude CLI backend in Docker](/install/docker#claude-cli-backend-in-docker).
     Other container installs such as [Podman](/install/podman) do not mount host
     `~/.claude` into setup or runtime; use an Anthropic API key there, or choose
-    a provider with OpenClaw-managed OAuth such as
+    a provider with PASO-managed OAuth such as
     [OpenAI Codex](/providers/openai).
     </Warning>
 
@@ -199,12 +199,12 @@ OpenClaw release:
       the subscription Agent SDK credit.
 
     Anthropic can change Claude Code billing and rate-limit behavior without an
-    OpenClaw release. Check `claude auth status`, `/status`, and
+    PASO release. Check `claude auth status`, `/status`, and
     Anthropic's linked docs when billing predictability matters.
 
     <Tip>
     For shared production automation, use an Anthropic API key instead of
-    Claude CLI. OpenClaw also supports subscription-style options from
+    Claude CLI. PASO also supports subscription-style options from
     [OpenAI Codex](/providers/openai), [Qwen Cloud](/providers/qwen),
     [MiniMax](/providers/minimax), and [Z.AI / GLM](/providers/zai).
     </Tip>
@@ -234,7 +234,7 @@ metadata appended to large transcripts is included without reading the entire
 history. Metadata outside those windows may be unavailable. Desktop rows retain
 their Desktop title and remain colorless.
 
-No additional OpenClaw config is required for discovery. The Anthropic plugin
+No additional PASO config is required for discovery. The Anthropic plugin
 is bundled and enabled by default; a native macOS node advertises the read-only
 Claude session commands when the local `~/.claude/projects/` directory exists.
 Approve the node pairing upgrade when those commands first appear.
@@ -242,7 +242,7 @@ Approve the node pairing upgrade when those commands first appear.
 The sidebar groups rows by their Gateway or paired-node host and shows each
 host's newest bounded page as soon as that computer answers. It reconciles again
 after host-connectivity changes, when the page regains focus, and at most every
-30 seconds while visible, so Claude sessions created outside OpenClaw appear
+30 seconds while visible, so Claude sessions created outside PASO appear
 without a reload. A changed catalog gets a faster follow-up pass. Use **Load more
 sessions** below a catalog group to append the next page for every host that has
 more history; appended rows stay visible and are re-fetched to the same depth
@@ -267,14 +267,14 @@ reasoning, tool-call, and tool-result content is preserved. An individual item
 larger than the node/Gateway safety ceiling is clearly marked as truncated.
 
 For a Gateway-local `claude-cli` row, typing in the normal composer calls
-`sessions.catalog.continue`. OpenClaw re-resolves the local catalog record,
+`sessions.catalog.continue`. PASO re-resolves the local catalog record,
 creates or reuses a model-locked native session, imports at most 200 visible
 items or 512 KiB, and seeds the Claude CLI binding. The first turn resumes with
 `--fork-session`; Claude assigns the fork a new session ID, so later turns use
 the fork and the source session stays untouched.
 
-The new OpenClaw session starts with the catalog title and color. Continuing an
-already adopted session preserves any title or color changes made in OpenClaw.
+The new PASO session starts with the catalog title and color. Continuing an
+already adopted session preserves any title or color changes made in PASO.
 
 A headless node host can also make its Claude CLI rows continuable by enabling
 the node-local setting below and restarting the node host:
@@ -290,7 +290,7 @@ the node-local setting below and restarting the node host:
 ```
 
 The node advertises `agent.cli.claude.run.v1` only when the setting is enabled
-and its local `claude` executable resolves. OpenClaw re-resolves the catalog
+and its local `claude` executable resolves. PASO re-resolves the catalog
 record on that node, imports the same bounded history, and binds the adopted
 session to the node and catalog-reported working directory. Each turn runs the
 node's real `claude -p` process using that node's Claude files and login. The
@@ -303,7 +303,7 @@ macOS app nodes also remain view-only until the app advertises the run command.
 
 <Note>
 Paired-node Claude sessions remain read-only unless the headless node explicitly
-advertises `agent.cli.claude.run.v1`. OpenClaw never modifies Claude Desktop
+advertises `agent.cli.claude.run.v1`. PASO never modifies Claude Desktop
 metadata or archives Claude sessions. Catalog list and read use `operator.read`,
 while continuation uses `operator.write`. Paired-node command advertisement and
 Gateway node policy remain additional requirements for node-backed rows.
@@ -314,14 +314,14 @@ for the node command and security boundary.
 
 ## Live model discovery
 
-With an Anthropic API key configured, OpenClaw refreshes the Claude catalog from
+With an Anthropic API key configured, PASO refreshes the Claude catalog from
 Anthropic's models endpoint, so newly published snapshots of supported model
-families appear without an OpenClaw release. Models the shipped catalog already
+families appear without a PASO release. Models the shipped catalog already
 describes always keep their published metadata and pricing.
 
 A newly discovered model is only offered when Anthropic's advertised
-capabilities match the request shaping OpenClaw would apply to it. A brand-new
-model generation therefore stays hidden until OpenClaw adds support for it,
+capabilities match the request shaping PASO would apply to it. A brand-new
+model generation therefore stays hidden until PASO adds support for it,
 rather than appearing in the picker and failing every request. Discovery is
 advisory: without an API key, or if the endpoint is unreachable, the shipped
 catalog is used unchanged.
@@ -330,14 +330,14 @@ catalog is used unchanged.
 
 Bare family aliases are rolling: `opus` tracks the current supported Claude
 Opus generation and today resolves to `anthropic/claude-opus-5`, the same way
-`sonnet` tracks the current Sonnet. Upgrading OpenClaw can therefore move a
+`sonnet` tracks the current Sonnet. Upgrading PASO can therefore move a
 config that says `opus` onto a newer model generation. Pin a version to opt
 out — versioned aliases such as `opus-4.8` keep resolving to their own model,
 and configs that already name `claude-opus-4-8` are never rewritten.
 
 `anthropic/claude-opus-5` uses adaptive thinking at `high` effort by default.
 Use `/think off` to disable thinking, or `/think xhigh|max` for the model's
-higher native effort levels. OpenClaw omits manual thinking budgets, custom
+higher native effort levels. PASO omits manual thinking budgets, custom
 sampling parameters, assistant prefills, and Priority Tier for Opus 5 because
 Anthropic does not support those request features on this model. The catalog
 publishes its 1,000,000-token context window, 128,000-token output limit, image
@@ -349,18 +349,18 @@ pricing through August 31, 2026; standard `$3/$15` pricing begins September 1, 2
 
 `anthropic/claude-fable-5` always uses adaptive thinking and defaults to `high`
 effort. Anthropic does not allow thinking to be disabled for this model, so
-`/think off` and `/think minimal` map to `low` effort instead. OpenClaw also
+`/think off` and `/think minimal` map to `low` effort instead. PASO also
 omits custom temperature values for Fable 5 requests, since Anthropic rejects
 a temperature override on any thinking-enabled request.
 
 `anthropic/claude-mythos-5` is a limited-access model with the same always-on
-adaptive-thinking contract. OpenClaw defaults to `high`, maps `/think off` and
+adaptive-thinking contract. PASO defaults to `high`, maps `/think off` and
 `/think minimal` to `low`, and omits caller-selected sampling parameters.
 The catalog publishes its 1,000,000-token context window, 128,000-token output
 limit, image input, and `$10/$50` input/output pricing.
 
-Claude Opus 4.8 keeps thinking off by default in OpenClaw. When you explicitly
-enable adaptive thinking with `/think high|xhigh|max`, OpenClaw sends
+Claude Opus 4.8 keeps thinking off by default in PASO. When you explicitly
+enable adaptive thinking with `/think high|xhigh|max`, PASO sends
 Anthropic's Opus 4.8 effort values; Claude 4.6 models (Opus 4.6 and Sonnet 4.6)
 default to `adaptive`.
 
@@ -391,7 +391,7 @@ Related Anthropic docs:
 
 <Warning>
 Claude Opus 5 and Fable 5 can route a safety-classifier refusal to another
-Claude model. OpenClaw opts into Anthropic's recommended per-category routing
+Claude model. PASO opts into Anthropic's recommended per-category routing
 for direct API-key requests. A fallback-served turn is billed at the model
 that answered. If your policy requires every turn to stay on the requested
 model, do not use these models through the automatic fallback path.
@@ -406,13 +406,13 @@ Anthropic has a recommended model for that refusal category.
 ### How it works
 
 1. For every direct API-key request to `anthropic/claude-opus-5` or
-   `anthropic/claude-fable-5`, OpenClaw sends the
+   `anthropic/claude-fable-5`, PASO sends the
    `server-side-fallback-2026-07-01` beta header plus
    `fallbacks: "default"`. Anthropic selects the recommended model for the
    reported refusal category.
 2. Only a safety-classifier decline triggers the fallback. Rate limits,
    overloads, and server errors behave exactly as before and go through
-   OpenClaw's normal [model failover](/concepts/model-failover).
+   PASO's normal [model failover](/concepts/model-failover).
 3. The rescue happens inside the same call. A decline before any output is
    invisible apart from latency; the whole answer comes from the serving
    model. On a
@@ -424,18 +424,18 @@ Anthropic has a recommended model for that refusal category.
    as an error.
 
 The fallback happens at the Anthropic API level, so the serving model does not
-need to be in your configured OpenClaw fallback chain.
+need to be in your configured PASO fallback chain.
 
 ### Observability and billing
 
 - A fallback-served turn records a `provider_fallback` diagnostic on the
   assistant message naming `fromModel` and `toModel`, and the message's
   `responseModel` reports the model that answered.
-- Anthropic bills the fallback attempt at the serving model's rates. OpenClaw
+- Anthropic bills the fallback attempt at the serving model's rates. PASO
   prices known Opus 4.8 fallback-served turns at Opus 4.8 rates.
 - A mid-stream decline additionally bills the already-streamed primary-model partial
   on Anthropic's side; that portion is reported in the API's per-attempt
-  usage but not folded into OpenClaw's per-turn estimate.
+  usage but not folded into PASO's per-turn estimate.
 
 ### Scope
 
@@ -450,7 +450,7 @@ for the underlying behavior.
 
 ## Prompt caching
 
-OpenClaw supports Anthropic's prompt caching feature for API-key auth.
+PASO supports Anthropic's prompt caching feature for API-key auth.
 
 | Value               | Cache duration | Description                            |
 | ------------------- | -------------- | -------------------------------------- |
@@ -516,7 +516,7 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
 
 <AccordionGroup>
   <Accordion title="Fast mode">
-    For Claude Opus 5 and Opus 4.8, OpenClaw's shared `/fast` toggle uses
+    For Claude Opus 5 and Opus 4.8, PASO's shared `/fast` toggle uses
     Anthropic's native fast mode for direct API-key traffic to `api.anthropic.com`.
 
     | Command | Maps to |
@@ -539,12 +539,12 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     ```
 
     <Note>
-    - Native fast mode is a research preview for Claude Opus 5 and Opus 4.8. It can deliver up to 2.5x higher output-token throughput and is billed at `$10/$50` per million input/output tokens. OpenClaw applies the same 2x multiplier to cache pricing in its cost estimate.
+    - Native fast mode is a research preview for Claude Opus 5 and Opus 4.8. It can deliver up to 2.5x higher output-token throughput and is billed at `$10/$50` per million input/output tokens. PASO applies the same 2x multiplier to cache pricing in its cost estimate.
     - Native fast mode only applies to direct `api.anthropic.com` requests made with an API key. OAuth/subscription-token requests, Claude CLI, proxies, Bedrock, Vertex, and Foundry never receive the beta or `speed` field.
     - Accounts need fast-mode access and a non-zero fast-mode rate limit. Anthropic returns a fast-specific `429` when the separate fast quota is exhausted or zero.
     - For other direct Anthropic models, `/fast` retains the existing Priority Tier mapping: on uses `service_tier: "auto"` and off uses `service_tier: "standard_only"`.
     - Explicit `serviceTier` or `service_tier` params override `/fast` when both are set.
-    - Claude Sonnet 5 supports neither native fast mode nor Priority Tier, so OpenClaw omits both fields.
+    - Claude Sonnet 5 supports neither native fast mode nor Priority Tier, so PASO omits both fields.
 
     </Note>
 
@@ -569,15 +569,15 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     }
     ```
 
-    OpenClaw adds the `compact-2026-01-12` beta header and sends an Anthropic
-    `context_management` compaction edit. When compaction occurs, OpenClaw
+    PASO adds the `compact-2026-01-12` beta header and sends an Anthropic
+    `context_management` compaction edit. When compaction occurs, PASO
     stores the newest summary as hidden provider replay state and sends it
     first on the next matching request. The full transcript remains local;
     only the outbound history before the checkpoint is omitted.
     If Anthropic rejects a stored checkpoint, that turn reports the provider
     error and the following turn falls back to full local history.
 
-    When `anthropicCompactThreshold` is omitted, OpenClaw uses
+    When `anthropicCompactThreshold` is omitted, PASO uses
     `max(50000, floor(contextWindow * 0.7))`. To choose a different input-token
     trigger:
 
@@ -601,10 +601,10 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     Configured thresholds below `50000` are clamped to `50000`.
 
     <Warning>
-    Anthropic server-side compaction is a beta feature and OpenClaw never
+    Anthropic server-side compaction is a beta feature and PASO never
     enables it automatically. It applies only to direct Anthropic API requests
     authenticated with an API key. OAuth/subscription tokens, Claude CLI,
-    proxies, Bedrock, Vertex, and Foundry are excluded. OpenClaw does not send
+    proxies, Bedrock, Vertex, and Foundry are excluded. PASO does not send
     `pause_after_compaction` or custom compaction instructions.
     </Warning>
 
@@ -613,7 +613,7 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
   </Accordion>
 
   <Accordion title="Media understanding (image and PDF)">
-    The bundled Anthropic plugin registers image and PDF understanding. OpenClaw
+    The bundled Anthropic plugin registers image and PDF understanding. PASO
     auto-resolves media capabilities from the configured Anthropic auth; no
     additional config is needed.
 
@@ -622,7 +622,7 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     | Default model   | `claude-opus-5`       |
     | Supported input | Images, PDF documents |
 
-    When an image or PDF is attached to a conversation, OpenClaw automatically
+    When an image or PDF is attached to a conversation, PASO automatically
     routes it through the Anthropic media understanding provider.
 
   </Accordion>
@@ -632,7 +632,7 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     1,000,000-token input window and support up to 128,000 output tokens.
     Anthropic's 1M context window is also GA on Claude 4.x models with adaptive
     thinking: Opus 4.8,
-    Opus 4.7, Opus 4.6, and Sonnet 4.6. OpenClaw sizes these models
+    Opus 4.7, Opus 4.6, and Sonnet 4.6. PASO sizes these models
     automatically, no `params.context1m` needed:
 
     ```json5
@@ -651,20 +651,20 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     ```
 
     Older configs can keep `params.context1m: true`; it is a harmless no-op for
-    these models and OpenClaw no longer sends the retired
+    these models and PASO no longer sends the retired
     `context-1m-2025-08-07` beta header regardless. Older `anthropicBeta` config
     entries with that value are dropped during request header resolution, and
     unsupported older Claude models stay on their normal context window.
 
     Claude CLI (`claude-cli/*`) has its own context budget. For older models
     such as Sonnet 4.6, API availability does not automatically select the CLI's
-    extended context. OpenClaw uses CLI-owned metadata and configured limits;
+    extended context. PASO uses CLI-owned metadata and configured limits;
     an eligible `[1m]` model ref or `params.context1m: true` selects a 1M budget.
     Native extended-context access still depends on the installed CLI and your
     account; see [Claude Code extended context](https://code.claude.com/docs/en/model-config#extended-context).
 
     <Warning>
-    Requires long-context access on your Anthropic credential. OAuth/subscription token auth keeps its required Anthropic beta headers, but OpenClaw strips the retired 1M beta header if it remains in older config.
+    Requires long-context access on your Anthropic credential. OAuth/subscription token auth keeps its required Anthropic beta headers, but PASO strips the retired 1M beta header if it remains in older config.
     </Warning>
 
   </Accordion>
@@ -687,7 +687,7 @@ OpenClaw supports Anthropic's prompt caching feature for API-key auth.
     openclaw gateway restart
     ```
 
-    Claude Code owns its login and refresh lifecycle; do not copy an OAuth token into OpenClaw.
+    Claude Code owns its login and refresh lifecycle; do not copy an OAuth token into PASO.
 
   </Accordion>
 

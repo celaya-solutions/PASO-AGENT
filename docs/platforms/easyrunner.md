@@ -1,20 +1,21 @@
 ---
-summary: "Run the OpenClaw Gateway on EasyRunner with Podman and Caddy"
+summary: "Run the PASO Gateway on EasyRunner with Podman and Caddy"
 read_when:
-  - Deploying OpenClaw on EasyRunner
+  - Deploying PASO on EasyRunner
   - Running the Gateway behind EasyRunner's Caddy proxy
   - Choosing persistent volumes and auth for a hosted Gateway
 title: "EasyRunner"
 ---
 
-EasyRunner hosts the OpenClaw Gateway as a small containerized app behind its
+EasyRunner hosts the PASO Gateway as a small containerized app behind its
 Caddy proxy. This guide assumes an EasyRunner host that runs Podman-compatible
 Compose apps and terminates HTTPS through Caddy.
 
 ## Before you begin
 
 - An EasyRunner server with a domain routed to it.
-- The official OpenClaw image (`ghcr.io/openclaw/openclaw`) or your own build.
+- A PASO image built from this fork and pushed to a registry EasyRunner can
+  access. PASO does not currently advertise a pre-built registry image.
 - A persistent config volume for `/home/node/.openclaw`.
 - A persistent workspace volume for `/home/node/.openclaw/workspace`.
 - A strong Gateway token or password.
@@ -31,7 +32,7 @@ Create an EasyRunner app with a Compose file shaped like this:
 ```yaml
 services:
   openclaw:
-    image: ghcr.io/openclaw/openclaw:latest
+    image: registry.example.com/celaya/paso-agent:<version-or-digest>
     restart: unless-stopped
     environment:
       OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN}
@@ -52,13 +53,14 @@ volumes:
   openclaw-workspace:
 ```
 
-Replace `openclaw.example.com` with your Gateway hostname. Store
+Replace the image reference with your source-built PASO image and replace
+`openclaw.example.com` with your Gateway hostname. Store
 `OPENCLAW_GATEWAY_TOKEN` in EasyRunner's secret/environment manager instead of
 committing it to the app definition. The image binds to loopback by default,
 so the explicit `--bind lan --port 1455` in `command` is required for Caddy to
 reach the container.
 
-## Configure OpenClaw
+## Configure PASO
 
 Inside the persistent config volume, keep the Gateway reachable only through
 the proxy and require auth:
@@ -95,7 +97,7 @@ SecretRef, plugin, or channel auth failures.
 
 ## Updates and backups
 
-- Pull or build the new OpenClaw image, then redeploy the EasyRunner app.
+- Pull or build the new PASO image, then redeploy the EasyRunner app.
 - Back up the `openclaw-config` volume before updates. It holds
   `openclaw.json`, shared auth in `state/openclaw.sqlite`, agent-local profiles
   in `agents/<agentId>/agent/openclaw-agent.sqlite`, and installed plugin package state.

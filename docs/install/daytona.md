@@ -1,15 +1,17 @@
 ---
-summary: "Run OpenClaw in a Daytona cloud sandbox with SSH access and signed preview URLs"
+summary: "Run PASO in a Daytona cloud sandbox with SSH access and signed preview URLs"
 read_when:
-  - Running OpenClaw in a Daytona sandbox
-  - You want a cloud sandbox for OpenClaw without managing a VPS
+  - Running PASO in a Daytona sandbox
+  - You want a cloud sandbox for PASO without managing a VPS
 title: "Daytona"
 ---
 
-Run a persistent OpenClaw Gateway in a [Daytona](https://www.daytona.io) cloud
+Run a persistent PASO Gateway in a [Daytona](https://www.daytona.io) cloud
 sandbox: an isolated Linux environment with SSH access and built-in preview
-URLs, no VPS management required. OpenClaw comes pre-installed in the
-`daytona-medium` snapshot, so setup starts immediately after SSH.
+URLs, no VPS management required. The `daytona-medium` snapshot may include the
+upstream OpenClaw compatibility package; it does not include a PASO source
+release. Install PASO from the Celaya Solutions Research repository after you
+connect.
 
 Keep the Gateway on loopback and reach the dashboard through Daytona's signed
 preview URLs. Do not expose the Gateway port directly to the public internet.
@@ -67,9 +69,19 @@ daytona sandbox create --name openclaw --snapshot daytona-medium --auto-stop 0
 daytona ssh openclaw
 ```
 
+## Install PASO
+
+Inside the sandbox, replace any preinstalled upstream compatibility package
+with the PASO source checkout:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+  | bash -s -- --install-method git --version main --no-onboard
+```
+
 ## Run onboarding
 
-Inside the sandbox, configure OpenClaw in one command:
+Inside the sandbox, configure PASO in one command:
 
 ```bash
 openclaw onboard --non-interactive --accept-risk \
@@ -187,7 +199,7 @@ Unknown senders require pairing approval by default; see
 ### Telegram
 
 Create a bot with [@BotFather](https://t.me/botfather) (`/newbot`), copy the
-token, then configure OpenClaw from the sandbox SSH session:
+token, then configure PASO from the sandbox SSH session:
 
 ```bash
 export TELEGRAM_BOT_TOKEN="<bot-token>"
@@ -217,10 +229,12 @@ openclaw plugins install clawhub:@openclaw/whatsapp
 openclaw plugins enable whatsapp
 ```
 
-Installing does not enable a plugin, so the `enable` step is required;
+The technical `clawhub:` source prefix is retained for framework compatibility;
+it does not name a PASO or Celaya Solutions Research store. Installing does not
+enable a plugin, so the `enable` step is required;
 otherwise the Gateway reports the channel as configured but untrusted. Running
 the login command below without installing first prompts you to download the
-plugin from ClawHub or npm instead.
+plugin from the external catalog or npm instead.
 
 Then link the account by scanning a QR code from the sandbox SSH session:
 
@@ -230,7 +244,7 @@ openclaw channels login --channel whatsapp
 
 On your phone: **Settings → Linked Devices → Link a Device**, then scan the QR
 code shown in the terminal. Restart the Gateway after linking, then message
-yourself on WhatsApp and OpenClaw replies in that chat.
+yourself on WhatsApp and PASO replies in that chat.
 
 No pairing approval is needed: with no allowlist configured, the linked
 account's own number is allowed by default. Pairing applies to unknown
@@ -239,14 +253,12 @@ personal-number mode, and self-chat details: [WhatsApp](/channels/whatsapp).
 
 ## Updating
 
-The snapshot's global npm tree is owned by root, so plain `openclaw update`
-cannot write to it. Update from the sandbox SSH session with:
-
-The command below is for npm 12 or npm 11.16+. On npm 11.15 and earlier,
-omit `--allow-scripts=openclaw`.
+Update the PASO checkout from the sandbox SSH session with the fork-safe source
+installer:
 
 ```bash
-sudo env "PATH=$PATH" npm install --global openclaw@latest --allow-scripts=openclaw
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+  | bash -s -- --install-method git --version latest --no-onboard
 openclaw doctor
 ```
 
@@ -309,11 +321,12 @@ If you changed the Gateway port, pass the same port to `daytona preview-url`.
 
 ## Notes
 
-- For programmatic sandbox provisioning, see the
-  [Daytona OpenClaw SDK guide](https://www.daytona.io/docs/en/guides/openclaw/openclaw-sdk-sandbox/)
+- Daytona's [upstream OpenClaw SDK guide](https://www.daytona.io/docs/en/guides/openclaw/openclaw-sdk-sandbox/)
+  is an external compatibility reference. Its install commands do not install
+  PASO; keep the PASO source step from this page.
 
 ## Related
 
 - [Gateway remote access](/gateway/remote)
 - [Gateway security](/gateway/security)
-- [Updating OpenClaw](/install/updating)
+- [Updating PASO](/install/updating)

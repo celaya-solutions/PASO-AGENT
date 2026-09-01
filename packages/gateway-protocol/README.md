@@ -1,18 +1,18 @@
 # `@openclaw/gateway-protocol`
 
-Typed schemas, inferred TypeScript types, and runtime validators for the OpenClaw
+Typed schemas, inferred TypeScript types, and runtime validators for the PASO
 Gateway WebSocket protocol.
 
 The current wire protocol is version 4. General clients must use v4; authenticated
 node clients and lightweight probes may use the N-1 window during rolling upgrades.
-See the [Gateway protocol specification](https://docs.openclaw.ai/gateway/protocol)
+See the [Gateway protocol specification](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/protocol.md)
 for transport, authentication, roles, scopes, and complete frame examples.
 
 ## Versioning
 
-Package versions follow the OpenClaw calendar release train:
+Package versions follow the PASO calendar release train:
 `YYYY.M.PATCH`, with the same prerelease suffix when applicable. A package version
-therefore identifies the OpenClaw source release that produced the schemas; it is
+therefore identifies the PASO source release that produced the schemas; it is
 not the wire protocol number.
 
 The wire protocol integer is versioned separately. Its current value is exported
@@ -30,7 +30,7 @@ npm install --save-exact @openclaw/gateway-protocol@2026.8.1
 ```
 
 This release declares Node.js `>=22.19.0`. See the canonical
-[installation guide](https://docs.openclaw.ai/gateway/clients#install-the-packages)
+[installation guide](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/clients.md#install-the-packages)
 for the matching client package, package/wire-version rules, and recovery from
 reserved `0.0.0` artifacts. Test it with the Gateway version you deploy; the root
 `openclaw` CLI has its own package versions and dist-tags.

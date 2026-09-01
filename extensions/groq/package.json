@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/groq-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Groq media-understanding provider.",
+  "description": "PASO Groq media-understanding provider.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

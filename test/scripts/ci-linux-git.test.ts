@@ -1017,8 +1017,8 @@ const push = ["push", "origin", "HEAD:main"];
 const abort = ["rebase", "--abort"];
 const diff = ["diff", "--quiet", "--", "docs", ".openclaw-sync"];
 const commit = [
-  ["config", "user.name", "openclaw-docs-sync[bot]"],
-  ["config", "user.email", "openclaw-docs-sync[bot]@users.noreply.github.com"],
+  ["config", "user.name", "paso-docs-sync[bot]"],
+  ["config", "user.email", "paso-docs-sync[bot]@users.noreply.github.com"],
   ["add", "docs", ".openclaw-sync"],
   ["commit", "-m", `chore(sync): mirror docs from fixture/checkout@${candidate}`],
 ];
@@ -1050,7 +1050,7 @@ posixIt.each(["directory", "file", "symlink"] as const)(
     expect(gitArgs(report)).toEqual(
       [1, 2].map(() => [
         "clone",
-        "https://x-access-token:fixture-docs-token@github.com/openclaw/docs.git",
+        "https://x-access-token:fixture-docs-token@github.com/celaya-solutions/PASO-DOCS.git",
         path.join(report.workspace, "publish"),
       ]),
     );
@@ -1277,7 +1277,7 @@ posixIt.each([0, 23, "cleanup-failure"] satisfies FetchResult[])(
               "--clawhub-repo",
               path.join(report.workspace, "clawhub-source"),
               "--clawhub-source-repo",
-              "openclaw/clawhub",
+              "celaya-solutions/PASO-PLUGINS",
               "--clawhub-source-sha",
               candidate,
             ],

@@ -43,5 +43,7 @@ describe("make_appcast cleanup", () => {
       script.indexOf("command -v generate_appcast"),
     );
     expect(script).toContain("is missing sparkle:edSignature");
+    expect(script).toContain("<sparkle:updatesDisabled>");
+    expect(script).toContain("writeFileSync(appcastPath, appcast)");
   });
 });

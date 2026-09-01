@@ -62,10 +62,10 @@ crabbox run --provider <backend> --id <lease> --no-sync -- bash -lc '<tool> --ve
 crabbox stop --provider <backend> --id <lease>
 ```
 
-Record warmup total and compare against the pre-bake timing. Then confirm the OpenClaw path end to end: dispatch one session to the profile from a client (Cloud destination) and verify the placement reaches active. If any step fails, roll back the image selection and report the exact blocker.
+Record warmup total and compare against the pre-bake timing. Then confirm the PASO path end to end: dispatch one session to the profile from a client (Cloud destination) and verify the placement reaches active. If any step fails, roll back the image selection and report the exact blocker.
 
 ## Report
 
 Report the profile, backend, new and previous image ids, tooling smoke result, timed warmup before/after, and rollback state. Only after successful proof, show the exact deletion target and get hard operator confirmation, then delete only that superseded snapshot (`crabbox image delete <id>` or `hcloud image delete <id>`) and verify it is gone. Without confirmation, leave it intact and report cleanup pending.
 
-Further reference: https://docs.openclaw.ai/gateway/cloud-workers
+Further reference: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/cloud-workers.md

@@ -126,7 +126,7 @@ describe("qa docker harness", () => {
       path.join(outputDir, "state", "seed-workspace", "QA_KICKOFF_TASK.md"),
       "utf8",
     );
-    expect(kickoff).toContain("Lobster Invaders");
+    expect(kickoff).toContain("PASO Task Board");
 
     const scenarios = await readFile(
       path.join(outputDir, "state", "seed-workspace", "QA_SCENARIOS.yaml"),

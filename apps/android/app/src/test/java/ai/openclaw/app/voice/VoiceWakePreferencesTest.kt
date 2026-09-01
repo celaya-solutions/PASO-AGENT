@@ -14,47 +14,47 @@ class VoiceWakePreferencesTest {
   @Test
   fun sanitizePreservesPhrasePunctuationAndNewlines() {
     assertEquals(
-      listOf("hey, openclaw", "line\nbreak"),
-      VoiceWakePreferences.sanitizeTriggerWords(listOf(" hey, openclaw ", "line\nbreak")),
+      listOf("hey, paso", "line\nbreak"),
+      VoiceWakePreferences.sanitizeTriggerWords(listOf(" hey, paso ", "line\nbreak")),
     )
   }
 
   @Test
   fun matcherRequiresWordBoundariesAndCommand() {
-    assertNull(VoiceWakePhraseMatcher.match("reopenclaw show status", listOf("openclaw")))
-    assertNull(VoiceWakePhraseMatcher.match("openclaw", listOf("openclaw")))
-    assertNull(VoiceWakePhraseMatcher.match("tell openclaw show status", listOf("openclaw")))
+    assertNull(VoiceWakePhraseMatcher.match("repaso show status", listOf("paso")))
+    assertNull(VoiceWakePhraseMatcher.match("paso", listOf("paso")))
+    assertNull(VoiceWakePhraseMatcher.match("tell paso show status", listOf("paso")))
     assertEquals(
-      VoiceWakeMatch(trigger = "OpenClaw", command = "show status"),
-      VoiceWakePhraseMatcher.match("Hey OpenClaw, show status", listOf("openclaw")),
+      VoiceWakeMatch(trigger = "PASO", command = "show status"),
+      VoiceWakePhraseMatcher.match("Hey PASO, show status", listOf("paso")),
     )
   }
 
   @Test
   fun matcherUsesEarliestTrigger() {
     assertEquals(
-      VoiceWakeMatch(trigger = "computer", command = "ask claude for status"),
-      VoiceWakePhraseMatcher.match("computer ask claude for status", listOf("claude", "computer")),
+      VoiceWakeMatch(trigger = "computer", command = "ask paso for status"),
+      VoiceWakePhraseMatcher.match("computer ask paso for status", listOf("paso", "computer")),
     )
   }
 
   @Test
   fun matcherSupportsScriptsWithoutWhitespaceWordBoundaries() {
     assertEquals(
-      VoiceWakeMatch(trigger = "小龙虾", command = "天气怎么样"),
-      VoiceWakePhraseMatcher.match("小龙虾天气怎么样", listOf("小龙虾")),
+      VoiceWakeMatch(trigger = "助手", command = "天气怎么样"),
+      VoiceWakePhraseMatcher.match("助手天气怎么样", listOf("助手")),
     )
     assertEquals(
-      VoiceWakeMatch(trigger = "โอเพนคลอ", command = "สภาพอากาศ"),
-      VoiceWakePhraseMatcher.match("โอเพนคลอสภาพอากาศ", listOf("โอเพนคลอ")),
+      VoiceWakeMatch(trigger = "ผู้ช่วย", command = "สภาพอากาศ"),
+      VoiceWakePhraseMatcher.match("ผู้ช่วยสภาพอากาศ", listOf("ผู้ช่วย")),
     )
   }
 
   @Test
   fun matcherNormalizesSpokenPunctuationAndWhitespace() {
     assertEquals(
-      VoiceWakeMatch(trigger = "Hey OpenClaw", command = "show status"),
-      VoiceWakePhraseMatcher.match("Hey OpenClaw show status", listOf("hey,\nopenclaw")),
+      VoiceWakeMatch(trigger = "Hey PASO", command = "show status"),
+      VoiceWakePhraseMatcher.match("Hey PASO show status", listOf("hey,\npaso")),
     )
   }
 }

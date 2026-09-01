@@ -1,4 +1,4 @@
-# MiniMax (OpenClaw plugin)
+# MiniMax (PASO plugin)
 
 Bundled MiniMax plugin for both:
 

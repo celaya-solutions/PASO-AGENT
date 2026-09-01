@@ -77,10 +77,10 @@ Kimi `baseUrl` to override this inheritance.
 
 ## Grounding requirement
 
-OpenClaw only returns a Kimi `web_search` result after Moonshot's response
+PASO only returns a Kimi `web_search` result after Moonshot's response
 includes native web-search grounding evidence, such as a `$web_search` tool-call
 replay, `search_results`, or citation URLs. If Kimi answers directly with no
-grounding (for example "I cannot browse the internet"), OpenClaw returns a
+grounding (for example "I cannot browse the internet"), PASO returns a
 `kimi_web_search_ungrounded` error instead of treating that text as a search
 result. Retry the query, switch to a structured provider such as Brave, or use
 `web_fetch` / the browser tool when you already have a target URL.

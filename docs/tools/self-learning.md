@@ -1,7 +1,7 @@
 ---
 summary: "Turn corrections and successful work into reusable skills through Skill Workshop"
 read_when:
-  - You want OpenClaw to learn reusable procedures from completed conversations
+  - You want PASO to learn reusable procedures from completed conversations
   - You are choosing between off, propose, and auto self-learning modes
   - You need to understand self-learning safety, cost, privacy, or troubleshooting
 title: "Self-learning"
@@ -14,7 +14,7 @@ follow. Every learned skill flows through [Skill Workshop](/tools/skill-workshop
 the same governed proposal, scan, apply, and lifecycle path used for explicit
 skill authoring.
 
-The default mode is `auto`. OpenClaw captures strong learning signals and applies
+The default mode is `auto`. PASO captures strong learning signals and applies
 them through the normal scanner-gated Workshop service without asking for
 approval. Choose `propose` to review every capture before it becomes active, or
 `off` to disable autonomous capture.
@@ -46,7 +46,7 @@ is no template or pattern-matching path: content that reaches a proposal was
 written by the reviewer against the Workshop authoring standards, never copied
 from conversation text.
 
-After substantial work, OpenClaw can run one detached background review to find
+After substantial work, PASO can run one detached background review to find
 a reusable recovery technique or a stable procedure that would remove at least
 two future model or tool round trips. Deep turns the user interrupted qualify
 too: the wrong path and its correction are exactly the evidence worth keeping.
@@ -183,7 +183,7 @@ Every learned skill receives these controls:
   descriptions, evidence-backed steps, and token-efficient language.
 - **Bounded failure:** an automatic apply is attempted once. A normal apply
   failure leaves the proposal pending, while a scanner-critical proposal is
-  quarantined. OpenClaw does not retry in a loop.
+  quarantined. PASO does not retry in a loop.
 
 Reject a pending miscapture with one command:
 

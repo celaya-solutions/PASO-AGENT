@@ -2515,7 +2515,7 @@ describe("stageSystemdService", () => {
 
       const unit = await fs.readFile(unitPath, "utf8");
 
-      expect(unit).toContain("Description=OpenClaw Gateway");
+      expect(unit).toContain("Description=PASO Gateway");
       expect(unit).not.toContain("OPENCLAW_SERVICE_VERSION");
       expect(unit).not.toContain("EnvironmentFile=");
       expect(unit).toContain("Environment=OPENCLAW_GATEWAY_PORT=18789");

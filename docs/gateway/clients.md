@@ -1,7 +1,7 @@
 ---
 summary: "Build a third-party operator or WebChat client for the Gateway WebSocket protocol"
 read_when:
-  - Building an operator, dashboard, or WebChat client outside the OpenClaw repository
+  - Building an operator, dashboard, or WebChat client outside the PASO repository
   - Implementing Gateway reconnect, history, approvals, or device pairing
   - Updating a third-party client for a new Gateway wire version
 title: "Building a Gateway client"
@@ -14,7 +14,7 @@ the wire contract: authentication, capabilities, reconnect recovery, history,
 subscriptions, and version upgrades.
 
 For frame shapes, the handshake, errors, and the complete method surface, read the
-[Gateway protocol specification](https://docs.openclaw.ai/gateway/protocol).
+[Gateway protocol specification](/gateway/protocol).
 
 ## Install the packages
 
@@ -28,7 +28,7 @@ If an existing lockfile still pins either package to the reserved `0.0.0`
 artifact, rerun the command above to replace it. Those reserved artifacts have no
 runnable entrypoint or TypeScript declarations.
 
-Package versions follow the OpenClaw release train and are separate from the wire
+Package versions follow the PASO release train and are separate from the wire
 protocol version. The `2026.8.1` packages export wire version `4`; that does not
 guarantee compatibility with every Gateway release. The root `openclaw` CLI has
 its own package versions and dist-tags. Pin and test the client and Gateway
@@ -66,7 +66,7 @@ A full interactive chat client that also renders approval prompts should request
 Add `operator.questions` only if the client handles interactive questions,
 `operator.pairing` only if it manages paired devices or nodes, and
 `operator.admin` only for administrative operations such as `config.patch`.
-The [operator scopes reference](https://docs.openclaw.ai/gateway/operator-scopes)
+The [operator scopes reference](/gateway/operator-scopes)
 defines the complete method and approval-time rules.
 
 Do not create a per-client bearer token by hand-editing `openclaw.json`. Configure
@@ -90,7 +90,7 @@ pairing mint the client token:
 
 Scope or role upgrades create a new pending pairing request. Token rotation cannot
 expand the approved pairing contract. See the
-[Devices CLI](https://docs.openclaw.ai/cli/devices) for approval, rotation, and
+[Devices CLI](/cli/devices) for approval, rotation, and
 revocation commands.
 
 ## Advertise client capabilities
@@ -302,12 +302,12 @@ release-vintage metadata and required scope metadata for core methods, but a wir
 version bump is still an explicit breaking event for third-party clients. Pin the
 package versions you test, upgrade the client and Gateway together when the wire
 version changes, and review the
-[OpenClaw changelog](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
+[PASO changelog](https://github.com/celaya-solutions/PASO-AGENT/blob/main/CHANGELOG.md)
 before each upgrade.
 
 ## Related
 
-- [Gateway protocol](https://docs.openclaw.ai/gateway/protocol)
-- [Embedding OpenClaw](https://docs.openclaw.ai/gateway/embedding)
-- [Gateway RPC reference](https://docs.openclaw.ai/reference/rpc)
-- [Gateway integrations for external apps](https://docs.openclaw.ai/gateway/external-apps)
+- [Gateway protocol](/gateway/protocol)
+- [Embedding PASO](/gateway/embedding)
+- [Gateway RPC reference](/reference/rpc)
+- [Gateway integrations for external apps](/gateway/external-apps)

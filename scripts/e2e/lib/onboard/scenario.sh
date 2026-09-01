@@ -243,7 +243,7 @@ send_skills_flow() {
 }
 
 send_guided_skip_ui_flow() {
-  wait_for_log "Help make OpenClaw better?" 120 || return $?
+  wait_for_log "Help make PASO better?" 120 || return $?
   send $'\r' 0.8
   wait_for_log "What should we call your first agent?" 120 || return $?
   send $'\r' 0.8
@@ -256,11 +256,11 @@ send_guided_skip_ui_flow() {
 validate_guided_skip_ui_log() {
   local log_path="$1"
   local mock_request_log="$2"
-  log_contains "Hi — I'm OpenClaw. I keep this system running. Let's get you set up." || {
+  log_contains "Hi — I'm PASO. I keep this system running. Let's get you set up." || {
     echo "Guided onboarding introduction was not rendered"
     return 1
   }
-  log_contains "OpenClaw is ready." || {
+  log_contains "PASO is ready." || {
     echo "Guided onboarding did not reach its skip-UI completion"
     return 1
   }

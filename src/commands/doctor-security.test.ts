@@ -197,7 +197,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
         "  Fix: openclaw config set gateway.bind loopback",
         "  Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
         "  Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
-        "  Docs: https://docs.openclaw.ai/gateway/remote",
+        "  Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         "  Fix: openclaw doctor --fix to generate a token",
         "  Or set token directly: openclaw config set gateway.auth.mode token",
         "- Run: openclaw security audit --deep",
@@ -602,7 +602,7 @@ describe("noteSecurityWarnings gateway exposure", () => {
     expect(message).toContain("tools.exec is broader than the host exec policy");
     expect(message).toContain('tools.exec.mode="full"');
     expect(message).toContain('defaults.security="allowlist"');
-    expect(message).not.toContain("OpenClaw default");
+    expect(message).not.toContain("PASO default");
   });
 
   it("attributes broader host policy warnings to wildcard agent entries", async () => {

@@ -16,6 +16,8 @@ import { createDeferred, withTestTimeout } from "./promise.js";
 
 const MIGRATION_CONVERGENCE_REFUSAL =
   "OpenClaw plugin migration inputs changed during startup convergence;";
+const PASO_MIGRATION_CONVERGENCE_REFUSAL =
+  "PASO plugin migration inputs changed during startup convergence;";
 const RESTART_MARKER =
   "[openclaw-test-instance] restarting gateway after migration convergence refusal";
 const fakeInstances: Awaited<ReturnType<typeof createOpenClawTestInstance>>[] = [];
@@ -399,6 +401,7 @@ describe("openclaw test instance", () => {
   it("classifies only exact stderr convergence refusals with status 1", () => {
     const classify = testing.isGatewayMigrationConvergenceRefusal;
     expect(classify(1, null, `notice\n${MIGRATION_CONVERGENCE_REFUSAL} retry\n`)).toBe(true);
+    expect(classify(1, null, `notice\n${PASO_MIGRATION_CONVERGENCE_REFUSAL} retry\n`)).toBe(true);
     for (const candidate of [
       [2, null, MIGRATION_CONVERGENCE_REFUSAL],
       [1, "SIGTERM", MIGRATION_CONVERGENCE_REFUSAL],

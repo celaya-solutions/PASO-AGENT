@@ -173,9 +173,7 @@ describeControlUiE2e("Control UI shell routing E2E", () => {
       // request paths so only main.ts can make these links load under the base path.
       const assetResults = await page.evaluate(async () => {
         const links = Array.from(
-          document.querySelectorAll<HTMLLinkElement>(
-            'link[rel="icon"], link[rel="apple-touch-icon"], link[rel="manifest"]',
-          ),
+          document.querySelectorAll<HTMLLinkElement>('link[rel="icon"], link[rel="manifest"]'),
         );
         return Promise.all(
           links.map(async (link) => {
@@ -200,19 +198,6 @@ describeControlUiE2e("Control UI shell routing E2E", () => {
             type: "image/svg+xml",
           }),
           expect.objectContaining({
-            contentType: expect.stringContaining("image/png"),
-            pathname: `${basePath}/favicon-32.png`,
-            rel: "icon",
-            status: 200,
-            type: "image/png",
-          }),
-          expect.objectContaining({
-            contentType: expect.stringContaining("image/png"),
-            pathname: `${basePath}/apple-touch-icon.png`,
-            rel: "apple-touch-icon",
-            status: 200,
-          }),
-          expect.objectContaining({
             contentType: expect.stringContaining("application/manifest+json"),
             pathname: `${basePath}/manifest.webmanifest`,
             rel: "manifest",
@@ -224,8 +209,6 @@ describeControlUiE2e("Control UI shell routing E2E", () => {
         expect.arrayContaining([
           `${basePath}/chat`,
           `${basePath}/favicon.svg`,
-          `${basePath}/favicon-32.png`,
-          `${basePath}/apple-touch-icon.png`,
           `${basePath}/manifest.webmanifest`,
         ]),
       );

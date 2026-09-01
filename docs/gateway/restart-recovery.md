@@ -123,7 +123,7 @@ so the agent can deliver it instead of redoing the work.
 Startup reconciliation retries transient failures up to three times with
 exponential backoff. Separately, each interrupted main-session cycle has a
 durable budget of three charged automatic dispatch attempts, retained across
-gateway restarts. OpenClaw charges an attempt before dispatch, refunds it when
+gateway restarts. PASO charges an attempt before dispatch, refunds it when
 the gateway explicitly rejects the request before acceptance, and retains the
 charge when a post-dispatch result is uncertain to avoid replaying work.
 Foreground work that already owns the session keeps automatic recovery out
@@ -157,7 +157,7 @@ run keeps the original source-delivery mode and source correlation, including
 requester identity and any same-channel/thread restriction, so the same receipt
 remains authoritative even if another restart happens during recovery. A
 message-tool-only turn without reconstructable channel authority is tombstoned
-because OpenClaw cannot safely mint message-action authority without the
+because PASO cannot safely mint message-action authority without the
 original channel-ingress claim. The terminal notice directs the user to start a
 replacement with `/new` or `/reset`.
 
@@ -172,7 +172,7 @@ and stale pending approvals also continue from the existing transcript. States
 with ambiguous side effects use restart-safe tools; otherwise the model decides
 what completed and what remains and can report any uncertainty to the user.
 
-OpenClaw can also reconstruct interrupted read-only [Code Mode](/tools/code-mode)
+PASO can also reconstruct interrupted read-only [Code Mode](/tools/code-mode)
 work. Code Mode marks these runs as restart-safe and rejects side-effecting
 catalog or namespace tool calls before they execute. If a restart lands on
 the `wait` control, the new gateway reconstructs the turn from its transcript

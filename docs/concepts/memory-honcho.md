@@ -6,7 +6,7 @@ read_when:
   - You want AI-powered recall and user modeling
 ---
 
-[Honcho](https://honcho.dev) adds AI-native memory to OpenClaw through an
+[Honcho](https://honcho.dev) adds AI-native memory to PASO through an
 external plugin. It persists conversations to a dedicated service and builds
 user and agent models over time, giving your agent cross-session context that
 goes beyond workspace Markdown files.
@@ -101,7 +101,7 @@ After every AI turn, the conversation is persisted to Honcho. Both user and
 agent messages are observed, letting Honcho build and refine its models over
 time.
 
-During conversation, Honcho tools query the service during OpenClaw's
+During conversation, Honcho tools query the service during PASO's
 `before_prompt_build` plugin hook, injecting relevant context before the model
 sees the prompt.
 
@@ -132,7 +132,7 @@ openclaw honcho search <query> [-k N] [-d D] # Semantic search over memory
 
 - [Plugin source code](https://github.com/plastic-labs/openclaw-honcho)
 - [Honcho documentation](https://docs.honcho.dev)
-- [Honcho OpenClaw integration guide](https://docs.honcho.dev/v3/guides/integrations/openclaw)
+- [Honcho's upstream OpenClaw integration guide](https://docs.honcho.dev/v3/guides/integrations/openclaw) (external compatibility reference, not PASO documentation)
 
 ## Related
 

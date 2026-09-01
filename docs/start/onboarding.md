@@ -1,5 +1,5 @@
 ---
-summary: "First-run setup flow for OpenClaw (macOS app)"
+summary: "First-run setup flow for PASO (macOS app)"
 read_when:
   - Designing the macOS onboarding assistant
   - Implementing auth or identity setup
@@ -14,39 +14,30 @@ agent.
 For CLI onboarding and a comparison of both paths, see [Onboarding Overview](/start/onboarding-overview).
 
 <Tip>
-Need the app first? [Download OpenClaw for macOS](/platforms/macos#download),
+Need the app first? [Build PASO for macOS](/platforms/macos#availability),
 then return here for first-run setup.
 </Tip>
 
 <Steps>
 <Step title="Approve macOS warning">
-<Frame>
-<img src="/assets/macos-onboarding/01-macos-warning.jpeg" alt="" />
-</Frame>
+If macOS asks you to confirm a locally built app, review the prompt and approve
+PASO only when you trust the source and signing identity.
 </Step>
 <Step title="Approve find local networks">
-<Frame>
-<img src="/assets/macos-onboarding/02-local-networks.jpeg" alt="" />
-</Frame>
+Allow local-network access when PASO needs to connect to a Gateway or node on your trusted network.
 </Step>
 <Step title="Welcome and security notice">
-<Frame caption="Read the security notice displayed and decide accordingly">
-<img src="/assets/macos-onboarding/03-security-notice.png" alt="" />
-</Frame>
+Read the in-app security notice before continuing.
 
 Security trust model:
 
-- By default, OpenClaw is a personal agent: one trusted operator boundary.
+- By default, PASO is a personal agent: one trusted operator boundary.
 - Shared/multi-user setups need lock-down: split trust boundaries, keep tool access minimal, and follow [Security](/gateway/security).
 - Local onboarding defaults new configs to `tools.profile: "coding"` so fresh setups keep filesystem/runtime tools without the unrestricted `full` profile.
 - If hooks/webhooks or other untrusted content feeds are enabled, use a strong modern model tier and keep strict tool policy/sandboxing.
 
 </Step>
 <Step title="Local vs Remote">
-<Frame>
-<img src="/assets/macos-onboarding/04-choose-gateway.png" alt="" />
-</Frame>
-
 Where does the **Gateway** run?
 
 - **This Mac (Local only):** onboarding configures auth and writes credentials locally.
@@ -109,14 +100,14 @@ Gateway's active text-inference provider plugins rather than a fixed app list,
 so another provider can opt in without adding provider-specific macOS code.
 
 The manual key/token picker uses the same provider registry. In every route,
-the provider supplies its starter model and configuration; OpenClaw verifies
+the provider supplies its starter model and configuration; PASO verifies
 the credential with the same live test before storing its auth profile.
 Continuing remains locked until one backend has passed, so the first agent
 chat cannot start without working inference.
 </Step>
 <Step title="Continue in the dashboard">
 After a new model passes its live check, native setup closes and opens guided
-onboarding in the dashboard. OpenClaw helps configure the remaining workspace,
+onboarding in the dashboard. PASO helps configure the remaining workspace,
 Gateway, channels, and other optional features, then hands you off to normal
 agent chat. A verified pre-existing model opens the normal dashboard instead.
 
@@ -135,8 +126,8 @@ Location. See [macOS permissions](/platforms/mac/permissions) for grant and
 recovery guidance.
 
 See [Bootstrapping](/start/bootstrapping) for what happens on the Gateway host
-during the agent's first real turn. OpenClaw remains available later under
-**Settings → OpenClaw**.
+during the agent's first real turn. PASO remains available later under
+**Settings → PASO**.
 </Step>
 </Steps>
 

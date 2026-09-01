@@ -1,8 +1,14 @@
-# OpenClaw iOS Versioning
+# PASO iOS Versioning
 
-OpenClaw iOS releases retain their gateway association while allowing multiple
-public App Store releases for one gateway version. The release planner derives
-the active release identity from the repository and App Store Connect.
+> **PASO App Store publishing is not configured.** This document preserves the
+> inherited upstream OpenClaw versioning contract for compatibility. Release
+> commands fail closed while `AppStoreSigning.json` has
+> `releaseEnabled: false`; do not target the upstream Apple identity.
+
+Once Celaya-owned distribution is configured, PASO iOS releases can retain
+their gateway association while allowing multiple public App Store releases
+for one gateway version. The release planner derives the active release
+identity from the repository and App Store Connect.
 
 ## Goals
 

@@ -129,7 +129,7 @@ describe("update global helpers", () => {
 
   it("maps main and explicit package targets to install specs", () => {
     expect(resolveGlobalInstallSpec({ packageName: "openclaw", tag: "main" })).toBe(
-      "github:openclaw/openclaw#main",
+      "github:celaya-solutions/PASO-AGENT#main",
     );
     expect(
       resolveGlobalInstallSpec({

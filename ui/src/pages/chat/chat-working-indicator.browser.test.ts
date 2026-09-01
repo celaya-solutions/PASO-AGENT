@@ -1,4 +1,4 @@
-// Control UI tests cover the working claw's optical alignment.
+// Control UI tests cover the PASO working spark's optical alignment.
 import { chromium, type Browser } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { readStyleSheet } from "../../../../test/helpers/ui-style-fixtures.js";
@@ -10,13 +10,12 @@ import {
 const chromiumExecutablePath = resolvePlaywrightChromiumExecutablePath(chromium.executablePath());
 const describeBrowser = canRunPlaywrightChromium(chromiumExecutablePath) ? describe : describe.skip;
 
-const claw = `
+const spark = `
   <svg viewBox="0 0 24 24">
-    <path d="M8.2 10 A5.2 5.2 0 1 0 8.2 20.4 A5.2 5.2 0 0 0 8.2 10 Z M10.2 20 C14.5 20.8 19 18.6 22.3 13.2 C21 12.9 19.7 12.7 18.4 12.8 L17.5 14.6 L16 12.9 L14.3 14.5 L13.5 13 L11.5 14.2 Z"></path>
-    <path class="claw-icon__jaw" d="M5.6 12.2 C5.2 5.6 10.4 1.4 15.6 2 C19.4 2.6 21.8 5.2 22.6 8.2 C20.9 7.7 19.2 7.6 17.6 7.9 L16.9 6.3 L15.2 8.5 C13.6 9.4 12.2 10.9 11.6 12.4 L6.8 13 Z"></path>
+    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
   </svg>`;
 
-describeBrowser("working claw browser layout", () => {
+describeBrowser("working spark browser layout", () => {
   let browser: Browser;
 
   beforeAll(async () => {
@@ -27,7 +26,7 @@ describeBrowser("working claw browser layout", () => {
     await browser?.close();
   });
 
-  it("centers the claw when grouped chat styles load after the indicator styles", async () => {
+  it("centers the spark when grouped chat styles load after the indicator styles", async () => {
     const page = await browser.newPage({ viewport: { width: 640, height: 240 } });
     try {
       const css = [
@@ -43,7 +42,7 @@ describeBrowser("working claw browser layout", () => {
       await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body>
         <div class="chat-group assistant chat-group--working">
           <div class="chat-working-indicator">
-            <div class="chat-bubble chat-reading-indicator">${claw}</div>
+            <div class="chat-bubble chat-reading-indicator">${spark}</div>
             <span class="chat-working-indicator__status">
               <span class="chat-working-indicator__elapsed">8s</span><span>·</span><span>72 tokens</span>
             </span>

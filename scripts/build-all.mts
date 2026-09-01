@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds OpenClaw packages and plugin SDK artifacts with cache-aware orchestration.
+// Builds PASO packages and plugin SDK artifacts with cache-aware orchestration.
 
 import { spawnSync, type SpawnSyncOptions } from "node:child_process";
 import fs from "node:fs";
@@ -421,7 +421,7 @@ function buildAllUsage() {
   return [
     "Usage: node --import tsx scripts/build-all.mts [profile]",
     "",
-    "Builds OpenClaw artifacts for the selected profile.",
+    "Builds PASO artifacts for the selected profile.",
     "",
     "Profiles:",
     ...Object.keys(BUILD_ALL_PROFILES).map((profile) => `  ${profile}`),

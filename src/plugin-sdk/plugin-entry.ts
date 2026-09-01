@@ -211,7 +211,7 @@ type DefinePluginEntryOptions = {
   register: NonNullable<OpenClawPluginDefinition["register"]>;
 };
 
-/** Normalized object shape that OpenClaw loads from a plugin entry module. */
+/** Normalized object shape that PASO loads from a plugin entry module. */
 type DefinedPluginEntry = Omit<DefinePluginEntryOptions, "configSchema"> & {
   configSchema: OpenClawPluginConfigSchema;
 };

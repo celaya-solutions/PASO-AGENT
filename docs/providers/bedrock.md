@@ -1,12 +1,12 @@
 ---
-summary: "Use Amazon Bedrock (Converse API) models with OpenClaw"
+summary: "Use Amazon Bedrock (Converse API) models with PASO"
 read_when:
-  - You want to use Amazon Bedrock models with OpenClaw
+  - You want to use Amazon Bedrock models with PASO
   - You need AWS credential/region setup for model calls
 title: "Amazon Bedrock"
 ---
 
-OpenClaw can use **Amazon Bedrock** models via its **Bedrock Converse**
+PASO can use **Amazon Bedrock** models via its **Bedrock Converse**
 streaming provider. Bedrock auth uses the **AWS SDK default credential chain**,
 not an API key.
 
@@ -79,7 +79,7 @@ Choose your preferred auth method and follow the setup steps.
     </Steps>
 
     <Tip>
-    With env-marker auth (`AWS_ACCESS_KEY_ID`, `AWS_PROFILE`, or `AWS_BEARER_TOKEN_BEDROCK`), OpenClaw auto-enables the implicit Bedrock provider for model discovery without extra config.
+    With env-marker auth (`AWS_ACCESS_KEY_ID`, `AWS_PROFILE`, or `AWS_BEARER_TOKEN_BEDROCK`), PASO auto-enables the implicit Bedrock provider for model discovery without extra config.
     </Tip>
 
   </Tab>
@@ -89,7 +89,7 @@ Choose your preferred auth method and follow the setup steps.
 
     <Steps>
       <Step title="Enable discovery explicitly">
-        When using IMDS, OpenClaw cannot detect AWS auth from env markers alone, so you must opt in:
+        When using IMDS, PASO cannot detect AWS auth from env markers alone, so you must opt in:
 
         ```bash
         openclaw config set plugins.entries.amazon-bedrock.config.discovery.enabled true
@@ -133,16 +133,16 @@ Choose your preferred auth method and follow the setup steps.
 
 ## Automatic model discovery
 
-OpenClaw can automatically discover Bedrock models that support **streaming**
+PASO can automatically discover Bedrock models that support **streaming**
 and **text output**. Discovery uses `bedrock:ListFoundationModels` and
 `bedrock:ListInferenceProfiles`, and results are cached (default: 1 hour).
 
 How the implicit provider is enabled:
 
 - If `plugins.entries.amazon-bedrock.config.discovery.enabled` is `true`,
-  OpenClaw will try discovery even when no AWS env marker is present.
+  PASO will try discovery even when no AWS env marker is present.
 - If `plugins.entries.amazon-bedrock.config.discovery.enabled` is unset,
-  OpenClaw only auto-adds the
+  PASO only auto-adds the
   implicit Bedrock provider when it sees one of these AWS auth markers:
   `AWS_BEARER_TOKEN_BEDROCK`, `AWS_ACCESS_KEY_ID` +
   `AWS_SECRET_ACCESS_KEY`, or `AWS_PROFILE`.
@@ -151,7 +151,7 @@ How the implicit provider is enabled:
   needed `enabled: true` to opt in.
 
 <Note>
-For explicit `models.providers["amazon-bedrock"]` entries, OpenClaw can still resolve Bedrock env-marker auth early from AWS env markers such as `AWS_BEARER_TOKEN_BEDROCK` without forcing full runtime auth loading. The actual model-call auth path still uses the AWS SDK default chain.
+For explicit `models.providers["amazon-bedrock"]` entries, PASO can still resolve Bedrock env-marker auth early from AWS env markers such as `AWS_BEARER_TOKEN_BEDROCK` without forcing full runtime auth loading. The actual model-call auth path still uses the AWS SDK default chain.
 </Note>
 
 <AccordionGroup>
@@ -181,7 +181,7 @@ For explicit `models.providers["amazon-bedrock"]` entries, OpenClaw can still re
 
     | Option | Default | Description |
     | ------ | ------- | ----------- |
-    | `enabled` | auto | In auto mode, OpenClaw only enables the implicit Bedrock provider when it sees a supported AWS env marker. Set `true` to force discovery. |
+    | `enabled` | auto | In auto mode, PASO only enables the implicit Bedrock provider when it sees a supported AWS env marker. Set `true` to force discovery. |
     | `region` | `AWS_REGION` / `AWS_DEFAULT_REGION` / `us-east-1` | AWS region used for discovery API calls. |
     | `providerFilter` | (all) | Matches Bedrock provider names (for example `anthropic`, `amazon`). |
     | `refreshInterval` | `3600` | Cache duration in seconds. Set to `0` to disable caching. |
@@ -193,7 +193,7 @@ For explicit `models.providers["amazon-bedrock"]` entries, OpenClaw can still re
   <Accordion title="Context window and max-token limits">
     The Bedrock `ListFoundationModels` and `GetFoundationModel` APIs return no
     token-limit metadata, only model ID, name, modalities, and lifecycle
-    status. OpenClaw ships a lookup table of known context windows and output
+    status. PASO ships a lookup table of known context windows and output
     limits for popular Bedrock models (Claude, Nova, Llama, Mistral, DeepSeek,
     and others) so session management, compaction thresholds, and
     context-overflow detection work correctly for those models.
@@ -209,7 +209,7 @@ For explicit `models.providers["amazon-bedrock"]` entries, OpenClaw can still re
 ## Quick setup (AWS path)
 
 This walkthrough creates an IAM role, attaches Bedrock permissions, associates
-the instance profile, and enables OpenClaw discovery on the EC2 host.
+the instance profile, and enables PASO discovery on the EC2 host.
 
 ```bash
 # 1. Create IAM role and instance profile
@@ -253,7 +253,7 @@ openclaw models list
 
 <AccordionGroup>
   <Accordion title="Inference profiles">
-    OpenClaw discovers **regional and global inference profiles** alongside
+    PASO discovers **regional and global inference profiles** alongside
     foundation models. When a profile maps to a known foundation model, the
     profile inherits that model's capabilities (context window, max tokens,
     reasoning, vision) and the correct Bedrock request region is injected
@@ -308,7 +308,7 @@ openclaw models list
     ```
 
     Valid values are `default`, `flex`, `priority`, and `reserved`. Claude
-    Fable 5, Opus 5, and Sonnet 5 only support the `default` tier; OpenClaw warns and
+    Fable 5, Opus 5, and Sonnet 5 only support the `default` tier; PASO warns and
     ignores `flex`, `priority`, or `reserved` requested for those models. For
     other models, not every model supports every tier -- an unsupported tier
     returns a Bedrock validation error, and the error message can be
@@ -320,7 +320,7 @@ openclaw models list
 
   <Accordion title="Claude Opus 5, 4.8, and 4.7 temperature">
     Bedrock rejects the `temperature` parameter for Claude Opus 5, Opus 4.8,
-    and Opus 4.7. OpenClaw omits `temperature` automatically for any matching Bedrock
+    and Opus 4.7. PASO omits `temperature` automatically for any matching Bedrock
     ref, including foundation model ids, named inference profiles, application
     inference profiles whose underlying model resolves to Opus 5/4.8/4.7 via
     `bedrock:GetInferenceProfile`, and dotted `opus-4.7`/`opus-4.8` variants
@@ -333,12 +333,12 @@ openclaw models list
     Use `amazon-bedrock/anthropic.claude-opus-5` on the Messages-API Bedrock
     endpoint, or a regional/global inference profile such as
     `global.anthropic.claude-opus-5` when it appears in Bedrock discovery.
-    OpenClaw applies the 1,000,000-token context window, 128,000-token output
+    PASO applies the 1,000,000-token context window, 128,000-token output
     limit, image input, prompt caching, refusal-safe streaming, and native
     `xhigh`/`max` effort levels.
 
     Adaptive thinking defaults to `high`. `/think off` disables thinking, while
-    `/think xhigh|max` keeps adaptive thinking enabled. OpenClaw omits custom
+    `/think xhigh|max` keeps adaptive thinking enabled. PASO omits custom
     sampling parameters and unsupported non-default service tiers.
 
   </Accordion>
@@ -346,7 +346,7 @@ openclaw models list
   <Accordion title="Claude Fable 5">
     Use `amazon-bedrock/anthropic.claude-fable-5` in `us-east-1`, or the
     regional inference ids such as `us.anthropic.claude-fable-5`.
-    OpenClaw applies Fable's 1M context window, 128K output limit, always-on
+    PASO applies Fable's 1M context window, 128K output limit, always-on
     adaptive thinking, and supported effort mapping. `/think off` and
     `/think minimal` map to `low`; temperature and forced tool choice controls
     are omitted, matching the Opus 4.7/4.8 route. Streaming output is held
@@ -363,11 +363,11 @@ openclaw models list
 
   <Accordion title="Claude Mythos 5">
     Claude Mythos 5 is available through Bedrock only for accounts with the
-    required limited-access approval. OpenClaw recognizes the foundation model
+    required limited-access approval. PASO recognizes the foundation model
     `anthropic.claude-mythos-5` and regional or global inference profiles such
     as `us.anthropic.claude-mythos-5`.
 
-    OpenClaw applies the 1,000,000-token context window, 128,000-token output
+    PASO applies the 1,000,000-token context window, 128,000-token output
     limit, image input, prompt caching, refusal-safe streaming, and native
     effort levels. Adaptive thinking is always enabled: `/think off` and
     `/think minimal` map to `low`, while `xhigh` and `max` remain available.
@@ -378,13 +378,13 @@ openclaw models list
   <Accordion title="Claude Sonnet 5">
     AWS documents Sonnet 5 for both the
     [`bedrock-runtime` and `bedrock-mantle` endpoints](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-sonnet-5.html).
-    OpenClaw recognizes the Bedrock foundation model
+    PASO recognizes the Bedrock foundation model
     `anthropic.claude-sonnet-5` and regional or global inference profiles such
     as `us.anthropic.claude-sonnet-5`. It applies the 1,000,000-token context
     window, 128,000-token output limit, image input, native effort levels,
     prompt caching, and refusal-safe streaming.
 
-    Bedrock keeps adaptive thinking enabled for Sonnet 5. OpenClaw defaults to
+    Bedrock keeps adaptive thinking enabled for Sonnet 5. PASO defaults to
     `high`; `/think off` and `/think minimal` map to `low` because this route
     cannot disable thinking. Custom temperature and forced tool choice values
     are omitted while adaptive thinking is active.
@@ -466,7 +466,7 @@ openclaw models list
     - If you rely on auto mode, set one of the supported AWS auth env markers on the
       gateway host. If you prefer IMDS/shared-config auth without env markers, set
       `plugins.entries.amazon-bedrock.config.discovery.enabled: true`.
-    - OpenClaw surfaces the credential source in this order: `AWS_BEARER_TOKEN_BEDROCK`,
+    - PASO surfaces the credential source in this order: `AWS_BEARER_TOKEN_BEDROCK`,
       then `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY`, then `AWS_PROFILE`, then the
       default AWS SDK chain.
     - Reasoning support depends on the model; check the Bedrock model card for

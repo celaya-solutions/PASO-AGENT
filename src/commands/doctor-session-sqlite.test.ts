@@ -4831,7 +4831,9 @@ describe("runDoctorSessionSqlite", () => {
     if (process.env.HOME) {
       expect(recover.supportIssue?.body).not.toContain(process.env.HOME);
     }
-    expect(recover.supportIssue?.url).toContain("github.com/openclaw/openclaw/issues/new");
+    expect(recover.supportIssue?.url).toContain(
+      "github.com/celaya-solutions/PASO-AGENT/issues/new",
+    );
   });
 
   it("keeps truncated GitHub issue bodies on a valid UTF-16 boundary", () => {

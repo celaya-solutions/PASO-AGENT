@@ -152,7 +152,7 @@ a workflow fix that the existing parent run cannot consume.
   extra fixes during an active release unless the operator explicitly asks for
   that audit. Operators may authorize up to 4 autonomous beta attempts; after
   4 failed beta attempts, stop and report.
-- As soon as the Code SHA exists, dispatch `OpenClaw Performance`
+- As soon as the Code SHA exists, dispatch `PASO Performance`
   with `target_ref=<code-sha>` in parallel with the other release work. Do
   not wait for full release validation to start the performance signal.
 - Before publish/closeout, compare available product performance metrics with
@@ -414,7 +414,7 @@ HEAD/worktree-bound manifest under git metadata for cutover review.
   `OpenClawCompanion-SHA256SUMS.txt` assets on the canonical
   `openclaw/openclaw` GitHub Release. Pass the exact signed
   `openclaw/openclaw-windows-node` release tag as `windows_node_tag` to
-  `OpenClaw Release Publish`, together with the candidate-approved
+  `PASO Release Publish`, together with the candidate-approved
   `windows_node_installer_digests` map; it prevalidates the published source
   release and required installers against that map before any publish child,
   dispatches the public `Windows Node Release` workflow while the OpenClaw
@@ -940,7 +940,7 @@ node --import tsx scripts/openclaw-npm-postpublish-verify.ts <published-version>
   package list. `all-publishable` plugin runs require complete immutable npm
   preflight and Full Release Validation evidence even when core npm publication
   is disabled.
-- Dispatch regular beta and stable `OpenClaw Release Publish` runs from trusted
+- Dispatch regular beta and stable `PASO Release Publish` runs from trusted
   `main`; the tag still selects the exact release commit, including a commit on
   `release/YYYY.M.PATCH`. Tideclaw alpha publish runs remain on their matching
   alpha branch. Reuse the successful preflight for that exact release SHA.
@@ -1020,7 +1020,7 @@ node --import tsx scripts/openclaw-npm-postpublish-verify.ts <published-version>
 6. Make every repo version location match the beta tag. Apply only explicitly
    selected backports or release fixes. Make a pre-publish main change only
    under the active release scope lock. Freeze the result as the Code SHA.
-7. Immediately dispatch Actions > `OpenClaw Performance` from the pinned
+7. Immediately dispatch Actions > `PASO Performance` from the pinned
    trusted workflow source with `target_ref=<code-sha>`, `profile=release`,
    `repeat=3`, deep profiling off, live OpenAI off, and `fail_on_regression`
    matching Full Release Validation's profile gate: `true` for stable,

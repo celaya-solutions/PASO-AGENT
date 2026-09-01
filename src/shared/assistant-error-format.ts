@@ -31,9 +31,19 @@ const GENERIC_PROVIDER_INTERNAL_ERROR_USER_MESSAGE =
   "The AI service returned an internal error. Please try again in a moment.";
 
 export const MALFORMED_STREAMING_FRAGMENT_ERROR_MESSAGE =
+  "PASO transport error: malformed_streaming_fragment";
+const LEGACY_MALFORMED_STREAMING_FRAGMENT_ERROR_MESSAGE =
   "OpenClaw transport error: malformed_streaming_fragment";
 const MALFORMED_STREAMING_FRAGMENT_USER_MESSAGE =
   "LLM streaming response contained a malformed fragment. Please try again.";
+
+export function isMalformedStreamingFragmentError(raw: string): boolean {
+  const trimmed = raw.trim();
+  return (
+    trimmed === MALFORMED_STREAMING_FRAGMENT_ERROR_MESSAGE ||
+    trimmed === LEGACY_MALFORMED_STREAMING_FRAGMENT_ERROR_MESSAGE
+  );
+}
 
 type ErrorPayload = Record<string, unknown>;
 
@@ -251,7 +261,7 @@ export function formatRawAssistantErrorForUi(raw?: string): string {
     return "LLM request failed with an unknown error.";
   }
 
-  if (trimmed === MALFORMED_STREAMING_FRAGMENT_ERROR_MESSAGE) {
+  if (isMalformedStreamingFragmentError(trimmed)) {
     return MALFORMED_STREAMING_FRAGMENT_USER_MESSAGE;
   }
 

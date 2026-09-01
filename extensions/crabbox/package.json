@@ -2,7 +2,7 @@
   "name": "@openclaw/crabbox-provider",
   "version": "2026.8.1",
   "private": true,
-  "description": "OpenClaw cloud worker provider backed by the Crabbox CLI",
+  "description": "PASO cloud worker provider backed by the Crabbox CLI",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -14,8 +14,8 @@
     "build": {
       "staticAssets": [
         {
-          "source": "./assets/openclaw-worker-wallpaper.png",
-          "output": "assets/openclaw-worker-wallpaper.png"
+          "source": "./assets/paso-worker-wallpaper.png",
+          "output": "assets/paso-worker-wallpaper.png"
         }
       ]
     }

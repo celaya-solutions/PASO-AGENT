@@ -13,8 +13,10 @@ import { formatQaGatewayLogsForError } from "./gateway-log-redaction.js";
 
 export const QA_GATEWAY_CHILD_STARTUP_MAX_ATTEMPTS = 5;
 const QA_GATEWAY_CHILD_RESTART_BOUNDARY_TIMEOUT_MS = 90_000;
-const QA_GATEWAY_MIGRATION_CONVERGENCE_RESTART_PREFIX =
-  "OpenClaw plugin migration inputs changed during startup convergence;";
+const QA_GATEWAY_MIGRATION_CONVERGENCE_RESTART_PREFIXES = [
+  "PASO plugin migration inputs changed during startup convergence;",
+  "OpenClaw plugin migration inputs changed during startup convergence;",
+] as const;
 
 type QaGatewayStartupRetryKind = "bind-collision" | "migration-convergence-restart";
 
@@ -24,7 +26,9 @@ type QaGatewayHealthChild = {
 };
 
 function classifyQaGatewayStartupRetry(details: string): QaGatewayStartupRetryKind | null {
-  if (details.includes(QA_GATEWAY_MIGRATION_CONVERGENCE_RESTART_PREFIX)) {
+  if (
+    QA_GATEWAY_MIGRATION_CONVERGENCE_RESTART_PREFIXES.some((prefix) => details.includes(prefix))
+  ) {
     return "migration-convergence-restart";
   }
   if (

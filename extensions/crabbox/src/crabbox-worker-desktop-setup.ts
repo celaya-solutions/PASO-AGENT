@@ -130,7 +130,7 @@ export function createCrabboxWorkerDesktopSetup(leaseId: string, wallpaperBase64
     'as_root install -d -o "$worker_user" -g "$worker_group" -m 0755 "$worker_home/.cache" "$worker_home/.cache/openclaw" "$worker_home/.cache/openclaw/worker-browser"',
     `as_root install -d -o "$worker_user" -g "$worker_group" -m 0700 "$worker_home/.cache/openclaw/worker-browser/${leaseId}"`,
     'as_root install -d -o "$worker_user" -g "$worker_group" -m 0755 "$worker_home/.local" "$worker_home/.local/share" "$worker_home/.local/share/backgrounds"',
-    'wallpaper_path="$worker_home/.local/share/backgrounds/openclaw-worker.png"',
+    'wallpaper_path="$worker_home/.local/share/backgrounds/paso-worker.png"',
     'as_root install -o "$worker_user" -g "$worker_group" -m 0644 "$setup_dir/wallpaper.png" "$wallpaper_path"',
     "# Setup precedes node enrollment, so re-home only this worker's renderer before publishing it.",
     'pkill -TERM -u "$worker_uid" -x xfdesktop || true',

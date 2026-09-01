@@ -22,12 +22,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.MotionDurationScale
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -44,8 +46,8 @@ import kotlin.math.exp
 import kotlin.math.max
 import kotlin.math.sin
 
-// Canonical 120x120 mascot geometry from ui/public/favicon.svg. Parts stay
-// separate so the original silhouette can react without substituting artwork.
+// Legacy pose channels remain stable, while the visible avatar uses the
+// neutral PASO path-and-step mark.
 private val BodyPath by lazy {
   PathParser()
     .parsePathString(
@@ -344,6 +346,9 @@ private fun DrawScope.drawCanonicalAvatar(
   state: RealtimeVoiceButtonState,
   animationSeconds: Float,
 ) {
+  drawPasoMark()
+  return
+
   val stretchX = (1f + ((1f - pose.bodyStretch) * 0.5f)).coerceIn(0.96f, 1.04f)
   withTransform({ translate(top = pose.floatOffset) }) {
     withTransform({
@@ -400,6 +405,45 @@ private fun DrawScope.drawCanonicalAvatar(
       drawCanonicalMouth(state, pose.mouthLevel, animationSeconds)
     }
   }
+}
+
+private fun DrawScope.drawPasoMark() {
+  drawRoundRect(
+    color = Color(0xFF0E1015),
+    topLeft = Offset.Zero,
+    size = Size(120f, 120f),
+    cornerRadius = CornerRadius(26.25f, 26.25f),
+  )
+
+  val path =
+    Path().apply {
+      moveTo(33.75f, 93.75f)
+      lineTo(33.75f, 26.25f)
+      lineTo(67.5f, 26.25f)
+      cubicTo(84.07f, 26.25f, 97.5f, 39.68f, 97.5f, 56.25f)
+      cubicTo(97.5f, 72.82f, 84.07f, 86.25f, 67.5f, 86.25f)
+      lineTo(56.25f, 86.25f)
+    }
+  drawPath(
+    path = path,
+    color = Color(0xFFE8590C),
+    style = Stroke(width = 13.125f, cap = StrokeCap.Round, join = StrokeJoin.Round),
+  )
+
+  val steps =
+    Path().apply {
+      moveTo(33.75f, 93.75f)
+      lineTo(52.5f, 93.75f)
+      lineTo(52.5f, 75f)
+      lineTo(71.25f, 75f)
+      lineTo(71.25f, 56.25f)
+      lineTo(93.75f, 56.25f)
+    }
+  drawPath(
+    path = steps,
+    color = Color(0xFFFAF9F7),
+    style = Stroke(width = 9.375f, cap = StrokeCap.Square, join = StrokeJoin.Miter),
+  )
 }
 
 private fun DrawScope.drawCanonicalEye(

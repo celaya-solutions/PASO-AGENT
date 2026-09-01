@@ -34,7 +34,7 @@ async function initializeRepository(root: string, name: string): Promise<string>
   const repo = path.join(root, name);
   await fs.mkdir(repo, { recursive: true });
   await execFileAsync("git", ["init", "-b", "main", repo]);
-  await execFileAsync("git", ["-C", repo, "config", "user.name", "OpenClaw Tests"]);
+  await execFileAsync("git", ["-C", repo, "config", "user.name", "PASO Tests"]);
   await execFileAsync("git", ["-C", repo, "config", "user.email", "tests@openclaw.invalid"]);
   await fs.writeFile(path.join(repo, "README.md"), `${name}\n`);
   await execFileAsync("git", ["-C", repo, "add", "README.md"]);
@@ -44,11 +44,26 @@ async function initializeRepository(root: string, name: string): Promise<string>
 
 describe("project registry", () => {
   it.each([
-    ["https://github.com/OpenClaw/OpenClaw", "https://github.com/openclaw/openclaw.git"],
-    ["https://github.com/OpenClaw/OpenClaw.git", "https://github.com/openclaw/openclaw.git"],
-    ["git@github.com:OpenClaw/OpenClaw.git", "https://github.com/openclaw/openclaw.git"],
-    ["ssh://git@github.com/OpenClaw/OpenClaw.git", "https://github.com/openclaw/openclaw.git"],
-    ["ssh://git@github.com:22/OpenClaw/OpenClaw", "https://github.com/openclaw/openclaw.git"],
+    [
+      "https://github.com/Celaya-Solutions/PASO-AGENT",
+      "https://github.com/celaya-solutions/paso-agent.git",
+    ],
+    [
+      "https://github.com/Celaya-Solutions/PASO-AGENT.git",
+      "https://github.com/celaya-solutions/paso-agent.git",
+    ],
+    [
+      "git@github.com:Celaya-Solutions/PASO-AGENT.git",
+      "https://github.com/celaya-solutions/paso-agent.git",
+    ],
+    [
+      "ssh://git@github.com/Celaya-Solutions/PASO-AGENT.git",
+      "https://github.com/celaya-solutions/paso-agent.git",
+    ],
+    [
+      "ssh://git@github.com:22/Celaya-Solutions/PASO-AGENT",
+      "https://github.com/celaya-solutions/paso-agent.git",
+    ],
   ])("canonicalizes accepted GitHub clone URL %s", (input, expected) => {
     expect(parseProjectGitUrl(input)?.url).toBe(expected);
   });
@@ -104,11 +119,11 @@ describe("project registry", () => {
     await fs.symlink(repo, alias, "dir");
     const options = { path: path.join(root, "state.sqlite") };
 
-    const first = await registerProjectRegistry({ path: alias, name: "OpenClaw" }, options);
-    const second = await registerProjectRegistry({ path: repo, name: "OpenClaw" }, options);
+    const first = await registerProjectRegistry({ path: alias, name: "PASO" }, options);
+    const second = await registerProjectRegistry({ path: repo, name: "PASO" }, options);
     expect(first).toMatchObject({
-      id: "openclaw",
-      displayName: "OpenClaw",
+      id: "paso",
+      displayName: "PASO",
       repoRoot: repo,
       source: "registered",
     });
@@ -124,7 +139,7 @@ describe("project registry", () => {
     } as OpenClawConfig;
     expect(listProjectRegistry(cfg, options).map((project) => project.displayName)).toEqual([
       "alpha",
-      "OpenClaw",
+      "PASO",
       "zeta",
     ]);
     const sharedWorkspaceCfg = {
@@ -136,9 +151,9 @@ describe("project registry", () => {
       },
     } as OpenClawConfig;
     expect(listProjectRegistry(sharedWorkspaceCfg, options).map((project) => project.id)).toEqual([
-      "openclaw",
       "workspace:main",
       "workspace:work",
+      "paso",
     ]);
     expect(removeProjectRegistry(first.id, options)).toBe(true);
     expect(removeProjectRegistry(first.id, options)).toBe(false);

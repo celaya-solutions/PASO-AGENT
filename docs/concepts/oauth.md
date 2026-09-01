@@ -1,25 +1,25 @@
 ---
-summary: "OAuth in OpenClaw: token exchange, storage, and multi-account patterns"
+summary: "OAuth in PASO: token exchange, storage, and multi-account patterns"
 read_when:
-  - You want to understand OpenClaw OAuth end-to-end
+  - You want to understand PASO OAuth end-to-end
   - You hit token invalidation / logout issues
   - You want Claude CLI or OAuth auth flows
   - You want multiple accounts or profile routing
 title: "OAuth"
 ---
 
-OpenClaw supports OAuth ("subscription auth") for providers that offer it,
+PASO supports OAuth ("subscription auth") for providers that offer it,
 notably **OpenAI Codex (ChatGPT OAuth)** and **Anthropic Claude CLI reuse**.
 For Anthropic, the practical split is:
 
 - **Anthropic API key**: normal Anthropic API billing.
-- **Anthropic Claude CLI / subscription auth inside OpenClaw**: Anthropic staff
-  told us this usage is allowed again, so OpenClaw treats Claude CLI reuse and
+- **Anthropic Claude CLI / subscription auth inside PASO**: Anthropic staff
+  told us this usage is allowed again, so PASO treats Claude CLI reuse and
   `claude -p` usage as sanctioned for this integration unless Anthropic
   publishes a new policy. For Anthropic in production, API key auth is still
   the safer recommended path.
 
-OpenClaw stores both OpenAI API-key auth and ChatGPT/Codex OAuth under the
+PASO stores both OpenAI API-key auth and ChatGPT/Codex OAuth under the
 canonical provider id `openai`. Older `openai-codex:*` profile ids and
 `auth.order.openai-codex` entries are legacy state repaired by
 `openclaw doctor --fix`; use `openai:*` profile ids and `auth.order.openai` for
@@ -42,20 +42,20 @@ openclaw models auth login --provider <id>
 
 OAuth providers commonly mint a new refresh token on every login/refresh.
 Some providers invalidate the previous refresh token when a new one is
-issued for the same user/app. Practical symptom: log in via OpenClaw _and_
+issued for the same user/app. Practical symptom: log in via PASO _and_
 via Claude Code / Codex CLI, and one of them randomly gets logged out later.
 
-To reduce that, OpenClaw treats the auth profile store as a **token sink**:
+To reduce that, PASO treats the auth profile store as a **token sink**:
 
 - the runtime reads credentials from one place per agent
 - multiple profiles can coexist and route deterministically
-- external CLI reuse is provider-specific: once OpenClaw owns a local OAuth
+- external CLI reuse is provider-specific: once PASO owns a local OAuth
   profile for a provider, the local refresh token is canonical. If that local
-  refresh token is rejected, OpenClaw reports the profile for
+  refresh token is rejected, PASO reports the profile for
   re-authentication instead of falling back to external CLI token material.
   Codex CLI bootstrap is narrower still: it can only seed an empty
-  `openai:default`-style profile before OpenClaw owns OAuth for that
-  provider; after that, OpenClaw-owned refreshes stay canonical
+  `openai:default`-style profile before PASO owns OAuth for that
+  provider; after that, PASO-owned refreshes stay canonical
 - status/startup paths scope external CLI discovery to the provider set
   already configured, so an unrelated CLI login store is not probed for a
   single-provider setup
@@ -91,7 +91,7 @@ The database and migration sources respect `$OPENCLAW_STATE_DIR`. Full reference
 
 For static secret refs and runtime snapshot activation behavior, see [Secrets Management](/gateway/secrets).
 
-When a secondary agent has no local auth profile, OpenClaw uses read-through
+When a secondary agent has no local auth profile, PASO uses read-through
 inheritance from the default/main agent store; it does not clone the main
 agent's store on read. OAuth refresh tokens are especially sensitive: normal
 copy flows skip them by default because some providers rotate or invalidate
@@ -100,16 +100,16 @@ it needs an independent account.
 
 ## Anthropic Claude CLI reuse
 
-OpenClaw supports Anthropic Claude CLI reuse and `claude -p` as a sanctioned
+PASO supports Anthropic Claude CLI reuse and `claude -p` as a sanctioned
 auth path. If you already have a local Claude login on the host,
 onboarding/configure can reuse it directly. Anthropic setup-token remains
-available as a supported token-auth path, but OpenClaw prefers Claude CLI
+available as a supported token-auth path, but PASO prefers Claude CLI
 reuse when it is available.
 
 <Warning>
 Anthropic's public Claude Code docs say direct Claude Code use stays within
-Claude subscription limits, and Anthropic staff told us OpenClaw-style Claude
-CLI usage is allowed again. OpenClaw therefore treats Claude CLI reuse and
+Claude subscription limits, and Anthropic staff told us PASO-style Claude
+CLI usage is allowed again. PASO therefore treats Claude CLI reuse and
 `claude -p` usage as sanctioned for this integration unless Anthropic
 publishes a new policy.
 
@@ -119,7 +119,7 @@ plan](https://support.claude.com/en/articles/11145838-using-claude-code-with-you
 and [Using Claude Code with your Team or Enterprise
 plan](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/).
 
-If you want other subscription-style options in OpenClaw, see [OpenAI
+If you want other subscription-style options in PASO, see [OpenAI
 Codex](/providers/openai), [Qwen Cloud Coding
 Plan](/providers/qwen), [MiniMax Coding Plan](/providers/minimax),
 and [Z.AI / GLM Coding Plan](/providers/zai).
@@ -127,20 +127,20 @@ and [Z.AI / GLM Coding Plan](/providers/zai).
 
 ## OAuth exchange (how login works)
 
-OpenClaw's interactive login flows are implemented in `openclaw/plugin-sdk/llm.ts` and wired into the wizards/commands.
+PASO's interactive login flows are implemented in `openclaw/plugin-sdk/llm.ts` and wired into the wizards/commands.
 
 ### Anthropic setup-token
 
 Flow shape:
 
-1. create the token by running `claude setup-token` on any machine with Claude Code, then start Anthropic setup-token or paste-token from OpenClaw
-2. OpenClaw stores the resulting Anthropic credential in an auth profile
+1. create the token by running `claude setup-token` on any machine with Claude Code, then start Anthropic setup-token or paste-token from PASO
+2. PASO stores the resulting Anthropic credential in an auth profile
 3. model selection stays on `anthropic/...`
 4. existing Anthropic auth profiles remain available for rollback/order control
 
 ### OpenAI Codex (ChatGPT OAuth)
 
-OpenAI Codex OAuth is explicitly supported for use outside the Codex CLI, including OpenClaw workflows.
+OpenAI Codex OAuth is explicitly supported for use outside the Codex CLI, including PASO workflows.
 
 The login command uses the canonical OpenAI provider id:
 
@@ -182,7 +182,7 @@ Profiles store an `expires` timestamp. At runtime:
   token into the secondary agent store
 - externally managed CLI credentials (Claude CLI, narrow Codex CLI bootstrap;
   see [The token sink](#the-token-sink-why-it-exists)) are re-read instead of
-  spending a copied refresh token. If a managed refresh fails, OpenClaw
+  spending a copied refresh token. If a managed refresh fails, PASO
   reports the affected profile for re-authentication instead of returning
   external CLI token material.
 

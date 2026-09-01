@@ -43,9 +43,9 @@ final class ShareExtensionUITests: XCTestCase {
         // Target the share-sheet app cell explicitly; label-only matching can hit
         // other OpenClaw builds installed on the same simulator.
         let openClawOption = photos.cells.matching(identifier: "shareCell")
-            .matching(NSPredicate(format: "label BEGINSWITH 'OpenClaw'"))
+            .matching(NSPredicate(format: "label BEGINSWITH 'PASO'"))
             .firstMatch
-        XCTAssertTrue(openClawOption.waitForExistence(timeout: 10), "OpenClaw missing from share sheet")
+        XCTAssertTrue(openClawOption.waitForExistence(timeout: 10), "PASO missing from share sheet")
         openClawOption.tap()
 
         let draft = photos.textViews["share-compose.draft"]

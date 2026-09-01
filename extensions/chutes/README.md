@@ -1,12 +1,12 @@
-# OpenClaw Chutes Provider
+# PASO Chutes Provider
 
-Official OpenClaw provider plugin for Chutes.
+Official PASO provider plugin for Chutes.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/chutes-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/chutes> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/chutes.md> for setup and configuration.

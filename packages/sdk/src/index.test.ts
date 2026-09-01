@@ -1,6 +1,6 @@
-// OpenClaw SDK tests cover index behavior.
+// PASO SDK tests cover index behavior.
 import { describe, expect, it } from "vitest";
-import { EventHub, OpenClaw, normalizeGatewayEvent } from "./index.js";
+import { EventHub, OpenClaw, PASO, normalizeGatewayEvent } from "./index.js";
 import type {
   GatewayEvent,
   GatewayRequestOptions,
@@ -121,7 +121,7 @@ function requireTransportCall(calls: readonly RequestCall[], index: number): Req
 
 function createClientFixture(responses: Record<string, FakeResponse> = {}) {
   const transport = new FakeTransport(responses);
-  return { transport, oc: new OpenClaw({ transport }) };
+  return { transport, oc: new PASO({ transport }) };
 }
 
 function createListFixture() {
@@ -184,7 +184,11 @@ function createRunEventFixture(runId: string, sessionKey: string, events: readon
   });
 }
 
-describe("OpenClaw SDK", () => {
+describe("PASO SDK", () => {
+  it("keeps the OpenClaw SDK class export as a PASO alias", () => {
+    expect(PASO).toBe(OpenClaw);
+  });
+
   it("runs an agent through the Gateway agent method", async () => {
     const { transport, oc } = createClientFixture({
       agent: { status: "accepted", runId: "run_123" },
@@ -413,7 +417,7 @@ describe("OpenClaw SDK", () => {
         approvals: "ask",
       }),
     ).rejects.toThrow(
-      "OpenClaw Gateway does not support per-run SDK options yet: workspace, runtime, environment, approvals",
+      "PASO Gateway does not support per-run SDK options yet: workspace, runtime, environment, approvals",
     );
   });
 
@@ -672,7 +676,7 @@ describe("OpenClaw SDK", () => {
       status: "unavailable",
     });
     await expect(oc.environments.delete("worker_123")).rejects.toThrow(
-      "oc.environments.delete is not supported by the current OpenClaw Gateway yet",
+      "oc.environments.delete is not supported by the current PASO Gateway yet",
     );
     expect(transport.calls).toEqual([
       { method: "environments.list", params: {}, options: undefined },
@@ -753,19 +757,19 @@ describe("OpenClaw SDK", () => {
     const transport = new DelayedConnectTransport({
       "agents.list": { agents: [] },
     });
-    const oc = new OpenClaw({ transport });
+    const oc = new PASO({ transport });
 
     const connect = oc.connect();
     const close = oc.close();
     transport.finishConnect();
 
-    await expect(connect).rejects.toThrow("OpenClaw SDK client is closed");
+    await expect(connect).rejects.toThrow("PASO SDK client is closed");
     await close;
-    await expect(oc.agents.list()).rejects.toThrow("OpenClaw SDK client is closed");
+    await expect(oc.agents.list()).rejects.toThrow("PASO SDK client is closed");
     await expect(oc.events()[Symbol.asyncIterator]().next()).rejects.toThrow(
-      "OpenClaw SDK client is closed",
+      "PASO SDK client is closed",
     );
-    expect(() => oc.rawEvents()).toThrow("OpenClaw SDK client is closed");
+    expect(() => oc.rawEvents()).toThrow("PASO SDK client is closed");
     expect(transport.connectCalls).toBe(1);
     expect(transport.calls).toEqual([]);
   });
@@ -800,13 +804,13 @@ describe("OpenClaw SDK", () => {
     const transport = new ClosingEventPumpTransport({
       "agents.list": { agents: [] },
     });
-    const oc = new OpenClaw({ transport });
+    const oc = new PASO({ transport });
     let closePromise: Promise<void> | undefined;
     transport.onFirstEventPoll = () => {
       closePromise = oc.close();
     };
 
-    await expect(oc.agents.list()).rejects.toThrow("OpenClaw SDK client is closed");
+    await expect(oc.agents.list()).rejects.toThrow("PASO SDK client is closed");
     await closePromise;
     expect(transport.calls).toEqual([]);
   });
@@ -872,7 +876,7 @@ describe("OpenClaw SDK", () => {
         };
       },
     });
-    const oc = new OpenClaw({ transport });
+    const oc = new PASO({ transport });
     const iterator = oc.events()[Symbol.asyncIterator]();
     let futureIterator: AsyncIterator<OpenClawEvent> | undefined;
 
@@ -899,7 +903,7 @@ describe("OpenClaw SDK", () => {
         throw failure;
       },
     });
-    const oc = new OpenClaw({ transport });
+    const oc = new PASO({ transport });
     const run = await oc.runs.get("run_pump_failure");
     const iterator = run.events()[Symbol.asyncIterator]();
     let futureIterator: AsyncIterator<OpenClawEvent> | undefined;

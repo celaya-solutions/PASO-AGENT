@@ -1,9 +1,9 @@
 ---
-summary: "Browse non-archived native Codex sessions and paginated transcripts across OpenClaw nodes"
+summary: "Browse non-archived native Codex sessions and paginated transcripts across PASO nodes"
 title: "Supervise Codex sessions"
 sidebarTitle: "Codex supervision"
 read_when:
-  - You want Codex Desktop or CLI sessions to appear in OpenClaw
+  - You want Codex Desktop or CLI sessions to appear in PASO
   - You need to continue a stored or idle Codex session or archive a local one
   - You are exposing Codex sessions and transcript history from paired nodes
 ---
@@ -15,12 +15,12 @@ sidebar and Chat pane.
 
 Supported actions depend on the source host and its capabilities:
 
-- A stored or idle local session can create a model-locked OpenClaw Chat from
+- A stored or idle local session can create a model-locked PASO Chat from
   its bounded persisted user and assistant history. The first message starts a
   native snapshot fork, then starts the full Codex harness thread with exactly
   the model and provider that Codex App Server selected for that fork. Later
   turns restore the canonical native thread's persisted pair while the
-  supervised binding prevents OpenClaw from substituting another runtime,
+  supervised binding prevents PASO from substituting another runtime,
   model, or fallback. A separate native Codex control can still change that
   persisted pair. An already-created branch opens its existing Chat.
 - A stored local session discovered from another Codex process has unknown live
@@ -41,12 +41,12 @@ Supported actions depend on the source host and its capabilities:
 
 ## Before you begin
 
-- Install the official `@openclaw/codex` plugin on the Gateway. The OpenClaw
+- Install the official `@openclaw/codex` plugin on the Gateway. The PASO
   macOS app can install it when you enable Codex features; CLI installations can
   run `openclaw plugins install @openclaw/codex`.
 - Install and sign in to Codex Desktop or the Codex CLI on each computer whose
   sessions you want to list.
-- Pair remote computers as OpenClaw nodes. Each computer must opt in locally;
+- Pair remote computers as PASO nodes. Each computer must opt in locally;
   enabling supervision only on the Gateway does not authorize another node.
 - Use an owner-controlled Gateway. Session titles, working directories, and Git
   branches can reveal sensitive project information.
@@ -92,10 +92,10 @@ changing plugin activation.
 With no explicit `appServer` connection settings, supervision uses managed
 stdio connections for the available local Codex stores. The catalog combines
 the process user's `CODEX_HOME` with existing `codex-home` stores under configured
-OpenClaw agent directories, deduplicates canonical paths, and assigns each store
+PASO agent directories, deduplicates canonical paths, and assigns each store
 an opaque local host id. Each store gets its own App Server connection; its path
 is never exposed in the catalog. List, read, continue, archive, adoption, and
-terminal resume keep the selected source while retaining the explicit OpenClaw
+terminal resume keep the selected source while retaining the explicit PASO
 route agent as owner. The ordinary Codex harness remains agent-scoped by default.
 Set `appServer.homeScope: "user"` explicitly if the harness should share native
 Codex state too. Supervision honors explicit `appServer` connection settings
@@ -109,13 +109,13 @@ and provider configuration without changing the default for other sessions.
 Watched adopted Chats also participate in [session state awareness](/concepts/session-state).
 
 For the default local supervision connection, the store is shared with native
-Codex clients. OpenClaw does not assume that another client shares the same live
+Codex clients. PASO does not assume that another client shares the same live
 App Server process, and native status ownership is process-local. It therefore
 treats a thread that its supervision App Server reports as `notLoaded` as
 **Stored / activity unknown**, not as idle.
 
 Apply the same opt-in on every headless node host whose sessions should appear.
-The native OpenClaw macOS app reads the same local setting when it advertises
+The native PASO macOS app reads the same local setting when it advertises
 its Codex catalog to the paired Gateway. That paired native Mac catalog supports
 only the default or explicit `appServer.transport: "stdio"` with an unset or
 explicit `appServer.homeScope: "user"`. `command`, `args`, and `clearEnv` are
@@ -125,7 +125,7 @@ capability or command, and a stale direct invocation fails instead of exposing
 the user Codex home or spawning a different local stdio App Server.
 
 The optional `agentId` in native Mac catalog list/read requests identifies the
-Gateway's OpenClaw route owner. It cannot select an agent-specific Codex home;
+Gateway's PASO route owner. It cannot select an agent-specific Codex home;
 the native catalog remains user-home stdio only. Headless node catalog requests
 still resolve `agentId` against that node's configured agents and use the selected
 agent's configured catalog source. This does not map agent IDs between computers.
@@ -185,7 +185,7 @@ openclaw codex archive <thread-id> --confirm-no-other-runner [--agent <id>] [--h
 
 `openclaw codex sessions` options:
 
-- `--agent <id>` selects the OpenClaw owner in a multi-agent Gateway.
+- `--agent <id>` selects the PASO owner in a multi-agent Gateway.
 - `--search <text>` searches session titles case-insensitively.
 - `--host <id>` limits the response to one stable catalog host, such as
   `gateway:local`, an opaque `gateway:local:<source-id>`, or `node:<node-id>`.
@@ -221,7 +221,7 @@ command.
 ## Branch from a local session
 
 Choose **Continue as branch** on a stored or idle row from the Gateway computer.
-OpenClaw creates a normal Chat entry, mirrors bounded user and assistant history
+PASO creates a normal Chat entry, mirrors bounded user and assistant history
 through the source's last terminal persisted turn (completed, interrupted, or
 failed), records a pending harness branch, and opens the Chat. The generic model
 picker is locked, but no concrete model or provider has been selected yet. The
@@ -239,25 +239,25 @@ Send the first normal Chat message to begin work. The Codex harness installs the
 real approval, elicitation, event, and delivery handlers. It uses an ephemeral
 native fork on the supervision connection to pin the source snapshot without
 supplying a model or provider override. Codex App Server selects both from its
-current native configuration and returns the actual selection. OpenClaw confirms
+current native configuration and returns the actual selection. PASO confirms
 the probe's subscription is released before creating the canonical branch; the
 probe never becomes stored history or an archive artifact. On that same
-connection, OpenClaw starts the canonical `appServer`-source full harness thread
+connection, PASO starts the canonical `appServer`-source full harness thread
 under its cwd and runtime policy with exactly that returned pair, injects the
 bounded visible history, and commits the branch binding. The canonical thread
-has the full OpenClaw harness tool surface. This is a visible-history branch, not
+has the full PASO harness tool surface. This is a visible-history branch, not
 a full native rollout clone: source reasoning, tool calls, and tool results are
 omitted. This and every later turn stays on the supervised Codex connection
-rather than another OpenClaw model runtime or the ordinary agent-home harness.
+rather than another PASO model runtime or the ordinary agent-home harness.
 
 The returned selection is not proof of the source's historical model. If the
 current native configuration differs from the model recorded for the source's
-last turn, Codex emits its normal model-difference warning. OpenClaw uses the
+last turn, Codex emits its normal model-difference warning. PASO uses the
 returned pair for the canonical thread start. Codex persists that canonical
 thread's native model and provider, and later resumes preserve them because
-OpenClaw omits model and provider overrides. If the canonical thread is changed
-through a separate native Codex control, OpenClaw accepts Codex's persisted
-selection. OpenClaw never substitutes its outer model or fallback chain.
+PASO omits model and provider overrides. If the canonical thread is changed
+through a separate native Codex control, PASO accepts Codex's persisted
+selection. PASO never substitutes its outer model or fallback chain.
 
 The supervised model-locked Chat cannot be deleted, switch models, use `/new`
 or `/reset`, invoke the Gateway session-reset action, or use the generic
@@ -271,10 +271,10 @@ ordinary session when you want a different model or fresh thread.
 **Fork from here** can branch before a mirrored user message from the original
 native source. The child keeps that source's connection and model-locked harness,
 and the original source and parent Chat remain unchanged. Messages added after
-OpenClaw starts its canonical harness thread are not supported as fork points
+PASO starts its canonical harness thread are not supported as fork points
 yet: those requests are rejected rather than rebuilding model history from an
 incomplete native transcript view. Choose an original mirrored source message
-when forking from OpenClaw.
+when forking from PASO.
 
 Keep supervision enabled for this Chat. If supervision is disabled or its
 stored connection binding becomes unavailable or inconsistent, the turn fails
@@ -282,7 +282,7 @@ closed instead of moving to an ordinary agent-home session.
 
 A new adoption snapshots the native title as a trimmed display name, capped at
 500 UTF-16 code units without splitting surrogate pairs. Native titles can be
-duplicated or blank; they do not claim unique OpenClaw labels. An explicit local
+duplicated or blank; they do not claim unique PASO labels. An explicit local
 label takes priority over the stored display name. Reopening or recovering a Chat
 preserves its existing label and title snapshot, including older automatically
 assigned labels; renaming the native source does not resync either field.
@@ -304,18 +304,18 @@ still provide bounded title-only search. Rename, unarchive, detached fork, and
 archive of an unrelated unowned thread require
 `allowWriteControls`. Neither option bypasses the locked binding.
 
-OpenClaw does not subscribe to or answer approval requests while merely listing
+PASO does not subscribe to or answer approval requests while merely listing
 the source thread or displaying the pending Chat. Starting a distinct canonical
 harness thread on the first turn lets another Codex process keep owning the
 source without creating competing rollout writers.
 
 The original CLI, VS Code, Atlas, or ChatGPT source remains visible to native
-clients and the OpenClaw catalog. The canonical branch is stored as a native
+clients and the PASO catalog. The canonical branch is stored as a native
 Codex thread, but its source kind is `appServer`; Codex Desktop or another
 native client may filter that source kind, so the branch itself is not guaranteed
 to appear in every native history view.
 
-An active row reported by OpenClaw's App Server cannot start a new branch. Wait
+An active row reported by PASO's App Server cannot start a new branch. Wait
 for the current turn to finish and refresh the catalog. Codex App Server
 serializes mutations within one process, but it does not provide an exclusive
 cross-process runner or approval-owner lease.
@@ -328,8 +328,8 @@ in-progress turn, its latest in-flight work might not be present in the branch.
 ## Archive a local session
 
 Choose **Archive** on a stored or idle Gateway-local row, then confirm that no
-other Codex client or OpenClaw runner is using that thread or its spawned
-descendants. OpenClaw freshly reads the process-local status, proceeds only for
+other Codex client or PASO runner is using that thread or its spawned
+descendants. PASO freshly reads the process-local status, proceeds only for
 `idle` or `notLoaded`, calls the native Codex archive operation, and removes the
 session from the non-archived list. Native Codex also attempts to archive the
 thread's spawned descendants.
@@ -338,8 +338,8 @@ Archive is unavailable when the fresh read reports the session active or in an
 error state, when it belongs to a paired node, or while a newly created
 supervised Chat still has a pending branch from that source. Send the Chat's
 first message to materialize its canonical branch before archiving the source.
-Archive is also blocked when OpenClaw knows that an active binding owns the
-exact target thread or any non-archived spawned descendant. OpenClaw follows the
+Archive is also blocked when PASO knows that an active binding owns the
+exact target thread or any non-archived spawned descendant. PASO follows the
 experimental Codex descendant query through every page; an invalid response,
 request failure, repeated cursor or thread, or safety-limit exhaustion rejects
 archive.
@@ -394,10 +394,10 @@ Chat. That message and later turns run `codex exec resume` on the node with its
 native CLI configuration and return its final text. This text-prompt path does
 not create the Gateway-local branch or forward the full App Server harness
 events, approvals, tool calls, or structured attachments. Bound turns still
-require owner/admin authority and are blocked while OpenClaw sandboxing is active.
+require owner/admin authority and are blocked while PASO sandboxing is active.
 
 Avoid running the same thread in another Codex client while using this Chat.
-The node prevents overlapping OpenClaw resume turns within its own process, but
+The node prevents overlapping PASO resume turns within its own process, but
 `notLoaded` does not prove that another native client is idle and there is no
 cross-process runner lease. Paired-node **Archive** remains unavailable,
 regardless of continuation or terminal capabilities.
@@ -486,7 +486,7 @@ sources, transcript, Continue, Archive, and terminal actions verify the selected
 thread directly, check non-archived native index membership, and validate its
 rollout metadata in the selected Codex home. These checks share one request
 budget and do not scan the full catalog. Missing, unreadable, inconsistent, or
-OpenClaw-managed metadata is not accepted. Refresh the catalog, verify the session
+PASO-managed metadata is not accepted. Refresh the catalog, verify the session
 in its native Codex home, and retry. This error does not prove that the thread
 does not exist. Ordinary discovery keeps its existing behavior; remote sources
 continue to use native catalog verification.

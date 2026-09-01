@@ -9,7 +9,7 @@ scenario:
       - session-memory.compaction
       - session-memory.compaction-retry-policy
       - session-memory.pruning
-  objective: Verify OpenClaw persists one overflow compaction, prunes bulky historical turns, retries from durable context, and performs the requested mutation exactly once.
+  objective: Verify PASO persists one overflow compaction, prunes bulky historical turns, retries from durable context, and performs the requested mutation exactly once.
   successCriteria:
     - One coded over-threshold provider overflow produces one persisted OpenClaw overflow compaction and one compacted retry retaining durable current context.
     - OpenClaw performs exactly one successful write, then one terminal continuation after zero-or-more causally linked waits, and returns the exact file content and final marker.
@@ -24,7 +24,7 @@ scenario:
     - src/gateway/session-compaction-checkpoints.ts
   execution:
     kind: flow
-    summary: Force one OpenClaw context overflow, verify persisted pruning evidence, and prove exactly-once mutation after compaction.
+    summary: Force one PASO context overflow, verify persisted pruning evidence, and prove exactly-once mutation after compaction.
     retryCount: 0
     config:
       requiredProviderMode: mock-openai

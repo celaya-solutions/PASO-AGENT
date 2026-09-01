@@ -1,5 +1,5 @@
 ---
-summary: "CLI reference for provisioning and managing isolated per-tenant OpenClaw cells"
+summary: "CLI reference for provisioning and managing isolated per-tenant PASO cells"
 read_when:
   - You host multiple tenant trust domains on one machine
   - You need to create, inspect, upgrade, or remove fleet cells
@@ -8,11 +8,14 @@ title: "Fleet"
 
 # `openclaw fleet`
 
-`openclaw fleet` manages complete OpenClaw instances called **cells**. Each cell has its own Gateway, state, credentials, channel accounts, container, and loopback-only host port. Use one cell for each tenant trust boundary; do not use one shared Gateway as a hostile multi-tenant boundary.
+`openclaw fleet` manages complete PASO instances called **cells**. Each cell has its own Gateway, state, credentials, channel accounts, container, and loopback-only host port. Use one cell for each tenant trust boundary; do not use one shared Gateway as a hostile multi-tenant boundary.
 
 Fleet is **experimental**. Command names, flags, output shapes, and the container profile can change between releases without a deprecation window.
 
-Fleet supports Docker and Podman. The default image is `ghcr.io/openclaw/openclaw:latest`.
+Fleet supports Docker and Podman. The current compatibility default,
+`ghcr.io/openclaw/openclaw:latest`, is an upstream framework image rather than
+a PASO release. For PASO branding and fork behavior, pass `--image` with an
+image built from this repository.
 
 Fleet is tested on Linux and macOS hosts. Windows hosts are currently untested.
 
@@ -69,7 +72,7 @@ Environment keys use letters, digits, and underscores and cannot start with a di
 
 | Option                    | Default                               | Description                                                                                    |
 | ------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `--image <ref>`           | `ghcr.io/openclaw/openclaw:latest`    | Container image for the cell.                                                                  |
+| `--image <ref>`           | `ghcr.io/openclaw/openclaw:latest`    | Container image for the cell; the default is an upstream compatibility image.                  |
 | `--runtime <runtime>`     | `docker`                              | Container CLI: `docker` or `podman`.                                                           |
 | `--port <number>`         | Automatically allocated from `19100`  | Loopback host port. An explicitly selected port must not belong to another registered cell.    |
 | `--memory <value>`        | `2g`                                  | Container memory limit in Docker/Podman syntax.                                                |
@@ -92,7 +95,10 @@ When Fleet starts a new cell, create waits up to about a minute for its Gateway 
 
 ### Pinning by digest
 
-Create and upgrade accept digest-pinned image references such as `--image ghcr.io/openclaw/openclaw@sha256:<digest>`. Fleet passes the image reference through verbatim to Docker or Podman, which lets an operator keep a cell on immutable image bytes instead of a moving tag.
+Create and upgrade accept digest-pinned image references such as
+`--image registry.example.com/celaya/paso-agent@sha256:<digest>`. Fleet passes
+the image reference through verbatim to Docker or Podman, which lets an
+operator keep a cell on immutable image bytes instead of a moving tag.
 
 The create result includes the tenant ID, container name, host port, Gateway token, and local URL. Even in JSON output, treat the result as secret-bearing because it contains the token.
 
@@ -193,7 +199,7 @@ openclaw fleet upgrade acme
 Move the cell to another image:
 
 ```bash
-openclaw fleet upgrade acme --image ghcr.io/openclaw/openclaw:<version>
+openclaw fleet upgrade acme --image registry.example.com/celaya/paso-agent:<version>
 ```
 
 Upgrade pulls the target image, inspects the existing container and per-cell network, stops and removes the container, then recreates and starts it. The replacement preserves the same host port, data directories, per-cell bridge network, runtime profile, resource limits, restart policy, Fleet-managed environment, and values originally supplied with `--env`. Mounted state survives container replacement; image-default environment can change with the target image.
@@ -262,7 +268,7 @@ Purge is retryable when an exact expected tenant directory is already absent. Th
 
 ## Storage and container layout
 
-Cell state and auth-profile encryption keys use separate per-tenant host paths under the active OpenClaw state directory:
+Cell state and auth-profile encryption keys use separate per-tenant host paths under the active PASO state directory:
 
 ```text
 <state-dir>/fleet/cells/<tenant>/
@@ -273,7 +279,7 @@ The first directory is mounted at `/home/node/.openclaw`. The second is mounted 
 
 Before first start, Fleet initializes the cell config with `gateway.mode=local`, token auth, the LAN container bind, and Control UI origins for the allocated host port. The token value is not written to that config; it remains in the container environment.
 
-Fleet pins the official image's container paths with these environment values:
+Fleet pins the project image's container paths with these environment values:
 
 | Variable                 | Container value                      |
 | ------------------------ | ------------------------------------ |
@@ -284,7 +290,7 @@ Fleet pins the official image's container paths with these environment values:
 | `OPENCLAW_WORKSPACE_DIR` | `/home/node/.openclaw/workspace`     |
 | `OPENCLAW_GATEWAY_TOKEN` | Generated or supplied cell token     |
 
-The official image defaults to the non-root `node` user with UID 1000. Fleet keeps the private `0700` bind mounts writable without making them world-accessible. Rootful Docker runs the cell with the invoking non-root UID and GID; rootless Docker uses container UID 0, which maps to the invoking unprivileged host user inside the daemon's user namespace. Podman uses `keep-id` with the invoking UID and GID. When Fleet itself runs as root against a rootful runtime, it retains the image user and assigns the initial mount files to UID/GID 1000.
+The project image defaults to the non-root `node` user with UID 1000. Fleet keeps the private `0700` bind mounts writable without making them world-accessible. Rootful Docker runs the cell with the invoking non-root UID and GID; rootless Docker uses container UID 0, which maps to the invoking unprivileged host user inside the daemon's user namespace. Podman uses `keep-id` with the invoking UID and GID. When Fleet itself runs as root against a rootful runtime, it retains the image user and assigns the initial mount files to UID/GID 1000.
 
 On SELinux hosts, Docker and Podman mounts receive a private `:Z` relabel. If you restore or relocate cell data, keep the bind-mounted paths writable by the effective container user. The profile is rootless-friendly, but Docker or Podman must already be configured for rootless operation on the host; Fleet does not convert a rootful daemon into a rootless one.
 

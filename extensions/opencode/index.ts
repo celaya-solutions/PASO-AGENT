@@ -1,4 +1,4 @@
-// Opencode plugin entrypoint registers its OpenClaw integration.
+// Opencode plugin entrypoint registers its PASO integration.
 import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";
 import {
   buildProviderReplayFamilyHooks,

@@ -18,7 +18,7 @@ func TestTaxonomyCanonicalProductLinksAreProtected(t *testing.T) {
 		"link:/channels/imessage:iMessage",
 		"link:/channels/msteams:Microsoft Teams",
 		"link:/channels/whatsapp:WhatsApp",
-		"link:/start/openclaw:OpenClaw",
+		"link:/start/personal-assistant:PASO",
 	} {
 		if !slices.Contains(protected, want) {
 			t.Errorf("missing protected taxonomy link %q", want)

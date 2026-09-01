@@ -3710,7 +3710,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
       "sessionKey is required to resolve delivery.channel=last",
     );
     expect(state.result?.error).toContain(
-      "the agent used the message tool, but OpenClaw could not verify",
+      "the agent used the message tool, but PASO could not verify",
     );
   });
 
@@ -3803,7 +3803,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
       archivedAt: Date.now(),
     });
 
-    const params = makeBaseParams({ synthesizedText: "Delivered outside OpenClaw" });
+    const params = makeBaseParams({ synthesizedText: "Delivered outside PASO" });
     params.resolvedDelivery = makeResolvedDelivery({
       channel: "whatsapp",
       to: "+15551234567",
@@ -3838,7 +3838,7 @@ describe("dispatchCronDelivery — double-announce guard", () => {
       },
     });
 
-    const params = makeBaseParams({ synthesizedText: "Delivered outside OpenClaw" });
+    const params = makeBaseParams({ synthesizedText: "Delivered outside PASO" });
     params.resolvedDelivery = makeResolvedDelivery({
       channel: "whatsapp",
       to: "+15551234567",

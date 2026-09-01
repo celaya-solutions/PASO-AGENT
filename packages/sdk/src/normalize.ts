@@ -1,4 +1,4 @@
-// OpenClaw SDK helper module supports normalize behavior.
+// PASO SDK helper module supports normalize behavior.
 import { asFiniteNumber } from "@openclaw/normalization-core/number-coercion";
 import { asRecord } from "@openclaw/normalization-core/record-coerce";
 import { readNonEmptyStringPreservingWhitespace as readNonEmptyString } from "@openclaw/normalization-core/string-coerce";

@@ -70,12 +70,12 @@ struct ServeCommand: ParsableCommand {
     }
 
     private static func matchesWake(text: String, cfg: SwabbleConfig) -> Bool {
-        let triggers = [cfg.wake.word] + cfg.wake.aliases
+        let triggers = [cfg.wake.word] + cfg.wake.aliases + ["clawd", "claude"]
         return WakeWordGate.matchesTextOnly(text: text, triggers: triggers)
     }
 
     private static func stripWake(text: String, cfg: SwabbleConfig) -> String {
-        let triggers = [cfg.wake.word] + cfg.wake.aliases
+        let triggers = [cfg.wake.word] + cfg.wake.aliases + ["clawd", "claude"]
         return WakeWordGate.stripWake(text: text, triggers: triggers)
     }
 }

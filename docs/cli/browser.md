@@ -9,7 +9,7 @@ title: "Browser"
 
 # `openclaw browser`
 
-Manage OpenClaw's browser control surface and run browser actions: lifecycle, profiles, tabs, snapshots, screenshots, navigation, input, state emulation, and debugging.
+Manage PASO's browser control surface and run browser actions: lifecycle, profiles, tabs, snapshots, screenshots, navigation, input, state emulation, and debugging.
 
 Related: [Browser tool](/tools/browser)
 
@@ -70,8 +70,8 @@ openclaw browser --browser-profile openclaw reset-profile
   backend, device/driver, feature and disabled-status details, and accelerated
   video capabilities. `openclaw browser --json status` returns the full structured payload.
   Passive status never launches Chrome just to collect these facts.
-- `stop` closes the active control session and clears temporary emulation overrides even for `attachOnly` and remote CDP profiles where OpenClaw did not launch the browser process itself. For local managed profiles, `stop` also stops the spawned browser process.
-- `start --headless` applies only to that start request, and only when OpenClaw launches a local managed browser. It does not rewrite `browser.headless` or profile config, and is a no-op for an already-running browser.
+- `stop` closes the active control session and clears temporary emulation overrides even for `attachOnly` and remote CDP profiles where PASO did not launch the browser process itself. For local managed profiles, `stop` also stops the spawned browser process.
+- `start --headless` applies only to that start request, and only when PASO launches a local managed browser. It does not rewrite `browser.headless` or profile config, and is a no-op for an already-running browser.
 - On Linux hosts without `DISPLAY` or `WAYLAND_DISPLAY`, local managed profiles run headless automatically unless `OPENCLAW_BROWSER_HEADLESS=0`, `browser.headless=false`, or `browser.profiles.<name>.headless=false` explicitly requests a visible browser.
 
 ## If the command is missing
@@ -94,7 +94,7 @@ Related: [Browser tool](/tools/browser#missing-browser-command-or-tool)
 
 Profiles are named browser routing configs:
 
-- `openclaw` (default): launches or attaches to a dedicated OpenClaw-managed Chrome instance (isolated user data dir).
+- `openclaw` (default): launches or attaches to a dedicated PASO-managed Chrome instance (isolated user data dir).
 - `user`: controls your existing signed-in Chrome session via Chrome DevTools MCP.
 - custom CDP profiles: point at a local or remote CDP endpoint.
 
@@ -112,7 +112,7 @@ openclaw browser delete-profile --name work
 
 Use a specific profile with `--browser-profile <name>` on any subcommand, for example `openclaw browser --browser-profile work tabs`.
 
-On macOS, `system-profiles` lists real Chrome, Brave, Edge, or Chromium profiles available on the host. `import-profile` decrypts their cookies after one macOS Keychain/Touch ID consent prompt and injects them into a fresh OpenClaw-managed profile. It imports cookies only; local storage and IndexedDB are unchanged. Some Google sessions use device-bound session credentials (DBSC) and can still require re-authentication after import.
+On macOS, `system-profiles` lists real Chrome, Brave, Edge, or Chromium profiles available on the host. `import-profile` decrypts their cookies after one macOS Keychain/Touch ID consent prompt and injects them into a fresh PASO-managed profile. It imports cookies only; local storage and IndexedDB are unchanged. Some Google sessions use device-bound session credentials (DBSC) and can still require re-authentication after import.
 
 When the macOS app uses a local Gateway, it can offer this import once and make the isolated imported profile the default for agent browsing. Import always requires an explicit click; successful import or dismissal suppresses later automatic prompts, and **Settings → General → Browser login** remains available for re-import.
 
@@ -120,7 +120,7 @@ System-profile import is enabled by default. Set `browser.allowSystemProfileImpo
 
 ### Cookie sync to a remote Gateway
 
-`import-profile` targets a managed profile on the same host. When your OpenClaw Gateway and agent browser run on a separate computer, use `cookie-sync` to decrypt cookies on this Mac and push them into a managed profile on that remote Gateway over the operator connection:
+`import-profile` targets a managed profile on the same host. When your PASO Gateway and agent browser run on a separate computer, use `cookie-sync` to decrypt cookies on this Mac and push them into a managed profile on that remote Gateway over the operator connection:
 
 ```bash
 openclaw browser cookie-sync --domains github.com,news.ycombinator.com --into work
@@ -151,13 +151,14 @@ openclaw browser extension cdp --json
 ```
 
 - `extension install` pre-registers the origin-locked native bootstrap host in
-  existing Chrome-family user-data roots. Run it first, then
-  [add OpenClaw from the Chrome Web Store](https://chromewebstore.google.com/detail/openclaw/kcdjddhmeafeomebliikmbpblkmkfoig).
-  The stable **Load unpacked** path remains available as a development fallback.
+  existing Chrome-family user-data roots and prints the stable bundled PASO
+  extension path. Run it first, then use Chrome's **Load unpacked** action with
+  that path. The upstream Store ID remains accepted only for upgrades from an
+  existing framework installation; that Store listing is not a PASO release.
 - `extension status` reports Store discovery separately from approved unpacked
   IDs and paths, plus owned-registration health and whether manual setup is
   required. JSON output never includes a pairing string or relay key.
-- `extension uninstall-host` removes only verified OpenClaw-owned native-host
+- `extension uninstall-host` removes only verified PASO-owned native-host
   manifests and launchers. It does not remove the extension from Chrome.
 - `extension path` is read-only. It prints the stable installed copy when
   present and the bundled source directory otherwise.
@@ -172,7 +173,7 @@ Automatic local bootstrap connects through the local Gateway's exact
 `/browser/extension` route so the first authenticated extension connection
 starts the lazy browser-control service. Keep `openclaw gateway run` or the
 managed Gateway service running; no separate browser request or prewarm is
-needed. Local OpenClaw and mcporter calls still use the profile relay port
+needed. Local PASO and mcporter calls still use the profile relay port
 reported by `extension pair` or `extension cdp` after that wakeup. Browser-node
 pairings continue to use the relay on the browser-node host, while explicit
 `--gateway-url` pairings remain direct-remote and manual-only.
@@ -184,7 +185,7 @@ wake-up, reconnecting can start a standalone relay on the saved pairing's
 configured port. This does not start Gateway browser control: authenticated CDP
 clients can use the standalone relay without a Gateway, but `openclaw browser`
 actions still require one. For source-checkout testing, load the managed unpacked
-copy from the same OpenClaw installation.
+copy from the same PASO installation.
 
 `extension cdp --legacy-bearer` is a temporary migration escape hatch. It
 prints the old Bearer header with a warning only while
@@ -207,14 +208,14 @@ openclaw browser tab new --label docs
 openclaw browser tab label t1 docs
 openclaw browser tab select 2
 openclaw browser tab close 2
-openclaw browser open https://docs.openclaw.ai --label docs
+openclaw browser open https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs --label docs
 openclaw browser focus docs
 openclaw browser close t1
 ```
 
 `tabs` returns `suggestedTargetId` first, then the stable `tabId` (such as `t1`), the optional label, and the raw `targetId`. Pass `suggestedTargetId` back into `focus`, `close`, snapshots, and actions. Assign a label with `open --label`, `tab new --label`, or `tab label`; labels, tab ids, raw target ids, and unique target-id prefixes are all accepted. The request field is still named `targetId` for compatibility, but it accepts any of these tab references.
 
-Raw target ids are volatile diagnostic handles, not durable agent memory: when Chromium replaces the underlying raw target during a navigation or form submit, OpenClaw keeps the stable `tabId`/label attached to the replacement tab when it can prove the match. Prefer `suggestedTargetId`.
+Raw target ids are volatile diagnostic handles, not durable agent memory: when Chromium replaces the underlying raw target during a navigation or form submit, PASO keeps the stable `tabId`/label attached to the replacement tab when it can prove the match. Prefer `suggestedTargetId`.
 
 ## Snapshot / screenshot / actions
 
@@ -265,7 +266,7 @@ For managed browser profiles, `select` preserves option values exactly. Quote em
 
 `evaluate --fn` accepts a function source, an expression, or a statement body. Statement bodies are wrapped as async functions, so use `return` for the value you want back. Use `--timeout-ms` when the page-side function may need longer than the default evaluate timeout. `browser.evaluateEnabled=false` (default: `true`) disables both `evaluate` and `wait --fn`.
 
-Action responses return the current raw `targetId` after action-triggered page replacement when OpenClaw can prove the replacement tab. Scripts should still store and pass `suggestedTargetId`/labels for long-lived workflows.
+Action responses return the current raw `targetId` after action-triggered page replacement when PASO can prove the replacement tab. Scripts should still store and pass `suggestedTargetId`/labels for long-lived workflows.
 
 File + dialog helpers:
 
@@ -278,11 +279,11 @@ openclaw browser dialog --accept
 openclaw browser dialog --dismiss --dialog-id d1
 ```
 
-Managed Chrome profiles save ordinary click-triggered downloads into the OpenClaw downloads directory (`/tmp/openclaw/downloads` by default, or the configured temp root). Use `waitfordownload` or `download` when the agent needs to wait for a specific file and return its path; those explicit waiters own the next download. Uploads accept files from the OpenClaw temp uploads root and OpenClaw-managed inbound media, including `media://inbound/<id>` and sandbox-relative `media/inbound/<id>` references. Nested media refs, traversal, and arbitrary local paths are rejected.
+Managed Chrome profiles save ordinary click-triggered downloads into the PASO downloads directory (`/tmp/openclaw/downloads` by default, or the configured temp root). Use `waitfordownload` or `download` when the agent needs to wait for a specific file and return its path; those explicit waiters own the next download. Uploads accept files from the PASO temp uploads root and PASO-managed inbound media, including `media://inbound/<id>` and sandbox-relative `media/inbound/<id>` references. Nested media refs, traversal, and arbitrary local paths are rejected.
 
-If saving a download fails, OpenClaw requests cancellation of the transfer and reports the original save error. Correct the output path or filesystem problem before starting a new download.
+If saving a download fails, PASO requests cancellation of the transfer and reports the original save error. Correct the output path or filesystem problem before starting a new download.
 
-When an action opens a modal dialog, the action response returns `blockedByDialog` with `browserState.dialogs.pending`; pass `--dialog-id` to answer it directly. Dialogs handled outside OpenClaw appear under `browserState.dialogs.recent`.
+When an action opens a modal dialog, the action response returns `blockedByDialog` with `browserState.dialogs.pending`; pass `--dialog-id` to answer it directly. Dialogs handled outside PASO appear under `browserState.dialogs.recent`.
 
 Batch actions:
 

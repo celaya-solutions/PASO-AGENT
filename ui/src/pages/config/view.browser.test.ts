@@ -1271,8 +1271,8 @@ describe("config view", () => {
         },
       },
       uiHints: {
-        messages: { docsUrl: "https://docs.openclaw.ai/concepts/messages" },
-        tts: { docsUrl: "https://docs.openclaw.ai/tts" },
+        messages: { docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" },
+        tts: { docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" },
       },
     });
 
@@ -1879,7 +1879,7 @@ describe("config view", () => {
     });
 
     expect(findButtonByText(container, "Knot").getAttribute("aria-pressed")).toBe("true");
-    expect(findButtonByText(container, "Claw").getAttribute("aria-pressed")).toBe("false");
+    expect(findButtonByText(container, "PASO").getAttribute("aria-pressed")).toBe("false");
     const textScaleButtons = [
       ...container.querySelectorAll<HTMLButtonElement>(".settings-text-scale__btn"),
     ];
@@ -1904,7 +1904,7 @@ describe("config view", () => {
     expect(findButtonByText(customContainer, "Light Green").getAttribute("aria-pressed")).toBe(
       "true",
     );
-    expect(findButtonByText(customContainer, "Claw").getAttribute("aria-pressed")).toBe("false");
+    expect(findButtonByText(customContainer, "PASO").getAttribute("aria-pressed")).toBe("false");
   });
 
   it("shows Appearance default descriptions", () => {
@@ -1922,24 +1922,17 @@ describe("config view", () => {
 
     for (const expected of [
       "Using default: System",
-      "Using default: Claw",
+      "Using default: PASO",
       "Using default: 100%",
       "Using default: Enabled",
       "Using default: 48rem",
       "Using default: Enter",
-      "Using default: OpenClaw viewer",
-      "Using default: Disabled",
+      "Using default: PASO viewer",
     ]) {
       expect(text).toContain(expected);
     }
-    const lobsterPreviews = container.querySelectorAll(".lobsterdex__mini");
-    expect(lobsterPreviews).toHaveLength(42);
-    expect([...lobsterPreviews].every((preview) => preview.getAttribute("role") === "img")).toBe(
-      true,
-    );
-    expect(
-      [...lobsterPreviews].every((preview) => Boolean(preview.getAttribute("aria-label")?.trim())),
-    ).toBe(true);
+    expect(container.querySelector(".lobsterdex__mini")).toBeNull();
+    expect(normalizedText(container)).not.toContain("Legacy mascot sounds");
   });
 
   it("keeps direct Appearance default selections independent", () => {
@@ -1969,7 +1962,7 @@ describe("config view", () => {
           candidate.querySelector(".settings-row__title")?.textContent?.trim() === title,
       ) ?? null;
 
-    findButtonByText(container, "Claw").click();
+    findButtonByText(container, "PASO").click();
     const colorModeGroup = row("Color mode")?.querySelector<HTMLElement & { value: string }>(
       "wa-radio-group",
     );
@@ -2013,10 +2006,10 @@ describe("config view", () => {
         candidate.querySelector(".settings-row__title")?.textContent?.trim() === "Send shortcut",
     );
 
-    expect(normalizedText(themeSection)).toContain("Default: Claw");
+    expect(normalizedText(themeSection)).toContain("Default: PASO");
     expect(normalizedText(themeSection)).toContain("Default: System");
     expect(shortcutRow?.textContent).toContain("Default: Enter");
-    findButtonByText(themeSection, "Claw").click();
+    findButtonByText(themeSection, "PASO").click();
     themeSection.querySelector<HTMLElement>('wa-radio[value="system"]')?.click();
 
     expect(setTheme).toHaveBeenCalledWith("claw", expect.any(Object));
@@ -2056,14 +2049,14 @@ describe("config view", () => {
         }
       ).selected,
     ).toBe(true);
-    expect(themeDescription.textContent).toContain("Default: Claw");
+    expect(themeDescription.textContent).toContain("Default: PASO");
     expect(themeDescription.textContent).toContain("Stored in this browser only");
     expect(themeDescription.textContent).not.toContain("Synced across your devices");
     expect(
       themeSection.querySelector(".settings-theme-card--knot")?.getAttribute("aria-pressed"),
     ).toBe("true");
 
-    findButtonByText(themeSection, "Claw").click();
+    findButtonByText(themeSection, "PASO").click();
 
     expect(setTheme).toHaveBeenCalledWith("claw", expect.any(Object));
   });
@@ -2355,100 +2348,17 @@ describe("config view", () => {
     expect(onCameraRefresh).toHaveBeenCalledOnce();
   });
 
-  it("previews lobster sounds only when the user enables them", () => {
-    const param = () => ({
-      setValueAtTime: vi.fn(),
-      exponentialRampToValueAtTime: vi.fn(),
-    });
-    const audioContextCtor = vi.fn(function MockAudioContext() {
-      return {
-        state: "running",
-        currentTime: 0,
-        destination: {},
-        resume: vi.fn(),
-        close: vi.fn(() => Promise.resolve()),
-        createOscillator: vi.fn(() => ({
-          type: "sine",
-          frequency: param(),
-          connect: (node: unknown) => node,
-          start: vi.fn(),
-          stop: vi.fn(),
-        })),
-        createGain: vi.fn(() => ({ gain: param(), connect: vi.fn() })),
-      };
-    });
-    vi.stubGlobal("AudioContext", audioContextCtor);
-
-    const activateSwitch = (element: HTMLElement & { checked: boolean }, nextChecked: boolean) => {
-      const dispatchClick = (path: EventTarget[]) => {
-        const event = new MouseEvent("click", { bubbles: true, composed: true });
-        Object.defineProperty(event, "composedPath", { value: () => path });
-        element.dispatchEvent(event);
-      };
-      dispatchClick([document.createElement("span"), element]);
-      element.checked = nextChecked;
-      dispatchClick([document.createElement("input"), element]);
-      element.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-    };
-
-    const setLobsterPetSounds = vi.fn();
-    const disabled = renderConfigView({
+  it("does not expose legacy mascot sound controls", () => {
+    const { container } = renderConfigView({
       activeSection: "__appearance__",
       includeSections: ["__appearance__"],
       lobsterPetVisits: true,
       setLobsterPetVisits: vi.fn(),
       lobsterPetSounds: false,
-      setLobsterPetSounds,
+      setLobsterPetSounds: vi.fn(),
     });
-    const disabledRow = Array.from(
-      disabled.container.querySelectorAll<HTMLElement>(".settings-row--toggle"),
-    ).find((candidate) => candidate.textContent?.includes("Lobster sounds"));
-    const disabledSwitch = disabledRow?.querySelector<HTMLElement & { checked: boolean }>(
-      "wa-switch",
-    );
-    expect(disabledSwitch).toBeDefined();
-    if (!disabledSwitch) {
-      return;
-    }
-
-    expect(audioContextCtor).not.toHaveBeenCalled();
-    activateSwitch(disabledSwitch, true);
-    expect(audioContextCtor).toHaveBeenCalledTimes(1);
-    expect(setLobsterPetSounds).toHaveBeenCalledWith(true);
-
-    const enabled = renderConfigView({
-      activeSection: "__appearance__",
-      includeSections: ["__appearance__"],
-      lobsterPetVisits: true,
-      setLobsterPetVisits: vi.fn(),
-      lobsterPetSounds: true,
-      setLobsterPetSounds,
-    });
-    const enabledRow = Array.from(
-      enabled.container.querySelectorAll<HTMLElement>(".settings-row--toggle"),
-    ).find((candidate) => candidate.textContent?.includes("Lobster sounds"));
-    const enabledSwitch = enabledRow?.querySelector<HTMLElement & { checked: boolean }>(
-      "wa-switch",
-    );
-    expect(enabledSwitch).toBeDefined();
-    if (!enabledSwitch) {
-      return;
-    }
-
-    const noOpKey = new KeyboardEvent("keydown", {
-      key: "ArrowRight",
-      bubbles: true,
-      composed: true,
-    });
-    Object.defineProperty(noOpKey, "composedPath", {
-      value: () => [document.createElement("input"), enabledSwitch],
-    });
-    enabledSwitch.dispatchEvent(noOpKey);
-    expect(audioContextCtor).toHaveBeenCalledTimes(1);
-
-    activateSwitch(enabledSwitch, false);
-    expect(audioContextCtor).toHaveBeenCalledTimes(1);
-    expect(setLobsterPetSounds).toHaveBeenLastCalledWith(false);
+    expect(container.querySelector(".lobsterdex__gallery")).toBeNull();
+    expect(container.textContent).not.toContain("Legacy mascot sounds");
   });
 
   it("renders and changes the live sidebar activity preference", () => {
@@ -2497,7 +2407,7 @@ describe("config view", () => {
     expect(setSessionCatalogHidden).toHaveBeenCalledWith("claude", false);
   });
 
-  it("uses rich Lobsterdex lore tooltips and opens the full collection", () => {
+  it("does not expose the legacy mascot collection", () => {
     const firstSeenAt = new Date("2026-07-10T12:00:00.000Z").getTime();
     vi.stubGlobal("localStorage", window.localStorage);
     localStorage.setItem(
@@ -2520,32 +2430,10 @@ describe("config view", () => {
       });
 
       const seen = container.querySelector(".lobster-pet--palette-crimson");
-      const seenTooltip = seen?.closest("openclaw-tooltip");
-      expect(seen?.hasAttribute("title")).toBe(false);
-      expect(seen?.getAttribute("aria-label")).toContain("Ruby ✦");
-      expect(seenTooltip?.querySelector('[slot="content"]')?.textContent).toContain(
-        "The classic red, first in every tide pool.",
-      );
-      expect(seenTooltip?.querySelector('[slot="content"]')?.textContent).toContain(
-        new Date(firstSeenAt).toLocaleDateString(),
-      );
-
-      const unseen = container.querySelector(".lobster-pet--palette-watermelon");
-      expect(unseen?.getAttribute("aria-label")).toContain("Ripe when thumped.");
-      expect(
-        unseen?.closest("openclaw-tooltip")?.querySelector('[slot="content"]')?.textContent,
-      ).toContain("Ripe when thumped.");
-
       const openLink = container.querySelector<HTMLAnchorElement>(".lobsterdex__open");
-      openLink?.addEventListener("click", (event) => event.preventDefault(), {
-        capture: true,
-        once: true,
-      });
-      openLink?.click();
+      expect(seen).toBeNull();
+      expect(openLink).toBeNull();
       expect(onOpenLobsterdex).not.toHaveBeenCalled();
-
-      openLink?.click();
-      expect(onOpenLobsterdex).toHaveBeenCalledOnce();
     } finally {
       localStorage.removeItem("openclaw.control.lobsterdex.v1");
       vi.unstubAllGlobals();

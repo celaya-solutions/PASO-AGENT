@@ -341,7 +341,7 @@ CONFIG_PATH="$OPENCLAW_CONFIG_PATH" \
           enabled: true,
           baseUrl: `http://127.0.0.1:${process.env.QA_BUS_PORT}`,
           botUserId: "openclaw",
-          botDisplayName: "OpenClaw QA",
+          botDisplayName: "PASO QA",
           allowFrom: ["*"],
           pollTimeoutMs: 250,
         },

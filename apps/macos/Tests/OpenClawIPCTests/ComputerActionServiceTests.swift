@@ -143,8 +143,8 @@ struct ComputerActionServiceTests {
 
         #expect(permissions.diagnostic == .accessibilityGrantMayBeStale)
         #expect(permissions.diagnostic.detailText == """
-        OpenClaw may already appear enabled under System Settings → Privacy & Security → Accessibility. \
-        If so, the grant is pinned to an older build: select OpenClaw, remove it with −, then re-add \
+        PASO may already appear enabled under System Settings → Privacy & Security → Accessibility. \
+        If so, the grant is pinned to an older build: select PASO, remove it with −, then re-add \
         /Applications/OpenClaw.app.
         """)
         #expect(permissions.inputAccess == .accessibilityGrantMayBeStale)
@@ -165,7 +165,7 @@ struct ComputerActionServiceTests {
         #expect(permissions.diagnostic == .missing([.accessibility, .screenCapture]))
         #expect(permissions.diagnostic.detailText == """
         Missing: Accessibility, Screen Recording. \
-        Grant access in System Settings → Privacy & Security, then reopen OpenClaw.
+        Grant access in System Settings → Privacy & Security, then reopen PASO.
         """)
         #expect(permissions.inputAccess == .accessibilityMissing)
         let error = self.validationError {

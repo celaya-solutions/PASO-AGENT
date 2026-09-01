@@ -113,7 +113,7 @@ Enabled plugins can add their own named read-only feeds and actions to these cap
 
 Grants are bound to the exact widget bytes and revision approved by your session
 policy. If the agent changes the widget and asks for _more_ than was approved,
-OpenClaw applies that policy again; refreshing content within the same
+PASO applies that policy again; refreshing content within the same
 permissions keeps the grant.
 Widget interactions the agent should know about (filters you clicked, views
 you switched) reach it quietly as session notices — it stays informed without

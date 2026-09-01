@@ -1502,7 +1502,7 @@ describe("handleDiscordMessagingAction", () => {
     });
     fetchGuildInfoDiscord.mockResolvedValueOnce({
       id: "111",
-      name: "Friends of OpenClaw",
+      name: "Friends of PASO",
     });
     const cfg = {
       channels: {
@@ -1615,7 +1615,7 @@ describe("handleDiscordMessagingAction", () => {
     });
     fetchGuildInfoDiscord.mockResolvedValueOnce({
       id: "111",
-      name: "Friends of OpenClaw",
+      name: "Friends of PASO",
     });
     const cfg = {
       channels: {

@@ -2,7 +2,7 @@
   "name": "@openclaw/clawrouter",
   "version": "2026.8.1",
   "private": true,
-  "description": "OpenClaw ClawRouter plugin",
+  "description": "PASO ClawRouter plugin",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"

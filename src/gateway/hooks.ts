@@ -203,7 +203,7 @@ export function isSessionKeyAllowedByPrefix(sessionKey: string, prefixes: string
   return prefixes.some((prefix) => normalized.startsWith(prefix));
 }
 
-/** Extract the hook bearer token from Authorization or x-openclaw-token headers. */
+/** Extract the hook bearer token from Authorization or PASO/legacy compatibility headers. */
 export function extractHookToken(req: IncomingMessage): string | undefined {
   const auth = normalizeOptionalString(req.headers.authorization) ?? "";
   if (normalizeLowercaseStringOrEmpty(auth).startsWith("bearer ")) {
@@ -212,7 +212,10 @@ export function extractHookToken(req: IncomingMessage): string | undefined {
       return token;
     }
   }
-  const headerToken = normalizeOptionalString(req.headers["x-openclaw-token"]) ?? "";
+  const headerToken =
+    normalizeOptionalString(req.headers["x-paso-token"]) ??
+    normalizeOptionalString(req.headers["x-openclaw-token"]) ??
+    "";
   if (headerToken) {
     return headerToken;
   }
@@ -483,6 +486,7 @@ export function resolveHookIdempotencyKey(params: {
 }): string | undefined {
   return (
     resolveOptionalHookIdempotencyKey(params.headers?.["idempotency-key"]) ||
+    resolveOptionalHookIdempotencyKey(params.headers?.["x-paso-idempotency-key"]) ||
     resolveOptionalHookIdempotencyKey(params.headers?.["x-openclaw-idempotency-key"]) ||
     resolveOptionalHookIdempotencyKey(params.payload.idempotencyKey)
   );

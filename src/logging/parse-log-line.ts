@@ -2,7 +2,7 @@ import { isRecord } from "@openclaw/normalization-core/record-coerce";
 // Log line parsing helpers convert text log entries into structured records.
 import { normalizeOptionalLowercaseString } from "@openclaw/normalization-core/string-coerce";
 
-// Parser for JSON LogTape lines emitted by the OpenClaw logger.
+// Parser for JSON LogTape lines emitted by the PASO logger.
 export type ParsedLogLine = {
   time?: string;
   level?: string;

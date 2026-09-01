@@ -1,7 +1,7 @@
 ---
 name: session-memory
 description: "Save session context to memory on manual or automatic reset"
-homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+homepage: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/automation/hooks.md#session-memory
 metadata:
   {
     "openclaw":
@@ -9,7 +9,7 @@ metadata:
         "emoji": "💾",
         "events": ["command:new", "command:reset", "session:auto-reset"],
         "requires": { "config": ["workspace.dir"] },
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with PASO" }],
       },
   }
 ---

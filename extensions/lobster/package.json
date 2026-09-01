@@ -4,7 +4,7 @@
   "description": "Lobster workflow tool plugin for typed pipelines and resumable approvals.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

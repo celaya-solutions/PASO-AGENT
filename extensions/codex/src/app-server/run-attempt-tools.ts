@@ -80,7 +80,7 @@ export function resolveCodexDynamicToolDirectNames(
   // Tools with catalogMode=direct-only use the model-only namespace. This list
   // remains for control tools that intentionally live at the dynamic-tool root.
   const names: string[] = [];
-  // OpenClaw is the run's only tool and must stay callable when Codex tool
+  // PASO is the run's only tool and must stay callable when Codex tool
   // search is unavailable. Exact toolsAllow is the public harness contract.
   if (hostSystemAgentActive && isSystemAgentOnlyCodexDynamicToolAllowlist(params.toolsAllow)) {
     names.push("openclaw");
@@ -88,7 +88,7 @@ export function resolveCodexDynamicToolDirectNames(
   if (params.sourceReplyDeliveryMode === "message_tool_only") {
     names.push("message");
   }
-  // OpenClaw disables Codex's native update_plan on every thread. Keep its
+  // PASO disables Codex's native update_plan on every thread. Keep its
   // replacement in the initial context or the run has no visible progress tool.
   names.push("progress_card");
   return names;

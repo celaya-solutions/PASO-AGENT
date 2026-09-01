@@ -360,7 +360,7 @@ describe("runDaemonInstall", () => {
     expect(actionState.failed[0]?.message).toContain("Rerun the same command without sudo");
     expect(actionState.failed[0]?.message).toContain("chmod go-w <path>");
     expect(actionState.failed[0]?.message).toContain(
-      "https://docs.openclaw.ai/cli/gateway#install-identity",
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
     expect(replaceConfigFileMock).not.toHaveBeenCalled();
     expect(randomTokenMock).not.toHaveBeenCalled();

@@ -24,7 +24,7 @@ import {
 const SHA = "a".repeat(40);
 const TARGET_SHA = "b".repeat(40);
 const SOURCE_REF = `release-ci/${SHA.slice(0, 12)}-77`;
-const REPOSITORY = "openclaw/openclaw";
+const REPOSITORY = "celaya-solutions/PASO-AGENT";
 
 function job(name: string, conclusion = "success") {
   return {
@@ -162,6 +162,16 @@ function historicalExecutionPlanArtifact() {
   delete artifact.repository;
   for (const entry of artifact.children) {
     delete entry.sourceParentAttempt;
+    if (entry.key === "releaseChecks") {
+      entry.displayTitle = entry.displayTitle.replace(
+        "PASO Release Checks",
+        "OpenClaw Release Checks",
+      );
+    }
+    if (entry.key === "productPerformance") {
+      entry.dispatchName = "Dispatch OpenClaw Performance";
+      entry.displayTitle = entry.displayTitle.replace("PASO Performance", "OpenClaw Performance");
+    }
   }
   artifact.sha256 = releaseExecutionPlanSha256(artifact);
   return artifact;
@@ -390,8 +400,16 @@ function rerunScenario(options: {
 
 describe("FRV immutable plan eligibility", () => {
   it("accepts current v2 all-group plans", async () => {
+    const current = executionPlanArtifact();
+    expect(current.children.find((entry) => entry.key === "releaseChecks")).toMatchObject({
+      displayTitle: "PASO Release Checks full-release-validation-77-1-release-checks",
+    });
+    expect(current.children.find((entry) => entry.key === "productPerformance")).toMatchObject({
+      dispatchName: "Dispatch PASO Performance",
+      displayTitle: "PASO Performance full-release-validation-77-1",
+    });
     await expect(
-      loadPlan({ repository: REPOSITORY, runId: "77" }, async () => executionPlanArtifact()),
+      loadPlan({ repository: REPOSITORY, runId: "77" }, async () => current),
     ).resolves.toMatchObject({
       attemptEvidenceVersion: 2,
       parentRunId: "77",

@@ -679,7 +679,7 @@ function renderUnifiedQaSuiteReport(params: {
   startedAt: Date;
 }) {
   return renderQaMarkdownReport({
-    title: "OpenClaw QA Scenario Suite",
+    title: "PASO QA Scenario Suite",
     startedAt: params.startedAt,
     finishedAt: params.finishedAt,
     checks: [],

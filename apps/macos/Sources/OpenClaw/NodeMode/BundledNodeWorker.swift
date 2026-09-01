@@ -39,7 +39,7 @@ enum BundledNodeWorker {
             }
         } catch {
             throw MacNodeHostWorker.WorkerError.unavailable(
-                reason: "The bundled node worker is missing or incompatible. Rebuild or reinstall OpenClaw.app.",
+                reason: "The bundled node worker is missing or incompatible. Rebuild or reinstall PASO.",
                 diagnostic: error.localizedDescription)
         }
         return MacNodeHostWorkerLaunch(

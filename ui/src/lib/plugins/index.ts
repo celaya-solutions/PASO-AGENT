@@ -49,7 +49,8 @@ export function resolvePluginInstallIdentity(
     : `clawhub:${request.packageName}`;
 }
 
-export const CLAWHUB_BROWSE_URL = "https://clawhub.ai/plugins";
+export const CLAWHUB_BROWSE_URL =
+  "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs/plugins";
 
 export function loadPluginCatalog(client: GatewayBrowserClient): Promise<PluginListResult> {
   return client.request<PluginListResult>("plugins.list", {});

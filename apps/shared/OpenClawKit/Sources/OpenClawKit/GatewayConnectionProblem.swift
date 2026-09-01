@@ -270,7 +270,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/tailscale"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -287,7 +287,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/tailscale"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -304,7 +304,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/tailscale"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -321,7 +321,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/tailscale"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -338,7 +338,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -376,7 +376,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -394,7 +394,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: authError.canRetryWithDeviceToken,
                     pauseReconnect: !authError.canRetryWithDeviceToken),
@@ -412,7 +412,7 @@ public enum GatewayConnectionProblemMapper {
                         ?? "openclaw config set gateway.auth.token <new-token>",
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -429,7 +429,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -446,7 +446,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -465,7 +465,7 @@ public enum GatewayConnectionProblemMapper {
                         ?? "openclaw config set gateway.auth.password <new-password>",
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/authentication"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -494,7 +494,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/platforms/ios"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -511,7 +511,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand ?? pairingCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -528,7 +528,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand ?? pairingCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -556,7 +556,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/platforms/ios"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -572,7 +572,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: true,
                     pauseReconnect: true),
@@ -589,7 +589,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: true,
                     pauseReconnect: true),
@@ -605,7 +605,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: true,
                     pauseReconnect: true),
@@ -622,7 +622,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -639,7 +639,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -656,7 +656,7 @@ public enum GatewayConnectionProblemMapper {
                     actionCommand: authError.actionCommand,
                     docsURL: self.docsURL(
                         authError.docsURLString,
-                        fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                        fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                     requestId: authError.requestId,
                     retryable: false,
                     pauseReconnect: true),
@@ -719,7 +719,7 @@ extension GatewayConnectionProblemMapper {
                 actionLabel: "Review certificate",
                 messagePresentation: messagePresentation,
                 actionCommand: nil,
-                docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: false,
                 pauseReconnect: true,
                 technicalDetails: tlsError.localizedDescription,
@@ -732,13 +732,13 @@ extension GatewayConnectionProblemMapper {
                 kind: .tlsCertificateUnavailable,
                 owner: .network,
                 title: "Gateway certificate unavailable",
-                message: "OpenClaw could not read the gateway certificate for \(failure.host).",
+                message: "PASO could not read the gateway certificate for \(failure.host).",
                 actionLabel: "Retry",
                 messagePresentation: .localizedFormat(
-                    "OpenClaw could not read the gateway certificate for %@.",
+                    "PASO could not read the gateway certificate for %@.",
                     [failure.host]),
                 actionCommand: nil,
-                docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: true,
                 pauseReconnect: false,
                 technicalDetails: tlsError.localizedDescription)
@@ -753,7 +753,7 @@ extension GatewayConnectionProblemMapper {
                     "This device does not trust the TLS certificate presented by %@.",
                     [failure.host]),
                 actionCommand: nil,
-                docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: false,
                 pauseReconnect: true,
                 technicalDetails: tlsError.localizedDescription)
@@ -762,15 +762,15 @@ extension GatewayConnectionProblemMapper {
                 kind: .tlsCertificateUnavailable,
                 owner: .unknown,
                 title: "Gateway certificate unavailable",
-                message: "OpenClaw could not securely save the TLS certificate pin for \(failure.host).",
+                message: "PASO could not securely save the TLS certificate pin for \(failure.host).",
                 actionLabel: "Retry",
                 titlePresentation: .localized("Gateway certificate unavailable"),
                 messagePresentation: .localizedFormat(
-                    "OpenClaw could not securely save the TLS certificate pin for %@.",
+                    "PASO could not securely save the TLS certificate pin for %@.",
                     [failure.host]),
                 actionLabelPresentation: .localized("Retry"),
                 actionCommand: nil,
-                docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: true,
                 pauseReconnect: false,
                 technicalDetails: tlsError.localizedDescription)
@@ -786,7 +786,7 @@ extension GatewayConnectionProblemMapper {
                     "The TLS challenge came from a different host or port than the requested Gateway."),
                 actionLabelPresentation: .localized("Check certificate"),
                 actionCommand: nil,
-                docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: false,
                 pauseReconnect: true,
                 technicalDetails: tlsError.localizedDescription)
@@ -841,7 +841,7 @@ extension GatewayConnectionProblemMapper {
         case .reachabilityFailed:
             (
                 "Gateway is not reachable",
-                "OpenClaw could not reach the gateway over the current network.",
+                "PASO could not reach the gateway over the current network.",
                 "Check network")
         case .websocketCancelled:
             ("Connection interrupted", "The connection to the gateway was interrupted before setup completed.", "Retry")
@@ -854,7 +854,7 @@ extension GatewayConnectionProblemMapper {
             title: facts.title,
             message: facts.message,
             actionLabel: facts.actionLabel,
-            docsURL: URL(string: "https://docs.openclaw.ai/gateway/troubleshooting"),
+            docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
             retryable: true,
             pauseReconnect: false,
             technicalDetails: technicalDetails)
@@ -894,7 +894,7 @@ extension GatewayConnectionProblemMapper {
                 actionCommand: authError.actionCommand ?? self.approvalCommand(requestId: authError.requestId),
                 docsURL: self.docsURL(
                     authError.docsURLString,
-                    fallback: "https://docs.openclaw.ai/gateway/pairing"),
+                    fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                 requestId: authError.requestId,
                 retryable: false,
                 pauseReconnect: true),
@@ -913,7 +913,7 @@ extension GatewayConnectionProblemMapper {
         {
             title = authError.titleOverride ?? "App update required"
             message = authError.userMessageOverride
-                ?? "This app is older than the gateway. Update OpenClaw on this device, then retry."
+                ?? "This app is older than the gateway. Update PASO on this device, then retry."
             owner = .iphone
             actionLabel = authError.actionLabel ?? "Update app"
             actionCommand = authError.actionCommand
@@ -923,16 +923,16 @@ extension GatewayConnectionProblemMapper {
         {
             title = authError.titleOverride ?? "Gateway update required"
             message = authError.userMessageOverride
-                ?? "The gateway is older than this app. Update OpenClaw on the gateway host, then retry."
+                ?? "The gateway is older than this app. Update PASO on the gateway host, then retry."
             owner = .gateway
             actionLabel = authError.actionLabel ?? "Copy update command"
             actionCommand = authError.actionCommand ?? "openclaw update"
         } else {
-            title = authError.titleOverride ?? "OpenClaw update required"
+            title = authError.titleOverride ?? "PASO update required"
             message = authError.userMessageOverride
-                ?? "The app and gateway use incompatible protocol versions. Update OpenClaw on both, then retry."
+                ?? "The app and gateway use incompatible protocol versions. Update PASO on both, then retry."
             owner = .both
-            actionLabel = authError.actionLabel ?? "Update OpenClaw"
+            actionLabel = authError.actionLabel ?? "Update PASO"
             actionCommand = authError.actionCommand
         }
         return self.problem(
@@ -945,7 +945,7 @@ extension GatewayConnectionProblemMapper {
                 actionCommand: actionCommand,
                 docsURL: self.docsURL(
                     authError.docsURLString,
-                    fallback: "https://docs.openclaw.ai/gateway/troubleshooting"),
+                    fallback: "https://github.com/celaya-solutions/PASO-AGENT"),
                 requestId: authError.requestId,
                 retryable: false,
                 pauseReconnect: true),

@@ -1,7 +1,7 @@
 ---
-summary: "Uninstall OpenClaw completely (CLI, service, state, workspace)"
+summary: "Uninstall PASO completely (CLI, service, state, workspace)"
 read_when:
-  - You want to remove OpenClaw from a machine
+  - You want to remove PASO from a machine
   - The gateway service is still running after uninstall
 title: "Uninstall"
 ---
@@ -90,6 +90,9 @@ bun remove -g openclaw
 
 7. If you installed the macOS app:
 
+The visible app is PASO; its technical bundle path remains
+`/Applications/OpenClaw.app` for upgrade compatibility.
+
 ```bash
 rm -rf /Applications/OpenClaw.app
 ```
@@ -126,7 +129,10 @@ systemctl --user daemon-reload
 
 ### Windows (Scheduled Task)
 
-Default task name is `OpenClaw Gateway` (or `OpenClaw Gateway (<profile>)`).
+The technical Scheduled Task name remains `OpenClaw Gateway` (or
+`OpenClaw Gateway (<profile>)`) for service-upgrade compatibility. It runs the
+PASO Gateway.
+
 The task launches a windowless `gateway.vbs` script under your state dir, which in turn
 runs `gateway.cmd`; remove both.
 
@@ -139,20 +145,23 @@ Remove-Item -Force "$env:USERPROFILE\.openclaw\gateway.vbs" -ErrorAction Silentl
 If you used a profile, delete the matching task name and the `gateway.cmd` /
 `gateway.vbs` files under `~\.openclaw-<profile>`.
 
-## Normal install vs source checkout
+## Source installer vs framework package
 
-### Normal install (install.sh / npm / pnpm / bun)
+### PASO source installer
 
-If you used `https://openclaw.ai/install.sh` or `install.ps1`, the CLI was installed with `npm install -g openclaw@latest`.
-Remove it with `npm rm -g openclaw` (or `pnpm remove -g` / `bun remove -g` if you installed that way).
+The documented PASO installer commands use `--install-method git`. After uninstalling the gateway service, remove the PASO checkout you selected and its compatibility wrapper (`~/.local/bin/openclaw` on macOS/Linux or `%USERPROFILE%\.local\bin\openclaw.cmd` on Windows).
 
-### Source checkout (git clone)
+### Manual source checkout
 
 If you run from a repo checkout (`git clone` + `openclaw ...` / `bun run openclaw ...`):
 
 1. Uninstall the gateway service **before** deleting the repo (use the easy path above or manual service removal).
 2. Delete the repo directory.
 3. Remove state + workspace as shown above.
+
+### Upstream framework package
+
+If you intentionally installed the lowercase framework package with npm, pnpm, or bun, remove it with `npm rm -g openclaw` (or the matching pnpm/bun command).
 
 ## Related
 

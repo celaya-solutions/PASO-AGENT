@@ -43,7 +43,7 @@ import type { WorkerEnvironmentServiceRecord } from "../../../src/gateway/worker
 import { emitAgentEvent } from "../../../src/infra/agent-events.js";
 import { registerAgentRunContext } from "../../../src/infra/agent-run-registry.js";
 import { withTimeout } from "../../../src/utils/with-timeout.js";
-import { GatewayClientTransport, OpenClaw, type OpenClawEvent } from "./index.js";
+import { GatewayClientTransport, PASO, type OpenClawEvent } from "./index.js";
 
 vi.mock("../../../src/infra/device-pairing.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../src/infra/device-pairing.js")>();
@@ -409,7 +409,7 @@ async function collectUntilCompleted(events: AsyncIterable<OpenClawEvent>) {
 async function proveDeterministicGatewayContracts(): Promise<void> {
   const dateNow = vi.spyOn(Date, "now").mockReturnValue(10_000);
   const gateway = await createFakeGateway();
-  const oc = new OpenClaw({
+  const oc = new PASO({
     transport: new GatewayClientTransport({
       url: gateway.url,
       deviceIdentity: null,
@@ -614,7 +614,7 @@ async function proveRealGatewayContracts(): Promise<void> {
   const transcriptPath = path.join(tempDir, `${sessionId}.jsonl`);
   const previousSessionStorePath = testState.sessionStorePath;
   let started: Awaited<ReturnType<typeof startServer>> | undefined;
-  let oc: OpenClaw | undefined;
+  let oc: PASO | undefined;
   testState.sessionStorePath = path.join(tempDir, "sessions.json");
 
   try {
@@ -651,7 +651,7 @@ async function proveRealGatewayContracts(): Promise<void> {
 
     const token = "sdk-real-gateway-token";
     started = await startServer(token, { controlUiEnabled: false });
-    oc = new OpenClaw({
+    oc = new PASO({
       transport: new GatewayClientTransport({
         url: `ws://127.0.0.1:${started.port}`,
         token,

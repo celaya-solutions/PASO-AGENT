@@ -1,4 +1,4 @@
-# OpenClaw Codebase Patterns
+# PASO Codebase Patterns
 
 **Always reuse existing code - no redundancy!**
 

@@ -14,7 +14,7 @@ import {
 import { createCommandError } from "../../process/command-error.js";
 import { runCommandWithTimeout } from "../../process/exec.js";
 import { withOpenClawStateLease } from "../../state/openclaw-state-lease.js";
-import { createCrustaceanSlug } from "../session-slug.js";
+import { createPathSlug } from "../session-slug.js";
 import { resolveWorktreeBase } from "./base-ref.js";
 import {
   directorySizeBytes,
@@ -185,7 +185,7 @@ async function nameIsUnavailable(
     // Let createForRepository reuse the caller's live checkout; a collision here
     // could mint a second checkout for one owner. Removed records stay collisions:
     // restore is explicit-name/id only, so a generated name (title slug or random
-    // crustacean) must never silently resurrect a retired checkout.
+    // generated path name) must never silently resurrect a retired checkout.
     return false;
   }
   if (registered || (await worktreePathExists(worktreePath))) {
@@ -499,10 +499,10 @@ async function snapshotWorktree(
   const filemodeArgs = process.platform === "win32" ? [] : ["-c", "core.filemode=true"];
   const env: NodeJS.ProcessEnv = {
     GIT_INDEX_FILE: indexPath,
-    GIT_AUTHOR_NAME: "OpenClaw",
-    GIT_AUTHOR_EMAIL: "openclaw@localhost",
-    GIT_COMMITTER_NAME: "OpenClaw",
-    GIT_COMMITTER_EMAIL: "openclaw@localhost",
+    GIT_AUTHOR_NAME: "PASO",
+    GIT_AUTHOR_EMAIL: "hello@celayasolutions.com",
+    GIT_COMMITTER_NAME: "PASO",
+    GIT_COMMITTER_EMAIL: "hello@celayasolutions.com",
   };
   try {
     const provisioned = new Set(provisionedPaths.map((entry) => gitPathKey(Buffer.from(entry))));
@@ -635,7 +635,7 @@ async function snapshotWorktree(
         "-p",
         parent,
         "-m",
-        `OpenClaw worktree snapshot: ${reason}`,
+        `PASO worktree snapshot: ${reason}`,
       ],
       { env },
     );
@@ -769,7 +769,7 @@ export class ManagedWorktreeService {
       return await this.createForRepository(
         { ...params, ...guard },
         repository,
-        params.name ?? params.suggestedName ?? createCrustaceanSlug(),
+        params.name ?? params.suggestedName ?? createPathSlug(),
       );
     });
   }
@@ -1190,7 +1190,7 @@ export class ManagedWorktreeService {
         throw new WorktreeRemovalLockError(
           state.kind === "live" ? "busy" : "foreign-lock",
           state.kind === "live"
-            ? `worktree is locked by live OpenClaw pid ${state.pid}`
+            ? `worktree is locked by live PASO pid ${state.pid}`
             : `worktree has a foreign lock${state.reason ? `: ${state.reason}` : ""}`,
         );
       }

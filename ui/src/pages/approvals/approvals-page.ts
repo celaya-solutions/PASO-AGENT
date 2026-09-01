@@ -66,7 +66,7 @@ function grantIsActive(grant: StandingGrantRow, nowMs: number): boolean {
   return grant.revokedAtMs === null && (grant.expiresAtMs === null || grant.expiresAtMs > nowMs);
 }
 const APPROVAL_HISTORY_REQUIRED_SCOPE = "operator.approvals";
-const APPROVALS_DOCS_URL = "https://docs.openclaw.ai/tools/exec-approvals";
+const APPROVALS_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 function formatResolvedAt(timestampMs: number): string {
   return new Intl.DateTimeFormat(i18n.getLocale(), {

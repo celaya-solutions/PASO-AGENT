@@ -201,7 +201,7 @@ function describeStateSchemaMigration(migration: OpenClawStateDatabaseSchemaMigr
     case "conversation-binding-targets-v15":
       return "conversation bindings → exact target keys without agent/session projections";
     case "operator-approvals-system-agent":
-      return "operator approvals → OpenClaw system changes";
+      return "operator approvals → PASO system changes";
     case "session-watch-cursor-provenance-v4":
       return "session watch cursors → provenance column";
     case "strict-tables-v3":

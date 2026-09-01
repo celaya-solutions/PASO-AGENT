@@ -167,10 +167,12 @@ async function publicationCommitMatches(
     params.run(["git", "rev-parse", `${headCommit}^`], { cwd: params.cwd }),
     params.run(["git", "rev-parse", `${headCommit}^{tree}`], { cwd: params.cwd }),
   ]);
+  const messageLines = message.split(/\r?\n/u);
+  const hasPublicationMarker = ["PASO-Publication", "OpenClaw-Publication"].some((marker) =>
+    messageLines.includes(`${marker}: ${params.requestId}`),
+  );
   return (
-    message.split(/\r?\n/u).includes(`OpenClaw-Publication: ${params.requestId}`) &&
-    parent === params.sourceHeadCommit &&
-    tree === params.workspaceTree
+    hasPublicationMarker && parent === params.sourceHeadCommit && tree === params.workspaceTree
   );
 }
 

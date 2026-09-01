@@ -278,7 +278,7 @@ fn resolve_selected_agent(
         .iter()
         .find(|agent| agent.is_default)
         .cloned()
-        .ok_or_else(|| "OpenClaw did not report a default agent.".to_string())
+        .ok_or_else(|| "PASO did not report a default agent.".to_string())
 }
 
 fn non_empty(value: Option<String>) -> Option<String> {
@@ -310,7 +310,7 @@ fn build_agents(catalog: &AgentsListResult) -> Result<Vec<QuickChatAgent>, Strin
     if agents.iter().any(|agent| agent.is_default) {
         Ok(agents)
     } else {
-        Err("OpenClaw did not report a default agent.".to_string())
+        Err("PASO did not report a default agent.".to_string())
     }
 }
 
@@ -904,8 +904,8 @@ mod tests {
                     kind: Some("agent".to_string()),
                     name: Some("Configured".to_string()),
                     identity: Some(crate::gateway_ws::GatewayAgentIdentity {
-                        name: Some("Molty".to_string()),
-                        emoji: Some("🦞".to_string()),
+                        name: Some("PASO".to_string()),
+                        emoji: Some("◈".to_string()),
                         avatar_url: Some("data:image/png;base64,AA==".to_string()),
                     }),
                 },
@@ -925,8 +925,8 @@ mod tests {
         };
         let agents = build_agents(&catalog).expect("agent list");
 
-        assert_eq!(agents[0].name, "Molty");
-        assert_eq!(agents[0].emoji.as_deref(), Some("🦞"));
+        assert_eq!(agents[0].name, "PASO");
+        assert_eq!(agents[0].emoji.as_deref(), Some("◈"));
         assert_eq!(
             agents[0].avatar_url.as_deref(),
             Some("data:image/png;base64,AA==")

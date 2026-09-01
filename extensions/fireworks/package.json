@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/fireworks-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Fireworks provider plugin",
+  "description": "PASO Fireworks provider plugin",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -30,6 +30,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

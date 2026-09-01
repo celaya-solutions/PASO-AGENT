@@ -44,12 +44,12 @@ struct OpenClawApp: App {
         let launchPlan = AppLaunchRuntimePlan.current
         if let error = AppProfile.current.validationError {
             if launchPlan.isElevationHost {
-                fputs("OpenClaw elevation host profile is invalid: \(error.localizedDescription)\n", stderr)
+                fputs("PASO elevation host profile is invalid: \(error.localizedDescription)\n", stderr)
                 Darwin.exit(2)
             }
             let alert = NSAlert()
             alert.alertStyle = .critical
-            alert.messageText = "OpenClaw profile is invalid"
+            alert.messageText = "PASO profile is invalid"
             alert.informativeText = error.localizedDescription
             alert.runModal()
             Darwin.exit(2)
@@ -69,7 +69,7 @@ struct OpenClawApp: App {
     }
 
     var body: some Scene {
-        Window("OpenClaw Settings", id: SettingsWindowOpener.windowID) {
+        Window("PASO Settings", id: SettingsWindowOpener.windowID) {
             SettingsRootView(state: self.state, updater: self.delegate.updaterController)
                 .frame(width: SettingsTab.windowWidth, height: SettingsTab.windowHeight, alignment: .topLeading)
                 .environment(self.tailscaleService)
@@ -180,14 +180,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let isReplacementHandoff = hasReplacementMetadata &&
             ApplicationRelocator.acceptReplacementHandoff(environment: environment)
         if hasReplacementMetadata, !isReplacementHandoff {
-            fputs("OpenClaw replacement handoff authentication failed.\n", stderr)
+            fputs("PASO replacement handoff authentication failed.\n", stderr)
             Darwin.exit(2)
         }
         let ownership = AppInstanceLock.acquire(
             url: AppProfile.current.instanceLockURL(),
             waitMilliseconds: isReplacementHandoff ? 5000 : 0)
         if let exitCode = Self.processExitCode(for: ownership) {
-            fputs("OpenClaw profile is already running.\n", stderr)
+            fputs("PASO profile is already running.\n", stderr)
             Darwin.exit(exitCode)
         }
         var profileInstanceLock: AppInstanceLock?
@@ -208,13 +208,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let instanceOwnershipFailure {
             if AppLaunchRuntimePlan.current.isElevationHost {
                 fputs(
-                    "OpenClaw elevation host could not claim its instance lock: \(instanceOwnershipFailure)\n",
+                    "PASO elevation host could not claim its instance lock: \(instanceOwnershipFailure)\n",
                     stderr)
                 Darwin.exit(2)
             }
             let alert = NSAlert()
             alert.alertStyle = .critical
-            alert.messageText = "OpenClaw could not claim its instance lock"
+            alert.messageText = "PASO could not claim its instance lock"
             alert.informativeText = instanceOwnershipFailure
             alert.runModal()
             Darwin.exit(2)

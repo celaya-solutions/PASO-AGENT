@@ -121,7 +121,7 @@ openclaw channels status --probe
 | `--session-sqlite-store <path>` | With `--session-sqlite`: select a SQLite database or legacy `sessions.json` source, subject to the mode's selection rules below.                                                                            |
 | `--session-sqlite-agent <id>`   | With `--session-sqlite`: select one configured agent.                                                                                                                                                       |
 | `--session-sqlite-all-agents`   | With `--session-sqlite`: select configured and discovered agent stores.                                                                                                                                     |
-| `--github-issue`                | With `--session-sqlite recover`: prepare a sanitized openclaw/openclaw issue report; doctor creates it with `gh` after `--yes` or interactive confirmation.                                                 |
+| `--github-issue`                | With `--session-sqlite recover`: prepare a sanitized PASO issue report; doctor creates it in `celaya-solutions/PASO-AGENT` with `gh` after `--yes` or interactive confirmation.                             |
 | `--json`                        | Emit read-only JSON. Bare `--json` is advisory; combine with `--lint` for threshold-based exit codes. With another machine mode, emit that mode's existing JSON report.                                     |
 | `--severity-min <level>`        | With `--lint`: drop findings below `info`, `warning`, or `error`.                                                                                                                                           |
 | `--all`                         | With `--lint`: run all registered checks, including opt-in checks excluded from the default set.                                                                                                            |
@@ -240,7 +240,7 @@ openclaw doctor --lint --skip core/doctor/skills-readiness
 `openclaw doctor --post-upgrade` runs plugin compatibility probes for chaining after a build or upgrade. Findings go to stdout; exit code is 1 if any finding has `level: "error"`. Add `--json` for a machine-readable envelope (`{ probesRun, findings }`), suitable for CI, the community `fork-upgrade` skill, and other post-upgrade smoke tooling. If the installed plugin index is missing or malformed, JSON mode still emits the envelope with a `plugin.index_unavailable` error finding.
 
 Container image startup is the exception to the usual "run doctor after
-updating" flow. When `openclaw gateway run` starts on a new OpenClaw version, it
+updating" flow. When `openclaw gateway run` starts on a new PASO version, it
 runs safe state and plugin repairs before reporting ready. If repair cannot
 finish safely, startup exits and tells you to run the same image once with
 `openclaw doctor --fix` against the same mounted state/config before restarting
@@ -267,9 +267,9 @@ Doctor also reports when shared auth still uses the legacy `agents/main/agent/op
 For the retired QMD memory backend, including config rewrites and derived
 workspace cleanup, see [Migrating from QMD](/concepts/memory-builtin#migrating-from-qmd).
 
-This includes retired MCP OAuth files under `<state-dir>/mcp-oauth/*.json`. Stop the Gateway before repair. Doctor imports valid credentials into `<state-dir>/state/openclaw.sqlite`, preserves an existing canonical SQLite session when both stores exist, drops the obsolete persisted OAuth `state` value, and uses its receipt to prevent a recreated stale file from resurrecting logged-out credentials. Retired `.lock` sidecars fail closed: if Doctor reports a stale owner, verify that no older OpenClaw process is running, remove that sidecar, and rerun Doctor.
+This includes retired MCP OAuth files under `<state-dir>/mcp-oauth/*.json`. Stop the Gateway before repair. Doctor imports valid credentials into `<state-dir>/state/openclaw.sqlite`, preserves an existing canonical SQLite session when both stores exist, drops the obsolete persisted OAuth `state` value, and uses its receipt to prevent a recreated stale file from resurrecting logged-out credentials. Retired `.lock` sidecars fail closed: if Doctor reports a stale owner, verify that no older PASO process is running, remove that sidecar, and rerun Doctor.
 
-After explicit repair (`--fix`, `--repair`, or `--yes`), Doctor verifies runtime schema readiness for existing configured, default-layout, and registered databases before reporting completion, including stores whose migration failed before registration. A blocked required migration exits nonzero; stop the Gateway and other OpenClaw processes, then rerun repair. Unrelated advisory warnings, including archived transcript repair failures, do not make a ready database fail this check. Missing databases are not created by the readiness check.
+After explicit repair (`--fix`, `--repair`, or `--yes`), Doctor verifies runtime schema readiness for existing configured, default-layout, and registered databases before reporting completion, including stores whose migration failed before registration. A blocked required migration exits nonzero; stop the Gateway and other PASO processes, then rerun repair. Unrelated advisory warnings, including archived transcript repair failures, do not make a ready database fail this check. Missing databases are not created by the readiness check.
 
 Doctor also checks every configured agent workspace and active sandbox workspace for retired setup state and interrupted migration claims. Repair exits nonzero while any of these files still block agent turns, even if their data already reached SQLite. Gateway startup checks the same workspace readiness before starting channels. Keep the retained files in place and rerun `openclaw doctor --fix` to finish verified cleanup; neither check imports or deletes legacy state.
 
@@ -304,7 +304,7 @@ The command:
    database is reported as `skipped` and exits successfully.
 2. Validates the current supported schema version and
    `schema_meta.role = "global"` before checkpointing or changing the file.
-3. Requires a non-busy `wal_checkpoint(TRUNCATE)`. Stop any remaining OpenClaw
+3. Requires a non-busy `wal_checkpoint(TRUNCATE)`. Stop any remaining PASO
    process and retry if the checkpoint is busy.
 4. Sets `auto_vacuum` to `INCREMENTAL`, runs a full `VACUUM`, and checkpoints
    again.
@@ -318,9 +318,9 @@ fail-closed and has no separate success field. SQLite reports `auto_vacuum` as
 `0` for none, `1` for full, and `2` for incremental.
 
 Compaction fails without mutation when the schema is old, newer than the
-running OpenClaw build, or belongs to an agent database. Run
+running PASO build, or belongs to an agent database. Run
 `openclaw doctor --fix` first for an older shared-state schema. Restore a
-compatible backup or upgrade OpenClaw for a newer schema.
+compatible backup or upgrade PASO for a newer schema.
 
 ## Session SQLite migration
 
@@ -347,7 +347,7 @@ its original backup behavior.
 
 For large histories, plan space for the original JSON/JSONL files, the temporary
 SQLite spool, and the destination database and WAL at the same time. Keep free
-space on both the system temporary volume and the volume holding OpenClaw state;
+space on both the system temporary volume and the volume holding PASO state;
 the resulting SQLite database can be larger than the original JSONL. Streaming
 reduces whole-history memory pressure, but individual records are still parsed
 in memory and SQLite also uses native memory. Do not size a host from the JSONL
@@ -463,7 +463,7 @@ failure rolls already-moved files back before reporting failure, so a
 recoverable file set is not silently split. Stop the Gateway before recovery;
 copying or renaming an actively changing SQLite file set is unsafe and behaves
 differently across operating systems. With `--github-issue --yes`, doctor uses
-the GitHub CLI to create the issue in `openclaw/openclaw`; without confirmation
+the GitHub CLI to create the issue in `celaya-solutions/PASO-AGENT`; without confirmation
 it writes the local support report and prints a prefilled issue URL.
 
 `restore` remains the lower-level undo operation. It uses manifest
@@ -497,7 +497,7 @@ disposal, pending cleanup, and unexpected missing files. See
 ### Downgrading After Session SQLite Migration
 
 With the Gateway stopped, use the current CLI to restore archived legacy
-transcript artifacts before starting an older file-backed OpenClaw version:
+transcript artifacts before starting an older file-backed PASO version:
 
 ```bash
 openclaw doctor --session-sqlite restore --session-sqlite-all-agents
@@ -516,7 +516,7 @@ for portable-archive exclusions.
 
 Restore does not delete SQLite data. Sessions created after the SQLite flip
 exist only in SQLite and will not appear to the older runtime. If you later
-upgrade again, run the normal migration validation sequence above so OpenClaw can
+upgrade again, run the normal migration validation sequence above so PASO can
 compare restored legacy artifacts with the SQLite rows before importing.
 
 ## Notes
@@ -542,7 +542,7 @@ compare restored legacy artifacts with the SQLite rows before importing.
 - When HTTP(S) proxy environment variables are present but `tools.web.fetch.useTrustedEnvProxy` is disabled, doctor explains that `web_fetch` still uses direct routing, runs a short direct TLS connectivity probe, and names the explicit opt-in. It never enables proxy trust automatically.
 - Doctor rewrites legacy `codex/*` and `openai-codex/*` model refs to canonical `openai/*` refs across primary models, fallbacks, model allowlists, image/video generation models, heartbeat/subagent/compaction overrides, hooks, channel model overrides, cron payloads, and stale session/transcript route pins. `--fix` also merges legacy `models.providers.codex` and `models.providers.openai-codex` config when safe, migrates legacy `openai-codex:*` auth profiles and `auth.order.openai-codex` entries to `openai:*`, moves Codex intent onto provider/model-scoped `agentRuntime.id: "codex"` entries, removes stale whole-agent/session runtime pins, and keeps repaired OpenAI agent refs on Codex auth routing instead of direct OpenAI API-key auth.
 - Doctor reports nonempty `auth.order.<provider>` lists whose referenced profiles are all gone while compatible stored credentials exist. `doctor --fix` deletes only those stale overrides, restoring automatic per-agent credential selection; explicit empty orders, partially live lists, and orders without a compatible stored credential stay unchanged. If an active SQLite auth store is unreadable or malformed, doctor explains why it skipped this repair. Restart a running Gateway before rechecking auth status if its config reload mode does not apply the write automatically.
-- Doctor cleans legacy plugin dependency staging state from older OpenClaw versions and relinks the host `openclaw` package for managed npm plugins that declare it as a peer dependency. It also repairs missing downloadable plugins referenced by config (`plugins.entries`, configured channels, configured provider/search settings, configured agent runtimes). During package updates, doctor skips package-manager plugin repair until the package swap completes; rerun `openclaw doctor --fix` afterward if a configured plugin still needs recovery. If a download fails, doctor reports the install error and preserves the configured plugin entry for the next repair attempt.
+- Doctor cleans legacy plugin dependency staging state from older PASO versions and relinks the host `openclaw` package for managed npm plugins that declare it as a peer dependency. It also repairs missing downloadable plugins referenced by config (`plugins.entries`, configured channels, configured provider/search settings, configured agent runtimes). During package updates, doctor skips package-manager plugin repair until the package swap completes; rerun `openclaw doctor --fix` afterward if a configured plugin still needs recovery. If a download fails, doctor reports the install error and preserves the configured plugin entry for the next repair attempt.
 - Doctor repairs stale plugin config by removing missing plugin ids from `plugins.allow`/`plugins.deny`/`plugins.entries`, plus matching dangling channel config, heartbeat targets, and channel model overrides, when plugin discovery is healthy.
 - Doctor quarantines invalid plugin config by disabling the affected `plugins.entries.<id>` entry and removing its invalid `config` payload. Gateway startup already skips only that bad plugin so other plugins and channels keep running.
 - Doctor removes the retired `plugins.entries.codex.config.codexDynamicToolsProfile`; the Codex app-server always keeps Codex-native workspace tools native.

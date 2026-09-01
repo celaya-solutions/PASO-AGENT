@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/diagnostics-otel",
   "version": "2026.8.1",
-  "description": "OpenClaw diagnostics OpenTelemetry exporter for metrics, traces, and logs.",
+  "description": "PASO diagnostics OpenTelemetry exporter for metrics, traces, and logs.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

@@ -281,7 +281,7 @@ final class StatusMenuRenderer: NSObject {
             title = String(localized: "Debug")
             symbol = "ladybug"
         case .about:
-            title = String(localized: "About OpenClaw")
+            title = String(localized: "About PASO")
             symbol = "info.circle"
         case .quit:
             title = String(localized: "Quit")

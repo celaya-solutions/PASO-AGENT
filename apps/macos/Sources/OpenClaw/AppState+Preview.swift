@@ -9,7 +9,7 @@ extension AppState {
         state.debugPaneEnabled = true
         state.nativeSettingsPanesEnabled = true
         state.swabbleEnabled = true
-        state.swabbleTriggerWords = ["Claude", "Computer", "Jarvis"]
+        state.swabbleTriggerWords = ["PASO", "Assistant", "Computer"]
         state.voiceWakeTriggerChime = .system(name: "Glass")
         state.voiceWakeSendChime = .system(name: "Ping")
         state.iconAnimationsEnabled = true
@@ -36,7 +36,7 @@ extension AppState {
         state.remoteUrl = "wss://gateway.example.ts.net"
         state.remoteToken = "example-token"
         state.remoteIdentity = "~/.ssh/id_ed25519"
-        state.remoteProjectRoot = "~/Projects/openclaw"
+        state.remoteProjectRoot = "~/Projects/paso-agent"
         state.remoteCliPath = ""
         return state
     }

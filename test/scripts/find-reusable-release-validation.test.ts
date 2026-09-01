@@ -319,7 +319,7 @@ function normalizedEvidence(options: {
       "203",
       1,
       1,
-      "OpenClaw Release Checks",
+      "PASO Release Checks",
       "openclaw-release-checks.yml",
       "-release-checks-independent",
     ],
@@ -328,7 +328,7 @@ function normalizedEvidence(options: {
       "207",
       1,
       2,
-      "OpenClaw Release Checks",
+      "PASO Release Checks",
       "openclaw-release-checks.yml",
       "-release-checks-candidate",
     ],
@@ -345,7 +345,7 @@ function normalizedEvidence(options: {
           ],
         ] as const)
       : []),
-    ["productPerformance", "204", 3, 2, "OpenClaw Performance", "openclaw-performance.yml", ""],
+    ["productPerformance", "204", 3, 2, "PASO Performance", "openclaw-performance.yml", ""],
   ] as const;
   const children = roles.map(
     ([role, childRunId, runAttempt, sourceParentAttempt, name, workflow, suffix]) =>

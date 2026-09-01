@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# OpenClaw CLI installer (non-interactive, no onboarding)
-# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- [--json] [--prefix <path>] [--version <ver>] [--node-version <ver>] [--onboard]
+# PASO CLI installer (non-interactive, no onboarding)
+# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh | bash -s -- [--json] [--prefix <path>] [--version <ver>] [--node-version <ver>] [--onboard]
 
 ensure_home_env() {
   if [[ -n "${HOME:-}" && "${HOME}" != "/" && -d "${HOME}" ]]; then
@@ -69,7 +69,7 @@ resolve_installer_path() {
 
 OPENCLAW_EFFECTIVE_HOME="$(resolve_home_path "${OPENCLAW_HOME:-$HOME}")"
 PREFIX="${OPENCLAW_PREFIX:-${HOME}/.openclaw}"
-OPENCLAW_VERSION="${OPENCLAW_VERSION:-latest}"
+OPENCLAW_VERSION="${OPENCLAW_VERSION:-}"
 REQUIRED_COMPATIBLE_VERSION=""
 DEFAULT_NODE_VERSION="24.19.0"
 ARMV7_DEFAULT_NODE_VERSION="22.23.2"
@@ -85,7 +85,7 @@ SUPPORTED_NODE_VERSION_LABEL="Node 22.22.3+, Node 24.15.0+, or Node 25.9.0+"
 NODE_RELEASE_VERSION_CORE=""
 APK_NODE_BIN_DIR="/usr/bin"
 NPM_LOGLEVEL="${OPENCLAW_NPM_LOGLEVEL:-error}"
-INSTALL_METHOD="${OPENCLAW_INSTALL_METHOD:-npm}"
+INSTALL_METHOD="${OPENCLAW_INSTALL_METHOD:-git}"
 GIT_DIR="${OPENCLAW_GIT_DIR:-${OPENCLAW_EFFECTIVE_HOME}/openclaw}"
 GIT_UPDATE="${OPENCLAW_GIT_UPDATE:-1}"
 JSON=0
@@ -93,6 +93,7 @@ RUN_ONBOARD=0
 SET_NPM_PREFIX=0
 PNPM_CMD=()
 GIT_REF_KIND=""
+PASO_GIT_REPO_URL="https://github.com/celaya-solutions/PASO-AGENT.git"
 FRESH_GIT_MIN_FREE_KIB=$((6 * 1024 * 1024))
 
 print_usage() {
@@ -100,11 +101,11 @@ print_usage() {
 Usage: install-cli.sh [options]
   --json                              Emit NDJSON events (no human output)
   --prefix <path>                     Install prefix (default: ~/.openclaw; use \$OPENCLAW_PREFIX to override)
-  --install-method, --method npm|git  Install via npm (default) or from a git checkout
+  --install-method, --method git|npm  Install from the PASO git checkout (default) or via npm compatibility mode
   --npm                               Shortcut for --install-method npm
   --git, --github                     Shortcut for --install-method git
   --git-dir, --dir <path>             Checkout directory (default: ~/openclaw, or \$OPENCLAW_HOME/openclaw)
-  --version <ver>                     OpenClaw version (default: latest)
+  --version <ver>                     Git ref or npm target (default: main for git, latest for npm)
   --compatible-with <ver>             Refuse a CLI that cannot modify config written by <ver>
   --node-version <ver>                Node version (default: 24.19.0; 22.23.2 on Linux ARMv7)
   --onboard                           Run "openclaw onboard" after install
@@ -116,7 +117,7 @@ Environment variables:
   OPENCLAW_INSTALL_METHOD=git|npm
   OPENCLAW_HOME=...
   OPENCLAW_PREFIX=...
-  OPENCLAW_VERSION=latest|next|<semver>
+  OPENCLAW_VERSION=main|latest|next|<semver>
   OPENCLAW_GIT_DIR=...
   OPENCLAW_GIT_UPDATE=0|1
 EOF
@@ -809,9 +810,14 @@ is_openclaw_source_package_install_spec() {
   normalized_value="${normalized_value#openclaw@}"
 
   [[ "$normalized_value" == "main" ]] && return 0
+  [[ "$normalized_value" =~ ^github:celaya-solutions/paso-agent($|[#/]) ]] && return 0
   [[ "$normalized_value" =~ ^github:openclaw/openclaw($|[#/]) ]] && return 0
 
   normalized_value="${normalized_value#git+}"
+  [[ "$normalized_value" =~ ^https?://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+  [[ "$normalized_value" =~ ^ssh://git@github\.com[:/]celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+  [[ "$normalized_value" =~ ^git://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+  [[ "$normalized_value" =~ ^git@github\.com:celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
   [[ "$normalized_value" =~ ^https?://github\.com/openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
   [[ "$normalized_value" =~ ^ssh://git@github\.com[:/]openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
   [[ "$normalized_value" =~ ^git://github\.com/openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
@@ -914,9 +920,9 @@ require_openclaw_version_compatible() {
   fi
   local status="$?"
   if [[ "$status" -eq 2 ]]; then
-    fail "Cannot compare resolved OpenClaw version '${candidate}' with config writer '${config_writer}'."
+    fail "Cannot compare resolved PASO version '${candidate}' with config writer '${config_writer}'."
   fi
-  fail "OpenClaw ${candidate} is older than config writer ${config_writer}. Choose a newer CLI channel or retry after the channel is updated."
+  fail "PASO ${candidate} is older than config writer ${config_writer}. Choose a newer CLI channel or retry after the channel is updated."
 }
 
 resolve_npm_openclaw_version() {
@@ -935,27 +941,126 @@ resolve_git_checkout_openclaw_version() {
   ' "$repo_dir"
 }
 
+resolve_latest_paso_git_tag() {
+  local repo_dir="$1"
+  local lane="$2"
+  git -C "$repo_dir" ls-remote --tags --refs origin 'refs/tags/v*' 2>/dev/null | awk -v lane="$lane" '
+    {
+      tag = $2
+      sub(/^refs\/tags\//, "", tag)
+      raw = substr(tag, 2)
+      count = split(raw, part, /[.-]/)
+      correction = 0
+      beta = 0
+      valid = 0
+      if (lane == "stable" && (count == 3 || (count == 4 && part[4] ~ /^[0-9]+$/))) {
+        correction = count == 4 ? part[4] + 0 : 0
+        valid = part[1] ~ /^[0-9]+$/ && part[2] ~ /^[0-9]+$/ && part[3] ~ /^[0-9]+$/
+      } else if (lane == "beta" && count == 5 && part[4] == "beta" && part[5] ~ /^[0-9]+$/) {
+        beta = part[5] + 0
+        valid = part[1] ~ /^[0-9]+$/ && part[2] ~ /^[0-9]+$/ && part[3] ~ /^[0-9]+$/
+      }
+      if (!valid) next
+      year = part[1] + 0
+      month = part[2] + 0
+      patch = part[3] + 0
+      suffix = lane == "stable" ? correction : beta
+      if (!found || year > best_year ||
+          (year == best_year && month > best_month) ||
+          (year == best_year && month == best_month && patch > best_patch) ||
+          (year == best_year && month == best_month && patch == best_patch && suffix > best_suffix)) {
+        found = 1
+        best = tag
+        best_year = year
+        best_month = month
+        best_patch = patch
+        best_suffix = suffix
+      }
+    }
+    END { if (found) print best }
+  '
+}
+
+is_paso_git_remote_url() {
+  local normalized
+  normalized="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+  normalized="${normalized%/}"
+  normalized="${normalized%.git}"
+  case "$normalized" in
+    https://github.com/celaya-solutions/paso-agent|http://github.com/celaya-solutions/paso-agent|git://github.com/celaya-solutions/paso-agent|ssh://git@github.com/celaya-solutions/paso-agent|git@github.com:celaya-solutions/paso-agent) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_legacy_openclaw_git_remote_url() {
+  local normalized
+  normalized="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+  normalized="${normalized%/}"
+  normalized="${normalized%.git}"
+  case "$normalized" in
+    https://github.com/openclaw/openclaw|http://github.com/openclaw/openclaw|git://github.com/openclaw/openclaw|ssh://git@github.com/openclaw/openclaw|git@github.com:openclaw/openclaw) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+ensure_paso_git_origin() {
+  local repo_dir="$1"
+  local repo_url="$2"
+  local origin_url=""
+  local upstream_url=""
+  local added_upstream=0
+  origin_url="$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"
+  if [[ -z "$origin_url" ]]; then
+    git -C "$repo_dir" remote add origin "$repo_url" || fail "Could not configure the PASO git origin."
+    return 0
+  fi
+  if is_paso_git_remote_url "$origin_url"; then
+    return 0
+  fi
+  if ! is_legacy_openclaw_git_remote_url "$origin_url"; then
+    fail "Git checkout origin is not the PASO repository: ${origin_url}. Use a different --git-dir or preserve your fork remote before changing origin to ${repo_url}."
+  fi
+
+  upstream_url="$(git -C "$repo_dir" remote get-url upstream 2>/dev/null || true)"
+  if [[ -n "$upstream_url" ]] && ! is_legacy_openclaw_git_remote_url "$upstream_url"; then
+    fail "Cannot preserve the legacy OpenClaw origin because the upstream remote already points elsewhere. Move that remote or choose a different --git-dir, then retry."
+  fi
+  if [[ -z "$upstream_url" ]]; then
+    git -C "$repo_dir" remote add upstream "$origin_url" || fail "Could not preserve the legacy framework remote."
+    added_upstream=1
+  fi
+  if ! git -C "$repo_dir" remote set-url origin "$repo_url"; then
+    if [[ "$added_upstream" -eq 1 ]]; then
+      git -C "$repo_dir" remote remove upstream >/dev/null 2>&1 || true
+    fi
+    fail "Could not migrate the git origin to PASO."
+  fi
+  is_paso_git_remote_url "$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)" ||
+    fail "Could not verify the PASO git origin after migration."
+}
+
 resolve_git_openclaw_ref() {
-  local requested="${OPENCLAW_VERSION:-latest}"
+  local repo_dir="${1:-$GIT_DIR}"
+  local requested="${OPENCLAW_VERSION:-main}"
   local resolved_version=""
 
   case "$requested" in
     ""|latest)
-      resolved_version="$("$(npm_bin)" view "openclaw" "dist-tags.${requested:-latest}" 2>/dev/null || true)"
+      resolved_version="$(resolve_latest_paso_git_tag "$repo_dir" stable)"
       if [[ -n "$resolved_version" ]]; then
-        echo "v${resolved_version}"
+        echo "$resolved_version"
         return 0
       fi
       echo "main"
       return 0
       ;;
     next|beta)
-      resolved_version="$("$(npm_bin)" view "openclaw" "dist-tags.${requested:-latest}" 2>/dev/null || true)"
+      resolved_version="$(resolve_latest_paso_git_tag "$repo_dir" beta)"
       if [[ -n "$resolved_version" ]]; then
-        echo "v${resolved_version}"
+        echo "$resolved_version"
         return 0
       fi
-      echo "$requested"
+      echo "main"
       return 0
       ;;
     main)
@@ -1378,7 +1483,7 @@ commit_wrapper_backup() {
 install_openclaw() {
   local requested="${OPENCLAW_VERSION:-latest}"
   if is_openclaw_source_package_install_spec "$requested"; then
-    fail "npm installs do not support OpenClaw GitHub source targets like '${requested}'. Use --install-method git --version main, latest, beta, an exact version, or a built .tgz package."
+    fail "npm installs do not support PASO GitHub source targets like '${requested}'. Use --install-method git --version main, latest, beta, an exact version, or a built .tgz package."
   fi
   local freshness_flag="--min-release-age=0"
   local min_release_age=""
@@ -1404,7 +1509,7 @@ install_openclaw() {
     # of dying silently through set -e with no error event.
     resolved_requested="$(resolve_npm_openclaw_version "$requested" || true)"
     if [[ -z "$resolved_requested" ]]; then
-      fail "Could not resolve OpenClaw ${requested} before compatibility checking."
+      fail "Could not resolve PASO ${requested} before compatibility checking."
     fi
     require_openclaw_version_compatible "$resolved_requested"
   fi
@@ -1417,7 +1522,7 @@ install_openclaw() {
   local npm_cwd="$PWD"
   lifecycle_arg="$(npm_lifecycle_allow_arg "$npm_cmd" "$install_spec" "$npm_cwd")" || return 1
   emit_json step name openclaw status start version "$requested"
-  log "Installing OpenClaw (${requested})..."
+  log "Installing PASO (${requested})..."
   if [[ "$SET_NPM_PREFIX" -eq 1 ]]; then
     fix_npm_prefix_if_needed
   fi
@@ -1432,8 +1537,8 @@ install_openclaw() {
   if ! env -u NPM_CONFIG_BEFORE -u npm_config_before -u NPM_CONFIG_MIN_RELEASE_AGE -u npm_config_min_release_age -u npm_config_min-release-age "$npm_cmd" "${npm_install_args[@]}" || [[ ! -f "$installed_entry" || -e "$lifecycle_pending" || -e "$legacy_install_guard" ]]; then
     log "npm install openclaw@${resolved_requested} did not produce a usable package; retrying once"
     if ! env -u NPM_CONFIG_BEFORE -u npm_config_before -u NPM_CONFIG_MIN_RELEASE_AGE -u npm_config_min_release_age -u npm_config_min-release-age "$npm_cmd" "${npm_install_args[@]}" || [[ ! -f "$installed_entry" || -e "$lifecycle_pending" || -e "$legacy_install_guard" ]]; then
-      emit_json error message "npm install did not produce a usable OpenClaw package"
-      log "ERROR: npm install did not produce a usable OpenClaw package"
+      emit_json error message "npm install did not produce a usable PASO package"
+      log "ERROR: npm install did not produce a usable PASO package"
       return 1
     fi
   fi
@@ -1562,7 +1667,7 @@ NODE
 
 install_openclaw_from_git() {
   local repo_dir="$1"
-  local repo_url="https://github.com/openclaw/openclaw.git"
+  local repo_url="$PASO_GIT_REPO_URL"
   local fresh_checkout=0
 
   if [[ -z "$repo_dir" ]]; then
@@ -1577,9 +1682,9 @@ install_openclaw_from_git() {
 
   emit_json step name openclaw status start method git repo "$repo_url"
   if [[ -d "$repo_dir/.git" ]]; then
-    log "Installing Openclaw from git checkout: ${repo_dir}"
+    log "Installing PASO from git checkout: ${repo_dir}"
   else
-    log "Installing Openclaw from GitHub (${repo_url})..."
+    log "Installing PASO from GitHub (${repo_url})..."
   fi
 
   emit_json step name git-tools status start
@@ -1609,8 +1714,10 @@ install_openclaw_from_git() {
     fresh_checkout=1
   fi
 
+  ensure_paso_git_origin "$repo_dir" "$repo_url"
+
   local git_ref
-  git_ref="$(resolve_git_openclaw_ref)"
+  git_ref="$(resolve_git_openclaw_ref "$repo_dir")"
   if [[ -z "$(git -C "$repo_dir" status --porcelain 2>/dev/null || true)" ]]; then
     log "Using git ref: ${git_ref}"
     if [[ "$fresh_checkout" -eq 0 ]]; then
@@ -1745,6 +1852,13 @@ refresh_gateway_service_if_loaded() {
 
 main() {
   parse_args "$@"
+  if [[ -z "$OPENCLAW_VERSION" ]]; then
+    if [[ "$INSTALL_METHOD" == "git" ]]; then
+      OPENCLAW_VERSION="main"
+    else
+      OPENCLAW_VERSION="latest"
+    fi
+  fi
   PREFIX="$(resolve_installer_path "$PREFIX")"
   GIT_DIR="$(resolve_installer_path "$GIT_DIR")"
 
@@ -1776,13 +1890,13 @@ main() {
   local installed_version
   if ! installed_version="$("${PREFIX}/bin/openclaw" --version 2>/dev/null | head -n 1 | tr -d '\r')" ||
     [[ -z "$installed_version" ]]; then
-    fail "Installed OpenClaw CLI did not return a version successfully from ${PREFIX}/bin/openclaw."
+    fail "Installed PASO CLI did not return a version successfully from ${PREFIX}/bin/openclaw."
   fi
   commit_wrapper_backup
 
   refresh_gateway_service_if_loaded
   emit_json "done" version "$installed_version"
-  log "OpenClaw installed (${installed_version})."
+  log "PASO installed (${installed_version})."
 
   if [[ "$RUN_ONBOARD" -eq 1 ]]; then
     "${PREFIX}/bin/openclaw" onboard

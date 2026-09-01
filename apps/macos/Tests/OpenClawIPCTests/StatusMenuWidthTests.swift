@@ -11,7 +11,7 @@ struct StatusMenuWidthTests {
     private static let workerDiagnostic = [
         "[openclaw] bootstrap failed: state database uses a newer schema version than this installed CLI",
         "[openclaw] run openclaw doctor to inspect the current installation and its persisted local state",
-        "[openclaw] check that the application and worker are using the same installed OpenClaw release",
+        "[openclaw] check that the application and worker are using the same installed PASO release",
     ].joined(separator: "\n")
 
     @Test func `long native and hosted content cannot expand the status menu`() throws {

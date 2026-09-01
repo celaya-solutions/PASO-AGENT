@@ -84,7 +84,7 @@ prepare_ai_candidate() {
 const manifest = require(process.argv[1]);
 process.exit(manifest.dependencies?.["@openclaw/ai"] ? 0 : 1);
 ' "$root_manifest"; then
-      echo "OpenClaw tarball declares @openclaw/ai but does not bundle it" >&2
+      echo "PASO tarball declares @openclaw/ai but does not bundle it" >&2
       exit 1
     fi
     echo "==> Candidate has no bundled @openclaw/ai dependency"
@@ -200,7 +200,7 @@ resolve_package_tgz() {
 
   PACK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/openclaw-bun-pack.XXXXXX")"
 
-  echo "==> Pack OpenClaw tarball"
+  echo "==> Pack PASO tarball"
   package_args=(
     --skip-build
     --output-dir "$PACK_DIR"
@@ -213,7 +213,7 @@ resolve_package_tgz() {
     node scripts/package-openclaw-for-docker.mjs "${package_args[@]}"
   )"
   if [ -z "$PACKAGE_TGZ" ] || [ ! -f "$PACKAGE_TGZ" ]; then
-    echo "missing packed OpenClaw tarball" >&2
+    echo "missing packed PASO tarball" >&2
     exit 1
   fi
 }
@@ -288,7 +288,7 @@ NODE
   GATEWAY_HEALTH_LOG="$SMOKE_DIR/gateway-health.json"
   GATEWAY_AGENT_LOG="$SMOKE_DIR/gateway-agent.log"
 
-  echo "==> Install packed OpenClaw with trusted lifecycle scripts on Bun $bun_version"
+  echo "==> Install packed PASO with trusted lifecycle scripts on Bun $bun_version"
   run_with_timeout "$COMMAND_TIMEOUT_MS" \
     "$bun_path" install -g --trust "$PACKAGE_TGZ" --no-progress >"$INSTALL_LOG" 2>&1
 
@@ -307,7 +307,7 @@ NODE
   package_root="$(dirname "$openclaw_entry")"
   export OPENCLAW_E2E_REDACTOR_MODULE="$package_root/dist/plugin-sdk/logging-core.js"
 
-  echo "==> Verify OpenClaw lifecycle scripts were trusted and executed"
+  echo "==> Verify PASO lifecycle scripts were trusted and executed"
   run_with_timeout "$COMMAND_TIMEOUT_MS" "$bun_path" pm -g untrusted >"$UNTRUSTED_LOG" 2>&1
   node scripts/e2e/lib/bun-global-install/assertions.mjs \
     assert-openclaw-trusted \
@@ -315,12 +315,12 @@ NODE
     "$BUN_INSTALL/install/global/package.json" \
     "$UNTRUSTED_LOG"
 
-  echo "==> OpenClaw version through Bun global install"
+  echo "==> PASO version through Bun global install"
   local openclaw_version
   openclaw_version="$(run_with_timeout "$COMMAND_TIMEOUT_MS" "$openclaw_bin" --version)"
   printf "%s\n" "$openclaw_version"
 
-  echo "==> OpenClaw help through Bun global install"
+  echo "==> PASO help through Bun global install"
   run_with_timeout "$COMMAND_TIMEOUT_MS" "$openclaw_bin" --help >/dev/null
 
   run_bun_cli() {
@@ -334,7 +334,7 @@ NODE
   run_with_timeout "$COMMAND_TIMEOUT_MS" "$bun_path" run --bun openclaw --version
   popd >/dev/null
 
-  echo "==> OpenClaw image providers under Bun"
+  echo "==> PASO image providers under Bun"
   local providers_json
   providers_json="$(run_bun_cli infer image providers --json)"
   OPENCLAW_IMAGE_PROVIDERS_JSON="$providers_json" node scripts/e2e/lib/bun-global-install/assertions.mjs assert-image-providers

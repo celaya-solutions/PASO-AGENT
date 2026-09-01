@@ -9,7 +9,7 @@ export const agentChip = {
   help: "Help",
   getHelp: "Get help",
   getApps: "Get the apps",
-  discord: "Discord community",
+  discord: "Email Celaya Solutions Research",
   viewChangelog: "View changelog",
   agentSettings: "Agent settings",
 };

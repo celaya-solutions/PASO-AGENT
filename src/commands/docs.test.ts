@@ -89,7 +89,7 @@ describe("docsSearchCommand", () => {
       results: [
         {
           title: "CLI reference",
-          link: "https://docs.openclaw.ai/cli",
+          link: "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/cli/index.md",
           snippet: "Command-line usage",
         },
       ],
@@ -104,7 +104,7 @@ describe("docsSearchCommand", () => {
     expect(fetchMock).not.toHaveBeenCalled();
     expect(JSON.parse(String(runtime.log.mock.calls[0]?.[0]))).toEqual({
       query: null,
-      url: "https://docs.openclaw.ai/",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       results: [],
     });
   });
@@ -149,7 +149,9 @@ describe("docsSearchCommand", () => {
     const body = new Uint8Array([
       ...new TextEncoder().encode('{"results":[{"title":"Plugin allow'),
       0xff,
-      ...new TextEncoder().encode('list","link":"https://docs.openclaw.ai/plugins/allowlist"}]}'),
+      ...new TextEncoder().encode(
+        'list","link":"https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"}]}',
+      ),
     ]);
     fetchMock.mockResolvedValueOnce(
       new Response(body, { headers: { "Content-Type": "application/json" } }),

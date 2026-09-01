@@ -2,7 +2,7 @@
 summary: "DeepSeek setup (auth + model selection)"
 title: "DeepSeek"
 read_when:
-  - You want to use DeepSeek with OpenClaw
+  - You want to use DeepSeek with PASO
   - You need the API key env var or CLI auth choice
 ---
 
@@ -88,7 +88,7 @@ DeepSeek retired `deepseek-chat` and `deepseek-reasoner` on July 24, 2026 at
 to `deepseek/deepseek-v4-flash` or `deepseek/deepseek-v4-pro`.
 </Warning>
 
-OpenClaw's local costs are estimates. The vision model's bundled estimate uses
+PASO's local costs are estimates. The vision model's bundled estimate uses
 DeepSeek's peak rates; its published off-peak rates are half those amounts.
 DeepSeek can change rates; its
 [Models & Pricing](https://api-docs.deepseek.com/quick_start/pricing/) page is
@@ -100,7 +100,7 @@ PNG, JPEG, GIF, and WebP images through the same API and API key. See
 [DeepSeek vision](https://api-docs.deepseek.com/guides/vision) for image limits.
 
 <Tip>
-V4 models support DeepSeek's `thinking` control. OpenClaw also replays
+V4 models support DeepSeek's `thinking` control. PASO also replays
 DeepSeek `reasoning_content` on follow-up turns so thinking sessions with tool
 calls can continue.
 Use `/think xhigh` or `/think max` with DeepSeek V4 models to request DeepSeek's
@@ -111,13 +111,13 @@ maximum `reasoning_effort`; both map to `"max"`.
 
 DeepSeek V4 thinking sessions require replayed assistant messages from a
 thinking-enabled turn to include `reasoning_content` on follow-up requests.
-OpenClaw's DeepSeek plugin backfills that field automatically, so normal
+PASO's DeepSeek plugin backfills that field automatically, so normal
 multi-turn tool use works on `deepseek/deepseek-v4-flash`,
 `deepseek/deepseek-v4-flash-vision-exp`, and `deepseek/deepseek-v4-pro` even when history came from another
 OpenAI-compatible provider (no native `reasoning_content`) or from a plain
 assistant message. No `/new` required after switching providers mid-session.
 
-When thinking is disabled (including the UI **None** selection), OpenClaw
+When thinking is disabled (including the UI **None** selection), PASO
 sends `thinking: { type: "disabled" }` and strips replayed `reasoning_content`
 from outgoing history, keeping the session on the non-thinking DeepSeek path.
 

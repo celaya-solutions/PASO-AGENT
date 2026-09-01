@@ -155,10 +155,10 @@ describe("Codex app-server dynamic tool schema boundary contract", () => {
     expect(startPayload?.approvalPolicy).toBe("never");
     expect(startPayload?.approvalsReviewer).toBe("user");
     expect(startPayload?.sandbox).toBe("workspace-write");
-    expect(startPayload?.serviceName).toBe("OpenClaw");
+    expect(startPayload?.serviceName).toBe("PASO");
     expect(startPayload?.experimentalRawEvents).toBe(true);
     expect(typeof startPayload?.developerInstructions).toBe("string");
-    expect(startPayload?.developerInstructions).toContain("OpenClaw");
+    expect(startPayload?.developerInstructions).toContain("PASO");
   });
 
   it("accepts Codex app-server priority service tier responses", async () => {

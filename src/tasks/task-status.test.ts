@@ -99,7 +99,7 @@ describe("task status formatting", () => {
     const task = makeTask({
       status: "failed",
       error: [
-        "OpenClaw runtime context (internal):",
+        "PASO runtime context (internal):",
         "This context is runtime-generated, not user-authored. Keep internal details private.",
         "",
         "[Internal task completion event]",

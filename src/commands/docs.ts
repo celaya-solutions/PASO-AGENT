@@ -1,11 +1,18 @@
-import { formatDocsLink } from "../../packages/terminal-core/src/links.js";
+import {
+  formatDocsLink,
+  PASO_DOCS_REPO_ROOT,
+  resolvePasoDocsUrl,
+} from "../../packages/terminal-core/src/links.js";
 import { isRich, theme } from "../../packages/terminal-core/src/theme.js";
 import { formatCliCommand } from "../cli/command-format.js";
 // Implements docs link/search output for `openclaw docs`.
 import { readResponseWithLimit } from "../infra/http-body.js";
 import { type RuntimeEnv, writeRuntimeJson } from "../runtime.js";
 
+// PASO still uses the framework's search service as a compatibility backend,
+// but every result shown to users is rewritten to this fork's documentation.
 const SEARCH_API = "https://docs.openclaw.ai/api/search";
+const PASO_DOCS_ROOT = PASO_DOCS_REPO_ROOT;
 const SEARCH_TIMEOUT_MS = 30_000;
 const DOCS_SEARCH_RESPONSE_MAX_BYTES = 8 * 1024 * 1024;
 
@@ -40,6 +47,18 @@ function buildMarkdown(query: string, results: DocResult[]): string {
 
 function formatLinkLabel(link: string): string {
   return link.replace(/^https?:\/\//i, "");
+}
+
+function normalizeDocsResultLink(link: string): string {
+  try {
+    const url = new URL(link);
+    if (url.hostname.toLowerCase() !== "docs.openclaw.ai") {
+      return link;
+    }
+    return resolvePasoDocsUrl(`${url.pathname}${url.search}${url.hash}`);
+  } catch {
+    return link;
+  }
 }
 
 function renderRichResults(query: string, results: DocResult[], runtime: RuntimeEnv) {
@@ -110,7 +129,7 @@ function parseDocsSearchResults(raw: unknown): DocResult[] {
     }
     results.push({
       title: entry.title,
-      link: entry.link,
+      link: normalizeDocsResultLink(entry.link),
       snippet:
         typeof entry.snippet === "string" && entry.snippet.trim() ? entry.snippet : undefined,
     });
@@ -129,17 +148,17 @@ export async function docsSearchCommand(
     if (options.json) {
       writeRuntimeJson(runtime, {
         query: null,
-        url: "https://docs.openclaw.ai/",
+        url: PASO_DOCS_ROOT,
         results: [],
       });
       return;
     }
-    const docs = formatDocsLink("/", "docs.openclaw.ai");
+    const docs = formatDocsLink("/", "PASO docs");
     if (isRich()) {
       runtime.log(`${theme.muted("Docs:")} ${docs}`);
       runtime.log(`${theme.muted("Search:")} ${formatCliCommand('openclaw docs "your query"')}`);
     } else {
-      runtime.log("Docs: https://docs.openclaw.ai/");
+      runtime.log(`Docs: ${PASO_DOCS_ROOT}`);
       runtime.log(`Search: ${formatCliCommand('openclaw docs "your query"')}`);
     }
     return;

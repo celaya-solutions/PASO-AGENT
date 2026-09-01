@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw browser control API, CLI reference, and scripting actions"
+summary: "PASO browser control API, CLI reference, and scripting actions"
 read_when:
   - Scripting or debugging the agent browser via the local control API
   - Looking for the `openclaw browser` CLI reference
@@ -42,7 +42,7 @@ prefer the single-purpose tab routes above when scripting directly.
 All endpoints accept `?profile=<name>`. `POST /start?headless=true` requests a
 one-shot headless launch for local managed profiles without changing persisted
 browser config; attach-only, remote CDP, and existing-session profiles reject
-that override because OpenClaw does not launch those browser processes.
+that override because PASO does not launch those browser processes.
 
 For tab endpoints, `targetId` is the compatibility field name. Prefer passing
 `suggestedTargetId` from `GET /tabs` or `POST /tabs/open`; labels and `tabId`
@@ -65,7 +65,7 @@ When URL validation fails during tab listing, the tab keeps its identity and
 title but returns `url: ""` and `urlUnavailableReason`:
 
 - `navigation_blocked`: navigation rules rejected the address.
-- `navigation_check_failed`: OpenClaw could not validate the address, for example
+- `navigation_check_failed`: PASO could not validate the address, for example
   because DNS lookup failed. Refresh to check again.
 
 An empty URL alone does not indicate a policy denial. Navigation-policy errors
@@ -137,7 +137,7 @@ not supported for element screenshots`.
 
 If you see `Playwright is not available in this gateway build`, the packaged
 Gateway is missing the core browser runtime dependency. Reinstall or update
-OpenClaw, then restart the gateway. For Docker, also install the Chromium
+PASO, then restart the gateway. For Docker, also install the Chromium
 browser binaries as shown below.
 
 #### Docker Playwright install
@@ -288,17 +288,17 @@ Notes:
   download URL, suggested filename, and guarded local path. Explicit download
   interception is available for managed Playwright profiles; existing-session
   profiles return an unsupported-operation error.
-- Prefer atomic chooser uploads: pass the trigger `--ref` with the upload so OpenClaw arms and clicks in one request. Paths-only `upload` remains supported when a later trigger is intentional. Use `--input-ref` or `--element` to set a file input directly. `dialog` is an arming call; run it before the click/press that triggers the dialog. If an action opens a modal, the action response includes `blockedByDialog` and `browserState.dialogs.pending`; pass that `dialogId` to respond directly. Dialogs handled outside OpenClaw appear under `browserState.dialogs.recent`.
+- Prefer atomic chooser uploads: pass the trigger `--ref` with the upload so PASO arms and clicks in one request. Paths-only `upload` remains supported when a later trigger is intentional. Use `--input-ref` or `--element` to set a file input directly. `dialog` is an arming call; run it before the click/press that triggers the dialog. If an action opens a modal, the action response includes `blockedByDialog` and `browserState.dialogs.pending`; pass that `dialogId` to respond directly. Dialogs handled outside PASO appear under `browserState.dialogs.recent`.
 - `click`/`type`/etc require a `ref` from `snapshot` (for example, Playwright ref `f1e12`, role ref `e12`, or actionable ARIA ref `ax12`). Copy the returned ref unchanged, including any frame prefix. CSS selectors are intentionally not supported for actions. Use `click-coords` when the visible viewport position is the only reliable target.
-- Download and trace paths are constrained to OpenClaw temp roots: `/tmp/openclaw{,/downloads}` (fallback: `${os.tmpdir()}/openclaw/...`).
-- `upload` accepts files from the OpenClaw temp uploads root and
-  OpenClaw-managed inbound media. Managed inbound media can be referenced as
+- Download and trace paths are constrained to PASO temp roots: `/tmp/openclaw{,/downloads}` (fallback: `${os.tmpdir()}/openclaw/...`).
+- `upload` accepts files from the PASO temp uploads root and
+  PASO-managed inbound media. Managed inbound media can be referenced as
   `media://inbound/<id>`, sandbox-relative `media/inbound/<id>`, or a resolved
   path inside the managed inbound media directory. Nested media refs,
   traversal, symlinks, hardlinks, and arbitrary local paths are still rejected.
 - `upload` can also set file inputs directly via `--input-ref` or `--element`.
 
-Stable tab ids and labels survive Chromium raw-target replacement when OpenClaw
+Stable tab ids and labels survive Chromium raw-target replacement when PASO
 can prove the replacement tab, such as a unique old/new pair for the same URL or
 a single old tab becoming a single new tab after form submission. Ambiguous
 duplicate-URL replacements receive fresh handles. Raw target ids are still
@@ -307,7 +307,7 @@ volatile; prefer `suggestedTargetId` from `tabs` in scripts.
 Snapshot flags at a glance:
 
 - `--format ai` (default with Playwright): AI snapshot with native Playwright refs, including frame-qualified refs such as `f1e12`.
-- `--format aria`: accessibility tree with `axN` refs. When Playwright is available, OpenClaw binds refs with backend DOM ids to the live page so follow-up actions can use them; otherwise treat the output as inspection-only.
+- `--format aria`: accessibility tree with `axN` refs. When Playwright is available, PASO binds refs with backend DOM ids to the live page so follow-up actions can use them; otherwise treat the output as inspection-only.
 - `--efficient` (or `--mode efficient`): compact role snapshot preset. Set `browser.snapshotDefaults.mode: "efficient"` to make this the default (see [Gateway configuration](/gateway/configuration-reference#browser)).
 - `--interactive`, `--compact`, `--depth`, `--selector` force a role snapshot with `ref=e12` refs. `--frame "<iframe>"` scopes role snapshots to an iframe.
 - A selector-scoped snapshot is a point-in-time observation: if no element matches when the snapshot is requested, it returns an empty snapshot immediately instead of waiting for the snapshot timeout. Use `openclaw browser wait "<selector>"` when the page is expected to add the element later.
@@ -324,7 +324,7 @@ Snapshot flags at a glance:
 
 ## Snapshots and refs
 
-OpenClaw supports three "snapshot" styles:
+PASO supports three "snapshot" styles:
 
 - **AI snapshot (native refs)**: `openclaw browser snapshot` (default; `--format ai`)
   - Output: a text snapshot with refs such as `f1e12` and matching `refs` metadata.

@@ -9,7 +9,7 @@ title: "Secrets management"
 sidebarTitle: "Secrets management"
 ---
 
-OpenClaw supports additive SecretRefs so supported credentials do not need to live as plaintext in configuration.
+PASO supports additive SecretRefs so supported credentials do not need to live as plaintext in configuration.
 
 <Note>
 Plaintext still works. SecretRefs are opt-in per credential.
@@ -35,14 +35,14 @@ Gateway ingress protection, structurally invalid config or resolved values, poli
 
 ## Egress-time injection (sentinels)
 
-For model-provider credentials backed by SecretRefs, OpenClaw mints an opaque, process-local sentinel during model-auth resolution. Auth storage, stream options, SDK configuration, logs, error objects, and most runtime introspection therefore see a value such as `oc-sent-v2.<authenticated-ciphertext>.end`, not the provider credential. The guarded model fetch and managed local-provider health probes replace known sentinels in URL and header values immediately before each request leaves the process.
+For model-provider credentials backed by SecretRefs, PASO mints an opaque, process-local sentinel during model-auth resolution. Auth storage, stream options, SDK configuration, logs, error objects, and most runtime introspection therefore see a value such as `oc-sent-v2.<authenticated-ciphertext>.end`, not the provider credential. The guarded model fetch and managed local-provider health probes replace known sentinels in URL and header values immediately before each request leaves the process.
 
-Unknown sentinel-shaped values fail closed before network activity. OpenClaw refuses to send the request rather than forwarding an unresolved sentinel to a provider. Resolved secret values are also registered for exact-value log redaction as a defense in depth measure.
+Unknown sentinel-shaped values fail closed before network activity. PASO refuses to send the request rather than forwarding an unresolved sentinel to a provider. Resolved secret values are also registered for exact-value log redaction as a defense in depth measure.
 
 Provider adapters use the latest injection point their SDK supports:
 
-- SDKs with a custom fetch option receive OpenClaw's guarded fetch, so the SDK retains the sentinel.
-- SDKs without a custom fetch option unwrap the sentinel immediately before client construction. Plugin-owned provider streams and agent harnesses unwrap at the final core-owned handoff because those transports do not share OpenClaw's guarded fetch.
+- SDKs with a custom fetch option receive PASO's guarded fetch, so the SDK retains the sentinel.
+- SDKs without a custom fetch option unwrap the sentinel immediately before client construction. Plugin-owned provider streams and agent harnesses unwrap at the final core-owned handoff because those transports do not share PASO's guarded fetch.
 
 Sentinels reduce plaintext exposure across the model-call chain, but they are not process isolation. The real value still exists in same-process memory and appears at the final adapter boundary. Plain environment credentials that are not configured through SecretRefs remain plaintext and are outside this mechanism.
 
@@ -227,7 +227,7 @@ Read-only inspection recognizes valid `store` bindings without opening the datab
 - `mode: "json"` (default) expects a JSON object payload and resolves `id` as a JSON pointer.
 - `mode: "singleValue"` expects ref id `"value"` and returns the raw file contents (trailing newline stripped).
 - Path must pass ownership/permission checks; `timeoutMs` (default 5000) and `maxBytes` (default 1 MiB) bound the read.
-- Windows fail-closed: if ACL verification is unavailable for the path, resolution fails. Move the secret to a path whose ACLs OpenClaw can verify; there is no provider-level bypass.
+- Windows fail-closed: if ACL verification is unavailable for the path, resolution fails. Move the secret to a path whose ACLs PASO can verify; there is no provider-level bypass.
 
 </Accordion>
 
@@ -237,8 +237,8 @@ Read-only inspection recognizes valid `store` bindings without opening the datab
 - [`config validate`](/cli/config#config-validate) checks every manual exec command path without executing providers. Config writes and dry runs check only changed or newly referenced providers, so an unrelated inactive provider does not block repairs. These are path trust checks, not proof that a provider can execute or return a secret.
 - Supports `timeoutMs` (default 5000), `noOutputTimeoutMs` (default equals `timeoutMs`), `maxOutputBytes` (default 1 MiB), `env`/`passEnv` allowlist, and `trustedDirs`.
 - `jsonOnly` defaults to `true`. With `jsonOnly: false` and a single requested id, plain non-JSON stdout is accepted as that id's value.
-- Windows fail-closed: if ACL verification is unavailable for the command path, resolution fails. Use a command path whose ACLs OpenClaw can verify; there is no provider-level bypass.
-- Plugin-managed exec providers can use `pluginIntegration` instead of a copied `command`/`args`. OpenClaw resolves the current command details from the installed plugin manifest during startup/reload; if the plugin is disabled, removed, untrusted, or no longer declares the integration, active SecretRefs on that provider fail closed.
+- Windows fail-closed: if ACL verification is unavailable for the command path, resolution fails. Use a command path whose ACLs PASO can verify; there is no provider-level bypass.
+- Plugin-managed exec providers can use `pluginIntegration` instead of a copied `command`/`args`. PASO resolves the current command details from the installed plugin manifest during startup/reload; if the plugin is disabled, removed, untrusted, or no longer declares the integration, active SecretRefs on that provider fail closed.
 
 Request payload (stdin):
 
@@ -262,7 +262,7 @@ Optional per-id errors:
 }
 ```
 
-`code` is an optional machine-readable diagnostic. OpenClaw displays the recognized
+`code` is an optional machine-readable diagnostic. PASO displays the recognized
 codes `NOT_FOUND` and `AMBIGUOUS_DUPLICATE_KEY` with the provider and ref id. Other
 codes and free-form fields such as `message` are accepted for protocol-v1 compatibility
 but are not displayed because resolver output can contain credential material.
@@ -270,7 +270,7 @@ but are not displayed because resolver output can contain credential material.
 </Accordion>
 
 <Accordion title="Store provider">
-- Reads values from OpenClaw's shared state SQLite database.
+- Reads values from PASO's shared state SQLite database.
 - The provider has no connection settings. `secrets.defaults.store` selects its default alias.
 - Only team scope is resolved in this release. Identity scope is reserved for a later release.
 
@@ -283,9 +283,9 @@ The shared secret store is a Gateway-wide, team-scoped place for secrets and env
 Entries have two explicit access modes. Both retain the existing `secret` and `env` storage kinds, and either kind can back a SecretRef:
 
 - **Protected secret** (`kind: "secret"`) values are write-only after saving. Gateway list results, the Control UI, and CLI list/get output never include them; there is no reveal RPC. A protected value is inert until a supported config field references it with a SecretRef or an enabled, destination-bound [secret egress proxy](#secret-egress-proxy) uses it.
-- **Agent-readable environment** (`kind: "env"`) values remain visible to administrators in the Control UI and can be returned by `store list` and `store get`. OpenClaw adds them as plaintext to Gateway-hosted commands run through its exec tool, after inherited process values and before explicit per-call env. The agent can print, transmit, or persist these values. Protected host keys are ignored with a visible warning.
+- **Agent-readable environment** (`kind: "env"`) values remain visible to administrators in the Control UI and can be returned by `store list` and `store get`. PASO adds them as plaintext to Gateway-hosted commands run through its exec tool, after inherited process values and before explicit per-call env. The agent can print, transmit, or persist these values. Protected host keys are ignored with a visible warning.
 
-Agent-readable environment values do not reach Codex native shell, the Codex sandbox exec-server, ACP children such as Claude Code, OpenClaw sandbox exec, or remote `node` exec. Those paths assemble a different child environment. In eligible Codex app-server turns, use `gateway_exec` to deliberately re-enter the OpenClaw Gateway execution path; `gateway_process` provides the existing per-session background follow-up. Native Codex shell remains preferred for ordinary local work. Gateway-hosted exec captures the store snapshot on its first execution in a run. Later additions, replacements, deletions, and host edits require a new run; storing a credential does not refresh an already-captured exec snapshot.
+Agent-readable environment values do not reach Codex native shell, the Codex sandbox exec-server, ACP children such as Claude Code, PASO sandbox exec, or remote `node` exec. Those paths assemble a different child environment. In eligible Codex app-server turns, use `gateway_exec` to deliberately re-enter the PASO Gateway execution path; `gateway_process` provides the existing per-session background follow-up. Native Codex shell remains preferred for ordinary local work. Gateway-hosted exec captures the store snapshot on its first execution in a run. Later additions, replacements, deletions, and host edits require a new run; storing a credential does not refresh an already-captured exec snapshot.
 
 By default, `secret` entries are never injected into subprocess environments. When the default-off [secret egress proxy](#secret-egress-proxy) is enabled, Gateway-hosted exec commands receive process-local sentinels instead of plaintext values.
 
@@ -317,7 +317,7 @@ Store values are not encrypted at rest. They are stored unencrypted in the share
 
 ## Secret egress proxy
 
-The secret egress proxy lets Gateway-hosted agent subprocesses use shared-store `secret` entries without receiving their plaintext. OpenClaw puts the existing authenticated sentinel in the subprocess environment, then a Gateway-owned loopback proxy replaces it in request URLs, headers, and streamed bodies immediately before egress.
+The secret egress proxy lets Gateway-hosted agent subprocesses use shared-store `secret` entries without receiving their plaintext. PASO puts the existing authenticated sentinel in the subprocess environment, then a Gateway-owned loopback proxy replaces it in request URLs, headers, and streamed bodies immediately before egress.
 
 Each secret must also name the exact HTTPS hosts where substitution is allowed. Hostnames are stored lowercase in ASCII/punycode form and matched exactly; wildcards, suffix matching, and ports are not supported. A secret with no allowed hosts is never substituted. Bind a host without replacing the stored value:
 
@@ -363,7 +363,7 @@ Equivalent config:
 }
 ```
 
-When enabled, OpenClaw adds these values to Gateway-hosted exec environments:
+When enabled, PASO adds these values to Gateway-hosted exec environments:
 
 - `HTTPS_PROXY` and `HTTP_PROXY`, with per-run credentials embedded in the loopback proxy URL
 - `NODE_USE_ENV_PROXY=1`, which makes supported Node.js global `fetch` clients honor `HTTP_PROXY` and `HTTPS_PROXY` without using `NODE_OPTIONS`
@@ -380,7 +380,7 @@ The run snapshot registers each sentinel together with its secret name and allow
 Destination binding does not make an allowed host trustworthy. A bound service that reflects request credentials can still return the plaintext to the agent. DNS-level compromise can redirect a permitted hostname because policy is hostname-based, not an IP pin. Non-HTTPS requests are refused rather than protected, and HTTPS interception still has the protocol limits below. Use external network policy or process isolation when those threats are in scope.
 </Warning>
 
-The CA is generated once per Gateway start under the state directory. Its directory is mode `0700`, its private keys are mode `0600`, it is removed during Gateway shutdown, and OpenClaw never installs it in a system trust store. Requests fail closed when a sentinel cannot be authenticated or resolved; the proxy never forwards or silently strips an unresolved sentinel. Request bodies are scanned as a stream with a bounded carry window, so substitution also works when a sentinel crosses chunk boundaries or appears in a large upload.
+The CA is generated once per Gateway start under the state directory. Its directory is mode `0700`, its private keys are mode `0600`, it is removed during Gateway shutdown, and PASO never installs it in a system trust store. Requests fail closed when a sentinel cannot be authenticated or resolved; the proxy never forwards or silently strips an unresolved sentinel. Request bodies are scanned as a stream with a bounded carry window, so substitution also works when a sentinel crosses chunk boundaries or appears in a large upload.
 
 `bypassHosts` contains exact hostnames that must remain end-to-end TLS for certificate-pinned clients. Those hosts use an authenticated blind CONNECT tunnel. No substitution is possible inside the tunnel; a sentinel sent there is safe by construction because it is authenticated ciphertext rather than a credential, so the vendor sees an invalid credential and rejects it.
 
@@ -724,7 +724,7 @@ The core `ssh` sandbox backend also supports SecretRefs for SSH auth material:
 
 Runtime behavior:
 
-- OpenClaw resolves these refs during sandbox activation, not lazily on each SSH call.
+- PASO resolves these refs during sandbox activation, not lazily on each SSH call.
 - Resolved values are written to a temp directory with restrictive file permissions (`0o600`) and used in the generated SSH config.
 - If the effective sandbox backend is not `ssh` (or sandbox mode is `off`), these refs stay inactive and do not block startup.
 
@@ -773,7 +773,7 @@ Activation contract:
 
 ## Degraded and recovered signals
 
-When reload-time activation fails after a healthy state, OpenClaw enters degraded secrets state, emitting one-shot system events and log codes:
+When reload-time activation fails after a healthy state, PASO enters degraded secrets state, emitting one-shot system events and log codes:
 
 - `SECRETS_RELOADER_DEGRADED`
 - `SECRETS_RELOADER_RECOVERED`
@@ -903,7 +903,7 @@ If you save a plan instead of applying during `configure`, apply that saved plan
 ## One-way safety policy
 
 <Warning>
-OpenClaw intentionally does not write rollback backups containing historical plaintext secret values.
+PASO intentionally does not write rollback backups containing historical plaintext secret values.
 </Warning>
 
 Safety model:

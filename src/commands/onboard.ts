@@ -504,7 +504,7 @@ function validateResetNonInteractiveGateway(params: {
  * them with Boolean(). False-valued explicit choices preserve undefined when
  * omitted, so daemon, Tailscale-reset, and custom-model input overrides are
  * special-cased. `--modern` never reaches this dispatch; the command layer
- * routes it through the inference-gated OpenClaw.
+ * routes it through the inference-gated PASO.
  */
 const GUIDED_SAFE_ONBOARD_KEYS = new Set([
   "workspace",
@@ -634,7 +634,7 @@ export async function setupWizardCommand(
       runtime,
       [
         "Non-interactive setup requires explicit risk acknowledgement.",
-        "Read: https://docs.openclaw.ai/security",
+        "Read: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         `Re-run with: ${formatCliCommand("openclaw onboard --non-interactive --accept-risk ...")}`,
       ].join("\n"),
     );
@@ -651,10 +651,10 @@ export async function setupWizardCommand(
   if (process.platform === "win32") {
     runtime.log(
       [
-        "Windows detected - OpenClaw runs great on WSL2!",
+        "Windows detected - PASO runs great on WSL2!",
         "Native Windows might be trickier.",
         "Quick setup: wsl --install (one command, one reboot)",
-        "Guide: https://docs.openclaw.ai/windows",
+        "Guide: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
     );
   }

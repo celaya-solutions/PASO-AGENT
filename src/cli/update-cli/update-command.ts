@@ -284,9 +284,11 @@ async function updateCommandInternal(
   const switchToGit =
     installKind !== "git" &&
     (requestedChannel === "dev" || (channel === "dev" && explicitTag === null));
-  const switchToPackage =
-    requestedChannel !== null && requestedChannel !== "dev" && installKind === "git";
-  const updateInstallKind = switchToGit ? "git" : switchToPackage ? "package" : installKind;
+  // PASO is distributed from this fork's Git repository. A source install must
+  // stay on that repository for stable and beta channels; switching it to the
+  // public `openclaw` npm package would replace PASO with the upstream product.
+  const switchToPackage = false;
+  const updateInstallKind = switchToGit ? "git" : installKind;
   if (channel === "dev" && requestedChannel !== "dev") {
     const resolvedDevTarget = readDevUpdateTargetOrExit();
     if (!resolvedDevTarget.ok) {
@@ -343,7 +345,7 @@ async function updateCommandInternal(
         );
         defaultRuntime.log(
           theme.warn(
-            `Shell OpenClaw root differs from the managed gateway service root: ${managedServiceRootRedirect.previousRoot}`,
+            `Shell PASO root differs from the managed gateway service root: ${managedServiceRootRedirect.previousRoot}`,
           ),
         );
         defaultRuntime.log(
@@ -624,7 +626,7 @@ async function updateCommandInternal(
 
   const showProgress = !opts.json;
   if (!opts.json) {
-    defaultRuntime.log(theme.heading("Updating OpenClaw..."));
+    defaultRuntime.log(theme.heading("Updating PASO..."));
     defaultRuntime.log("");
   }
 

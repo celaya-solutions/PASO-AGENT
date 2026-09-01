@@ -1,5 +1,5 @@
 #!/bin/bash
-# Setup OpenClaw Auth Management System
+# Setup PASO Auth Management System
 # Run this once to set up:
 # 1. Long-lived Claude Code token
 # 2. Auth monitoring with notifications
@@ -9,7 +9,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "=== OpenClaw Auth System Setup ==="
+echo "=== PASO Auth System Setup ==="
 echo ""
 
 # Step 1: Check current auth status
@@ -56,7 +56,7 @@ read -r NTFY_TOPIC
 
 # Phone notification
 echo ""
-echo "  OpenClaw message: Send warning via OpenClaw itself"
+echo "  PASO message: Send warning via PASO itself"
 echo "Enter your phone number for alerts (or leave blank to skip):"
 read -r PHONE_NUMBER
 
@@ -158,17 +158,17 @@ echo "2. Create ~/.shortcuts/ directory in Termux:"
 echo "   mkdir -p ~/.shortcuts"
 echo ""
 echo "3. Copy the widget scripts:"
-echo "   scp $SCRIPT_DIR/termux-quick-auth.sh phone:~/.shortcuts/ClawdAuth"
-echo "   scp $SCRIPT_DIR/termux-auth-widget.sh phone:~/.shortcuts/ClawdAuth-Full"
+echo "   scp $SCRIPT_DIR/termux-quick-auth.sh phone:~/.shortcuts/PASOAuth"
+echo "   scp $SCRIPT_DIR/termux-auth-widget.sh phone:~/.shortcuts/PASOAuth-Full"
 echo ""
 echo "4. Make them executable on phone:"
-echo "   ssh phone 'chmod +x ~/.shortcuts/Clawd*'"
+echo "   ssh phone 'chmod +x ~/.shortcuts/PASO*'"
 echo ""
 echo "5. Add Termux:Widget to your home screen"
 echo "6. Tap the widget to see your auth scripts"
 echo ""
-echo "The quick widget (ClawdAuth) shows status and opens auth URL if needed."
-echo "The full widget (ClawdAuth-Full) provides guided re-auth flow."
+echo "The quick widget (PASOAuth) shows status and opens auth URL if needed."
+echo "The full widget (PASOAuth-Full) provides guided re-auth flow."
 echo ""
 
 # Summary

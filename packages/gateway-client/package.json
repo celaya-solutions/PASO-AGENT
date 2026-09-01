@@ -1,22 +1,22 @@
 {
   "name": "@openclaw/gateway-client",
   "version": "2026.8.1",
-  "description": "Reference WebSocket client for the OpenClaw Gateway protocol",
+  "description": "Reference WebSocket client for the PASO Gateway protocol",
   "keywords": [
     "client",
     "gateway",
     "openclaw",
     "websocket"
   ],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "homepage": "https://github.com/celaya-solutions/PASO-AGENT#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT/issues"
   },
   "license": "MIT",
-  "author": "OpenClaw Foundation (https://openclaw.org)",
+  "author": "Celaya Solutions Research <hello@celayasolutions.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git",
+    "url": "git+https://github.com/celaya-solutions/PASO-AGENT.git",
     "directory": "packages/gateway-client"
   },
   "files": [

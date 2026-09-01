@@ -1,5 +1,5 @@
 ---
-summary: "Adds OpenCode model provider support to OpenClaw."
+summary: "Adds OpenCode model provider support to PASO."
 read_when:
   - You are installing, configuring, or auditing the opencode plugin
 title: "OpenCode plugin"
@@ -7,7 +7,7 @@ title: "OpenCode plugin"
 
 # OpenCode plugin
 
-Adds OpenCode model provider support to OpenClaw.
+Adds OpenCode model provider support to PASO.
 
 ## Distribution
 
@@ -22,13 +22,13 @@ providers: `opencode`; contracts: `mediaUnderstandingProviders`
 
 ## Native sessions
 
-OpenClaw auto-detects the `opencode` CLI on the Gateway and paired nodes. Stored
+PASO auto-detects the `opencode` CLI on the Gateway and paired nodes. Stored
 sessions then appear in the **OpenCode** sessions-sidebar group, with transcript
 browsing through the official `opencode --pure db ... --format json` and
 `opencode --pure export` commands. Local rows also offer **Continue**, which
-creates an OpenClaw session whose first turn resumes the native OpenCode session
+creates a PASO session whose first turn resumes the native OpenCode session
 through ACP. OpenCode retains the full server-side model context, and the catalog
-viewer continues to show that history. OpenClaw also imports the recent native
+viewer continues to show that history. PASO also imports the recent native
 history into the adopted session transcript. Very long transcripts import only
 their most recent 200 items using a 512 KiB serialized-item budget. Paired-node
 rows remain view-only.

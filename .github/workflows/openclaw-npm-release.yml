@@ -1,4 +1,4 @@
-name: OpenClaw NPM Release
+name: PASO NPM Release
 
 on:
   workflow_dispatch:
@@ -46,20 +46,20 @@ on:
         required: false
         type: string
       release_publish_run_id:
-        description: Approved OpenClaw Release Publish workflow run id
+        description: Approved PASO Release Publish workflow run id
         required: false
         type: string
       release_publish_run_attempt:
-        description: Exact approved OpenClaw Release Publish workflow run attempt
+        description: Exact approved PASO Release Publish workflow run attempt
         required: false
         type: string
       release_publish_branch:
-        description: Branch or protected tag name of the approving OpenClaw Release Publish workflow run
+        description: Branch or protected tag name of the approving PASO Release Publish workflow run
         required: false
         default: ""
         type: string
       release_publish_full_ref:
-        description: Full ref of the approving OpenClaw Release Publish workflow run
+        description: Full ref of the approving PASO Release Publish workflow run
         required: false
         default: ""
         type: string
@@ -105,9 +105,9 @@ jobs:
   # PLEASE DON'T ADD LONG-RUNNING OR FLAKY CHECKS TO THE npm RELEASE PATH.
   # KEEP THIS WORKFLOW SHORT AND DETERMINISTIC OR IT CAN GET STUCK AND JEOPARDIZE THE RELEASE.
   # RELEASE-TIME LIVE OR END-TO-END VALIDATION BELONGS IN openclaw-release-checks.yml.
-  # SECURITY NOTE: TOKEN-BASED npm dist-tag mutation moved to
-  # openclaw/releases/.github/workflows/openclaw-npm-dist-tags.yml
-  # so this source workflow can stay focused on OIDC publish only.
+  # SECURITY NOTE: PASO does not invoke inherited upstream npm dist-tag automation.
+  # Token-based dist-tag mutation stays disabled until Celaya Solutions provisions
+  # and documents a separately owned repository, workflow, and token route.
   preflight_openclaw_npm:
     if: ${{ inputs.preflight_only }}
     # Preflight builds the full release package before publish; ubuntu-latest can OOM in tsdown.
@@ -294,7 +294,7 @@ jobs:
           mkdir -p "$ARTIFACT_DIR"
           for package_dir in $CORE_PACKAGE_DIRS; do
             if [[ "$package_dir" == "packages/ai" ]] && ! node -e 'const pkg = require("./package.json"); process.exit(pkg.dependencies?.["@openclaw/ai"] ? 0 : 1)'; then
-              echo "Frozen target does not depend on @openclaw/ai; packing OpenClaw without a separate AI runtime tarball."
+              echo "Frozen target does not depend on @openclaw/ai; packing PASO without a separate AI runtime tarball."
               continue
             fi
             if [[ ! -f "$package_dir/package.json" ]]; then
@@ -906,7 +906,7 @@ jobs:
           if [[ "${WORKFLOW_REF}" =~ ^refs/tags/release-publish/([a-f0-9]{12})-[1-9][0-9]*$ ]]; then
             workflow_sha_prefix="${BASH_REMATCH[1]}"
             [[ "${WORKFLOW_SHA}" =~ ^[a-f0-9]{40}$ && "${WORKFLOW_SHA:0:12}" == "${workflow_sha_prefix}" ]] || {
-              echo "SHA-pinned release-publish tag does not match the OpenClaw npm workflow SHA." >&2
+              echo "SHA-pinned release-publish tag does not match the PASO npm workflow SHA." >&2
               exit 1
             }
             workflow_tag="${WORKFLOW_REF#refs/tags/}"
@@ -915,7 +915,7 @@ jobs:
                 --jq '.object | select(.type == "commit") | .sha | select(test("^[a-f0-9]{40}$"))'
             )"
             [[ "${remote_workflow_sha}" == "${WORKFLOW_SHA}" ]] || {
-              echo "SHA-pinned release-publish tag does not resolve to the OpenClaw npm workflow SHA." >&2
+              echo "SHA-pinned release-publish tag does not resolve to the PASO npm workflow SHA." >&2
               exit 1
             }
             sha_pinned_release_publish=true
@@ -989,7 +989,7 @@ jobs:
             exit 1
           fi
           if [[ -z "${RELEASE_PUBLISH_RUN_ID// }" && "${GITHUB_ACTOR}" == "github-actions[bot]" ]]; then
-            echo "Workflow-dispatched real publish requires release_publish_run_id from the approved OpenClaw Release Publish workflow." >&2
+            echo "Workflow-dispatched real publish requires release_publish_run_id from the approved PASO Release Publish workflow." >&2
             exit 1
           fi
           if [[ -n "${RELEASE_PUBLISH_RUN_ID// }" && ! "${RELEASE_PUBLISH_RUN_ATTEMPT}" =~ ^[1-9][0-9]*$ ]]; then
@@ -1008,16 +1008,16 @@ jobs:
           set -euo pipefail
           if [[ -z "${RELEASE_PUBLISH_RUN_ID// }" ]]; then
             if [[ "${GITHUB_ACTOR}" == "github-actions[bot]" ]]; then
-              echo "OpenClaw npm publish dispatched by another workflow must include release_publish_run_id." >&2
+              echo "PASO npm publish dispatched by another workflow must include release_publish_run_id." >&2
               exit 1
             fi
-            echo "Direct OpenClaw npm publish; relying on this workflow's npm-release environment approval."
+            echo "Direct PASO npm publish; relying on this workflow's npm-release environment approval."
             exit 0
           fi
           direct_recovery=false
           if [[ "${GITHUB_ACTOR}" != "github-actions[bot]" ]]; then
             direct_recovery=true
-            echo "Direct OpenClaw npm recovery with release_publish_run_id; relying on this workflow's npm-release environment approval."
+            echo "Direct PASO npm recovery with release_publish_run_id; relying on this workflow's npm-release environment approval."
           fi
           if [[ "${EXPECTED_WORKFLOW_BRANCH}" =~ ^release-publish/[a-f0-9]{12}-[1-9][0-9]*$ ]]; then
             export EXPECTED_WORKFLOW_FULL_REF="refs/tags/${EXPECTED_WORKFLOW_BRANCH}"
@@ -1040,6 +1040,21 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - name: Require PASO legacy npm publishing configuration
+        env:
+          PASO_LEGACY_NPM_PUBLISH_ENABLED: ${{ vars.PASO_LEGACY_NPM_PUBLISH_ENABLED }}
+          PASO_NPM_PUBLISH_REPOSITORY: ${{ vars.PASO_NPM_PUBLISH_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REPOSITORY" != "celaya-solutions/PASO-AGENT" ]]; then
+            echo "::error::Legacy openclaw package publishing is restricted to the PASO repository."
+            exit 1
+          fi
+          if [[ "$PASO_LEGACY_NPM_PUBLISH_ENABLED" != "true" || "$PASO_NPM_PUBLISH_REPOSITORY" != "$GITHUB_REPOSITORY" ]]; then
+            echo "::error::Publishing openclaw compatibility packages is disabled. Set PASO_LEGACY_NPM_PUBLISH_ENABLED=true and PASO_NPM_PUBLISH_REPOSITORY=celaya-solutions/PASO-AGENT only after Celaya Solutions controls the npm trusted-publisher routes."
+            exit 1
+          fi
+
       - name: Validate tag input format
         env:
           RELEASE_TAG: ${{ inputs.tag }}
@@ -1173,7 +1188,7 @@ jobs:
             protected_release_publish_preflight=true
           fi
           if [[ "$preflight_head_branch" != "main" && "$active_branch_preflight" != "true" && "$extended_stable_preflight" != "true" && "$protected_release_publish_preflight" != "true" ]]; then
-            echo "OpenClaw npm preflight run must come from main, the active protected release branch, or a verified protected release-publish tag." >&2
+            echo "PASO npm preflight run must come from main, the active protected release branch, or a verified protected release-publish tag." >&2
             exit 1
           fi
           if ! git -C trusted-workflow cat-file -e "${preflight_head_sha}^{commit}" 2>/dev/null; then
@@ -1181,12 +1196,12 @@ jobs:
               --no-tags --depth=1 origin "$preflight_head_sha"
           fi
           if [[ "$extended_stable_preflight" != "true" ]] && ! git -C trusted-workflow merge-base --is-ancestor "$preflight_head_sha" "$WORKFLOW_SHA"; then
-            echo "OpenClaw npm preflight tooling is not on the trusted publish workflow lineage." >&2
+            echo "PASO npm preflight tooling is not on the trusted publish workflow lineage." >&2
             exit 1
           fi
           preflight_run_attempt="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${PREFLIGHT_RUN_ID}" --jq .run_attempt)"
           if [[ ! "$preflight_run_attempt" =~ ^[1-9][0-9]*$ ]]; then
-            echo "OpenClaw npm preflight run has an invalid attempt." >&2
+            echo "PASO npm preflight run has an invalid attempt." >&2
             exit 1
           fi
           echo "head_sha=${preflight_head_sha}" >> "$GITHUB_OUTPUT"

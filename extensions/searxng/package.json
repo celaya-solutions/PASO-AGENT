@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/searxng-plugin",
   "version": "2026.8.1",
-  "description": "OpenClaw SearXNG plugin",
+  "description": "PASO SearXNG plugin",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -31,6 +31,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

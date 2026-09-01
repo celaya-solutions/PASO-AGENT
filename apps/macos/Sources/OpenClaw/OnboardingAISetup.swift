@@ -108,11 +108,11 @@ final class OnboardingAISetupModel {
         OnboardingController.shared.busyReason = if self.phase == .testing || self.manualTesting ||
             self.phase == .detecting && self.pendingActivationVerification
         {
-            "OpenClaw is testing your AI connection."
+            "PASO is testing your AI connection."
         } else if self.activeAuthOption != nil {
             self.isPreparingModel
-                ? "OpenClaw is preparing a local model."
-                : "OpenClaw is completing provider sign-in."
+                ? "PASO is preparing a local model."
+                : "PASO is completing provider sign-in."
         } else {
             nil
         }
@@ -271,7 +271,7 @@ final class OnboardingAISetupModel {
             else {
                 self.phase = .ready
                 self.detectError = Self.transportFailure(
-                    "Secure storage is unavailable, so OpenClaw cannot verify which Gateway completed AI setup.")
+                    "Secure storage is unavailable, so PASO cannot verify which Gateway completed AI setup.")
                 return .notConnected
             }
             guard activationOwner.routeFingerprint == currentFingerprint else {
@@ -1256,7 +1256,7 @@ extension OnboardingAISetupModel {
             }
             if cancellation == .unresolved {
                 self.authError = Failure(
-                    summary: "OpenClaw couldn’t confirm cancellation. Setup may still be running. Try Cancel again.",
+                    summary: "PASO couldn’t confirm cancellation. Setup may still be running. Try Cancel again.",
                     detail: nil)
             } else {
                 self.authAttemptID = UUID()

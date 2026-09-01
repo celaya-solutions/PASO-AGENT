@@ -49,7 +49,7 @@ Look for:
 
 Use when a gateway service unexpectedly stops after an update, or logs show one `openclaw` binary is older than the version that last wrote `openclaw.json`.
 
-OpenClaw stamps config writes with `meta.lastTouchedVersion`. Read-only commands can inspect a config written by a newer OpenClaw, but process and service mutations refuse to run from an older binary. Blocked actions: gateway service start/stop/restart/uninstall, forced service reinstall, service-mode gateway startup, and `gateway --force` port cleanup.
+PASO stamps config writes with `meta.lastTouchedVersion`. Read-only commands can inspect a config written by a newer PASO, but process and service mutations refuse to run from an older binary. Blocked actions: gateway service start/stop/restart/uninstall, forced service reinstall, service-mode gateway startup, and `gateway --force` port cleanup.
 
 ```bash
 which openclaw
@@ -96,12 +96,12 @@ Look for:
 
 - `protocol mismatch ... client=... v<version> min=<n> max=<n> expected=<n>` in Gateway logs.
 - `Established clients:` in `openclaw gateway status --deep` or `Gateway clients` in `openclaw doctor --deep`: active TCP clients connected to the Gateway port, with PIDs and command lines when the OS allows it.
-- A client process whose command line points at the newer OpenClaw install or wrapper you rolled back from.
+- A client process whose command line points at the newer PASO install or wrapper you rolled back from.
 
 Fix:
 
-1. Stop or restart the stale OpenClaw client process shown by `gateway status --deep`.
-2. Restart apps or wrappers that embed OpenClaw: local dashboards, editors, app-server helpers, or long-running `openclaw logs --follow` shells.
+1. Stop or restart the stale PASO client process shown by `gateway status --deep`.
+2. Restart apps or wrappers that embed PASO: local dashboards, editors, app-server helpers, or long-running `openclaw logs --follow` shells.
 3. Re-run `openclaw gateway status --deep` or `openclaw doctor --deep` and confirm the stale client PID is gone.
 
 Do not make an older Gateway accept a newer incompatible protocol. Protocol bumps protect the wire contract; rollback recovery is a process/version cleanup problem.
@@ -189,7 +189,7 @@ Related:
 
 Use when an upstream LLM provider returns a generic `403` such as `Your request was blocked`.
 
-Do not assume this is always an OpenClaw configuration issue. The response can come from an upstream security layer such as a CDN, WAF, bot-management rule, or reverse proxy in front of an OpenAI-compatible endpoint.
+Do not assume this is always a PASO configuration issue. The response can come from an upstream security layer such as a CDN, WAF, bot-management rule, or reverse proxy in front of an OpenAI-compatible endpoint.
 
 ```bash
 openclaw status
@@ -204,7 +204,7 @@ Look for:
 - Provider-side security events for the same request time.
 - A tiny direct `curl` probe succeeding while normal SDK-shaped requests fail.
 
-Fix the provider-side filtering first when evidence points to a WAF/CDN block. Prefer a narrowly scoped allow or skip rule for the API path OpenClaw uses, and avoid disabling protection for the whole site.
+Fix the provider-side filtering first when evidence points to a WAF/CDN block. Prefer a narrowly scoped allow or skip rule for the API path PASO uses, and avoid disabling protection for the whole site.
 
 <Warning>
 A successful minimal `curl` does not guarantee that real SDK-style requests will pass through the same upstream security layer.
@@ -222,7 +222,7 @@ Use when:
 
 - `curl ... /v1/models` works.
 - Tiny direct `/v1/chat/completions` calls work.
-- OpenClaw model runs fail only on normal agent turns.
+- PASO model runs fail only on normal agent turns.
 
 ```bash
 curl http://127.0.0.1:1234/v1/models
@@ -235,7 +235,7 @@ openclaw logs --follow
 
 Look for:
 
-- Direct tiny calls succeed, but OpenClaw runs fail only on larger prompts.
+- Direct tiny calls succeed, but PASO runs fail only on larger prompts.
 - `model_not_found` or 404 errors even though direct `/v1/chat/completions` works with the same bare model id.
 - Backend errors about `messages[].content` expecting a string.
 - Intermittent `incomplete turn detected ... stopReason=stop payloads=0` warnings with an OpenAI-compatible local backend.
@@ -246,17 +246,17 @@ Look for:
     - `model_not_found` with a local MLX/vLLM-style server: verify `baseUrl` includes `/v1`, `api` is `"openai-completions"` for `/v1/chat/completions` backends, and `models.providers.<provider>.models[].id` is the bare provider-local id. Select it with the provider prefix once, for example `mlx/mlx-community/Qwen3-30B-A3B-6bit`; keep the catalog entry as `mlx-community/Qwen3-30B-A3B-6bit`.
     - `messages[...].content: invalid type: sequence, expected a string`: backend rejects structured Chat Completions content parts. Fix: set `models.providers.<provider>.models[].compat.requiresStringContent: true`.
     - `validation.keys` or allowed message keys like `["role","content"]`: backend rejects OpenAI-style replay metadata on Chat Completions messages. Fix: set `models.providers.<provider>.models[].compat.strictMessageKeys: true`.
-    - `incomplete turn detected ... stopReason=stop payloads=0`: the backend completed the Chat Completions request but returned no user-visible assistant text for that turn. OpenClaw retries replay-safe empty OpenAI-compatible turns once; persistent failures usually mean the backend is emitting empty/non-text content or suppressing final-answer text.
-    - Direct tiny requests succeed, but OpenClaw agent runs fail with backend/model crashes (for example Gemma on some `inferrs` builds): OpenClaw transport is likely already correct; the backend is failing on the larger agent-runtime prompt shape.
+    - `incomplete turn detected ... stopReason=stop payloads=0`: the backend completed the Chat Completions request but returned no user-visible assistant text for that turn. PASO retries replay-safe empty OpenAI-compatible turns once; persistent failures usually mean the backend is emitting empty/non-text content or suppressing final-answer text.
+    - Direct tiny requests succeed, but PASO agent runs fail with backend/model crashes (for example Gemma on some `inferrs` builds): PASO transport is likely already correct; the backend is failing on the larger agent-runtime prompt shape.
     - Failures shrink after disabling tools but do not disappear: tool schemas were part of the pressure, but the remaining issue is still upstream model/server capacity or a backend bug.
 
   </Accordion>
   <Accordion title="Fix options">
     1. Set `compat.requiresStringContent: true` for string-only Chat Completions backends.
     2. Set `compat.strictMessageKeys: true` for strict Chat Completions backends that only accept `role` and `content` on each message.
-    3. Set `compat.supportsTools: false` for models/backends that cannot handle OpenClaw's tool schema surface reliably.
+    3. Set `compat.supportsTools: false` for models/backends that cannot handle PASO's tool schema surface reliably.
     4. Lower prompt pressure where possible: smaller workspace bootstrap, shorter session history, lighter local model, or a backend with stronger long-context support.
-    5. If tiny direct requests keep passing while OpenClaw agent turns still crash inside the backend, treat it as an upstream server/model limitation and file a repro there with the accepted payload shape.
+    5. If tiny direct requests keep passing while PASO agent turns still crash inside the backend, treat it as an upstream server/model limitation and file a repro there with the accepted payload shape.
   </Accordion>
 </AccordionGroup>
 
@@ -322,7 +322,7 @@ lsof -i :18789
 curl http://127.0.0.1:18789
 ```
 
-If `curl` returns OpenClaw HTML, the Gateway is working and the remaining issue is likely browser cache, an old deep link, or stale tab state. Open `http://127.0.0.1:18789` directly and navigate from the dashboard. If restart does not leave the service running, run `openclaw gateway start` and recheck `openclaw gateway status`.
+If `curl` returns PASO HTML, the Gateway is working and the remaining issue is likely browser cache, an old deep link, or stale tab state. Open `http://127.0.0.1:18789` directly and navigate from the dashboard. If restart does not leave the service running, run `openclaw gateway start` and recheck `openclaw gateway status`.
 
 <AccordionGroup>
   <Accordion title="Connect / auth signatures">
@@ -415,11 +415,11 @@ Look for:
 
 <AccordionGroup>
   <Accordion title="Common signatures">
-    - `Gateway start blocked: set gateway.mode=local` or `existing config is missing gateway.mode` → local gateway mode is not enabled, or the config file was clobbered and lost `gateway.mode`. Fix: set `gateway.mode="local"` in your config, or re-run `openclaw onboard --mode local` / `openclaw setup` to restamp the expected local-mode config. If you are running OpenClaw via Podman, the default config path is `~/.openclaw/openclaw.json`.
+    - `Gateway start blocked: set gateway.mode=local` or `existing config is missing gateway.mode` → local gateway mode is not enabled, or the config file was clobbered and lost `gateway.mode`. Fix: set `gateway.mode="local"` in your config, or re-run `openclaw onboard --mode local` / `openclaw setup` to restamp the expected local-mode config. If you are running PASO via Podman, the default config path is `~/.openclaw/openclaw.json`.
     - `refusing to bind gateway ... without auth` → non-loopback bind without a valid gateway auth path (token/password, or trusted-proxy where configured).
     - `another gateway instance is already listening` / `EADDRINUSE` → port conflict.
     - `Other gateway-like services detected (best effort)` → stale or parallel launchd/systemd/schtasks units exist. Most setups should keep one gateway per machine; if you do need more than one, isolate ports + config/state/workspace. See [/gateway#multiple-gateways-same-host](/gateway#multiple-gateways-same-host).
-    - `System-level OpenClaw gateway service detected` from doctor → a systemd system unit exists while the user-level service is missing. Remove or disable the duplicate before allowing doctor to install a user service, or set `OPENCLAW_SERVICE_REPAIR_POLICY=external` if the system unit is the intended supervisor.
+    - `System-level PASO gateway service detected` from doctor → a systemd system unit exists while the user-level service is missing. Remove or disable the duplicate before allowing doctor to install a user service, or set `OPENCLAW_SERVICE_REPAIR_POLICY=external` if the system unit is the intended supervisor.
     - `Gateway service port does not match current gateway config` → the installed supervisor still pins the old `--port`. Run `openclaw doctor --fix` or `openclaw gateway install --force`, then restart the gateway service.
 
   </Accordion>
@@ -450,7 +450,7 @@ Look for:
 
 Common signatures:
 
-- A stability bundle whose `error.code` is `ENETDOWN` or a sibling code, with the call stack pointing into Node `net` `lookupAndConnect` / `Socket.connect`. OpenClaw `2026.5.26` and newer classify these as benign transient network errors so they no longer propagate to the top-level uncaught handler; if you are on an older release, upgrade first.
+- A stability bundle whose `error.code` is `ENETDOWN` or a sibling code, with the call stack pointing into Node `net` `lookupAndConnect` / `Socket.connect`. PASO `2026.5.26` and newer classify these as benign transient network errors so they no longer propagate to the top-level uncaught handler; if you are on an older release, upgrade first.
 - Long quiet periods that end the instant you connect to the Control UI or SSH into the host: the user-visible activity is what re-arms launchd's respawn gate, not anything the dashboard does to the gateway.
 - `runs` count incrementing across the day with no corresponding `received SIG*; shutting down` line in `~/Library/Logs/openclaw/gateway.log`: clean shutdowns log a signal; transient crashes do not.
 
@@ -491,7 +491,7 @@ even though the service appears to be running.
 
 This was observed on older installs where both `ai.openclaw.gateway` and
 `ai.openclaw.node` LaunchAgents were active and each injected
-`OPENCLAW_LAUNCHD_LABEL`. In that state OpenClaw can detect launchd
+`OPENCLAW_LAUNCHD_LABEL`. In that state PASO can detect launchd
 supervision, try to hand restart back to launchd, and fall into a fast
 `EADDRINUSE`/respawn loop instead of one stable gateway process.
 
@@ -520,7 +520,7 @@ Look for:
 What to do:
 
 1. If this host should only run the Gateway service, remove the managed node
-   service through OpenClaw. **Skip this step** if you actively rely on the node
+   service through PASO. **Skip this step** if you actively rely on the node
    service for remote node features; uninstalling it stops those features on
    this host:
 
@@ -529,7 +529,7 @@ What to do:
    ```
 
 2. Install a persistent Gateway wrapper that clears the inherited launchd
-   markers before starting OpenClaw. Use the supported `--wrapper` option; do
+   markers before starting PASO. Use the supported `--wrapper` option; do
    not edit the generated file under `~/.openclaw/service-env/`, because service
    reinstall, update, and doctor repair regenerate that file:
 
@@ -600,8 +600,8 @@ Look for:
 
 Common signatures:
 
-- `critical memory pressure bundle written` appears shortly before restart → OpenClaw captured a pre-OOM stability bundle. Inspect it with `openclaw gateway stability --bundle latest`.
-- `memory pressure: level=critical` appears in gateway logs → OpenClaw detected critical memory pressure and recorded the available in-process memory facts.
+- `critical memory pressure bundle written` appears shortly before restart → PASO captured a pre-OOM stability bundle. Inspect it with `openclaw gateway stability --bundle latest`.
+- `memory pressure: level=critical` appears in gateway logs → PASO detected critical memory pressure and recorded the available in-process memory facts.
 - `Largest session files:` points at a very large redacted transcript path → reduce retained session history, inspect session growth, or move old transcripts out of the active store before restarting.
 - `V8 heap:` used bytes are close to the heap limit → lower prompt/session pressure or reduce concurrent work first. For a managed service, compare the configured controls and install-time recommendation in `Gateway heap:` from `openclaw gateway status` with the runtime measurement. Reinstalling preserves existing stored heap settings; it does not automatically replace an older value with the current recommendation.
 - `Memory pressure: critical/rss_growth` → memory grew quickly inside one sampling window. Check the latest logs for a large import, runaway tool output, repeated retries, or a batch of queued agent work.
@@ -617,7 +617,7 @@ For a foreground Node Gateway, set a native heap flag before Node starts, for ex
 NODE_OPTIONS="--max-old-space-size=16384" openclaw gateway run
 ```
 
-For a custom supervisor or Docker runtime command, place `--max-old-space-size=16384` immediately after `node`, before the OpenClaw entry script, or set `NODE_OPTIONS` in that process or container's launch environment. Docker image build-time heap options do not configure the runtime Gateway. An OpenClaw config or dotenv value loaded after Node starts cannot resize its heap. `NODE_OPTIONS` can also reach spawned Node children, so prefer a direct Node argument when only the Gateway should receive the budget.
+For a custom supervisor or Docker runtime command, place `--max-old-space-size=16384` immediately after `node`, before the PASO entry script, or set `NODE_OPTIONS` in that process or container's launch environment. Docker image build-time heap options do not configure the runtime Gateway. A PASO config or dotenv value loaded after Node starts cannot resize its heap. `NODE_OPTIONS` can also reach spawned Node children, so prefer a direct Node argument when only the Gateway should receive the budget.
 
 For managed Node services, use the [managed Gateway heap policy](/cli/gateway#manage-the-gateway-service) and inspect both managed launch arguments and operator-owned environment overrides before changing them. Native argv overrides the same option in `NODE_OPTIONS`; percentage old-space sizing takes precedence over absolute old-space sizing. Regeneration preserves stored argv but does not add an automatic heap flag when an operator override owns `NODE_OPTIONS`. Installer-shell `NODE_OPTIONS` does not become a service override. Runtime pressure diagnostics use the effective V8 heap ceiling and physical/reported constraint headroom; an oversized explicit heap setting does not raise the RSS alert threshold above physical capacity. Pressure warnings are diagnostic evidence, not heap limits or automatic restart triggers.
 
@@ -651,16 +651,16 @@ Look for:
 - `Config write rejected: ...`
 - A timestamped `openclaw.json.rejected.*` file beside the active config.
 - A timestamped `openclaw.json.clobbered.*` file if `doctor --fix` repaired a broken direct edit.
-- OpenClaw keeps the latest 32 `.clobbered.*` files for each config path and rotates older ones.
+- PASO keeps the latest 32 `.clobbered.*` files for each config path and rotates older ones.
 
 <AccordionGroup>
   <Accordion title="What happened">
-    - The config did not validate during startup, hot reload, or an OpenClaw-owned write.
+    - The config did not validate during startup, hot reload, or a PASO-owned write.
     - Gateway startup leaves `openclaw.json` unchanged and fails closed when safe legacy-key migration cannot produce a fully valid config.
     - Hot reload skips invalid external edits and keeps the current runtime config active.
-    - OpenClaw-owned writes reject invalid/destructive payloads before commit and save `.rejected.*`.
+    - PASO-owned writes reject invalid/destructive payloads before commit and save `.rejected.*`.
     - `openclaw doctor --fix` owns repairs beyond automatic legacy-key migration. It can remove non-JSON prefixes or restore the last-known-good copy while preserving the rejected payload as `.clobbered.*`.
-    - When many repairs happen for one config path, OpenClaw rotates older `.clobbered.*` files so the newest repaired payload is still available.
+    - When many repairs happen for one config path, PASO rotates older `.clobbered.*` files so the newest repaired payload is still available.
 
   </Accordion>
   <Accordion title="Inspect and repair">
@@ -674,11 +674,11 @@ Look for:
   </Accordion>
   <Accordion title="Common signatures">
     - `.clobbered.*` exists → doctor preserved a broken external edit while repairing the active config.
-    - `.rejected.*` exists → an OpenClaw-owned config write failed schema or clobber checks before commit.
+    - `.rejected.*` exists → a PASO-owned config write failed schema or clobber checks before commit.
     - `Config write rejected:` → the write tried to drop required shape, shrink the file sharply, or persist invalid config.
     - `config reload skipped (invalid config):` → a direct edit failed validation and was ignored by the running Gateway.
     - `Invalid config at ...` → startup failed before Gateway services booted.
-    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good`, or `size-drop-vs-last-good:*` → an OpenClaw-owned write was rejected because it lost fields or size compared with the last-known-good backup.
+    - `missing-meta-vs-last-good`, `gateway-mode-missing-vs-last-good`, or `size-drop-vs-last-good:*` → a PASO-owned write was rejected because it lost fields or size compared with the last-known-good backup.
     - `Config last-known-good promotion skipped` → the candidate contained redacted secret placeholders such as `***`.
 
   </Accordion>
@@ -718,7 +718,7 @@ Look for:
 Common signatures:
 
 - `SSH tunnel failed to start; falling back to direct probes.` → SSH setup failed, but the command still tried direct configured/loopback targets.
-- `multiple reachable gateway identities detected` → distinct gateways answered, or OpenClaw could not prove reachable targets are the same gateway. An SSH tunnel, proxy URL, or configured remote URL to the same gateway is treated as one gateway with multiple transports, even when transport ports differ.
+- `multiple reachable gateway identities detected` → distinct gateways answered, or PASO could not prove reachable targets are the same gateway. An SSH tunnel, proxy URL, or configured remote URL to the same gateway is treated as one gateway with multiple transports, even when transport ports differ.
 - `Read-probe diagnostics are limited by gateway scopes (missing operator.read)` → connect worked, but detail RPC is scope-limited; pair device identity or use credentials with `operator.read`.
 - `Gateway accepted the WebSocket connection, but follow-up read diagnostics failed` → connect worked, but the full diagnostic RPC set timed out or failed. Treat this as a reachable Gateway with degraded diagnostics; compare `connect.ok` and `connect.rpcOk` in `--json` output.
 - `Capability: pairing-pending` or `gateway closed (1008): pairing required` → the gateway answered, but this client still needs pairing/approval before normal operator access.
@@ -784,7 +784,7 @@ Look for:
     - `cron: scheduler disabled; jobs will not run automatically` → cron disabled.
     - `cron: timer tick failed` → scheduler tick failed; check file/log/runtime errors.
     - `heartbeat skipped` with `reason=quiet-hours` → outside active hours window.
-    - `heartbeat skipped` with `reason=empty-heartbeat-file` → heartbeat monitor scratch only contains blank, comment, header, fence, or empty-checklist scaffolding, so OpenClaw skips the model call.
+    - `heartbeat skipped` with `reason=empty-heartbeat-file` → heartbeat monitor scratch only contains blank, comment, header, fence, or empty-checklist scaffolding, so PASO skips the model call.
     - `heartbeat skipped` with `reason=no-route` → the default `owner` target has no concrete owner in `commands.ownerAllowFrom` or channel `allowFrom`, the owner cannot resolve to a DM, or no channel is configured. Explicit `last` also needs a session conversation route.
     - `heartbeat: unknown accountId` → invalid account id for heartbeat delivery target.
     - `heartbeat skipped` with `reason=dm-blocked` → heartbeat target resolved to a DM-style destination while `agents.defaults.heartbeat.directPolicy` (or per-agent override) is set to `block`.
@@ -856,7 +856,7 @@ Look for:
     - `browser.executablePath not found` → configured path is invalid.
     - `browser.cdpUrl must be http(s) or ws(s)` → the configured CDP URL uses an unsupported scheme such as `file:` or `ftp:`.
     - `browser.cdpUrl has invalid port` → the configured CDP URL has a bad or out-of-range port.
-    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → the current gateway install lacks the core browser runtime dependency; reinstall or update OpenClaw, then restart the gateway. ARIA snapshots and basic page screenshots can still work, but navigation, AI snapshots, CSS-selector element screenshots, and PDF export stay unavailable.
+    - `Playwright is not available in this gateway build; '<feature>' is unsupported.` → the current gateway install lacks the core browser runtime dependency; reinstall or update PASO, then restart the gateway. ARIA snapshots and basic page screenshots can still work, but navigation, AI snapshots, CSS-selector element screenshots, and PDF export stay unavailable.
 
   </Accordion>
   <Accordion title="Chrome MCP / existing-session signatures">
@@ -881,7 +881,7 @@ Look for:
 
 Related:
 
-- [Browser (OpenClaw-managed)](/tools/browser)
+- [Browser (PASO-managed)](/tools/browser)
 - [Browser troubleshooting](/tools/browser-linux-troubleshooting)
 
 ## If you upgraded and something suddenly broke

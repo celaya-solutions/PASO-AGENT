@@ -1,4 +1,4 @@
-// Plugin Clawhub Release script supports OpenClaw repository automation.
+// Plugin Clawhub Release script supports PASO repository automation.
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import { truncateUtf16Safe } from "../../packages/normalization-core/src/utf16-slice.js";
@@ -77,7 +77,7 @@ const CLAWHUB_ERROR_BODY_MAX_CHARS = 400;
 // All-publishable releases query dozens of packages. Bound registry pressure while
 // allowing independent package state reads to leave the core publish critical path quickly.
 const CLAWHUB_RELEASE_PLAN_CONCURRENCY = 8;
-const OPENCLAW_PLUGIN_CLAWHUB_REPOSITORY = "openclaw/openclaw";
+const OPENCLAW_PLUGIN_CLAWHUB_REPOSITORY = "celaya-solutions/PASO-AGENT";
 const OPENCLAW_PLUGIN_CLAWHUB_WORKFLOW_FILENAME = "plugin-clawhub-release.yml";
 const CLAWHUB_RELEASE_AUTHORITY_PATHS = [
   ".github/workflows/plugin-clawhub-release.yml",

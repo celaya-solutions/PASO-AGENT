@@ -775,7 +775,7 @@ export async function runDevUpdateSuite(
     const updatedShell = await verifyFreshShellCommand({
       lane,
       env,
-      expectedNeedle: "OpenClaw",
+      expectedNeedle: "PASO",
       logPath: join(params.logsDir, "dev-update-shell.log"),
     });
 
@@ -1029,7 +1029,7 @@ export function assertManagedGatewayInstallerHostAvailable(params: {
     .filter((path) => pathExists(path));
   if (params.serviceInstalled || occupiedStateDirs.length > 0) {
     throw new Error(
-      "Managed installer service checks require a pristine host account with no OpenClaw service or state.",
+      "Managed installer service checks require a pristine host account with no PASO service or state.",
     );
   }
 }

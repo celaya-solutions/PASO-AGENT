@@ -170,7 +170,7 @@ describe("install smoke no-push root image transport", () => {
       expect(checkoutIndex, jobName).toBeLessThan(resolverIndex);
       for (const checkout of trustedCheckouts) {
         expect(checkout.with, jobName).toMatchObject({
-          repository: "openclaw/openclaw",
+          repository: "${{ github.repository }}",
           ref: "main",
           "fetch-depth": 1,
           "persist-credentials": false,
@@ -577,7 +577,7 @@ describe("install smoke no-push root image transport", () => {
       target_sha: "${{ steps.payload.outputs.target_sha }}",
     });
     expect(step(producer, "Checkout trusted release harness").with).toMatchObject({
-      repository: "openclaw/openclaw",
+      repository: "${{ github.repository }}",
       ref: "main",
       "fetch-depth": 1,
       "persist-credentials": false,

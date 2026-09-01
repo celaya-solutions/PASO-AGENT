@@ -4,10 +4,10 @@ read_when:
   - Adding agent-controlled browser automation
   - Debugging why openclaw is interfering with your own Chrome
   - Implementing browser settings + lifecycle in the macOS app
-title: "Browser (OpenClaw-managed)"
+title: "Browser (PASO-managed)"
 ---
 
-OpenClaw can run a **dedicated Chrome/Brave/Edge/Chromium profile** that the agent controls. It runs through a small local control service inside the Gateway (loopback only) and is isolated from your personal browser.
+PASO can run a **dedicated Chrome/Brave/Edge/Chromium profile** that the agent controls. It runs through a small local control service inside the Gateway (loopback only) and is isolated from your personal browser.
 
 - Think of it as a **separate, agent-only browser**. The `openclaw` profile never touches your personal browser profile.
 - The agent opens tabs, reads pages, clicks, and types in this isolated lane.
@@ -131,10 +131,10 @@ themselves. Removing `plugins.allow` entirely also restores the default.
 - `openclaw`: managed, isolated browser (no extension required).
 - `user`: built-in Chrome DevTools MCP attach profile for your **real
   signed-in Chrome** session. Chrome shows a blocking "Allow remote debugging?"
-  prompt the first time OpenClaw attaches, so someone must be at the computer.
+  prompt the first time PASO attaches, so someone must be at the computer.
 - `chrome`: built-in [Chrome extension](/tools/chrome-extension) profile for
   your **real signed-in Chrome** session. Works from a phone with nobody at the
-  desk because it drives tabs through the OpenClaw browser extension instead of
+  desk because it drives tabs through the PASO browser extension instead of
   the remote-debugging port, so there is no "Allow remote debugging?" prompt.
 
 For agent browser tool calls:
@@ -156,7 +156,7 @@ that card's browser and tab. This does not change `browser.defaultProfile` or
 another session's selection. Without a session browser target, the panel uses
 the configured default routing.
 
-Preview cards are interactive only when OpenClaw can identify the browser's
+Preview cards are interactive only when PASO can identify the browser's
 route. Sandbox browser results remain available to the agent but do not open a
 host-browser preview.
 
@@ -224,8 +224,8 @@ an unmarked baseline. Existing-session snapshots omit deltas.
 
 ### Tab cleanup ownership
 
-Session tab cleanup applies only to tabs created by the OpenClaw browser tool
-with `action: "open"`. OpenClaw does not adopt tabs that were already open,
+Session tab cleanup applies only to tabs created by the PASO browser tool
+with `action: "open"`. PASO does not adopt tabs that were already open,
 opened by the user, or otherwise have unknown ownership. The
 `browser.tabCleanup` block controls periodic idle and cap sweeps for primary
 sessions; disabling it does not disable explicit session lifecycle cleanup.
@@ -238,10 +238,10 @@ Records whose tool-facing target is the native CDP target also remain eligible
 for idle and per-session cap sweeps after restart. Chrome MCP target handles are
 process-local, so cold existing-session records wait for lifecycle cleanup
 rather than risking an idle sweep against activity that cannot be attributed
-safely after restart. This durable path can cover OpenClaw-managed profiles,
+safely after restart. This durable path can cover PASO-managed profiles,
 regular remote CDP profiles, and existing-session profiles with an explicit
-`cdpUrl`, provided OpenClaw can resolve both the native target and a stable
-browser identity. Before closing a durable record, OpenClaw verifies that the
+`cdpUrl`, provided PASO can resolve both the native target and a stable
+browser identity. Before closing a durable record, PASO verifies that the
 configured profile and browser instance still match.
 
 Chrome MCP `--autoConnect`, CDP endpoints whose `/json/version` response lacks
@@ -299,7 +299,7 @@ browser-specific model settings.
    back to returning the original image block.
 
 Screenshot image blocks are private tool results: the agent can inspect them,
-but OpenClaw does not automatically attach them to channel replies. To share a
+but PASO does not automatically attach them to channel replies. To share a
 screenshot, ask the agent to send it explicitly with the message tool.
 
 Use `tools.media.models` for model fallbacks, timeouts, byte limits, profiles,
@@ -307,7 +307,7 @@ and provider request settings. Tag screenshot-capable entries with the `image`
 capability.
 
 If the active main model already supports vision and no explicit image
-understanding model is configured, OpenClaw keeps the normal image result so the
+understanding model is configured, PASO keeps the normal image result so the
 main model can read the screenshot directly.
 
 <AccordionGroup>
@@ -315,7 +315,7 @@ main model can read the screenshot directly.
 <Accordion title="Ports and reachability">
 
 - Control service binds to loopback on a port derived from `gateway.port` (default `18791` = gateway + 2). `OPENCLAW_GATEWAY_PORT` takes priority over `gateway.port`; either shifts the derived ports in the same family.
-- Local `openclaw` profiles use a CDP port range starting 9 ports above the control port (default `18800`-`18899`). OpenClaw allocates from that range for
+- Local `openclaw` profiles use a CDP port range starting 9 ports above the control port (default `18800`-`18899`). PASO allocates from that range for
   the implicit default profile and for profiles created with
   `openclaw browser create-profile`, writing the chosen `cdpPort` into the
   config. A profile you declare by hand must set `cdpPort` itself, or `cdpUrl`
@@ -326,7 +326,7 @@ main model can read the screenshot directly.
 - Remote and `attachOnly` CDP reachability, WebSocket handshakes, and local
   managed-Chrome startup use built-in deadlines.
 - Repeated managed Chrome launch/readiness failures are circuit-broken per
-  profile. After several consecutive failures, OpenClaw pauses new launch
+  profile. After several consecutive failures, PASO pauses new launch
   attempts briefly instead of spawning Chromium on every browser tool call. Fix
   the startup problem, disable the browser if it is not needed, or restart the
   Gateway after repair.
@@ -336,14 +336,14 @@ main model can read the screenshot directly.
 <Accordion title="SSRF policy">
 
 - Browser navigation and open-tab requests are preflight checked. During the action and bounded post-action grace, guarded Playwright interactions (click, coordinate click, hover, drag, scroll, select, press, type, form fill, and evaluate) intercept policy-denied top-level and subframe document loads before HTTP request bytes, then best-effort re-check the final `http(s)` URL.
-- Before each fresh OpenClaw-managed Chrome launch, OpenClaw best-effort disables network prediction, suppressing Chromium's observed speculative preconnect for those denied loads. This is defense in depth, not a policy boundary: a browser reused across a control-service restart and other browser backends may not share the hardening. Playwright routing is still not a network firewall and does not intercept redirect hops, a popup's first request, Service Worker traffic, page code that runs after the bounded guard window, or every background/subresource path. Complete egress isolation requires owner-side isolation or a policy-enforcing proxy.
+- Before each fresh PASO-managed Chrome launch, PASO best-effort disables network prediction, suppressing Chromium's observed speculative preconnect for those denied loads. This is defense in depth, not a policy boundary: a browser reused across a control-service restart and other browser backends may not share the hardening. Playwright routing is still not a network firewall and does not intercept redirect hops, a popup's first request, Service Worker traffic, page code that runs after the bounded guard window, or every background/subresource path. Complete egress isolation requires owner-side isolation or a policy-enforcing proxy.
 - In strict SSRF mode, remote CDP endpoint discovery and `/json/version` probes (`cdpUrl`) are checked too.
 - Guarded remote CDP connections now fail closed when the selected driver cannot
   keep the approved endpoint bound to the actual socket. Use the regular
   `openclaw` driver for Browserless, Browserbase, Notte, or other guarded
   remote CDP providers. `existing-session`/Chrome MCP profiles with an explicit
   `cdpUrl` or `--browserUrl`/`--wsEndpoint` MCP argument are rejected under the
-  default strict Browser policy because Chrome MCP cannot carry OpenClaw's
+  default strict Browser policy because Chrome MCP cannot carry PASO's
   pinned DNS lookup or guarded discovery result across its subprocess boundary.
   They remain supported only when private-network Browser access is explicitly
   trusted. Otherwise, omit the explicit endpoint and attach Chrome MCP to a
@@ -353,8 +353,8 @@ main model can read the screenshot directly.
   the active policy explicitly allows that authority change. Revalidating a
   returned hostname is not enough; the WebSocket transport must use the endpoint
   that passed policy validation.
-- Gateway/provider `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, and `NO_PROXY` environment variables do not automatically proxy the OpenClaw-managed browser. Managed Chrome launches direct by default so provider proxy settings do not weaken browser SSRF checks.
-- OpenClaw-managed local CDP readiness probes and DevTools WebSocket connections bypass the managed network proxy for the exact launched loopback endpoint, so `openclaw browser start` still works when an operator proxy blocks loopback egress.
+- Gateway/provider `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, and `NO_PROXY` environment variables do not automatically proxy the PASO-managed browser. Managed Chrome launches direct by default so provider proxy settings do not weaken browser SSRF checks.
+- PASO-managed local CDP readiness probes and DevTools WebSocket connections bypass the managed network proxy for the exact launched loopback endpoint, so `openclaw browser start` still works when an operator proxy blocks loopback egress.
 - To proxy the managed browser itself, pass explicit Chrome proxy flags through `browser.extraArgs`, such as `--proxy-server=...` or `--proxy-pac-url=...`. Strict SSRF mode blocks explicit browser proxy routing unless private-network browser access is intentionally enabled.
 - `browser.ssrfPolicy.dangerouslyAllowPrivateNetwork` is off by default; enable only when private-network browser access is intentionally trusted.
 - `browser.ssrfPolicy.allowedHostnames` grants exact hosts while the rest of the private network remains blocked.
@@ -370,7 +370,7 @@ main model can read the screenshot directly.
 - `POST /start?headless=true` and `openclaw browser start --headless` request a
   one-shot headless launch for local managed profiles without rewriting
   `browser.headless` or profile config. Existing-session, attach-only, and
-  remote CDP profiles reject the override because OpenClaw does not launch those
+  remote CDP profiles reject the override because PASO does not launch those
   browser processes.
 - On Linux hosts without `DISPLAY` or `WAYLAND_DISPLAY`, local managed profiles
   default to headless automatically when neither the environment nor profile/global
@@ -402,7 +402,7 @@ main model can read the screenshot directly.
 - Default profile is `openclaw` (managed standalone). Use `defaultProfile: "user"` to opt into the signed-in user browser.
 - Auto-detect order: system default browser if Chromium-based; otherwise Chrome, Brave, Edge, Chromium, Chrome Canary.
 - `driver: "existing-session"` uses Chrome DevTools MCP instead of raw CDP. It can attach through Chrome MCP auto-connect, or through `cdpUrl` when you already have a DevTools endpoint for the running browser.
-- `driver: "extension"` drives your signed-in Chrome through the [OpenClaw Chrome extension](/tools/chrome-extension). The relay owns its loopback endpoint, so these profiles do not accept `cdpUrl`. This is the only signed-in-browser mode that works with nobody at the computer.
+- `driver: "extension"` drives your signed-in Chrome through the [PASO Chrome extension](/tools/chrome-extension). The relay owns its loopback endpoint, so these profiles do not accept `cdpUrl`. This is the only signed-in-browser mode that works with nobody at the computer.
 - Set `browser.profiles.<name>.userDataDir` when an existing-session profile should attach to a non-default Chromium user profile (Brave, Edge, etc.). This path also accepts `~` for your OS home directory.
 
 </Accordion>
@@ -412,7 +412,7 @@ main model can read the screenshot directly.
 ## Use Brave or another Chromium-based browser
 
 If your **system default** browser is Chromium-based (Chrome/Brave/Edge/etc),
-OpenClaw uses it automatically. Set `browser.executablePath` to override
+PASO uses it automatically. Set `browser.executablePath` to override
 auto-detection. Top-level and per-profile `executablePath` values accept `~`
 for your OS home directory:
 
@@ -453,7 +453,7 @@ Or set it in config, per platform:
   </Tab>
 </Tabs>
 
-Per-profile `executablePath` only affects local managed profiles that OpenClaw
+Per-profile `executablePath` only affects local managed profiles that PASO
 launches. `existing-session` profiles attach to an already-running browser
 instead, and remote CDP profiles use the browser behind `cdpUrl`.
 
@@ -462,11 +462,11 @@ instead, and remote CDP profiles use the browser behind `cdpUrl`.
 - **Local control (default):** the Gateway starts the loopback control service and can launch a local browser.
 - **Remote control (node host):** run a node host on the machine that has the browser; the Gateway proxies browser actions to it.
 - **Remote CDP:** set `browser.profiles.<name>.cdpUrl` (or `browser.cdpUrl`) to
-  attach to a remote Chromium-based browser. In this case, OpenClaw will not launch a local browser.
+  attach to a remote Chromium-based browser. In this case, PASO will not launch a local browser.
 - For externally managed CDP services on loopback (for example Browserless in
   Docker published to `127.0.0.1`), also set `attachOnly: true`. Loopback CDP
-  without `attachOnly` is treated as a local OpenClaw-managed browser profile.
-- `headless` only affects local managed profiles that OpenClaw launches. It does not restart or change existing-session or remote CDP browsers.
+  without `attachOnly` is treated as a local PASO-managed browser profile.
+- `headless` only affects local managed profiles that PASO launches. It does not restart or change existing-session or remote CDP browsers.
 - `executablePath` follows the same local managed profile rule. Changing it on a
   running local managed profile marks that profile for restart/reconcile so the
   next launch uses the new binary.
@@ -474,24 +474,24 @@ instead, and remote CDP profiles use the browser behind `cdpUrl`.
 Stopping behavior differs by profile mode:
 
 - local managed profiles: `openclaw browser stop` stops the browser process that
-  OpenClaw launched
+  PASO launched
 - attach-only and remote CDP profiles: `openclaw browser stop` closes the active
   control session and releases Playwright/CDP emulation overrides (viewport,
   color scheme, locale, timezone, offline mode, and similar state), even
-  though no browser process was launched by OpenClaw
+  though no browser process was launched by PASO
 
 Remote CDP URLs can include auth:
 
 - Query tokens (e.g., `https://provider.example?token=<token>`)
 - HTTP Basic auth (e.g., `https://user:pass@provider.example`)
 
-OpenClaw preserves the auth when calling `/json/*` endpoints and when connecting
+PASO preserves the auth when calling `/json/*` endpoints and when connecting
 to the CDP WebSocket. Prefer environment variables or secrets managers for
 tokens instead of committing them to config files.
 
 ## Node browser proxy (zero-config default)
 
-If you run a **node host** on the machine that has your browser, OpenClaw can
+If you run a **node host** on the machine that has your browser, PASO can
 auto-route browser tool calls to that node without any extra browser config.
 This is the default path for remote gateways. Automatic host fallback is allowed
 only before the selected node handles a request. Once an action reaches the node,
@@ -503,7 +503,7 @@ Notes:
 - Profiles come from the node's own `browser.profiles` config (same as local).
 - The proxy command never allows persistent profile mutations (`create-profile`, `delete-profile`, `reset-profile`) regardless of `allowProfiles`; make those changes on the node directly.
 - `nodeHost.browserProxy.allowProfiles` is optional. Leave it empty for the legacy/default behavior: all configured profiles remain reachable through the proxy.
-- If you set `nodeHost.browserProxy.allowProfiles`, OpenClaw treats it as a least-privilege boundary limiting which profile names the proxy will target.
+- If you set `nodeHost.browserProxy.allowProfiles`, PASO treats it as a least-privilege boundary limiting which profile names the proxy will target.
 - Disable if you don't want it:
   - On the node: `nodeHost.browserProxy.enabled=false`
   - On the gateway: `gateway.nodes.browser.mode="off"` (also accepts `"auto"` to pick a single connected browser node, or `"manual"` to require an explicit node param)
@@ -511,7 +511,7 @@ Notes:
 ## Browserless (hosted remote CDP)
 
 [Browserless](https://browserless.io) is a hosted Chromium service that exposes
-CDP connection URLs over HTTPS and WebSocket. OpenClaw can use either form, but
+CDP connection URLs over HTTPS and WebSocket. PASO can use either form, but
 for a remote browser profile the simplest option is the direct WebSocket URL
 from Browserless' connection docs.
 
@@ -536,12 +536,12 @@ Notes:
 - Replace `<BROWSERLESS_API_KEY>` with your real Browserless token.
 - Choose the region endpoint that matches your Browserless account (see their docs).
 - If Browserless gives you an HTTPS base URL, you can either convert it to
-  `wss://` for a direct CDP connection or keep the HTTPS URL and let OpenClaw
+  `wss://` for a direct CDP connection or keep the HTTPS URL and let PASO
   discover `/json/version`.
 
 ### Browserless Docker on the same host
 
-When Browserless is self-hosted in Docker and OpenClaw runs on the host, treat
+When Browserless is self-hosted in Docker and PASO runs on the host, treat
 Browserless as an externally managed CDP service:
 
 ```json5
@@ -560,38 +560,38 @@ Browserless as an externally managed CDP service:
 ```
 
 The address in `browser.profiles.browserless.cdpUrl` must be reachable from the
-OpenClaw process. Browserless must also advertise a matching reachable endpoint;
-set Browserless `EXTERNAL` to that same public-to-OpenClaw WebSocket base, such
+PASO process. Browserless must also advertise a matching reachable endpoint;
+set Browserless `EXTERNAL` to that same public-to-PASO WebSocket base, such
 as `ws://127.0.0.1:3000`, `ws://browserless:3000`, or a stable private Docker
 network address. If `/json/version` returns `webSocketDebuggerUrl` pointing at
-an address OpenClaw cannot reach, CDP HTTP can look healthy while the WebSocket
+an address PASO cannot reach, CDP HTTP can look healthy while the WebSocket
 attach still fails.
 
 Do not leave `attachOnly` unset for a loopback Browserless profile. Without
-`attachOnly`, OpenClaw treats the loopback port as a local managed browser
-profile and may report that the port is in use but not owned by OpenClaw.
+`attachOnly`, PASO treats the loopback port as a local managed browser
+profile and may report that the port is in use but not owned by PASO.
 
 ## Direct WebSocket CDP providers
 
 Some hosted browser services expose a **direct WebSocket** endpoint rather than
-the standard HTTP-based CDP discovery (`/json/version`). OpenClaw accepts three
+the standard HTTP-based CDP discovery (`/json/version`). PASO accepts three
 CDP URL shapes and picks the right connection strategy automatically:
 
 - **HTTP(S) discovery** - `http://host[:port]` or `https://host[:port]`.
-  OpenClaw calls `/json/version` to discover the WebSocket debugger URL, then
+  PASO calls `/json/version` to discover the WebSocket debugger URL, then
   connects. No WebSocket fallback.
 - **Direct WebSocket endpoints** - `ws://host[:port]/devtools/<kind>/<id>` or
   `wss://...` with a `/devtools/browser|page|worker|shared_worker|service_worker/<id>`
-  path. OpenClaw connects directly via a WebSocket handshake and skips
+  path. PASO connects directly via a WebSocket handshake and skips
   `/json/version` entirely.
 - **Bare WebSocket roots** - `ws://host[:port]` or `wss://host[:port]` with no
   `/devtools/...` path (e.g. [Browserless](https://browserless.io),
-  [Browserbase](https://www.browserbase.com)). OpenClaw tries HTTP
+  [Browserbase](https://www.browserbase.com)). PASO tries HTTP
   `/json/version` discovery first (normalising the scheme to `http`/`https`);
-  if discovery returns a `webSocketDebuggerUrl` it is used, otherwise OpenClaw
+  if discovery returns a `webSocketDebuggerUrl` it is used, otherwise PASO
   falls back to a direct WebSocket handshake at the bare root. If the advertised
   WebSocket endpoint rejects the CDP handshake but the configured bare root
-  accepts it, OpenClaw falls back to that root as well. This lets a bare `ws://`
+  accepts it, PASO falls back to that root as well. This lets a bare `ws://`
   pointed at a local Chrome still connect, since Chrome only accepts WebSocket
   upgrades on the specific per-target path from `/json/version`, while hosted
   providers can still use their root WebSocket endpoint when their discovery
@@ -674,7 +674,7 @@ Key ideas:
   configured gateway password.
 - Tailscale Serve identity headers and `gateway.auth.mode: "trusted-proxy"` do
   **not** authenticate this standalone loopback browser API.
-- If browser control is enabled and no shared-secret auth is configured, OpenClaw
+- If browser control is enabled and no shared-secret auth is configured, PASO
   auto-generates and persists a browser-control credential at startup:
   a token when `gateway.auth.mode` is `none`, or a password when it is
   `trusted-proxy` (persisted through `gateway.auth.password` so out-of-process
@@ -694,7 +694,7 @@ Remote CDP tips:
 
 ## Profiles (multi-browser)
 
-OpenClaw supports multiple named profiles (routing configs). Profiles can be:
+PASO supports multiple named profiles (routing configs). Profiles can be:
 
 - **openclaw-managed**: a dedicated Chromium-based browser instance with its own user data directory + CDP port
 - **remote**: an explicit CDP URL (Chromium-based browser running elsewhere)
@@ -712,7 +712,7 @@ All control endpoints accept `?profile=<name>`; the CLI uses `--browser-profile`
 
 ## Existing session via Chrome DevTools MCP
 
-OpenClaw can also attach to a running Chromium-based browser profile through the
+PASO can also attach to a running Chromium-based browser profile through the
 official Chrome DevTools MCP server. This reuses the tabs and login state
 already open in that browser profile.
 
@@ -747,7 +747,7 @@ Then in the matching browser:
 
 1. Open that browser's inspect page for remote debugging.
 2. Enable remote debugging.
-3. Keep the browser running and approve the connection prompt when OpenClaw attaches.
+3. Keep the browser running and approve the connection prompt when PASO attaches.
 
 Common inspect pages:
 
@@ -796,8 +796,8 @@ Notes:
 
 - This path is higher-risk than the isolated `openclaw` profile because it can
   act inside your signed-in browser session.
-- OpenClaw does not launch the browser for this driver; it only attaches.
-- OpenClaw uses the official Chrome DevTools MCP `--autoConnect` flow here. If
+- PASO does not launch the browser for this driver; it only attaches.
+- PASO uses the official Chrome DevTools MCP `--autoConnect` flow here. If
   `userDataDir` is set, it is passed through to target that user data directory.
 - Existing-session can attach on the selected host or through a connected
   browser node. If Chrome lives elsewhere and no browser node is connected, use
@@ -824,7 +824,7 @@ pinned versions, vendored binaries):
 | `mcpCommand` | Executable to spawn instead of `npx`. Resolved as-is; absolute paths are honored.                                          |
 | `mcpArgs`    | Argument array passed verbatim to `mcpCommand`. Replaces the default `chrome-devtools-mcp@latest --autoConnect` arguments. |
 
-When `cdpUrl` is set on an existing-session profile, OpenClaw skips
+When `cdpUrl` is set on an existing-session profile, PASO skips
 `--autoConnect` and forwards the endpoint to Chrome MCP automatically:
 
 - `http(s)://...` → `--browserUrl <url>` (DevTools HTTP discovery endpoint).
@@ -842,7 +842,7 @@ Compared to the managed `openclaw` profile, existing-session drivers are more co
 - **Screenshots** - page captures and `--ref` element captures work; CSS `--element` selectors do not. Playwright is not required for page or ref-based element screenshots. (`--full-page` cannot combine with `--ref` or `--element` on any profile, not just existing-session.)
 - **Actions** - `click`, `type`, `hover`, `scrollIntoView`, `drag`, and `select` require snapshot refs (no CSS selectors). `click-coords` clicks visible viewport coordinates and does not require a snapshot ref. `click` is left-button only (no button overrides or modifiers). `type` does not support `slowly=true`; use `fill` or `press`. `press` does not support `delayMs`. `type`, `hover`, `scrollIntoView`, `drag`, `select`, and `fill` do not support per-call `timeoutMs` overrides; `evaluate` does. `select` accepts a single value. `batch` is not supported; send actions individually.
 - **Wait / upload / dialog** - `wait --url` supports exact, substring, and glob patterns (same as managed); `wait --load networkidle` is not supported on existing-session profiles (it works on managed and raw/remote CDP profiles). Upload hooks require `ref` or `inputRef`, one file at a time, no CSS `element`. Dialog hooks do not support timeout overrides or `dialogId`.
-- **Dialog visibility** - Managed browser action responses include `blockedByDialog` and `browserState.dialogs.pending` when an action opens a modal dialog; snapshots also include pending dialog state. Respond with `browser dialog --accept/--dismiss --dialog-id <id>` while a dialog is pending. Dialogs handled outside OpenClaw appear under `browserState.dialogs.recent`.
+- **Dialog visibility** - Managed browser action responses include `blockedByDialog` and `browserState.dialogs.pending` when an action opens a modal dialog; snapshots also include pending dialog state. Respond with `browser dialog --accept/--dismiss --dialog-id <id>` while a dialog is pending. Dialogs handled outside PASO appear under `browserState.dialogs.recent`.
 - **Playwright-only features** - PDF export, download interception, `responsebody`, and the agent actions `requests`, `errors`, `text`, and `emulate` require a Playwright-backed profile, such as the managed `openclaw` profile. Use `snapshot` to inspect an existing-session page.
 
 </Accordion>
@@ -858,7 +858,7 @@ Compared to the managed `openclaw` profile, existing-session drivers are more co
 
 ## Browser selection
 
-When launching locally, OpenClaw picks the first available:
+When launching locally, PASO picks the first available:
 
 1. Chrome
 2. Brave
@@ -896,7 +896,7 @@ For WSL2 Gateway + Windows Chrome split-host setups, see
 
 These are different failure classes and they point to different code paths.
 
-- **CDP startup or readiness failure** means OpenClaw cannot confirm that the browser control plane is healthy.
+- **CDP startup or readiness failure** means PASO cannot confirm that the browser control plane is healthy.
 - **Navigation SSRF block** means the browser control plane is healthy, but a page navigation target is rejected by policy.
 
 Common examples:
@@ -927,7 +927,7 @@ How to read the results:
 Important behavior details:
 
 - Browser config defaults to a fail-closed SSRF policy object even when you do not configure `browser.ssrfPolicy`.
-- For the local loopback `openclaw` managed profile, CDP health checks intentionally skip browser SSRF reachability enforcement for OpenClaw's own local control plane.
+- For the local loopback `openclaw` managed profile, CDP health checks intentionally skip browser SSRF reachability enforcement for PASO's own local control plane.
 - Navigation protection is separate. A successful `start` or `tabs` result does not mean a later `open` or `navigate` target is allowed.
 
 Security guidance:

@@ -8,7 +8,7 @@ title: "Video generation"
 sidebarTitle: "Video generation"
 ---
 
-OpenClaw agents generate videos from text prompts, reference images, or
+PASO agents generate videos from text prompts, reference images, or
 existing videos through `video_generate`. Sixteen provider backends are
 supported; the agent picks the right one automatically based on config and
 available API keys.
@@ -46,7 +46,7 @@ active mode before submission and reports supported modes in `action=list`.
     ```
   </Step>
   <Step title="Ask the agent">
-    > Generate a 5-second cinematic video of a friendly lobster surfing at sunset.
+    > Generate a 5-second cinematic video of desert mountains at sunset.
 
     The agent calls `video_generate` automatically. No tool allowlisting
     is needed.
@@ -58,13 +58,13 @@ active mode before submission and reports supported modes in `action=list`.
 
 Video generation is asynchronous:
 
-1. OpenClaw submits the request to the provider and immediately returns a task id.
+1. PASO submits the request to the provider and immediately returns a task id.
 2. The provider processes the job in the background (typically 30 seconds to several minutes depending on the provider and resolution; slow queue-backed providers can run up to the configured timeout).
-3. When the video is ready, OpenClaw wakes the same session with an internal completion event.
+3. When the video is ready, PASO wakes the same session with an internal completion event.
 4. The agent reports it through the session's normal visible-reply mode:
    automatic final reply, or `message(action="send")` when the session requires
    the message tool. If the requester session is inactive, or its wake fails and
-   generated media is still missing from the completion reply, OpenClaw sends
+   generated media is still missing from the completion reply, PASO sends
    an idempotent direct fallback with the media.
 
 While a job is in flight, duplicate `video_generate` calls in the same
@@ -77,10 +77,10 @@ Outside of session-backed agent runs (for example, direct tool invocations),
 the tool falls back to inline generation and returns the final media path
 in the same turn.
 
-Generated video files save under OpenClaw-managed media storage when the
+Generated video files save under PASO-managed media storage when the
 provider returns bytes. The default cap is 16MB (the shared video media
 limit); `agents.defaults.mediaMaxMb` raises it for larger renders. When a
-provider also returns a hosted output URL, OpenClaw delivers that URL instead
+provider also returns a hosted output URL, PASO delivers that URL instead
 of failing the task if local persistence rejects an oversized file.
 
 ### Task lifecycle
@@ -194,9 +194,9 @@ role or use `first_frame` for single-image image-to-video.
 ### Style controls
 
 <ParamField path="aspectRatio" type="string">
-  Aspect-ratio hint such as `1:1`, `16:9`, `9:16`, `adaptive`, or a provider-specific value. OpenClaw normalizes or ignores unsupported values per provider.
+  Aspect-ratio hint such as `1:1`, `16:9`, `9:16`, `adaptive`, or a provider-specific value. PASO normalizes or ignores unsupported values per provider.
 </ParamField>
-<ParamField path="resolution" type="string">Resolution hint such as `360P`, `480P`, `540P`, `720P`, `768P`, `1080P`, `4K`, or a provider-specific value. OpenClaw normalizes or ignores unsupported values per provider.</ParamField>
+<ParamField path="resolution" type="string">Resolution hint such as `360P`, `480P`, `540P`, `720P`, `768P`, `1080P`, `4K`, or a provider-specific value. PASO normalizes or ignores unsupported values per provider.</ParamField>
 <ParamField path="durationSeconds" type="number">
   Target duration in seconds (rounded to nearest provider-supported value).
 </ParamField>
@@ -219,7 +219,7 @@ dimensions). Providers that do not declare it surface the value via
 </ParamField>
 <ParamField path="model" type="string">Provider/model override (e.g. `runway/gen4.5`).</ParamField>
 <ParamField path="filename" type="string">Output filename hint.</ParamField>
-<ParamField path="timeoutMs" type="number">Optional provider operation timeout in milliseconds. When omitted, OpenClaw uses `agents.defaults.mediaModels.video.timeoutMs` if configured, otherwise the plugin-authored provider default when one exists.</ParamField>
+<ParamField path="timeoutMs" type="number">Optional provider operation timeout in milliseconds. When omitted, PASO uses `agents.defaults.mediaModels.video.timeoutMs` if configured, otherwise the plugin-authored provider default when one exists.</ParamField>
 <ParamField path="providerOptions" type="object">
   Provider-specific options as a JSON object (e.g. `{"seed": 42, "draft": true}`).
   Providers that declare a typed schema validate the keys and types; unknown
@@ -229,7 +229,7 @@ dimensions). Providers that do not declare it surface the value via
 </ParamField>
 
 <Note>
-Not all providers support all parameters. OpenClaw normalizes duration to
+Not all providers support all parameters. PASO normalizes duration to
 the closest provider-supported value, and remaps translated geometry hints
 such as size-to-aspect-ratio when a fallback provider exposes a different
 control surface. Truly unsupported overrides are ignored on a best-effort
@@ -286,7 +286,7 @@ aggregated error includes the skip reason for each.
 
 ## Model selection
 
-OpenClaw resolves the model in this order:
+PASO resolves the model in this order:
 
 1. **`model` tool parameter** - if the agent specifies one in the call.
 2. **`agents.defaults.mediaModels.video.primary`** from config.
@@ -376,7 +376,7 @@ Automatic fallback across authenticated providers is always enabled. A per-call
     image-to-video through the configured graph.
   </Accordion>
   <Accordion title="fal">
-    Uses a queue-backed flow for long-running jobs. OpenClaw waits up to 20
+    Uses a queue-backed flow for long-running jobs. PASO waits up to 20
     minutes by default before treating an in-progress fal queue job as timed
     out. Most fal video models
     accept a single image reference. Seedance 2.0 reference-to-video
@@ -399,7 +399,7 @@ Automatic fallback across authenticated providers is always enabled. A per-call
     a warning.
   </Accordion>
   <Accordion title="OpenRouter">
-    Uses OpenRouter's asynchronous `/videos` API. OpenClaw submits the
+    Uses OpenRouter's asynchronous `/videos` API. PASO submits the
     job, polls `polling_url`, and downloads either `unsigned_urls` or the
     documented job content endpoint. The bundled `google/veo-3.1-fast` default
     advertises 4/6/8 second durations, `720P`/`1080P` resolutions, and
@@ -497,7 +497,7 @@ This live file uses already-exported provider env vars ahead of stored auth
 profiles by default, and runs a release-safe smoke by default:
 
 - `generate` for every non-FAL provider in the sweep.
-- One-second lobster prompt.
+- One-second landscape prompt.
 - Per-provider operation cap from
   `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` by default).
 
@@ -521,7 +521,7 @@ select `runway/gen4_aleph`.
 
 ## Configuration
 
-Set the default video-generation model in your OpenClaw config:
+Set the default video-generation model in your PASO config:
 
 ```json5
 {

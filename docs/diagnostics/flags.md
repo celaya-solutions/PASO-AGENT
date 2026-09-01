@@ -133,7 +133,7 @@ Or enable it in config:
 The output path always comes from `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH`, even
 when the flag itself is set in config; there is no config key for the path.
 When `timeline` is enabled only from config, the earliest config-loading spans
-are missing because OpenClaw has not read config yet; subsequent startup spans
+are missing because PASO has not read config yet; subsequent startup spans
 are captured normally.
 
 `OPENCLAW_DIAGNOSTICS=1`, `=all`, and `=*` also enable the timeline, since they

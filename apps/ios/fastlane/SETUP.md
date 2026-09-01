@@ -1,4 +1,10 @@
-# fastlane setup (OpenClaw iOS)
+# fastlane setup (PASO iOS)
+
+> **PASO publishing is disabled.** The Apple team, bundle IDs, hosted relay,
+> and signing repository described below belong to upstream OpenClaw. They are
+> retained only as compatibility documentation. Do not run setup, sync, archive,
+> or upload lanes until Celaya Solutions Research provisions its own Apple
+> identities and changes `AppStoreSigning.json` to `releaseEnabled: true`.
 
 Install the pinned Ruby bundle:
 

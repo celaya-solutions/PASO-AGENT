@@ -171,7 +171,17 @@ describe("codesign-mac-app temp file hygiene", () => {
     expect(result.stderr).toContain(diagnostic);
   });
 
-  it("defines a closed Foundation elevation-host signing profile", () => {
+  it("fails closed before using the inherited upstream elevation signer", () => {
+    const tempRoot = tempDirs.make("openclaw-codesign-elevation-disabled-");
+    const result = runCodesignWithoutAllocation([path.join(tempRoot, "Missing.app")], tempRoot, {
+      OPENCLAW_MAC_SIGNING_VARIANT: "elevation-host",
+    });
+
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("legacy upstream elevation signing is disabled");
+  });
+
+  it("defines the legacy Foundation elevation-host verification profile", () => {
     const script = readFileSync(scriptPath, "utf8");
     const elevationProfile = script.slice(
       script.indexOf('if [[ "$SIGNING_VARIANT" == "elevation-host" ]]'),
@@ -179,9 +189,9 @@ describe("codesign-mac-app temp file hygiene", () => {
     );
 
     expect(script).toContain(
-      'ELEVATION_IDENTITY="Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)"',
+      'LEGACY_ELEVATION_IDENTITY="Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)"',
     );
-    expect(script).toContain('ELEVATION_TEAM_ID="FWJYW4S8P8"');
+    expect(script).toContain('LEGACY_ELEVATION_TEAM_ID="FWJYW4S8P8"');
     expect(elevationProfile).toContain("<dict/>");
     expect(elevationProfile).not.toContain("com.apple.security.automation.apple-events");
     expect(script).toContain("verify_elevation_signature");
@@ -210,6 +220,7 @@ describe("codesign-mac-app temp file hygiene", () => {
       encoding: "utf8",
       env: {
         ...process.env,
+        OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING: "1",
         OPENCLAW_MAC_SIGNING_VARIANT: "elevation-host",
         PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         SIGN_IDENTITY: "Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)",
@@ -236,6 +247,7 @@ describe("codesign-mac-app temp file hygiene", () => {
       env: {
         ...process.env,
         CODESIGN_FAKE_SECOND_AUTHORITY: "1",
+        OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING: "1",
         OPENCLAW_MAC_SIGNING_VARIANT: "elevation-host",
         PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         SIGN_IDENTITY: "Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)",
@@ -264,6 +276,7 @@ describe("codesign-mac-app temp file hygiene", () => {
       env: {
         ...process.env,
         CODESIGN_FAKE_NO_AUTHORITY: "1",
+        OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING: "1",
         OPENCLAW_MAC_SIGNING_VARIANT: "elevation-host",
         PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         SIGN_IDENTITY: "Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)",
@@ -290,6 +303,7 @@ describe("codesign-mac-app temp file hygiene", () => {
       env: {
         ...process.env,
         CODESIGN_FAKE_FAIL_AFTER_METADATA: "1",
+        OPENCLAW_ALLOW_LEGACY_ELEVATION_SIGNING: "1",
         OPENCLAW_MAC_SIGNING_VARIANT: "elevation-host",
         PATH: `${binDir}${path.delimiter}${process.env.PATH ?? ""}`,
         SIGN_IDENTITY: "Developer ID Application: OpenClaw Foundation (FWJYW4S8P8)",

@@ -21,7 +21,7 @@ struct SystemAgentSettings: View {
             ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 20) {
                     SettingsPageHeader(
-                        title: "OpenClaw",
+                        title: "PASO",
                         subtitle: """
                         Your AI-powered setup helper. It can check status, fix config, \
                         switch models, and connect channels.

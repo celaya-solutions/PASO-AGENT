@@ -269,7 +269,7 @@ describe("renderSkills ClawHub", () => {
     expect(rows[1]!.querySelector(".plugins-item__detail-button")).not.toBeNull();
     // The row is the only place left to say the source was never scanned.
     expect(rows[0]!.querySelector(".settings-row__desc")?.textContent).toContain(
-      "Not scanned by ClawHub",
+      "Not scanned by the registry",
     );
 
     for (const row of rows) {

@@ -80,13 +80,13 @@ enum RemoteGatewayAuthIssue: Equatable {
                 + "If the gateway uses an environment variable instead, "
                 + "set `OPENCLAW_GATEWAY_TOKEN` before starting the gateway."
         case .setupCodeExpired:
-            "Scan or paste a fresh setup code from an already-paired OpenClaw client, then try again."
+            "Scan or paste a fresh setup code from an already-paired PASO client, then try again."
         case .passwordRequired:
             "This onboarding flow does not support password auth yet. "
                 + "Reconfigure the gateway to use token auth, then retry."
         case .pairingRequired:
-            "Approve this device from an already-paired OpenClaw client. "
-                + "In your OpenClaw chat, run `/pair approve`, then click **Check connection** again."
+            "Approve this device from an already-paired PASO client. "
+                + "In your PASO chat, run `/pair approve`, then click **Check connection** again."
         }
     }
 
@@ -98,7 +98,7 @@ enum RemoteGatewayAuthIssue: Equatable {
         case .setupCodeExpired:
             nil
         case .pairingRequired:
-            "If you do not have another paired OpenClaw client yet, "
+            "If you do not have another paired PASO client yet, "
                 + "approve the pending request on the gateway host with `openclaw devices approve`."
         case .tokenMismatch, .passwordRequired:
             nil
@@ -118,7 +118,7 @@ enum RemoteGatewayAuthIssue: Equatable {
         case .passwordRequired:
             "This gateway uses password auth. Remote onboarding on macOS cannot collect gateway passwords yet."
         case .pairingRequired:
-            "Pairing required. In an already-paired OpenClaw client, "
+            "Pairing required. In an already-paired PASO client, "
                 + "run /pair approve, then check the connection again."
         }
     }

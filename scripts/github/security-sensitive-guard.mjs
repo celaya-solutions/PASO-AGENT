@@ -31,7 +31,7 @@ export {
   readBoundedGitHubJson,
 };
 
-const securityTeamSlug = process.env.OPENCLAW_SECURITY_TEAM_SLUG ?? "openclaw-secops";
+const securityTeamSlug = process.env.OPENCLAW_SECURITY_TEAM_SLUG ?? "";
 const maxListedFiles = 25;
 const securitySensitiveFiles = [
   {
@@ -230,7 +230,7 @@ export function renderSecuritySensitiveAwarenessComment(changes) {
     "Maintainer follow-up:",
     "- Review whether each security-sensitive file change is intentional.",
     "- Confirm the change does not weaken secret, credential, or local-state protection.",
-    "- If this PR intentionally needs the change, a repository admin or member of `@openclaw/openclaw-secops` must approve the exact head SHA.",
+    "- If this PR intentionally needs the change, `@celaya-solutions` or another repository admin must approve the exact head SHA.",
   ].join("\n");
 }
 
@@ -240,7 +240,7 @@ export function renderAuthorizedSecuritySensitiveComment(override) {
     "",
     "### Security-sensitive change authorized",
     "",
-    "This PR includes security-sensitive file changes. A repository admin or member of `@openclaw/openclaw-secops` authorized this exact head SHA with `/allow-security-sensitive-change`.",
+    "This PR includes security-sensitive file changes. `@celaya-solutions` or another repository admin authorized this exact head SHA with `/allow-security-sensitive-change`.",
     "",
     `- Approved SHA: ${markdownCode(override.sha)}`,
     `- Approved by: @${sanitizeGuardDisplayValue(override.login)}`,
@@ -258,7 +258,7 @@ export function renderTrustedSecuritySensitiveComment({ actor, headSha, changes 
     "",
     "### Security-sensitive changes noted",
     "",
-    "This PR includes security-sensitive file changes. The guard is informational because the PR author is a repository admin or a member of `@openclaw/openclaw-secops`.",
+    "This PR includes security-sensitive file changes. The guard is informational because the PR author is `@celaya-solutions` or another repository admin.",
     "",
     `- Current SHA: ${markdownCode(headSha ?? "<head-sha>")}`,
     `- Trusted actor: @${sanitizeGuardDisplayValue(actor.login)}`,
@@ -289,12 +289,12 @@ export function renderBlockedSecuritySensitiveComment({ headSha, changes }) {
     "",
     "### Security-sensitive changes are blocked",
     "",
-    "OpenClaw does not accept security-sensitive file changes through PRs unless a repository admin or security explicitly authorizes the current head SHA.",
+    "PASO does not accept security-sensitive file changes through PRs unless a repository admin or security explicitly authorizes the current head SHA.",
     "",
     "Detected security-sensitive changes:",
     ...renderChangedFileLines(changes),
     "",
-    "If this PR intentionally needs these changes, ask a repository admin or member of `@openclaw/openclaw-secops` to comment:",
+    "If this PR intentionally needs these changes, ask `@celaya-solutions` or another repository admin to comment:",
     "",
     "```text",
     allowSecuritySensitiveCommand,
@@ -359,7 +359,10 @@ async function main() {
   }
 
   const api = createGitHubApi(token, { userAgent: "openclaw-security-sensitive-guard" });
-  const explicitSecurityApprovers = normalizeGuardLoginSet(process.env.OPENCLAW_SECURITY_APPROVERS);
+  const explicitSecurityApprovers = normalizeGuardLoginSet(
+    process.env.OPENCLAW_SECURITY_APPROVERS,
+    "celaya-solutions",
+  );
   const trustedCommentAuthors = securitySensitiveGuardCommentAuthors(
     process.env.OPENCLAW_SECURITY_SENSITIVE_GUARD_COMMENT_BOTS,
   );
@@ -423,7 +426,7 @@ async function main() {
   });
   const isSecuritySensitiveApprover = async (login) => {
     if (await isSecurityMember(login)) {
-      return securityTeamSlug;
+      return securityTeamSlug || "explicit PASO security approver";
     }
     if (await isRepositoryAdmin(login)) {
       return "repository admin";

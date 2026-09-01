@@ -342,7 +342,7 @@ function approvalRun(overrides: Record<string, unknown> = {}) {
     repository: "openclaw/openclaw",
     status: "in_progress",
     url: "https://github.com/openclaw/openclaw/actions/runs/123",
-    workflowName: "OpenClaw Release Publish",
+    workflowName: "PASO Release Publish",
     ...overrides,
   };
 }
@@ -356,7 +356,7 @@ function writeClawHubApproval(overrides: Record<string, unknown> = {}) {
       version: 2,
       kind: "clawhub-bootstrap",
       repository: "openclaw/openclaw",
-      workflow: "OpenClaw Release Publish",
+      workflow: "PASO Release Publish",
       parentRunId: "123",
       parentRunAttempt: 2,
       workflowBranch: "main",
@@ -380,6 +380,12 @@ describe("scripts/validate-release-publish-approval.mjs", () => {
       "Using release publish approval run 123: https://github.com/openclaw/openclaw/actions/runs/123",
     );
     expect(result.stderr).toBe("");
+  });
+
+  it("accepts the exact legacy workflow name for an in-flight approval run", () => {
+    const result = runApprovalScript(approvalRun({ workflowName: "OpenClaw Release Publish" }));
+
+    expect(result.status, result.stderr).toBe(0);
   });
 
   it("rejects approval runs from the wrong workflow branch", () => {
@@ -645,6 +651,27 @@ describe("scripts/validate-release-publish-approval.mjs", () => {
 
     expect(result.status).toBe(0);
     expect(result.stderr).toBe("");
+  });
+
+  it("accepts the exact legacy workflow name in an in-flight signed approval", () => {
+    const approvalPath = writeClawHubApproval({ workflow: "OpenClaw Release Publish" });
+    const result = runApprovalScript(
+      approvalRun({
+        headBranch: "main",
+        headSha: "d".repeat(40),
+        runAttempt: 2,
+      }),
+      {
+        APPROVAL_PATH: approvalPath,
+        EXPECTED_WORKFLOW_BRANCH: "main",
+        EXPECTED_RUN_ATTEMPT: "2",
+        RELEASE_APPROVAL_KIND: "clawhub-bootstrap",
+        RELEASE_PACKAGES: "@openclaw/voice-call,@openclaw/meta-provider",
+        RELEASE_TAG: "v2026.7.1-beta.3",
+      },
+    );
+
+    expect(result.status, result.stderr).toBe(0);
   });
 
   it("accepts a child workflow SHA that differs from the approving parent tooling", () => {

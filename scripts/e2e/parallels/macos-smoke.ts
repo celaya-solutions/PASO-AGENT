@@ -1,5 +1,5 @@
 #!/usr/bin/env -S pnpm tsx
-// Macos Smoke script supports OpenClaw repository automation.
+// Macos Smoke script supports PASO repository automation.
 import { readFileSync } from "node:fs";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
@@ -110,7 +110,8 @@ const defaultOptions = (): MacosOptions => ({
   hostIp: undefined,
   hostPort: 18425,
   hostPortExplicit: false,
-  installUrl: "https://openclaw.ai/install.sh",
+  installUrl:
+    "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh",
   installVersion: "",
   json: false,
   keepServer: false,
@@ -138,7 +139,7 @@ Options:
   --model <provider/model>    Override the model used for the agent-turn smoke.
   --api-key-env <var>        Host env var name for provider API key.
   --openai-api-key-env <var> Alias for --api-key-env (backward compatible)
-  --install-url <url>        Installer URL for latest release. Default: https://openclaw.ai/install.sh
+  --install-url <url>        Installer URL. Default: PASO fork scripts/install.sh
   --host-port <port>         Host HTTP port for current-main tgz. Default: 18425
   --host-ip <ip>             Override Parallels host IP.
   --latest-version <ver>     Override npm latest version lookup.
@@ -989,7 +990,7 @@ sleep 1`,
 deadline=$((SECONDS + 120))
 while [ $SECONDS -lt $deadline ]; do
   if curl -fsSL --connect-timeout 2 --max-time 5 http://127.0.0.1:18789/ >/tmp/openclaw-dashboard-smoke.html 2>/dev/null; then
-    if grep -F '<title>OpenClaw Control</title>' /tmp/openclaw-dashboard-smoke.html >/dev/null &&
+    if grep -F '<title>PASO Control</title>' /tmp/openclaw-dashboard-smoke.html >/dev/null &&
       grep -F '<openclaw-app></openclaw-app>' /tmp/openclaw-dashboard-smoke.html >/dev/null; then
       asset_paths="$(
         sed -nE 's/.*<(script|link)[^>]*(src|href)=["'"'"']([^"'"'"']+)["'"'"'].*/\3/p' /tmp/openclaw-dashboard-smoke.html |

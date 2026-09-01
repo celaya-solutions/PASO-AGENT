@@ -1341,7 +1341,7 @@ describe("agent event handler", () => {
         "Visible before.",
         "",
         "<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>",
-        "OpenClaw runtime context (internal):",
+        "PASO runtime context (internal):",
         "[Internal task completion event]",
         "secret child result",
         "<<<END_OPENCLAW_INTERNAL_CONTEXT>>>",

@@ -113,7 +113,7 @@ describe("verifyBetaRelease workflow outcomes", () => {
     mkdirSync(join(rootDir, "extensions"));
     writeFileSync(join(rootDir, "package.json"), JSON.stringify({ version }));
     const run = {
-      workflowName: telegram ? "NPM Telegram Beta E2E" : "OpenClaw NPM Release",
+      workflowName: telegram ? "NPM Telegram Beta E2E" : "PASO NPM Release",
       headBranch: "main",
       event: "workflow_dispatch",
       status: "completed",
@@ -230,8 +230,16 @@ if (path.basename(process.argv[1]) === "npm" && args[0] === "view" && args[1] ==
     const fixture = workflowFixture(run, false);
 
     await expect(verifyBetaRelease(fixture.args, { rootDir: fixture.rootDir })).rejects.toThrow(
-      "OpenClaw NPM Release: run 44 is",
+      "PASO NPM Release: run 44 is",
     );
+  });
+
+  it("accepts the exact legacy npm workflow name in historical beta evidence", async () => {
+    const fixture = workflowFixture({ workflowName: "OpenClaw NPM Release" }, false);
+
+    await expect(
+      verifyBetaRelease(fixture.args, { rootDir: fixture.rootDir }),
+    ).resolves.toContainEqual(expect.stringContaining("PASO NPM Release OK: 44"));
   });
 });
 
@@ -241,7 +249,7 @@ describe("parseReleaseVerifyBetaArgs", () => {
       version: "2026.5.10-beta.3",
       tag: "v2026.5.10-beta.3",
       distTag: "beta",
-      repo: "openclaw/openclaw",
+      repo: "celaya-solutions/PASO-AGENT",
       registry: "https://clawhub.ai",
       releaseSha: undefined,
       workflowRef: undefined,
@@ -297,7 +305,7 @@ describe("parseReleaseVerifyBetaArgs", () => {
       version: "2026.5.10-beta.3",
       tag: "v2026.5.10-beta.3",
       distTag: "beta",
-      repo: "openclaw/openclaw",
+      repo: "celaya-solutions/PASO-AGENT",
       registry: "https://clawhub.ai",
       releaseSha: "a".repeat(40),
       workflowRef: "release/2026.5.10",
@@ -384,7 +392,7 @@ describe("validateClawHubBootstrapEvidence", () => {
     run_attempt: 2,
     status: "completed",
     conclusion: "success",
-    html_url: "https://github.com/openclaw/openclaw/actions/runs/34",
+    html_url: "https://github.com/celaya-solutions/PASO-AGENT/actions/runs/34",
     created_at: "2026-07-10T00:00:00Z",
     updated_at: "2026-07-10T00:02:00Z",
   };
@@ -410,7 +418,7 @@ describe("validateClawHubBootstrapEvidence", () => {
   };
   const evidence = {
     schemaVersion: 2,
-    repository: "openclaw/openclaw",
+    repository: "celaya-solutions/PASO-AGENT",
     targetSha: releaseSha,
     workflowSha,
     runId: "34",
@@ -457,7 +465,7 @@ describe("validateClawHubBootstrapEvidence", () => {
     } = {},
   ) {
     return validateClawHubBootstrapEvidence({
-      repo: "openclaw/openclaw",
+      repo: "celaya-solutions/PASO-AGENT",
       runId: "34",
       releaseSha,
       expectedVersion: "2026.7.1-beta.3",
@@ -599,8 +607,8 @@ describe("downloadClawHubBootstrapReadback", () => {
     path: ".github/workflows/plugin-clawhub-new.yml",
     status: "completed",
     conclusion: "success",
-    repository: { full_name: "openclaw/openclaw" },
-    head_repository: { full_name: "openclaw/openclaw" },
+    repository: { full_name: "celaya-solutions/PASO-AGENT" },
+    head_repository: { full_name: "celaya-solutions/PASO-AGENT" },
   };
 
   function createFixture(
@@ -657,7 +665,7 @@ describe("downloadClawHubBootstrapReadback", () => {
   }> {
     const fixture = createFixture(archive, overrides);
     const result = await downloadClawHubBootstrapReadback({
-      repo: "openclaw/openclaw",
+      repo: "celaya-solutions/PASO-AGENT",
       runId: "34",
       run,
       readbackArtifact: fixture.readbackArtifact,

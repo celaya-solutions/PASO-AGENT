@@ -1,13 +1,13 @@
 ---
-summary: "Install and configure Node.js for OpenClaw - version requirements, install options, and PATH troubleshooting"
+summary: "Install and configure Node.js for PASO - version requirements, install options, and PATH troubleshooting"
 title: "Node.js"
 read_when:
-  - "You need to install Node.js before installing OpenClaw"
-  - "You installed OpenClaw but `openclaw` is command not found"
+  - "You need to install Node.js before installing PASO"
+  - "You installed PASO but `openclaw` is command not found"
   - "npm install -g fails with permissions or PATH issues"
 ---
 
-OpenClaw requires **Node 22.22.3+, Node 24.15+, or Node 25.9+** (which includes Node 26) with a WAL-reset-safe linked SQLite library. **Node 26 is the recommended runtime** — it starts the Gateway noticeably faster and uses less memory than Node 24. The installer provisions Node 26 on macOS and the supported Node 24 LTS line on Linux when Node is missing; CI and release workflows also pin Node 24. On RPM-based Linux, the installer preserves a supported distro-owned Node package that links unsafe SQLite and uses a user-space Node runtime for OpenClaw instead. Node 22 remains supported via its LTS line. Node 23 is unsupported. The [installer script](/install#alternative-install-methods) detects and installs Node automatically — use this page when you want to set up Node yourself (versions, PATH, global installs).
+PASO requires **Node 22.22.3+, Node 24.15+, or Node 25.9+** (which includes Node 26) with a WAL-reset-safe linked SQLite library. **Node 26 is the recommended runtime** — it starts the Gateway noticeably faster and uses less memory than Node 24. The installer provisions Node 26 on macOS and the supported Node 24 LTS line on Linux when Node is missing; CI and release workflows also pin Node 24. On RPM-based Linux, the installer preserves a supported distro-owned Node package that links unsafe SQLite and uses a user-space Node runtime for PASO instead. Node 22 remains supported via its LTS line. Node 23 is unsupported. The [installer script](/install#alternative-install-methods) detects and installs Node automatically — use this page when you want to set up Node yourself (versions, PATH, global installs).
 
 ## Check your version
 
@@ -44,7 +44,7 @@ node -v
     sudo dnf install nodejs
     ```
 
-    Some distro Node packages link the system SQLite library. The recommended OpenClaw installer checks the effective Node and SQLite combination and automatically uses a user-space Node runtime when the distro build is unsafe; it does not remove the distro package.
+    Some distro Node packages link the system SQLite library. The recommended PASO installer checks the effective Node and SQLite combination and automatically uses a user-space Node runtime when the distro build is unsafe; it does not remove the distro package.
 
     Or use a version manager (see below).
 
@@ -140,5 +140,5 @@ Add the `export PATH=...` line to your `~/.bashrc` or `~/.zshrc` to make it perm
 ## Related
 
 - [Install Overview](/install) - all installation methods
-- [Updating](/install/updating) - keeping OpenClaw up to date
+- [Updating](/install/updating) - keeping PASO up to date
 - [Getting Started](/start/getting-started) - first steps after install

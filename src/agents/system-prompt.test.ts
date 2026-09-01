@@ -570,13 +570,13 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("<final>...</final>");
   });
 
-  it("includes an OpenClaw control section", () => {
+  it("includes a PASO control section", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/openclaw",
       toolNames: ["gateway"],
     });
 
-    expect(prompt).toContain("## OpenClaw Control");
+    expect(prompt).toContain("## PASO Control");
     expect(prompt).toContain("Config read: `gateway`");
     expect(prompt).not.toContain("openclaw gateway status|restart|start|stop");
     expect(prompt).toContain("Do not invent commands");
@@ -787,13 +787,13 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).not.toContain("Brave API");
   });
 
-  it("keeps the OpenClaw empty-tool fallback capability-only", () => {
+  it("keeps the PASO empty-tool fallback capability-only", () => {
     const prompt = buildAgentSystemPrompt({
       workspaceDir: "/tmp/openclaw",
       toolNames: [],
     });
 
-    expect(prompt).toContain("active runtime provides the available OpenClaw tools directly");
+    expect(prompt).toContain("active runtime provides the available PASO tools directly");
     expect(prompt).not.toContain("sessions_spawn");
   });
 
@@ -994,7 +994,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("Several: most specific");
     expect(prompt).toContain("Docs: /tmp/openclaw/docs");
     expect(prompt).toContain(
-      "OpenClaw behavior questions: docs first via `Read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
+      "PASO behavior questions: docs first via `Read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
     );
   });
 
@@ -1010,7 +1010,7 @@ describe("buildAgentSystemPrompt", () => {
     expect(prompt).toContain("Docs: /tmp/openclaw/docs");
     expect(prompt).toContain("Source: /tmp/openclaw");
     expect(prompt).toContain(
-      "OpenClaw behavior questions: docs first via `read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
+      "PASO behavior questions: docs first via `read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
     );
     expect(prompt).toContain("If docs are silent/stale, say so and inspect local source.");
   });
@@ -1027,7 +1027,7 @@ describe("buildAgentSystemPrompt", () => {
     const docsSection = prompt.slice(docsStart, nextSection);
 
     expect(prompt).toContain(
-      "OpenClaw behavior questions: docs first via `read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
+      "PASO behavior questions: docs first via `read`/local search. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
     );
     expect(docsSection.length).toBeLessThan(840);
     expect(prompt).not.toContain("Self-knowledge rule: for questions about");
@@ -1040,10 +1040,10 @@ describe("buildAgentSystemPrompt", () => {
       workspaceDir: "/tmp/work",
     });
 
-    expect(prompt).toContain("Docs: https://docs.openclaw.ai");
-    expect(prompt).toContain("Source: https://github.com/openclaw/openclaw");
+    expect(prompt).toContain("Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
+    expect(prompt).toContain("Source: https://github.com/celaya-solutions/PASO-AGENT");
     expect(prompt).toContain(
-      "OpenClaw behavior questions: docs mirror first when web exists. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
+      "PASO behavior questions: docs mirror first when web exists. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
     );
     expect(prompt).toContain("If docs are silent/stale, say so and inspect GitHub source.");
   });
@@ -2279,9 +2279,7 @@ describe("buildSubagentSystemPrompt", () => {
     expect(prompt).toContain("set `agentId` unless default");
     expect(prompt).toContain("Never ask the user for slash/CLI");
     expect(prompt).toContain("exec openclaw/acpx");
-    expect(prompt).toContain(
-      "Local subagent list/status tools cover OpenClaw runtime=subagent only",
-    );
+    expect(prompt).toContain("Local subagent list/status tools cover PASO runtime=subagent only");
     expect(prompt).toContain("Subagent results auto-announce");
     expect(prompt).toContain("never list histories, sleep, or poll in loops");
     expect(prompt).toContain("available turn-yield tool when needed");

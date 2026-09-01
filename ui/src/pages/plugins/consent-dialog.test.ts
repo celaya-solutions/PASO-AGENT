@@ -58,7 +58,7 @@ describe("renderPluginConsentDialog", () => {
         integrity: "sha256-0123456789abcdefghijklmnop",
         integrityKind: "ssri",
       },
-      provenance: "ClawHub · @openclaw/calendar-plus",
+      provenance: "Plugin registry · @openclaw/calendar-plus",
       integrityLabel: "Integrity: sha256-0123456789abc…",
     },
     {

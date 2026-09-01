@@ -243,11 +243,7 @@ export function visibleSettingsNavigationGroups(
 // Settings subpages render with settings chrome but stay out of the sidebar.
 // Subpages with a visible owner keep that owner selected so users retain
 // location context while completing the nested flow.
-const SETTINGS_SUBPAGE_ROUTES: readonly NavigationRouteId[] = [
-  "ai-agents",
-  "model-setup",
-  "lobsterdex",
-];
+const SETTINGS_SUBPAGE_ROUTES: readonly NavigationRouteId[] = ["ai-agents", "model-setup"];
 export const SETTINGS_SEARCHABLE_SUBPAGE_ROUTES: readonly NavigationRouteId[] = ["ai-agents"];
 const SETTINGS_SUBPAGE_OWNER_ROUTES: Partial<
   Readonly<Record<NavigationRouteId, NavigationRouteId>>
@@ -283,7 +279,7 @@ const NAVIGATION_ICONS: NavigationItem = {
   chat: "messageSquare",
   dashboard: "layoutDashboard",
   dashboards: "layoutDashboard",
-  custodian: "lobster",
+  custodian: "spark",
   config: "settings",
   profile: "circleUser",
   communications: "send",
@@ -443,16 +439,14 @@ export function titleForRoute(routeId: NavigationRouteId): string {
 /** Window/tab title, markers leftmost because tabs truncate from the right.
  * A disconnected Gateway replaces the approval count (a stale queue is not
  * actionable) and carries the pending-outbox total; titles already ending in the brand
- * ("Ask OpenClaw") skip the suffix so it never reads "… OpenClaw — OpenClaw". */
+ * ("Ask PASO") skip the suffix so it never reads "… PASO — PASO". */
 export function formatDocumentTitle(options: {
   context: string;
   attentionCount?: number;
   gatewayDisconnected?: boolean;
   queuedCount?: number;
 }): string {
-  const base = options.context.endsWith("OpenClaw")
-    ? options.context
-    : `${options.context} — OpenClaw`;
+  const base = options.context.endsWith("PASO") ? options.context : `${options.context} — PASO`;
   if (options.gatewayDisconnected) {
     const queued =
       options.queuedCount && options.queuedCount > 0

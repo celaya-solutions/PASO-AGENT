@@ -7,7 +7,7 @@ scenario:
   coverage:
     primary:
       - agent-runtime.subagent-turns-sessions-spawn
-  objective: Verify sessions_spawn executes successfully across OpenClaw and Codex.
+  objective: Verify sessions_spawn executes successfully across PASO and Codex.
   successCriteria:
     - Effective tools expose sessions_spawn.
     - The happy path retains a linked successful sessions_spawn call and result.

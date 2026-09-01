@@ -7,15 +7,15 @@ describe("device pairing dialog", () => {
   it.each([
     {
       access: "full" as const,
-      href: "https://docs.openclaw.ai/channels/pairing#pair-from-the-control-ui-recommended",
+      href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     },
     {
       access: "limited" as const,
-      href: "https://docs.openclaw.ai/channels/pairing#pair-from-the-control-ui-recommended",
+      href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     },
     {
       access: "node" as const,
-      href: "https://docs.openclaw.ai/gateway/pairing#one-paste-node-pairing",
+      href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     },
   ])("links $access setup help to the matching workflow", ({ access, href }) => {
     const container = document.createElement("div");

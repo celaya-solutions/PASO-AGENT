@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 IOS_DIR="${ROOT_DIR}/apps/ios"
 
-APP_NAME="${IOS_APP_NAME:-OpenClaw}"
+APP_NAME="${IOS_APP_NAME:-PASO}"
 CONFIGURATION="${IOS_CONFIGURATION:-Debug}"
 DERIVED_DATA_DIR="${IOS_DERIVED_DATA_DIR:-${IOS_DIR}/build/DerivedData}"
 IOS_DESTINATION="${IOS_DEST:-platform=iOS Simulator,name=iPhone 17}"

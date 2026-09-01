@@ -75,7 +75,7 @@ Publishing externally on ClawHub requires `compat` and `build`. Canonical publis
   Entry point files (relative to package root). Valid source entries for workspace and git checkout development.
 </ParamField>
 <ParamField path="runtimeExtensions" type="string[]">
-  Built JavaScript peers for `extensions`, preferred when OpenClaw loads an installed npm package. See [SDK entry points](/plugins/sdk-entrypoints) for the source/built resolution order.
+  Built JavaScript peers for `extensions`, preferred when PASO loads an installed npm package. See [SDK entry points](/plugins/sdk-entrypoints) for the source/built resolution order.
 </ParamField>
 <ParamField path="setupEntry" type="string">
   Lightweight setup-only entry (optional).
@@ -164,7 +164,7 @@ Supported field kinds are `string`, `boolean`, `integer`, `string-list`, and `ch
 
 For a boolean `useEnv` field, set `envVars` to the static environment variable names required by the plugin runtime. Non-interactive channel setup then rejects `--use-env` before writing config when any declared variable is empty. Set `envVarMode: "any"` when one variable from the list is sufficient, such as an inline credential or file-path alternative. Omitting `envVars` preserves the plugin's existing validation behavior.
 
-The released `setup`/`ChannelSetupInput` adapter stays available for existing external plugins. New plugins should expose `setupContract`; OpenClaw always prefers it when both are present.
+The released `setup`/`ChannelSetupInput` adapter stays available for existing external plugins. New plugins should expose `setupContract`; PASO always prefers it when both are present.
 
 | Field                                  | Type       | What it means                                                                 |
 | -------------------------------------- | ---------- | ----------------------------------------------------------------------------- |
@@ -235,7 +235,7 @@ Example:
 | `npmSpec`                    | `string`                            | Canonical npm spec for install/update fallback flows.                             |
 | `localPath`                  | `string`                            | Local development or bundled install path.                                        |
 | `defaultChoice`              | `"clawhub"` \| `"npm"` \| `"local"` | Preferred install source when multiple sources are available.                     |
-| `minHostVersion`             | `string`                            | Minimum supported OpenClaw version, `>=x.y.z` or `>=x.y.z-prerelease`.            |
+| `minHostVersion`             | `string`                            | Minimum supported PASO version, `>=x.y.z` or `>=x.y.z-prerelease`.                |
 | `expectedIntegrity`          | `string`                            | Expected npm dist integrity string, usually `sha512-...`, for pinned installs.    |
 | `allowInvalidConfigRecovery` | `boolean`                           | Lets bundled-plugin reinstall flows recover from specific stale-config failures.  |
 | `requiredPlatformPackages`   | `string[]`                          | Required platform-specific npm aliases verified during npm install.               |
@@ -274,13 +274,13 @@ If your setup/full entry registers gateway RPC methods, keep them on a plugin-sp
 
 ## Plugin manifest
 
-Every native plugin must ship an `openclaw.plugin.json` in the package root. OpenClaw uses this to validate config without executing plugin code.
+Every native plugin must ship an `openclaw.plugin.json` in the package root. PASO uses this to validate config without executing plugin code.
 
 ```json
 {
   "id": "my-plugin",
   "name": "My Plugin",
-  "description": "Adds My Plugin capabilities to OpenClaw",
+  "description": "Adds My Plugin capabilities to PASO",
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
@@ -337,7 +337,7 @@ clawhub package publish your-org/your-plugin
 
 ## Setup entry
 
-`setup-entry.ts` is a lightweight alternative to `index.ts` that OpenClaw loads when it only needs setup surfaces (onboarding, config repair, disabled channel inspection):
+`setup-entry.ts` is a lightweight alternative to `index.ts` that PASO loads when it only needs setup surfaces (onboarding, config repair, disabled channel inspection):
 
 ```typescript
 // setup-entry.ts
@@ -352,7 +352,7 @@ This avoids loading heavy runtime code (crypto libraries, CLI registrations, bac
 Bundled workspace channels that keep setup-safe exports in sidecar modules can use `defineBundledChannelSetupEntry(...)` from `openclaw/plugin-sdk/channel-entry-contract` instead of `defineSetupPluginEntry(...)`. That bundled contract also supports an optional `runtime` export so setup-time runtime wiring can stay lightweight and explicit.
 
 <AccordionGroup>
-  <Accordion title="When OpenClaw uses setupEntry instead of the full entry">
+  <Accordion title="When PASO uses setupEntry instead of the full entry">
     - The channel is disabled but needs setup/onboarding surfaces.
     - The channel is enabled but unconfigured.
 
@@ -505,7 +505,7 @@ const accountSchema = z.object({
 const configSchema = buildChannelConfigSchema(accountSchema);
 ```
 
-If you already author the contract as JSON Schema or TypeBox, use the direct helper so OpenClaw can skip Zod-to-JSON-Schema conversion on metadata paths:
+If you already author the contract as JSON Schema or TypeBox, use the direct helper so PASO can skip Zod-to-JSON-Schema conversion on metadata paths:
 
 ```typescript
 import { Type } from "typebox";
@@ -606,7 +606,7 @@ const setupWizard: ChannelSetupWizard = {
     openclaw plugins install @myorg/openclaw-my-plugin
     ```
 
-    Bare package specs install from npm during the launch cutover, unless the name matches a bundled or official plugin id, in which case OpenClaw uses that local/official copy instead. Use `clawhub:`, `npm:`, `git:`, or `npm-pack:` for deterministic source selection — see [Manage plugins](/plugins/manage-plugins).
+    Bare package specs install from npm during the launch cutover, unless the name matches a bundled or official plugin id, in which case PASO uses that local/official copy instead. Use `clawhub:`, `npm:`, `git:`, or `npm-pack:` for deterministic source selection — see [Manage plugins](/plugins/manage-plugins).
 
   </Tab>
   <Tab title="ClawHub only">
@@ -635,7 +635,7 @@ For npm-sourced installs, `openclaw plugins install` installs the package into a
 Gateway startup does not install plugin dependencies. npm/git/ClawHub install flows own dependency convergence; local plugins must already have their dependencies installed.
 </Note>
 
-Bundled package metadata is explicit, not inferred from built JavaScript at gateway startup. Runtime dependencies belong in the plugin package that owns them; packaged OpenClaw startup never repairs or mirrors plugin dependencies.
+Bundled package metadata is explicit, not inferred from built JavaScript at gateway startup. Runtime dependencies belong in the plugin package that owns them; packaged PASO startup never repairs or mirrors plugin dependencies.
 
 ## Related
 

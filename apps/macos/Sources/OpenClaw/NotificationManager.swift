@@ -103,7 +103,7 @@ enum TestNotificationOutcome: Encodable, Equatable {
 enum TestNotificationAction {
     static func send() async -> TestNotificationOutcome {
         let sent = await NotificationManager().send(
-            title: "OpenClaw",
+            title: "PASO",
             body: "Test notification",
             sound: nil)
         return sent

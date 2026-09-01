@@ -12,7 +12,7 @@ The Workboard plugin adds an optional Kanban-style board to the
 and a link back to the card's task, run, and dashboard session.
 
 Workboard is intentionally small: it tracks local operating work for one
-OpenClaw Gateway. It is not a replacement for GitHub Issues, Linear, Jira, or
+PASO Gateway. It is not a replacement for GitHub Issues, Linear, Jira, or
 other team project management systems.
 
 ## Enable it
@@ -23,7 +23,7 @@ Workboard is bundled but disabled by default:
    the configured Control UI base path. For example, a base path of `/openclaw`
    uses `/openclaw/settings/plugins`.
 2. Find **Workboard** and choose **Enable**. Because Workboard is included with
-   OpenClaw, it does not need an **Install** action.
+   PASO, it does not need an **Install** action.
 3. If the UI reports that a restart is required, restart the Gateway.
 
 The Workboard tab appears in the dashboard nav after the plugin runtime loads.
@@ -121,7 +121,7 @@ the board does not delete or otherwise mutate the
 operator-owned automation job.
 
 Cards are stored in the plugin's own Gateway state and move with the rest of
-that Gateway's OpenClaw state (see [Storage](#storage)).
+that Gateway's PASO state (see [Storage](#storage)).
 
 ## Starting work from a card
 
@@ -194,7 +194,7 @@ require the token.
 ## Dispatch
 
 Dispatch is Gateway-local: it does not spawn arbitrary OS processes. Normal
-OpenClaw subagent sessions still own execution. One dispatch pass:
+PASO subagent sessions still own execution. One dispatch pass:
 
 1. Promotes dependency-ready cards.
 2. Records dispatch metadata on ready cards.
@@ -275,7 +275,7 @@ as unavailable; they surface as command errors, and so does any Gateway
 failure when an explicit `--url`/`--token` target was given.
 
 Board metadata can set `autoDecompose`, `autoDecomposePerDispatch`,
-`defaultAssignee`, and `orchestratorProfile`. OpenClaw records this intent and
+`defaultAssignee`, and `orchestratorProfile`. PASO records this intent and
 exposes it in worker context; actual specification/decomposition still runs
 through the normal Workboard tools.
 
@@ -412,7 +412,7 @@ widens accepted Workboard host paths; it does not change the methods available.
 ## Storage
 
 Workboard stores durable data in a plugin-owned relational SQLite database
-under the OpenClaw state directory: boards, cards, labels, lifecycle events,
+under the PASO state directory: boards, cards, labels, lifecycle events,
 run attempts, comments, dependency links, proof, artifact references,
 attachment metadata and blobs, diagnostics, notifications, worker logs,
 protocol state, and subscriptions all live in Workboard tables (not

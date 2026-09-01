@@ -4,19 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing stable OpenClaw release tag to receive the signed Android APK
+        description: Existing stable PASO release tag to receive the signed Android APK
         required: true
         type: string
       release_publish_run_id:
-        description: OpenClaw Release Publish run that approved this release
+        description: PASO Release Publish run that approved this release
         required: true
         type: string
       release_publish_branch:
-        description: Branch or protected tag used by the approving OpenClaw Release Publish run
+        description: Branch or protected tag used by the approving PASO Release Publish run
         required: true
         type: string
       release_publish_run_attempt:
-        description: Exact approving OpenClaw Release Publish run attempt
+        description: Exact approving PASO Release Publish run attempt
         required: true
         type: string
       release_publish_full_ref:
@@ -28,7 +28,7 @@ on:
         required: true
         type: string
       release_target_sha:
-        description: Exact release tag commit resolved by OpenClaw Release Publish
+        description: Exact release tag commit resolved by PASO Release Publish
         required: true
         type: string
       direct_release_recovery:
@@ -66,6 +66,8 @@ jobs:
       RELEASE_PUBLISH_RUN_ID: ${{ inputs.release_publish_run_id }}
       RELEASE_TAG: ${{ inputs.tag }}
       RELEASE_TARGET_SHA: ${{ inputs.release_target_sha }}
+      PASO_ANDROID_SIGNING_OWNER: ${{ vars.PASO_ANDROID_SIGNING_OWNER }}
+      PASO_ANDROID_SIGNING_REPOSITORY: ${{ vars.PASO_ANDROID_SIGNING_REPOSITORY }}
     steps:
       - name: Checkout release tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -73,6 +75,24 @@ jobs:
           ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
           persist-credentials: false
+
+      - name: Require PASO-owned Android signing
+        run: |
+          set -euo pipefail
+          if [[ "${PASO_ANDROID_SIGNING_OWNER}" != "${GITHUB_REPOSITORY_OWNER}" || -z "${PASO_ANDROID_SIGNING_REPOSITORY}" ]]; then
+            echo "Configure PASO_ANDROID_SIGNING_OWNER and PASO_ANDROID_SIGNING_REPOSITORY for a Celaya-owned signing repository." >&2
+            exit 1
+          fi
+          if [[ "$(node -p 'require("./apps/android/Config/ReleaseSigning.json").releaseEnabled === true ? "true" : "false"')" != "true" ]]; then
+            echo "PASO Android publishing is disabled in ReleaseSigning.json." >&2
+            exit 1
+          fi
+          expected="git@github.com:${PASO_ANDROID_SIGNING_OWNER}/${PASO_ANDROID_SIGNING_REPOSITORY}.git"
+          actual="$(node -p 'require("./apps/android/Config/ReleaseSigning.json").signingRepo')"
+          if [[ "${actual}" != "${expected}" ]]; then
+            echo "Android signingRepo must be the configured Celaya-owned repository." >&2
+            exit 1
+          fi
 
       - name: Download parent release approval
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
@@ -91,7 +111,7 @@ jobs:
         run: |
           set -euo pipefail
           if [[ ! "${RELEASE_TAG}" =~ ^v[0-9]{4}\.[1-9][0-9]*\.[1-9][0-9]*(-[1-9][0-9]*)?$ ]]; then
-            echo "Android APK publishing requires a final or correction OpenClaw release tag: ${RELEASE_TAG}" >&2
+            echo "Android APK publishing requires a final or correction PASO release tag: ${RELEASE_TAG}" >&2
             exit 1
           fi
           expected_source_ref="refs/tags/${RELEASE_TAG}"
@@ -167,15 +187,15 @@ jobs:
         with:
           app-id: "2729701"
           private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
-          owner: openclaw
-          repositories: apps-signing
+          owner: ${{ vars.PASO_ANDROID_SIGNING_OWNER }}
+          repositories: ${{ vars.PASO_ANDROID_SIGNING_REPOSITORY }}
           permission-contents: read
 
       - name: Checkout encrypted Android signing assets
         if: ${{ steps.release_source.outputs.fallback_base_tag == '' }}
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: openclaw/apps-signing
+          repository: ${{ vars.PASO_ANDROID_SIGNING_OWNER }}/${{ vars.PASO_ANDROID_SIGNING_REPOSITORY }}
           ref: main
           path: apps/android/build/release-signing/apps-signing
           token: ${{ steps.apps-signing-token.outputs.token }}

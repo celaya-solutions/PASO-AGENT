@@ -1,12 +1,12 @@
 ---
-summary: "Host OpenClaw on Upstash Box with keep-alive and SSH tunnel access"
+summary: "Host PASO on Upstash Box with keep-alive and SSH tunnel access"
 read_when:
-  - Deploying OpenClaw to Upstash Box
-  - You want a managed Linux environment for OpenClaw with SSH-tunneled dashboard access
+  - Deploying PASO to Upstash Box
+  - You want a managed Linux environment for PASO with SSH-tunneled dashboard access
 title: "Upstash Box"
 ---
 
-Run a persistent OpenClaw Gateway on Upstash Box, a managed Linux environment
+Run a persistent PASO Gateway on Upstash Box, a managed Linux environment
 with keep-alive lifecycle support.
 
 Use an SSH tunnel for dashboard access. Do not expose the Gateway port directly
@@ -23,12 +23,11 @@ to the public internet.
 Create a keep-alive Box in the Upstash Console. Note the Box ID (for example
 `right-flamingo-14486`) and your Box API key.
 
-Upstash maintains its current OpenClaw Box walkthrough at
-[OpenClaw Setup](https://upstash.com/docs/box/guides/openclaw-setup).
+Upstash maintains an [upstream OpenClaw Box walkthrough](https://upstash.com/docs/box/guides/openclaw-setup). It is an external compatibility guide, not PASO documentation; use the PASO source command below instead of its package-install step.
 
 ## Connect with an SSH tunnel
 
-Forward the OpenClaw dashboard port to your local machine. Use your Box API key
+Forward the PASO dashboard port to your local machine. Use your Box API key
 as the SSH password when prompted:
 
 ```bash
@@ -37,13 +36,14 @@ ssh -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -L 18789:127.0.0.1:18789 
 
 The keepalive options reduce idle tunnel drops during onboarding.
 
-## Install OpenClaw
+## Install PASO
 
-Inside the Box, use the following command on npm 12 or npm 11.16+. On npm 11.15
-and earlier, omit `--allow-scripts=openclaw`.
+Inside the Box, install the Celaya Solutions Research source checkout without
+starting the interactive wizard yet:
 
 ```bash
-sudo npm install -g openclaw --allow-scripts=openclaw
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+  | bash -s -- --install-method git --version main --no-onboard
 ```
 
 ## Run onboarding
@@ -100,4 +100,4 @@ through idle network periods.
 
 - [Remote access](/gateway/remote)
 - [Gateway security](/gateway/security)
-- [Updating OpenClaw](/install/updating)
+- [Updating PASO](/install/updating)

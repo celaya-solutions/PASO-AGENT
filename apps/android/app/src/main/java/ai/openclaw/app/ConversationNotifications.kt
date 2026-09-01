@@ -394,12 +394,12 @@ internal class ConversationReplyNotifier(
     val style =
       NotificationCompat
         .MessagingStyle(userPerson())
-        .setConversationTitle(nativeString("OpenClaw"))
+        .setConversationTitle(nativeString("PASO"))
         .setGroupConversation(false)
         .addMessage(assistantText, System.currentTimeMillis(), assistant)
     return baseBuilder(target, contentIntent)
       .setStyle(style)
-      .setContentTitle(nativeString("OpenClaw"))
+      .setContentTitle(nativeString("PASO"))
       .setContentText(assistantText)
       .addPerson(assistant)
       .addAction(replyAction(target))
@@ -410,7 +410,7 @@ internal class ConversationReplyNotifier(
   internal fun buildSendFailureNotification(target: ConversationNotificationTarget): Notification {
     val contentIntent = contentPendingIntent(target)
     return baseBuilder(target, contentIntent)
-      .setContentTitle(nativeString("OpenClaw"))
+      .setContentTitle(nativeString("PASO"))
       .setContentText(nativeString("Chat failed"))
       .addAction(replyAction(target))
       .setPublicVersion(publicVersion(contentIntent))
@@ -439,7 +439,7 @@ internal class ConversationReplyNotifier(
     NotificationCompat
       .Builder(context, conversationChannelId)
       .setSmallIcon(R.mipmap.ic_launcher)
-      .setContentTitle(nativeString("OpenClaw"))
+      .setContentTitle(nativeString("PASO"))
       .setContentText(nativeString("Chat"))
       .setContentIntent(contentIntent)
       .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -457,7 +457,7 @@ internal class ConversationReplyNotifier(
     val remoteInput =
       RemoteInput
         .Builder(remoteInputReply)
-        .setLabel(nativeString("Reply to OpenClaw…"))
+        .setLabel(nativeString("Reply to PASO…"))
         .build()
     return NotificationCompat.Action
       .Builder(0, nativeString("Reply"), pendingIntent)
@@ -479,7 +479,7 @@ internal class ConversationReplyNotifier(
     val shortcut =
       ShortcutInfoCompat
         .Builder(context, target.shortcutId)
-        .setShortLabel(nativeString("OpenClaw"))
+        .setShortLabel(nativeString("PASO"))
         .setLongLived(true)
         .setPerson(assistantPerson())
         .setLocusId(LocusIdCompat(target.shortcutId))
@@ -492,7 +492,7 @@ internal class ConversationReplyNotifier(
   private fun assistantPerson(): Person =
     Person
       .Builder()
-      .setName(nativeString("OpenClaw"))
+      .setName(nativeString("PASO"))
       .setBot(true)
       .build()
 

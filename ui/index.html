@@ -6,14 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
     />
-    <title>OpenClaw Control</title>
+    <title>PASO Control</title>
     <meta name="color-scheme" content="dark light" />
-    <!-- These mirror the claw theme's --bg tokens for first paint; runtime theme application keeps them synchronized. -->
+    <!-- These mirror the default theme's --bg tokens for first paint; runtime theme application keeps them synchronized. -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf9f7" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1015" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <script>
       // Configure Zod before module evaluation so its JIT probe cannot violate strict CSP.
@@ -360,19 +358,19 @@
       hidden
     >
       <div class="mount-fallback__panel" tabindex="-1">
-        <p class="mount-fallback__eyebrow">OpenClaw Control UI</p>
+        <p class="mount-fallback__eyebrow">PASO Control UI</p>
         <h1 id="openclaw-mount-fallback-title">Control UI did not start</h1>
         <p id="openclaw-mount-fallback-summary">
           The browser loaded the static page, but the app bundle did not start. The gateway may be
-          restarting, or this page may reference assets from a different OpenClaw version.
+          restarting, or this page may reference assets from a different PASO version.
         </p>
         <ul>
-          <li>OpenClaw will retry the current app bundle automatically.</li>
+          <li>PASO will retry the current app bundle automatically.</li>
           <li>If this persists, reload or try a clean browser profile.</li>
           <li>
             See
             <a
-              href="https://docs.openclaw.ai/web/control-ui#blank-control-ui-page"
+              href="https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"
               target="_blank"
               rel="noopener noreferrer"
               >Control UI troubleshooting</a
@@ -448,7 +446,7 @@
             return;
           }
           setSummary(
-            "The gateway is not reachable yet. OpenClaw will keep retrying while it restarts.",
+            "The gateway is not reachable yet. PASO will keep retrying while it restarts.",
           );
           scheduleRecovery();
         }

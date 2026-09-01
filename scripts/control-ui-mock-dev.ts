@@ -1,4 +1,4 @@
-// Control Ui Mock Dev script supports OpenClaw repository automation.
+// Control Ui Mock Dev script supports PASO repository automation.
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -276,7 +276,7 @@ const boardFixtureHtml = `<!doctype html>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
-    <title>OpenClaw Board Fixture</title>
+    <title>PASO Board Fixture</title>
     <script>
       // This standalone fixture bypasses app bootstrap, so mirror its root theme contract.
       const mediaQuery = matchMedia("(prefers-color-scheme: light)");
@@ -487,7 +487,7 @@ function buildSearchSessionListCases(
 
 function buildActivitySessionRows(baseTime: number) {
   const owners = {
-    molty: { type: "agent", id: "profile-molty", label: "Molty" },
+    paso: { type: "agent", id: "profile-paso", label: "PASO" },
     riley: { type: "human", id: "presence-riley", label: "Riley" },
     colin: { type: "human", id: "presence-colin", label: "Colin" },
     patricia: {
@@ -501,17 +501,17 @@ function buildActivitySessionRows(baseTime: number) {
   const day = 24 * hour;
   const fixtures = [
     ["release-check", "Release readiness check", owners.riley, 5 * 60_000],
-    ["api-notes", "Gateway API notes", owners.molty, 20 * 60_000],
+    ["api-notes", "Gateway API notes", owners.paso, 20 * 60_000],
     ["design-review", "Activity feed design review", owners.colin, hour],
     ["archive-audit", "Archive retention audit", owners.unresolved, 3 * hour],
     ["support-handoff", "Support handoff", owners.patricia, 6 * hour],
     ["mobile-smoke", "Mobile layout smoke test", owners.riley, 18 * hour],
-    ["provider-matrix", "Provider matrix cleanup", owners.molty, 30 * hour],
+    ["provider-matrix", "Provider matrix cleanup", owners.paso, 30 * hour],
     ["docs-pass", "Operator docs pass", owners.colin, 2 * day],
     ["queue-review", "Queue behavior review", owners.patricia, 2.5 * day],
     ["identity-trace", "Identity trace", owners.unresolved, 3 * day],
     ["channel-followup", "Channel delivery follow-up", owners.riley, 4 * day],
-    ["tooling-refresh", "Tooling refresh", owners.molty, 5 * day],
+    ["tooling-refresh", "Tooling refresh", owners.paso, 5 * day],
     ["fixture-polish", "Mock fixture polish", owners.colin, 6 * day],
     ["weekly-summary", "Weekly activity summary", owners.patricia, 6.5 * day],
   ] as const;
@@ -952,7 +952,7 @@ function buildConfigMocks(options: { swarmEnabled?: boolean; workboardEnabled?: 
   };
   const schema = {
     type: "object",
-    title: "OpenClaw config",
+    title: "PASO config",
     properties: {
       logging: {
         type: "object",
@@ -1599,24 +1599,18 @@ async function createChatPickerScenario(
       sessionKey: "agent:main:main",
     },
   }));
-  const lobsterSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
-  <rect width="640" height="360" fill="#10151d"/>
-  <circle cx="320" cy="185" r="76" fill="#e23f3f"/>
-  <ellipse cx="250" cy="178" rx="54" ry="38" fill="#f05a52"/>
-  <ellipse cx="390" cy="178" rx="54" ry="38" fill="#f05a52"/>
-  <circle cx="292" cy="145" r="10" fill="#0b0f14"/>
-  <circle cx="348" cy="145" r="10" fill="#0b0f14"/>
-  <path d="M232 114c-72-44-135-22-146 35 52 9 91-4 125-39" fill="none" stroke="#f06b5f" stroke-width="28" stroke-linecap="round"/>
-  <path d="M408 114c72-44 135-22 146 35-52 9-91-4-125-39" fill="none" stroke="#f06b5f" stroke-width="28" stroke-linecap="round"/>
-  <path d="M232 246c-45 28-91 35-142 23M408 246c45 28 91 35 142 23" fill="none" stroke="#e14b47" stroke-width="16" stroke-linecap="round"/>
-  <text x="320" y="326" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="24" fill="#f6f7f9">openclaw session artifact</text>
+  const pasoMarkSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <rect width="640" height="360" rx="40" fill="#0E1015"/>
+  <path d="M190 285V75H335C405 75 460 125 460 185C460 245 405 285 335 285H285" stroke="#E8590C" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M190 285H250V235H315V185H450" stroke="#FAF9F7" stroke-width="28" stroke-linecap="square" stroke-linejoin="miter"/>
+  <text x="520" y="322" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="24" fill="#FAF9F7">PASO</text>
 </svg>`;
-  const lobsterArtifact = {
-    id: "artifact-openclaw-lobster",
+  const pasoMarkArtifact = {
+    id: "artifact-paso-mark",
     type: "image",
-    title: "openclaw-lobster-preview.svg",
+    title: "paso-mark-preview.svg",
     mimeType: "image/svg+xml",
-    sizeBytes: Buffer.byteLength(lobsterSvg, "utf8"),
+    sizeBytes: Buffer.byteLength(pasoMarkSvg, "utf8"),
     source: "session-transcript",
     download: { mode: "bytes" },
   };
@@ -1721,7 +1715,7 @@ async function createChatPickerScenario(
           }),
         ]
       : []),
-    sessionRow("agent:main:main", "Molty", baseTime - 1_000, {
+    sessionRow("agent:main:main", "PASO", baseTime - 1_000, {
       activeRunIds: [PLAN_DEMO_RUN_ID],
       childSessions: ["agent:main:lisbon-trip", ...swarmChildRows.map((row) => row.key)],
       hasActiveRun: true,
@@ -1790,18 +1784,18 @@ async function createChatPickerScenario(
       {
         category: "Research",
         createdActor: MOCK_ACTOR_MIRA,
-        execCwd: "/Users/peter/Projects/clawdbot",
+        execCwd: "/Users/peter/Projects/paso-agent",
         owner: { actor: MOCK_ACTOR_MIRA },
       },
     ),
     sessionRow("agent:main:model-budget", "Model budget review", baseTime - 80_000, {
       category: "Research",
-      execCwd: "/Users/peter/Projects/openclaw",
+      execCwd: "/Users/demo/Projects/paso-agent",
       owner: { actor: { type: "human", id: "presence-riley", label: "Riley" } },
       status: "failed",
       lastRunError: "Model out of credits: openai/gpt-5.6",
     }),
-    sessionRow("agent:main:work-openclaw", "OpenClaw work checkout", baseTime - 85_000, {
+    sessionRow("agent:main:work-openclaw", "PASO work checkout", baseTime - 85_000, {
       createdActor: MOCK_ACTOR_PETER,
       execCwd: "/Users/peter/Work/openclaw",
       lastReadAt: baseTime - 120_000,
@@ -1840,11 +1834,11 @@ async function createChatPickerScenario(
     }),
     // Second repo plus a spawned worktree checkout so the sidebar's
     // Project grouping shows several sections and the worktree fold.
-    sessionRow("agent:main:clawdbot-vite", "Vite upgrade spike", baseTime - 160_000, {
+    sessionRow("agent:main:field-notes-vite", "Vite upgrade spike", baseTime - 160_000, {
       worktree: {
-        id: "wt-clawdbot-vite",
-        branch: "openclaw/vite-upgrade",
-        repoRoot: "~/Projects/clawdbot",
+        id: "wt-field-notes-vite",
+        branch: "codex/vite-upgrade",
+        repoRoot: "~/Projects/field-notes",
       },
     }),
     sessionRow("agent:main:project-grouping", "Sidebar project grouping", baseTime - 170_000, {
@@ -2023,7 +2017,7 @@ async function createChatPickerScenario(
   } satisfies SystemChangesListResult;
   return {
     assistantAgentId: "main",
-    assistantName: "Molty",
+    assistantName: "PASO",
     defaultAgentId: "main",
     gatewayBootId: "mock-gateway-boot-1",
     serverBuildId: "mock",
@@ -2162,9 +2156,9 @@ async function createChatPickerScenario(
                 agents: [
                   {
                     id: "main",
-                    identity: { name: "Molty" },
-                    name: "Molty",
-                    workspace: "/Users/peter/Projects/openclaw",
+                    identity: { name: "PASO" },
+                    name: "PASO",
+                    workspace: "/Users/demo/Projects/paso-agent",
                     workspaceGit: true,
                   },
                 ],
@@ -2383,16 +2377,16 @@ async function createChatPickerScenario(
       "fs.listDir": {
         cases: [
           {
-            match: { path: "/Users/peter/Projects/openclaw" },
+            match: { path: "/Users/demo/Projects/paso-agent" },
             response: {
-              path: "/Users/peter/Projects/openclaw",
+              path: "/Users/demo/Projects/paso-agent",
               parent: "/Users/peter/Projects",
               home: "/Users/peter",
               entries: [
-                { name: "ui", path: "/Users/peter/Projects/openclaw/ui" },
-                { name: "src", path: "/Users/peter/Projects/openclaw/src" },
-                { name: "docs", path: "/Users/peter/Projects/openclaw/docs" },
-                { name: "packages", path: "/Users/peter/Projects/openclaw/packages" },
+                { name: "ui", path: "/Users/demo/Projects/paso-agent/ui" },
+                { name: "src", path: "/Users/demo/Projects/paso-agent/src" },
+                { name: "docs", path: "/Users/demo/Projects/paso-agent/docs" },
+                { name: "packages", path: "/Users/demo/Projects/paso-agent/packages" },
               ],
             },
           },
@@ -2403,8 +2397,8 @@ async function createChatPickerScenario(
               parent: "/Users/peter",
               home: "/Users/peter",
               entries: [
-                { name: "openclaw", path: "/Users/peter/Projects/openclaw" },
-                { name: "clawdbot", path: "/Users/peter/Projects/clawdbot" },
+                { name: "paso-agent", path: "/Users/demo/Projects/paso-agent" },
+                { name: "field-notes", path: "/Users/peter/Projects/field-notes" },
                 { name: "sweetistics", path: "/Users/peter/Projects/sweetistics" },
                 { name: "Peekaboo", path: "/Users/peter/Projects/Peekaboo" },
               ],
@@ -2428,9 +2422,9 @@ async function createChatPickerScenario(
       "worktrees.branches": {
         cases: [
           {
-            match: { repoRoot: "/Users/peter/Projects/openclaw" },
+            match: { repoRoot: "/Users/demo/Projects/paso-agent" },
             response: {
-              repoRoot: "/Users/peter/Projects/openclaw",
+              repoRoot: "/Users/demo/Projects/paso-agent",
               branches: [
                 { kind: "local", name: "main" },
                 { kind: "local", name: "steipete/place-picker" },
@@ -2440,9 +2434,9 @@ async function createChatPickerScenario(
             },
           },
           {
-            match: { repoRoot: "/Users/peter/Projects/clawdbot" },
+            match: { repoRoot: "/Users/peter/Projects/field-notes" },
             response: {
-              repoRoot: "/Users/peter/Projects/clawdbot",
+              repoRoot: "/Users/peter/Projects/field-notes",
               branches: [
                 { kind: "local", name: "main" },
                 { kind: "local", name: "steipete/storage-selector-design" },
@@ -2501,7 +2495,7 @@ async function createChatPickerScenario(
                   agentId: "main",
                   sessionKey: "agent:main:production-export",
                   host: "peters-mac-studio.local",
-                  cwd: "/Users/peter/Projects/openclaw",
+                  cwd: "/Users/demo/Projects/paso-agent",
                   security: "full",
                   ask: "on-miss",
                   allowedDecisions: ["allow-once", "allow-always", "deny"],
@@ -2895,17 +2889,17 @@ async function createChatPickerScenario(
         cases: [
           {
             match: { sessionKey: "agent:alpha" },
-            response: { artifacts: [lobsterArtifact] },
+            response: { artifacts: [pasoMarkArtifact] },
           },
         ],
       },
       "artifacts.download": {
         cases: [
           {
-            match: { sessionKey: "agent:alpha", artifactId: lobsterArtifact.id },
+            match: { sessionKey: "agent:alpha", artifactId: pasoMarkArtifact.id },
             response: {
-              artifact: lobsterArtifact,
-              data: Buffer.from(lobsterSvg, "utf8").toString("base64"),
+              artifact: pasoMarkArtifact,
+              data: Buffer.from(pasoMarkSvg, "utf8").toString("base64"),
               encoding: "base64",
             },
           },
@@ -3093,7 +3087,7 @@ async function createChatPickerScenario(
     sessionArchiveFiltering: true,
     sessions: [...sessions, ...archivedSessions, mainChildRow, taxChildRow],
     sessionKey: fixture === "workboard" ? workboardMocks.sessionKey : "agent:main:main",
-    workspace: "/Users/peter/Projects/openclaw",
+    workspace: "/Users/demo/Projects/paso-agent",
     workspaceGit: true,
   };
 }
@@ -3241,7 +3235,7 @@ function installControlUiStatefulMocks(
       : {
           sessionId,
           reply:
-            "Hi — I’m OpenClaw, your system caretaker.\n\nAsk me about setup, channels, or recent changes.",
+            "Hi — I’m PASO, your system caretaker.\n\nAsk me about setup, channels, or recent changes.",
           action: "none",
         };
 

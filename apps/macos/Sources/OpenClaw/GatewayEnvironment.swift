@@ -197,7 +197,7 @@ enum GatewayEnvironment {
                 projectRoot: projectRoot,
                 searchPaths: searchPaths)
             if let gatewayBin, installedRaw == nil {
-                let message = "OpenClaw Gateway at \(gatewayBin) could not be verified; reinstall or repair it."
+                let message = "PASO Gateway at \(gatewayBin) could not be verified; reinstall or repair it."
                 return GatewayEnvironmentStatus(
                     kind: .error(message),
                     nodeVersion: runtime.version.description,
@@ -247,8 +247,9 @@ enum GatewayEnvironment {
         guard var normalized = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !normalized.isEmpty else {
             return nil
         }
-        if normalized.lowercased().hasPrefix("openclaw ") {
-            normalized = String(normalized.dropFirst("openclaw ".count))
+        for productPrefix in ["paso ", "openclaw "] where normalized.lowercased().hasPrefix(productPrefix) {
+            normalized = String(normalized.dropFirst(productPrefix.count))
+            break
         }
         // Strip trailing commit metadata, e.g. "2026.4.2 (d74a122)" → "2026.4.2"
         if let parenRange = normalized.range(of: #"\s*\([0-9a-fA-F]+\)\s*$"#, options: .regularExpression) {

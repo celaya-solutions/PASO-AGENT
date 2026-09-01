@@ -143,7 +143,7 @@ extension SettingsProTab {
             self.settingsListRow(
                 icon: "sparkles.square.filled.on.square",
                 iconColor: OpenClawBrand.accent,
-                title: "OpenClaw",
+                title: "PASO",
                 route: .systemAgent)
                 .accessibilityIdentifier("settings-system-agent-row")
             self.settingsListRow(
@@ -472,7 +472,7 @@ extension SettingsProTab {
                     ? String(
                         localized: "Relay remains available; direct mode adds an independent Gateway node.")
                     : String(
-                        localized: "Install the OpenClaw watch app before enabling direct mode.")),
+                        localized: "Install the PASO watch app before enabling direct mode.")),
                 value: .verbatim(
                     watchStatus.reachable
                         ? String(localized: "Reachable")
@@ -521,7 +521,7 @@ extension SettingsProTab {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Notifications are off")
                     .font(OpenClawType.subheadSemiBold)
-                Text("Enable Notifications to receive approval alerts while OpenClaw is not open.")
+                Text("Enable Notifications to receive approval alerts while PASO is not open.")
                     .font(OpenClawType.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -776,7 +776,7 @@ extension SettingsProTab {
                 .accessibilityValue(self.notificationServingActive
                     ? String(localized: "On")
                     : String(localized: "Off"))
-                .accessibilityHint("Turns OpenClaw notification delivery on or off")
+                .accessibilityHint("Turns PASO notification delivery on or off")
             }
 
             HStack(alignment: .top, spacing: 10) {
@@ -850,7 +850,7 @@ extension SettingsProTab {
                     }
                 }
             } footer: {
-                Text("OpenClaw appreciates its partners in the open-source community.")
+                Text("PASO appreciates its partners in the open-source community.")
                     .font(OpenClawType.footnote)
             }
             .accessibilityIdentifier("settings-licenses-list")
@@ -890,9 +890,12 @@ extension SettingsProTab {
                     OpenClawProMark(size: 96, shadowRadius: 18, interactive: true)
                         .accessibilityHidden(true)
                     VStack(spacing: 2) {
-                        Text("OpenClaw")
+                        Text("PASO")
                             .font(OpenClawType.title2SemiBold)
-                        Text("Personal AI on your devices")
+                        Text(verbatim: "An AI agent by Celaya Solutions Research")
+                            .font(OpenClawType.footnote)
+                            .foregroundStyle(.secondary)
+                        Text(verbatim: "El Paso, TX")
                             .font(OpenClawType.footnote)
                             .foregroundStyle(.secondary)
                         SettingsBuildMetadataStrip(metadata: DeviceInfoHelper.buildMetadata())
@@ -919,24 +922,24 @@ extension SettingsProTab {
                     title: "Website",
                     icon: "globe",
                     color: .blue,
-                    url: URL(string: "https://openclaw.ai")!)
-                self.aboutLinkRow(
-                    title: "Docs",
-                    icon: "book.fill",
-                    color: .orange,
-                    url: URL(string: "https://docs.openclaw.ai")!)
+                    url: URL(string: "https://celayasolutions.com")!)
                 self.aboutLinkRow(
                     title: "GitHub",
                     icon: "chevron.left.slash.chevron.right",
                     color: .gray,
-                    url: URL(string: "https://github.com/openclaw/openclaw")!)
+                    url: URL(string: "https://github.com/celaya-solutions/PASO-AGENT")!)
                 self.aboutLinkRow(
-                    title: "Discord",
-                    icon: "bubble.left.and.bubble.right.fill",
-                    color: .indigo,
-                    url: URL(string: "https://discord.gg/clawd")!)
+                    title: "hello@celayasolutions.com",
+                    icon: "envelope.fill",
+                    color: .blue,
+                    url: URL(string: "mailto:hello@celayasolutions.com")!)
+                self.aboutLinkRow(
+                    title: "+1 915-270-0237",
+                    icon: "phone.fill",
+                    color: .green,
+                    url: URL(string: "tel:+19152700237")!)
             } footer: {
-                Text("© 2026 OpenClaw Foundation — MIT License.")
+                Text("© 2026 Celaya Solutions Research — MIT License.")
                     .font(OpenClawType.footnote)
             }
         }

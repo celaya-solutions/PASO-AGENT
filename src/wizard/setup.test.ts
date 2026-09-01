@@ -914,7 +914,7 @@ describe("runSetupWizard", () => {
     expect(plain).not.toHaveBeenCalled();
     expect(select).toHaveBeenCalledOnce();
     expect(select).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Help make OpenClaw better?", initialValue: false }),
+      expect.objectContaining({ message: "Help make PASO better?", initialValue: false }),
     );
     expect(ensureAuthProfileStore).not.toHaveBeenCalled();
     expect(setupChannels).not.toHaveBeenCalled();
@@ -1417,7 +1417,7 @@ describe("runSetupWizard", () => {
 
     expect(persistedWizardConfigs().at(-1)?.telemetry).toBeUndefined();
     expect(prompter.select).not.toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Help make OpenClaw better?" }),
+      expect.objectContaining({ message: "Help make PASO better?" }),
     );
   });
 
@@ -1496,7 +1496,7 @@ describe("runSetupWizard", () => {
     {
       label: "freshness rejection",
       error: new SetupMigrationFreshnessError(
-        "Migration import during onboarding requires a fresh OpenClaw setup.\nExisting setup:\n- state agents/ exists",
+        "Migration import during onboarding requires a fresh PASO setup.\nExisting setup:\n- state agents/ exists",
       ),
       detail: "state agents/ exists",
     },
@@ -1775,7 +1775,7 @@ describe("runSetupWizard", () => {
     );
     expect(prompter.select).toHaveBeenCalledOnce();
     expect(prompter.select).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "Help make OpenClaw better?", initialValue: false }),
+      expect.objectContaining({ message: "Help make PASO better?", initialValue: false }),
     );
   });
 

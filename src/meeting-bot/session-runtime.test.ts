@@ -170,7 +170,7 @@ function createTestRuntime(params: {
         state: "active",
         createdAt,
         updatedAt: createdAt,
-        participantIdentity: "OpenClaw",
+        participantIdentity: "PASO",
         realtime: { enabled: false, toolPolicy: "none" },
         notes: [],
       };

@@ -1,5 +1,5 @@
 ---
-summary: "Advanced setup and development workflows for OpenClaw"
+summary: "Advanced setup and development workflows for PASO"
 read_when:
   - Setting up a new machine
   - You want "latest + greatest" without breaking your personal setup
@@ -22,7 +22,7 @@ Pick a setup workflow based on how often you want updates and whether you want t
 ## Prereqs (from source)
 
 - Node 24.15+ recommended (Node 22 LTS, currently `22.22.3+`, still supported)
-- `pnpm` required for source checkouts. OpenClaw loads bundled plugins from the
+- `pnpm` required for source checkouts. PASO loads bundled plugins from the
   `extensions/*` pnpm workspace packages in dev mode, so root `npm install` does
   not prepare the full source tree.
 - Docker (optional; only for containerized setup/e2e - see [Docker](/install/docker))
@@ -73,7 +73,7 @@ node openclaw.mjs gateway --port 18789 --verbose
 
 ## Stable workflow (macOS app first)
 
-1. Install + launch **OpenClaw.app** (menu bar).
+1. Install and launch **PASO** (the technical bundle filename remains `OpenClaw.app` for upgrade compatibility).
 2. Complete the onboarding/permissions checklist (TCC prompts).
 3. Ensure Gateway is **Local** and running (the app manages it).
 4. Link surfaces (example: WhatsApp):
@@ -108,7 +108,7 @@ If you also want the macOS app on the bleeding edge:
 
 ```bash
 pnpm install
-# First run only (or after resetting local OpenClaw config/workspace)
+# First run only (or after resetting local PASO config/workspace)
 pnpm openclaw setup
 pnpm gateway:watch
 ```
@@ -132,7 +132,7 @@ TypeScript rebuilds triggered by `pnpm openclaw ...` or `pnpm gateway:watch` pre
 
 ### 2) Point the macOS app at your running Gateway
 
-In **OpenClaw.app**:
+In the **PASO** macOS app:
 
 - Connection Mode: **Local**
   The app will attach to the running gateway on the configured port.
@@ -154,7 +154,7 @@ openclaw health
   For developer workers, use the intended executable's absolute path for both
   `--version` and `exec`, and confirm the worker's startup version. A package
   manifest or a version check in another shell does not identify a running worker.
-  OpenClaw's [managed Codex app-server](/plugins/codex-harness-reference#app-server-transport)
+  PASO's [managed Codex app-server](/plugins/codex-harness-reference#app-server-transport)
   has a separate pinned-version contract; do not change that pin or your model/auth
   settings to fix developer CLI selection. If the installed workspace package and
   native executable disagree with the lockfile, repair the install with `pnpm install`
@@ -205,5 +205,5 @@ user service (no lingering needed). See [Gateway runbook](/gateway) for the syst
 - [Gateway runbook](/gateway) (flags, supervision, ports)
 - [Gateway configuration](/gateway/configuration) (config schema + examples)
 - [Discord](/channels/discord) and [Telegram](/channels/telegram) (reply tags + replyToMode settings)
-- [OpenClaw assistant setup](/start/openclaw)
+- [PASO assistant setup](/start/personal-assistant)
 - [macOS app](/platforms/macos) (gateway lifecycle)

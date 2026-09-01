@@ -369,9 +369,11 @@ const buildMissingEntryErrorMessage = async () => {
     "Build locally with `pnpm install && pnpm build`, or install a built package instead.",
   );
   lines.push(
-    "For pinned GitHub installs, use `npm install -g github:openclaw/openclaw#<ref>` instead of a raw `/archive/<ref>.tar.gz` URL.",
+    "For pinned GitHub installs, use `npm install -g github:celaya-solutions/PASO-AGENT#<ref>` instead of a raw `/archive/<ref>.tar.gz` URL.",
   );
-  lines.push("For releases, use `npm install -g openclaw@latest`.");
+  lines.push(
+    "For PASO releases, install a tagged fork ref with `npm install -g github:celaya-solutions/PASO-AGENT#<tag>`.",
+  );
   return lines.join("\n");
 };
 
@@ -592,7 +594,7 @@ function tryOutputLauncherVersion(argv) {
     }
     const version = resolveLauncherVersion();
     const commit = resolveLauncherCommit();
-    process.stdout.write(commit ? `OpenClaw ${version} (${commit})\n` : `OpenClaw ${version}\n`);
+    process.stdout.write(commit ? `PASO ${version} (${commit})\n` : `PASO ${version}\n`);
     return true;
   } catch {
     return false;

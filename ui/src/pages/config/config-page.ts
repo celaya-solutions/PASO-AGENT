@@ -186,15 +186,16 @@ function renderConfigPageSubtitle(pageId: ConfigPageId) {
   switch (pageId) {
     case "appearance":
       return html`${t("configView.appearance.intro")}
-      ${renderLearnMoreLink("https://docs.openclaw.ai/web/control-ui")}`;
+      ${renderLearnMoreLink("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs")}`;
     case "mcp":
-      return html`${t("mcpPage.intro")} ${renderLearnMoreLink("https://docs.openclaw.ai/tools/mcp")}`;
+      return html`${t("mcpPage.intro")}
+      ${renderLearnMoreLink("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs")}`;
     case "security":
       return html`${t("quickSettings.security.intro")}
-      ${renderLearnMoreLink("https://docs.openclaw.ai/gateway/security")}`;
+      ${renderLearnMoreLink("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs")}`;
     case "talk":
       return html`${t("talkPage.intro")}
-      ${renderLearnMoreLink("https://docs.openclaw.ai/nodes/talk")}`;
+      ${renderLearnMoreLink("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs")}`;
     case "updates":
       return t("updates.page.intro");
     default:

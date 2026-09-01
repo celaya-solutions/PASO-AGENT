@@ -9,6 +9,12 @@ func sanitizeVoiceWakeTriggers(_ words: [String]) -> [String] {
     return cleaned.isEmpty ? defaultVoiceWakeTriggers : cleaned
 }
 
+func voiceWakeMatchingTriggers(_ words: [String]) -> [String] {
+    var seen = Set<String>()
+    return (sanitizeVoiceWakeTriggers(words) + legacyVoiceWakeTriggers)
+        .filter { seen.insert($0.lowercased()).inserted }
+}
+
 func normalizeLocaleIdentifier(_ raw: String) -> String {
     var trimmed = raw
     if let at = trimmed.firstIndex(of: "@") {

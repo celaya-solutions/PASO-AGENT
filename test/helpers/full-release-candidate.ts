@@ -28,7 +28,7 @@ export function canonicalTestSha256(value: unknown): string {
 
 export function fullReleaseCandidateRequestInput(overrides: Record<string, unknown> = {}) {
   return {
-    repository: "openclaw/openclaw",
+    repository: "celaya-solutions/PASO-AGENT",
     targetSha: TARGET_SHA,
     toolingSha: TOOLING_SHA,
     releaseProfile: "stable",

@@ -37,7 +37,7 @@ for harness_path in \
 done
 chmod -R a+rX "$BUN_HARNESS_DIR"
 
-echo "Installing the real OpenClaw package artifact with npm as root..."
+echo "Installing the real PASO package artifact with npm as root..."
 DOCKER_COMMAND_TIMEOUT="$DOCKER_RUN_TIMEOUT" docker_e2e_docker_run_cmd run -d \
   --name "$NPM_PROOF_CONTAINER" \
   --user root \
@@ -58,7 +58,7 @@ DOCKER_COMMAND_TIMEOUT="$DOCKER_RUN_TIMEOUT" docker_e2e_docker_run_cmd run -d \
     exec sleep infinity
   ' >/dev/null
 
-echo "Installing the real OpenClaw package artifact with pnpm..."
+echo "Installing the real PASO package artifact with pnpm..."
 DOCKER_COMMAND_TIMEOUT="$DOCKER_RUN_TIMEOUT" docker_e2e_docker_run_cmd run -d \
   --name "$PNPM_PROOF_CONTAINER" \
   -v "$PACKAGE_TGZ:/tmp/openclaw-current.tgz:ro" \
@@ -113,7 +113,7 @@ SOURCE_LINK
     exec sleep infinity
   ' -- "$(node -p "require('$ROOT_DIR/package.json').packageManager")" >/dev/null
 
-echo "Installing the real OpenClaw package artifact with Bun..."
+echo "Installing the real PASO package artifact with Bun..."
 DOCKER_COMMAND_TIMEOUT="$DOCKER_RUN_TIMEOUT" docker_e2e_docker_run_cmd run -d \
   --name "$BUN_PROOF_CONTAINER" \
   -v "$PACKAGE_TGZ:/tmp/openclaw-current.tgz:ro" \

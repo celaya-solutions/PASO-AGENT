@@ -237,7 +237,7 @@ describe("ModelProvidersPage agent scope", () => {
 
     const link = page.querySelector<HTMLAnchorElement>(".page-subtitle a");
     expect(link?.textContent?.trim()).toBe("Learn more");
-    expect(link?.href).toBe("https://docs.openclaw.ai/concepts/model-providers");
+    expect(link?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
   });
 
   it("patches thinking and fast mode through the shared config draft", async () => {

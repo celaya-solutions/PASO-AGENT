@@ -1847,7 +1847,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
             expiresAtMs: 4_000_000_000_000))
         appModel._test_presentExecApprovalPrompt(prompt)
 
-        let uncertainMessage = "Decision status is unknown. Actions remain locked until OpenClaw reconnects."
+        let uncertainMessage = "Decision status is unknown. Actions remain locked until PASO reconnects."
         appModel._test_setPendingExecApprovalPromptUncertain(uncertainMessage)
 
         #expect(appModel._test_pendingExecApprovalState().resolving)
@@ -2196,7 +2196,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
         // owner-frozen uncertain contract with a durable readback record.
         #expect(appModel._test_pendingExecApprovalState().resolving)
         #expect(appModel._test_pendingExecApprovalState().error ==
-            "Decision status is unknown. Actions remain locked until OpenClaw reconnects.")
+            "Decision status is unknown. Actions remain locked until PASO reconnects.")
         #expect(appModel._test_pendingPersistedExecApprovalReadbacks().contains { readback in
             readback.approvalId == approvalID && readback.gatewayStableID == gatewayA.effectiveStableID
         })
@@ -5341,7 +5341,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
                 name: "Main",
                 identity: [
                     "avatarUrl": AnyCodable("https://example.com/openclaw.png"),
-                    "emoji": AnyCodable("OC"),
+                    "emoji": AnyCodable("P"),
                 ],
                 workspace: nil,
                 workspacegit: nil,
@@ -5358,7 +5358,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
 
         let snapshot = try #require(watchService.lastSentAppSnapshot)
         #expect(snapshot.agentAvatarURL == "https://example.com/openclaw.png")
-        #expect(snapshot.agentAvatarText == "OC")
+        #expect(snapshot.agentAvatarText == "P")
     }
 
     @Test @MainActor func `watch app snapshot includes pending approval count`() async throws {
@@ -6890,7 +6890,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
         let appModel = NodeAppModel(watchMessagingService: watchService)
         appModel.connectedGatewayID = "gateway-watch-notify"
         let params = OpenClawWatchNotifyParams(
-            title: "OpenClaw",
+            title: "PASO",
             body: "Meeting with Peter is at 4pm",
             priority: .timeSensitive)
         let req = try makeInvokeRequest(
@@ -6900,7 +6900,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
 
         let res = await appModel.handleInvoke(req, gatewayStableID: "gateway-a")
         #expect(res.ok == true)
-        #expect(watchService.lastSent?.params.title == "OpenClaw")
+        #expect(watchService.lastSent?.params.title == "PASO")
         #expect(watchService.lastSent?.params.body == "Meeting with Peter is at 4pm")
         #expect(watchService.lastSent?.params.priority == .timeSensitive)
         #expect(watchService.lastSent?.gatewayStableID == "gateway-watch-notify")
@@ -7315,7 +7315,7 @@ private final class TimingOutDeviceStatusService: DeviceStatusServicing {
             code: 1,
             userInfo: [NSLocalizedDescriptionKey: "WATCH_UNAVAILABLE: no paired Apple Watch"])
         let appModel = NodeAppModel(watchMessagingService: watchService)
-        let params = OpenClawWatchNotifyParams(title: "OpenClaw", body: "Delivery check")
+        let params = OpenClawWatchNotifyParams(title: "PASO", body: "Delivery check")
         let req = try makeInvokeRequest(
             id: "watch-notify-fail",
             command: OpenClawWatchCommand.notify.rawValue,

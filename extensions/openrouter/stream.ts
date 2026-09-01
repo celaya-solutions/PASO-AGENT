@@ -65,10 +65,10 @@ function mergeOpenRouterAuthHeaders(options: Parameters<StreamFn>[2]): Parameter
     headers.set("Authorization", `Bearer ${apiKey}`);
   }
   if (!headers.has("http-referer")) {
-    headers.set("HTTP-Referer", "https://openclaw.ai");
+    headers.set("HTTP-Referer", "https://github.com/celaya-solutions/PASO-AGENT");
   }
   if (!headers.has("x-openrouter-title")) {
-    headers.set("X-OpenRouter-Title", "OpenClaw");
+    headers.set("X-OpenRouter-Title", "PASO");
   }
   return {
     ...options,

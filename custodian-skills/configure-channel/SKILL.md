@@ -54,8 +54,8 @@ Apply `openclaw doctor --fix --non-interactive` only after approval, then re-che
 Send one real, clearly labeled test message and confirm delivery from the command result (use `--dry-run` first to inspect the payload):
 
 ```
-openclaw message send --channel telegram --target <chatId> --message "OpenClaw channel test — please ignore" --dry-run
-openclaw message send --channel telegram --target <chatId> --message "OpenClaw channel test — please ignore"
+openclaw message send --channel telegram --target <chatId> --message "PASO channel test — please ignore" --dry-run
+openclaw message send --channel telegram --target <chatId> --message "PASO channel test — please ignore"
 ```
 
 If sending fails, report the exact account, permission, destination, or network blocker without exposing credentials.
@@ -64,4 +64,4 @@ If sending fails, report the exact account, permission, destination, or network 
 
 State the channel and account changed, the exact config paths written (never values), the test destination, and the observed delivery result. List any remaining operator action.
 
-Further reference: https://docs.openclaw.ai/channels/telegram (and the matching page for other channels)
+Further reference: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/telegram.md (and the matching page for other channels)

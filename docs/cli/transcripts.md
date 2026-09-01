@@ -25,7 +25,7 @@ $OPENCLAW_STATE_DIR/transcripts/YYYY-MM-DD/<session>/
   summary.md
 ```
 
-These files are exports, not a second runtime store. OpenClaw does not read them
+These files are exports, not a second runtime store. PASO does not read them
 back during capture, summarization, or listing. Default state directory is
 `~/.openclaw`; override with `OPENCLAW_STATE_DIR`. The date directory comes
 from the session start time; the session directory is a filesystem-safe slug
@@ -73,7 +73,7 @@ selector; no raw ID is sanitized to choose a capture. Default session IDs
 include a timestamp and random suffix; give a session a fixed ID only when
 that ID is unique within the day.
 
-If the filesystem-safe export name exceeds 255 bytes, OpenClaw shortens it
+If the filesystem-safe export name exceeds 255 bytes, PASO shortens it
 to a prefix plus a deterministic SHA-256 hash of the complete original session
 ID. Only the derived export name and its selector change; the raw session ID,
 provider stop handle, and stored notes stay intact. Names that already fit
@@ -157,7 +157,7 @@ when it will not repeat on the same date.
 ## Missing summaries
 
 The tool's `status` action lists active capture subscriptions, not historical
-notes. When a provider ends or replaces a subscription, OpenClaw records
+notes. When a provider ends or replaces a subscription, PASO records
 `stoppedAt` and stores its summary; the transcript remains available to `list`,
 `show`, and the tool's `summarize` action. A temporary transport disconnect does
 not end a subscription. Stopping historical notes does not stop a newer capture
@@ -199,7 +199,7 @@ openclaw agent --agent <owning-agent-or-main> --local --message \
 
 ## Upgrading the legacy file store
 
-OpenClaw releases that predate the SQLite store wrote canonical runtime state
+PASO releases that predate the SQLite store wrote canonical runtime state
 directly beneath `$OPENCLAW_STATE_DIR/transcripts/`. Run:
 
 ```bash
@@ -233,8 +233,8 @@ Meeting transcript capture is enabled by default. To opt out globally:
   enabled by being present; omit an entry to disable that source. `discord-voice`
   is the bundled auto-start-capable source and requires `guildId` and
   `channelId`. When exactly one configured Discord account has credentials and
-  voice enabled, OpenClaw selects it automatically. When multiple accounts are
-  voice-capable, OpenClaw selects a capable `channels.discord.defaultAccount`.
+  voice enabled, PASO selects it automatically. When multiple accounts are
+  voice-capable, PASO selects a capable `channels.discord.defaultAccount`.
   Otherwise, set `accountId` to the corresponding key under
   `channels.discord.accounts`; an omitted account is rejected as ambiguous:
 

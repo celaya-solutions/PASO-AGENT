@@ -1,8 +1,8 @@
-# OpenClaw Voyage Provider
+# PASO Voyage Provider
 
-Official OpenClaw memory embedding provider plugin for Voyage AI.
+Official PASO memory embedding provider plugin for Voyage AI.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/voyage-provider
@@ -10,5 +10,5 @@ openclaw gateway restart
 ```
 
 Set `VOYAGE_API_KEY`, then configure memory search with `provider: "voyage"`.
-See <https://docs.openclaw.ai/reference/memory-config> for setup and
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/reference/memory-config.md> for setup and
 configuration.

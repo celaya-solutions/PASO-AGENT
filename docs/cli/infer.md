@@ -10,7 +10,7 @@ title: "Inference CLI"
 
 Reasons to prefer it over a one-off provider wrapper:
 
-- Reuses providers and models already configured in OpenClaw.
+- Reuses providers and models already configured in PASO.
 - Stable `--json` envelope for scripts and agent-driven automation (see [JSON output](#json-output)).
 - Runs the normal local path without the gateway for most subcommands.
 - For end-to-end provider checks, it exercises the shipped CLI, config loading, default-agent resolution, bundled plugin activation, and the shared capability runtime before the provider request goes out.
@@ -20,7 +20,7 @@ Reasons to prefer it over a one-off provider wrapper:
 Copy and paste this to an agent:
 
 ```text
-Read https://docs.openclaw.ai/cli/infer, then create a skill that routes my common workflows to `openclaw infer`.
+Read https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/cli/infer.md, then create a skill that routes my common workflows to `openclaw infer`.
 Focus on model runs, image generation, video generation, audio transcription, TTS, web search, and embeddings.
 ```
 
@@ -154,7 +154,7 @@ Notes:
 - Local `model run --model <provider/model>` can resolve exact bundled static-catalog rows (the same rows `openclaw models list --all` shows) before that provider is written to config. Provider auth is still required; missing credentials fail as auth errors, not `Unknown model`.
 - For Mistral Medium 3.5 reasoning probes, leave temperature unset/default. Mistral rejects `reasoning_effort="high"` with `temperature: 0`; use default temperature or a non-zero value such as `0.7`.
 - OpenAI ChatGPT/Codex OAuth (`openai-chatgpt-responses` API) local probes add a minimal system instruction so the transport can populate its required `instructions` field — no full agent context, tools, memory, or session transcript.
-- `model run --file` attaches image content directly to the single user message. Common formats (PNG, JPEG, WebP) work when MIME type is detected as `image/*`; unsupported or unrecognized files fail before the provider is called. Use `infer image describe` instead when you want OpenClaw's image-model routing and fallbacks rather than a direct multimodal-model probe.
+- `model run --file` attaches image content directly to the single user message. Common formats (PNG, JPEG, WebP) work when MIME type is detected as `image/*`; unsupported or unrecognized files fail before the provider is called. Use `infer image describe` instead when you want PASO's image-model routing and fallbacks rather than a direct multimodal-model probe.
 - The selected model must support image input; text-only models may reject the request at the provider layer.
 - `model run --prompt` must contain non-whitespace text; empty prompts are rejected before any provider or Gateway call.
 - Local `model run` exits non-zero when the provider returns no text output, so unreachable providers and empty completions do not look like successful probes.
@@ -263,9 +263,9 @@ Notes:
 Search and fetch.
 
 ```bash
-openclaw infer web search --query "OpenClaw docs" --json
-openclaw infer web search --query "OpenClaw infer web providers" --json
-openclaw infer web fetch --url https://docs.openclaw.ai/cli/infer --json
+openclaw infer web search --query "PASO docs" --json
+openclaw infer web search --query "PASO infer web providers" --json
+openclaw infer web fetch --url https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/cli/infer.md --json
 openclaw infer web providers --agent <id> --json
 ```
 
@@ -310,7 +310,7 @@ Stable top-level fields:
 - `ignoredOverrides` (hint keys a provider does not support, when applicable)
 - `error`
 
-For generated media commands, `outputs` contains files written by OpenClaw. Use the `path`, `mimeType`, `size`, and any media-specific dimensions in that array for automation instead of parsing human-readable stdout.
+For generated media commands, `outputs` contains files written by PASO. Use the `path`, `mimeType`, `size`, and any media-specific dimensions in that array for automation instead of parsing human-readable stdout.
 
 ## Common pitfalls
 

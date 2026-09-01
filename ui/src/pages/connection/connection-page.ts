@@ -28,7 +28,7 @@ import { isUnknownSystemInfoMethodError, supportsSystemInfo } from "./system-inf
 import { renderConnection } from "./view.ts";
 
 const SYSTEM_INFO_POLL_INTERVAL_MS = 10_000;
-const CONNECTION_DOCS_URL = "https://docs.openclaw.ai/gateway/remote";
+const CONNECTION_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 export { supportsSystemInfo } from "./system-info.ts";
 

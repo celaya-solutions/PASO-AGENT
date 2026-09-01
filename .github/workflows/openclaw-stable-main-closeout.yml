@@ -1,4 +1,4 @@
-name: OpenClaw Stable Main Closeout
+name: PASO Stable Main Closeout
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Stable OpenClaw tag to replay or repair, for example v2026.6.8 or v2026.6.8-2
+        description: Stable PASO tag to replay or repair, for example v2026.6.8 or v2026.6.8-2
         required: false
         type: string
       rollback_drill_id:
@@ -430,13 +430,20 @@ jobs:
           node --input-type=module - "$RUNNER_TEMP/release-publish-run.json" <<'NODE'
           import { readFileSync } from "node:fs";
           const run = JSON.parse(readFileSync(process.argv[2], "utf8"));
+          const acceptedWorkflowNames = new Set([
+            "PASO Release Publish",
+            // Allow closeout of a parent run already in flight when the workflow was renamed.
+            "OpenClaw Release Publish",
+          ]);
+          if (!acceptedWorkflowNames.has(run.workflowName)) {
+            throw new Error(`PASO Release Publish must have workflowName=PASO Release Publish, got ${run.workflowName ?? "<missing>"}.`);
+          }
           for (const [key, expected] of [
-            ["workflowName", "OpenClaw Release Publish"],
             ["event", "workflow_dispatch"],
             ["status", "completed"],
           ]) {
             if (run[key] !== expected) {
-              throw new Error(`OpenClaw Release Publish must have ${key}=${expected}, got ${run[key] ?? "<missing>"}.`);
+              throw new Error(`PASO Release Publish must have ${key}=${expected}, got ${run[key] ?? "<missing>"}.`);
             }
           }
           const recoveryRequested = process.env.ALLOW_FAILED_PUBLISH_RECOVERY === "true";
@@ -448,7 +455,7 @@ jobs:
           const failedRecovery = recoveryRequested && run.conclusion === "failure";
           if (run.conclusion !== "success" && !failedRecovery) {
             throw new Error(
-              `OpenClaw Release Publish must have conclusion=success, got ${run.conclusion ?? "<missing>"}.`,
+              `PASO Release Publish must have conclusion=success, got ${run.conclusion ?? "<missing>"}.`,
             );
           }
           if (failedRecovery) {
@@ -461,7 +468,7 @@ jobs:
             gh_with_retry run view "$RELEASE_PUBLISH_RUN_ID" --repo "$GITHUB_REPOSITORY" --log \
               > "$parent_log"
             mapfile -t windows_node_run_ids < <(
-              sed -nE '/Dispatched windows-node-release\.yml/ { s#.*https://github\.com/openclaw/openclaw/actions/runs/([1-9][0-9]*).*#\1#p; }' "$parent_log" |
+              sed -nE '/Dispatched windows-node-release\.yml/ { s#.*https://github\.com/celaya-solutions/PASO-AGENT/actions/runs/([1-9][0-9]*).*#\1#p; }' "$parent_log" |
                 LC_ALL=C sort -u
             )
             if [[ "${#windows_node_run_ids[@]}" != "1" ]]; then
@@ -498,7 +505,7 @@ jobs:
               for (const name of [
                 "Validate inputs",
                 "Verify Authenticode signatures",
-                "Upload to OpenClaw release",
+                "Upload to PASO release",
                 "Verify promoted release asset contract",
               ]) {
                 const steps = (jobs[0].steps ?? []).filter(

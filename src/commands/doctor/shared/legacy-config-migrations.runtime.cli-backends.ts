@@ -5,7 +5,7 @@ import {
   type LegacyConfigMigrationSpec,
 } from "../../../config/legacy.shared.js";
 
-const CLI_BACKENDS_PLUGIN_GUIDE = "https://docs.openclaw.ai/plugins/cli-backend-plugins";
+const CLI_BACKENDS_PLUGIN_GUIDE = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 export const LEGACY_CONFIG_MIGRATIONS_RUNTIME_CLI_BACKENDS: LegacyConfigMigrationSpec[] = [
   defineLegacyConfigMigration({

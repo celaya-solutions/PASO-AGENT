@@ -1,4 +1,4 @@
-// Qwen plugin entrypoint registers its OpenClaw integration.
+// Qwen plugin entrypoint registers its PASO integration.
 import { createProviderApiKeyAuthMethod } from "openclaw/plugin-sdk/provider-auth-api-key";
 import { buildOpenAICompatibleLiveModelProviderConfig } from "openclaw/plugin-sdk/provider-catalog-live-runtime";
 import { defineSingleProviderPluginEntry } from "openclaw/plugin-sdk/provider-entry";

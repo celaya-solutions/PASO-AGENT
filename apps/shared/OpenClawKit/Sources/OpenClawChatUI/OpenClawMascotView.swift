@@ -6,11 +6,7 @@ public enum OpenClawMascotAccessory: Equatable, Sendable {
     case gradCap
 }
 
-/// Animated OpenClaw mascot. Redraws the canonical 120x120 vector from
-/// `ui/public/favicon.svg` so individual parts (claws, antennae, eyes) can
-/// animate like the openclaw.ai hero mark; the bundled PNG asset cannot.
-/// Styling (palette, glow colors, float depth) follows the openclaw.ai hero
-/// (`src/pages/index.astro` + `Layout.astro` theme variables).
+/// Animated PASO mark. The public type name remains stable for source compatibility.
 ///
 /// Beyond the site's loop, an `OpenClawMascotAnimator` layers on moods
 /// (thinking, celebrating, sad, …), randomized micro-behaviors, and — when
@@ -114,15 +110,13 @@ public struct OpenClawMascotView: View {
         Date().timeIntervalSinceReferenceDate
     }
 
-    /// openclaw.ai hero drop-shadow color (`--logo-glow` / `--logo-glow-hover`).
-    /// Pair with a shadow radius of ~10% of the mascot size (15% while hovering)
-    /// to match the site's `drop-shadow(0 0 20px)` on a 100px mark.
+    /// PASO mark drop-shadow color.
     public static func heroGlowColor(for colorScheme: ColorScheme, hovering: Bool = false) -> Color {
         switch (colorScheme, hovering) {
-        case (.light, false): Color(red: 239 / 255, green: 75 / 255, blue: 88 / 255).opacity(0.2)
-        case (.light, true): Color(red: 0, green: 143 / 255, blue: 135 / 255).opacity(0.35)
-        case (_, false): Color(red: 1, green: 77 / 255, blue: 77 / 255).opacity(0.4)
-        case (_, true): Color(red: 0, green: 229 / 255, blue: 204 / 255).opacity(0.6)
+        case (.light, false): Color(red: 232 / 255, green: 89 / 255, blue: 12 / 255).opacity(0.22)
+        case (.light, true): Color(red: 232 / 255, green: 89 / 255, blue: 12 / 255).opacity(0.36)
+        case (_, false): Color(red: 232 / 255, green: 89 / 255, blue: 12 / 255).opacity(0.4)
+        case (_, true): Color(red: 232 / 255, green: 89 / 255, blue: 12 / 255).opacity(0.62)
         }
     }
 }
@@ -152,9 +146,7 @@ extension View {
     }
 }
 
-/// Body/antenna colors from the openclaw.ai theme variables: `:root` (dark)
-/// and `html[data-theme='light']` in `Layout.astro`. Eye colors are fixed in
-/// the site markup and shared by both themes.
+/// Legacy palette storage retained for source compatibility.
 struct OpenClawMascotPalette: Equatable {
     let gradientTop: Color
     let gradientBottom: Color
@@ -368,6 +360,9 @@ struct OpenClawMascotCanvas: View {
         let scale = min(size.width, size.height) / 120
         context.scaleBy(x: scale, y: scale)
 
+        self.drawPasoMark(context: context)
+        return
+
         // Squash-and-stretch about the feet (y=110); x compensates slightly to
         // conserve volume without pushing the claws past the 0/120 box edges.
         if pose.bodyStretch != 1 {
@@ -423,6 +418,41 @@ struct OpenClawMascotCanvas: View {
         self.drawEye(context: context, center: self.rightEyeCenter, openness: pose.rightEyeOpenness, pose: pose)
         self.drawMouth(context: context, pose: pose)
         self.drawEffect(context: context, pose: pose, palette: palette)
+    }
+
+    private static func drawPasoMark(context: GraphicsContext) {
+        let background = Path(roundedRect: CGRect(x: 0, y: 0, width: 120, height: 120), cornerRadius: 26.25)
+        context.fill(background, with: .color(Color(red: 14 / 255, green: 16 / 255, blue: 21 / 255)))
+
+        var path = Path()
+        path.move(to: CGPoint(x: 33.75, y: 93.75))
+        path.addLine(to: CGPoint(x: 33.75, y: 26.25))
+        path.addLine(to: CGPoint(x: 67.5, y: 26.25))
+        path.addCurve(
+            to: CGPoint(x: 97.5, y: 56.25),
+            control1: CGPoint(x: 84.07, y: 26.25),
+            control2: CGPoint(x: 97.5, y: 39.68))
+        path.addCurve(
+            to: CGPoint(x: 67.5, y: 86.25),
+            control1: CGPoint(x: 97.5, y: 72.82),
+            control2: CGPoint(x: 84.07, y: 86.25))
+        path.addLine(to: CGPoint(x: 56.25, y: 86.25))
+        context.stroke(
+            path,
+            with: .color(Color(red: 232 / 255, green: 89 / 255, blue: 12 / 255)),
+            style: StrokeStyle(lineWidth: 13.125, lineCap: .round, lineJoin: .round))
+
+        var steps = Path()
+        steps.move(to: CGPoint(x: 33.75, y: 93.75))
+        steps.addLine(to: CGPoint(x: 52.5, y: 93.75))
+        steps.addLine(to: CGPoint(x: 52.5, y: 75))
+        steps.addLine(to: CGPoint(x: 71.25, y: 75))
+        steps.addLine(to: CGPoint(x: 71.25, y: 56.25))
+        steps.addLine(to: CGPoint(x: 93.75, y: 56.25))
+        context.stroke(
+            steps,
+            with: .color(Color(red: 250 / 255, green: 249 / 255, blue: 247 / 255)),
+            style: StrokeStyle(lineWidth: 9.375, lineCap: .square, lineJoin: .miter))
     }
 
     private static func drawEye(

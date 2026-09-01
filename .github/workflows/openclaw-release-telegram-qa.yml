@@ -1,6 +1,6 @@
-name: OpenClaw Release Telegram QA
+name: PASO Release Telegram QA
 
-run-name: ${{ github.event_name == 'workflow_dispatch' && format('OpenClaw Release Telegram QA {0}', inputs.dispatch_id) || 'OpenClaw Release Telegram QA' }}
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('PASO Release Telegram QA {0}', inputs.dispatch_id) || 'PASO Release Telegram QA' }}
 
 on:
   workflow_call:
@@ -90,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          expected_repository="openclaw/openclaw"
+          expected_repository="celaya-solutions/PASO-AGENT"
           workflow_path=".github/workflows/openclaw-release-telegram-qa.yml"
           caller_path=".github/workflows/openclaw-release-checks.yml"
           if [[ "$GITHUB_REPOSITORY" != "$expected_repository" ||

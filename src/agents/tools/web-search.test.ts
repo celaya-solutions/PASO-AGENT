@@ -464,7 +464,7 @@ const normalizedProviderFixtures: Array<{
       results: [
         {
           title: "QA Lab fixture",
-          url: "https://docs.openclaw.ai/qa-lab/search-fixture/1",
+          url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           description: "QA Lab snippet",
           siteName: "docs.openclaw.ai",
         },
@@ -478,7 +478,7 @@ const normalizedProviderFixtures: Array<{
       results: [
         {
           title: "QA Lab fixture",
-          url: "https://docs.openclaw.ai/qa-lab/search-fixture/1",
+          url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           snippet: "QA Lab snippet",
           siteName: "docs.openclaw.ai",
         },
@@ -561,14 +561,14 @@ const normalizedProviderFixtures: Array<{
     query: "requested error query",
     result: {
       error: "missing_brave_api_key",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     },
     expected: {
       kind: "error",
       provider: "brave",
       error: "provider_error",
       message: "missing_brave_api_key",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     },
   },
   {
@@ -943,7 +943,7 @@ describe("web_search time filter parsing", () => {
       error: "conflicting_time_filters",
       message:
         "freshness and date_after/date_before cannot be used together. Use either freshness (day/week/month/year) or a date range (date_after/date_before), not both.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     });
   });
 
@@ -969,7 +969,7 @@ describe("web_search unsupported filter response", () => {
       error: "unsupported_country",
       message:
         "country filtering is not supported by the grok provider. Only Brave and Perplexity support country filtering.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     });
   });
 
@@ -978,7 +978,7 @@ describe("web_search unsupported filter response", () => {
       error: "unsupported_date_filter",
       message:
         "date_after/date_before filtering is not supported by the kimi provider. Only Brave and Perplexity support date filtering.",
-      docs: "https://docs.openclaw.ai/tools/web",
+      docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     });
   });
 });

@@ -1,12 +1,12 @@
-# OpenClaw Cloudflare AI Gateway Provider
+# PASO Cloudflare AI Gateway Provider
 
-Official OpenClaw provider plugin for Cloudflare AI Gateway.
+Official PASO provider plugin for Cloudflare AI Gateway.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/cloudflare-ai-gateway-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/cloudflare-ai-gateway> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/cloudflare-ai-gateway.md> for setup and configuration.

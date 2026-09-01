@@ -169,7 +169,7 @@ function registerCodexDiagnosticsCommandForTest(
         text: [
           "Codex runtime thread detected.",
           "Approving diagnostics will also send this thread's feedback bundle to OpenAI servers.",
-          "The completed diagnostics reply will list the OpenClaw session ids and Codex thread ids that were sent.",
+          "The completed diagnostics reply will list the PASO session ids and Codex thread ids that were sent.",
           "Included: Codex logs and spawned Codex subthreads when available.",
         ].join("\n"),
       };
@@ -180,7 +180,7 @@ function registerCodexDiagnosticsCommandForTest(
           "Codex diagnostics sent to OpenAI servers:",
           "Session 1",
           "Channel: whatsapp",
-          "OpenClaw session id: `session-1`",
+          "PASO session id: `session-1`",
           "Codex thread id: `codex-thread-1`",
           "Inspect locally: `codex resume codex-thread-1`",
           "Included Codex logs and spawned Codex subthreads when available.",
@@ -316,7 +316,7 @@ describe("diagnostics command", () => {
       "Diagnostics can include sensitive local logs and host-level runtime metadata.",
     );
     expect(execCall.defaults.approvalWarningText).toContain(
-      "https://docs.openclaw.ai/gateway/diagnostics",
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
     expect(execCall.params.ask).toBe("always");
     const command = execCall.params.command ?? "";
@@ -386,7 +386,9 @@ describe("diagnostics command", () => {
     expect(result?.reply?.text).toContain(
       "Diagnostics can include sensitive local logs and host-level runtime metadata.",
     );
-    expect(result?.reply?.text).toContain("https://docs.openclaw.ai/gateway/diagnostics");
+    expect(result?.reply?.text).toContain(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
     expect(result?.reply?.text).toContain("no interactive approval client");
     expect(execCalls).toHaveLength(1);
   });
@@ -482,7 +484,12 @@ describe("diagnostics command", () => {
     );
   });
 
-  it("omits the Codex section for ordinary sessions without Codex targets", async () => {
+  it.each([
+    "No Codex thread is attached to this PASO session yet.",
+    "No Codex thread is attached to this OpenClaw session yet.",
+    "Cannot send Codex diagnostics because this command did not include a PASO session file.",
+    "Cannot send Codex diagnostics because this command did not include an OpenClaw session file.",
+  ])("omits the Codex section for the unavailable result %s", async (unavailableText) => {
     registerHostTrustedReservedCommandForTest({
       name: "codex",
       description: "Codex command",
@@ -490,7 +497,7 @@ describe("diagnostics command", () => {
       ownership: "reserved",
       handler: vi.fn(async () => ({
         text: [
-          "No Codex thread is attached to this OpenClaw session yet.",
+          unavailableText,
           "Use /codex threads to find a thread, then /codex resume <thread-id> before sending diagnostics.",
         ].join("\n"),
       })),
@@ -583,7 +590,7 @@ describe("diagnostics command", () => {
     const commandHandler = vi.fn(async () => ({
       text: [
         "Codex diagnostics sent to OpenAI servers:",
-        "- channel whatsapp, OpenClaw session session-1, Codex thread codex-thread-1",
+        "- channel whatsapp, PASO session session-1, Codex thread codex-thread-1",
       ].join("\n"),
     }));
     registerHostTrustedReservedCommandForTest({

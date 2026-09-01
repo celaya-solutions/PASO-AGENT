@@ -1,12 +1,12 @@
-# OpenClaw DuckDuckGo Plugin
+# PASO DuckDuckGo Plugin
 
-Official OpenClaw plugin for DuckDuckGo web search.
+Official PASO plugin for DuckDuckGo web search.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/duckduckgo-plugin
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/tools/duckduckgo-search> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/duckduckgo-search.md> for setup and configuration.

@@ -1,4 +1,4 @@
-// Check Live Cache script supports OpenClaw repository automation.
+// Check Live Cache script supports PASO repository automation.
 
 import { LIVE_CACHE_TEST_ENABLED, logLiveCache } from "../src/agents/live-cache-test-support.js";
 import { runLiveCacheRegression } from "../src/agents/test-helpers/live-cache-regression-runner.js";

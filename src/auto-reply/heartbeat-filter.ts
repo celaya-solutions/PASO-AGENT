@@ -7,7 +7,7 @@ import { HEARTBEAT_RESPONSE_TOOL_NAME } from "./heartbeat-tool-response.js";
 import {
   HEARTBEAT_RESPONSE_TOOL_INSTRUCTIONS,
   HEARTBEAT_RESPONSE_TOOL_PROMPT,
-  HEARTBEAT_TRANSCRIPT_PROMPT,
+  HEARTBEAT_TRANSCRIPT_PROMPTS,
   isHeartbeatAcknowledgementText,
   resolveHeartbeatPromptForResponseTool,
 } from "./heartbeat.js";
@@ -314,12 +314,12 @@ export function isHeartbeatUserMessage(
     return false;
   }
   const normalizedHeartbeatPrompt = heartbeatPrompt?.trim();
-  if (trimmed === HEARTBEAT_TRANSCRIPT_PROMPT) {
+  if (HEARTBEAT_TRANSCRIPT_PROMPTS.some((prompt) => trimmed === prompt)) {
     return true;
   }
   if (
     MESSAGE_TOOL_DELIVERY_HINTS.some((prefix) => trimmed.startsWith(prefix)) &&
-    trimmed.endsWith(HEARTBEAT_TRANSCRIPT_PROMPT)
+    HEARTBEAT_TRANSCRIPT_PROMPTS.some((prompt) => trimmed.endsWith(prompt))
   ) {
     return true;
   }

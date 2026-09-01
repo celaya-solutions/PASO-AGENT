@@ -118,8 +118,8 @@ async function transcribeOpenRouterAudio(
       defaultHeaders: {
         Authorization: `Bearer ${params.apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://openclaw.ai",
-        "X-OpenRouter-Title": "OpenClaw",
+        "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+        "X-OpenRouter-Title": "PASO",
       },
       provider: "openrouter",
       api: "openrouter-stt",

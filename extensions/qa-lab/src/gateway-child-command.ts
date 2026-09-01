@@ -47,9 +47,7 @@ export function resolveQaGatewayChildCommand(repoRoot: string): QaGatewayChildCo
     }
   }
 
-  throw new Error(
-    "OpenClaw CLI entry not found: expected scripts/run-node.mjs or dist/index.(m)js",
-  );
+  throw new Error("PASO CLI entry not found: expected scripts/run-node.mjs or dist/index.(m)js");
 }
 
 export async function runQaGatewayCliCommand(params: {
@@ -145,9 +143,7 @@ async function readQaGatewayCliCommand(
   const stdoutText = readQaChildOutput(stdout);
   if (exitCode !== 0 && !failure) {
     const stderrText = formatQaChildOutputTail(stderr, "stderr");
-    failure = createQaGatewayCliError(
-      `OpenClaw CLI exited ${exitCode}: ${stderrText || stdoutText}`,
-    );
+    failure = createQaGatewayCliError(`PASO CLI exited ${exitCode}: ${stderrText || stdoutText}`);
   }
   if (stopped.errors.length) {
     throw new AggregateError(

@@ -124,7 +124,8 @@ export type SummaryPayload = {
   };
 };
 
-export const PUBLISHED_INSTALLER_BASE_URL = "https://openclaw.ai";
+export const PUBLISHED_INSTALLER_BASE_URL =
+  "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts";
 
 const SUPPORTED_MODES = new Set<CrossOsMode>(["fresh", "upgrade", "both"]);
 const SUPPORTED_SUITES = new Set<CrossOsSuite>([

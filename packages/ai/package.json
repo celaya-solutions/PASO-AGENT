@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/ai",
   "version": "2026.8.1",
-  "description": "Reusable model provider adapters and streaming runtime from OpenClaw",
+  "description": "Reusable model provider adapters and streaming runtime from PASO",
   "keywords": [
     "ai",
     "anthropic",
@@ -11,15 +11,15 @@
     "openai",
     "streaming"
   ],
-  "homepage": "https://github.com/openclaw/openclaw#readme",
+  "homepage": "https://github.com/celaya-solutions/PASO-AGENT#readme",
   "bugs": {
-    "url": "https://github.com/openclaw/openclaw/issues"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT/issues"
   },
   "license": "MIT",
-  "author": "OpenClaw Foundation (https://openclaw.org)",
+  "author": "Celaya Solutions Research <hello@celayasolutions.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/openclaw/openclaw.git",
+    "url": "git+https://github.com/celaya-solutions/PASO-AGENT.git",
     "directory": "packages/ai"
   },
   "files": [

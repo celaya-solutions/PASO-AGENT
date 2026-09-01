@@ -489,7 +489,7 @@ describe("modelsAuthLoginCommand", () => {
       "Default model available: openai/gpt-5.5 (current default unchanged; run openclaw models set openai/gpt-5.5 to apply)",
     );
     expect(runtime.log).toHaveBeenCalledWith(
-      "Tip: Codex-capable models can use native Codex web search. Configure the `web_search` tool with `openclaw configure --section web`. Docs: https://docs.openclaw.ai/tools/web",
+      "Tip: Codex-capable models can use native Codex web search. Configure the `web_search` tool with `openclaw configure --section web`. Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
     expect(mocks.callGateway).toHaveBeenCalledWith({
       method: "models.authStatus",
@@ -1362,7 +1362,7 @@ describe("modelsAuthLoginCommand", () => {
     await modelsAuthLoginCommand({ provider: "claude-cli" }, runtime);
 
     expect(prompter.note).toHaveBeenCalledWith(
-      'Provider "claude-cli" uses its own CLI login. Select a provider with an OpenClaw auth flow.',
+      'Provider "claude-cli" uses its own CLI login. Select a provider with a PASO auth flow.',
       "Provider auth",
     );
     expect(prompter.select).toHaveBeenCalledWith(
@@ -1447,14 +1447,12 @@ describe("modelsAuthLoginCommand", () => {
       },
       agentDir: "/tmp/openclaw/agents/main",
     });
+    expect(runtime.log).toHaveBeenCalledWith("Anthropic setup-token auth is supported in PASO.");
     expect(runtime.log).toHaveBeenCalledWith(
-      "Anthropic setup-token auth is supported in OpenClaw.",
+      "PASO prefers Claude CLI reuse when it is available on the host.",
     );
     expect(runtime.log).toHaveBeenCalledWith(
-      "OpenClaw prefers Claude CLI reuse when it is available on the host.",
-    );
-    expect(runtime.log).toHaveBeenCalledWith(
-      "Anthropic staff told us this OpenClaw path is allowed again.",
+      "Anthropic staff told us this PASO path is allowed again.",
     );
   });
 

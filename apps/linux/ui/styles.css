@@ -58,6 +58,19 @@ body::before {
   filter: drop-shadow(0 0 18px rgb(255 92 92 / 25%));
 }
 
+.brand-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.brand-copy small {
+  color: #858a9a;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}
+
 .panel {
   align-self: center;
   width: 100%;

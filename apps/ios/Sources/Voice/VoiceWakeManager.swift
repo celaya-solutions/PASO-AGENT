@@ -156,7 +156,7 @@ final class VoiceWakeManager: NSObject {
     }
 
     var activeTriggerWords: [String] {
-        VoiceWakePreferences.sanitizeTriggerWords(self.triggerWords)
+        VoiceWakePreferences.matchingTriggerWords(for: self.triggerWords)
     }
 
     private func handleUserDefaultsDidChange() {

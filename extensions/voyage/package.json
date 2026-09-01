@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/voyage-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Voyage embedding provider plugin.",
+  "description": "PASO Voyage embedding provider plugin.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

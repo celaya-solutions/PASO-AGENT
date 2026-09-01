@@ -199,7 +199,10 @@ function isTrustedSourceLinkedOfficialPackage(pkg: NonNullable<ClawHubPackageDet
     pkg.channel === "official" &&
     pkg.isOfficial &&
     pkg.verification?.tier === "source-linked" &&
-    (sourceRepo === "openclaw/openclaw" ||
+    (sourceRepo === "celaya-solutions/PASO-AGENT" ||
+      sourceRepo === "github.com/celaya-solutions/PASO-AGENT" ||
+      sourceRepo === "https://github.com/celaya-solutions/PASO-AGENT" ||
+      sourceRepo === "openclaw/openclaw" ||
       sourceRepo === "github.com/openclaw/openclaw" ||
       sourceRepo === "https://github.com/openclaw/openclaw")
   );
@@ -1140,7 +1143,7 @@ function validateClawHubPluginPackage(params: {
     !satisfiesPluginApiRange(runtimeVersion, compatibility.pluginApiRange)
   ) {
     return buildClawHubInstallFailure(
-      `Plugin "${pkg.name}" requires plugin API ${compatibility.pluginApiRange}, but this OpenClaw runtime exposes ${runtimeVersion}.`,
+      `Plugin "${pkg.name}" requires plugin API ${compatibility.pluginApiRange}, but this PASO runtime exposes ${runtimeVersion}.`,
       CLAWHUB_INSTALL_ERROR_CODE.INCOMPATIBLE_PLUGIN_API,
     );
   }
@@ -1163,12 +1166,12 @@ function validateClawHubPluginPackage(params: {
     }
     if (minGatewayVersionCheck.kind === "unknown_host_version") {
       return buildClawHubInstallFailure(
-        `Plugin "${pkg.name}" requires OpenClaw >=${minGatewayVersionCheck.requirement.minimumLabel}, but this host version could not be determined. Re-run from a released build or set OPENCLAW_VERSION and retry.`,
+        `Plugin "${pkg.name}" requires PASO >=${minGatewayVersionCheck.requirement.minimumLabel}, but this host version could not be determined. Re-run from a released build or set OPENCLAW_VERSION and retry.`,
         CLAWHUB_INSTALL_ERROR_CODE.UNKNOWN_GATEWAY_VERSION,
       );
     }
     return buildClawHubInstallFailure(
-      `Plugin "${pkg.name}" requires OpenClaw >=${minGatewayVersionCheck.requirement.minimumLabel}, but this host is ${minGatewayVersionCheck.currentVersion}.`,
+      `Plugin "${pkg.name}" requires PASO >=${minGatewayVersionCheck.requirement.minimumLabel}, but this host is ${minGatewayVersionCheck.currentVersion}.`,
       CLAWHUB_INSTALL_ERROR_CODE.INCOMPATIBLE_GATEWAY,
     );
   }

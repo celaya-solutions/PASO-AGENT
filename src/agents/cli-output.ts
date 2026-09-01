@@ -34,8 +34,8 @@ export function formatCliOutputError(
   const sessionId = normalizeCliContextValue(attribution.sessionId);
   const cliSessionId = normalizeCliContextValue(output.sessionId);
   const context = [
-    runId ? `OpenClaw run: ${runId}.` : undefined,
-    sessionId ? `OpenClaw session: ${sessionId}.` : undefined,
+    runId ? `PASO run: ${runId}.` : undefined,
+    sessionId ? `PASO session: ${sessionId}.` : undefined,
     cliSessionId ? `Claude session: ${cliSessionId}.` : undefined,
   ].filter((entry): entry is string => Boolean(entry));
   const limit = output.terminalFailure.limit;

@@ -1,4 +1,4 @@
-// Nostr plugin entrypoint registers its OpenClaw integration.
+// Nostr plugin entrypoint registers its PASO integration.
 import {
   defineBundledChannelEntry,
   loadBundledEntryExportSync,

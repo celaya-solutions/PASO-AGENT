@@ -25,7 +25,7 @@ started.
 
 Native sqlite-vec queries run in a separate, read-only process so a slow query
 does not block the Gateway event loop. Cancelling a search terminates its query
-process; OpenClaw does not retry that native query on the Gateway thread.
+process; PASO does not retry that native query on the Gateway thread.
 
 ## Getting started
 
@@ -77,7 +77,7 @@ openclaw plugins install @openclaw/llama-cpp-provider
 | Gemini            | `gemini`            | Supports multimodal (image + audio) |
 | GitHub Copilot    | `github-copilot`    | Uses your Copilot subscription      |
 | LM Studio         | `lmstudio`          | Local/self-hosted                   |
-| Local             | `local`             | OpenClaw-managed llama.cpp server   |
+| Local             | `local`             | PASO-managed llama.cpp server       |
 | Mistral           | `mistral`           |                                     |
 | Ollama            | `ollama`            | Local/self-hosted                   |
 | OpenAI            | `openai`            | Default: `text-embedding-3-small`   |
@@ -88,9 +88,9 @@ Set `memory.search.provider` to switch away from OpenAI.
 
 ## How indexing works
 
-OpenClaw indexes `MEMORY.md`, an existing root `USER.md`, and `memory/*.md` into
+PASO indexes `MEMORY.md`, an existing root `USER.md`, and `memory/*.md` into
 chunks (400 tokens with 80-token overlap by default) and stores them in a
-per-agent SQLite database. OpenClaw does not create `USER.md` automatically.
+per-agent SQLite database. PASO does not create `USER.md` automatically.
 
 Each chunk can carry nullable importance and trigger metadata. Null values are
 neutral, so older indexes remain usable. Search combines hybrid relevance,
@@ -202,7 +202,7 @@ Set `memory.search.provider: "local"` when you want local embeddings.
 **Stale results?** Run `openclaw memory index --force` to rebuild. The watcher
 may miss changes in rare edge cases.
 
-**sqlite-vec not loading?** OpenClaw falls back to in-process cosine
+**sqlite-vec not loading?** PASO falls back to in-process cosine
 similarity automatically. `openclaw memory status --deep` reports the local
 vector store separately from the embedding provider, so `Vector store:
 unavailable` points at sqlite-vec loading while `Embeddings: unavailable`

@@ -1,6 +1,6 @@
 /**
  * Confirms admitted plugin and account apps against their actual Codex thread before
- * OpenClaw commits a binding or starts a turn.
+ * PASO commits a binding or starts a turn.
  */
 import { embeddedAgentLog } from "openclaw/plugin-sdk/agent-harness-runtime";
 import {

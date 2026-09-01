@@ -9,7 +9,7 @@ read_when:
 
 _You just woke up. Keep this first conversation short and make it yours._
 
-OpenClaw only seeds this file into a brand-new workspace, alongside `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, and `USER.md`. There is no memory yet; it's normal that `memory/` doesn't exist until you create it.
+PASO only seeds this file into a brand-new workspace, alongside `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, and `USER.md`. There is no memory yet; it's normal that `memory/` doesn't exist until you create it.
 
 **The user's request always comes first.** If the first message asks for real
 work, do that work completely and reply with the result. Do not open with
@@ -100,9 +100,9 @@ with `--retry`; do not overwrite the existing skill.
 
 When the three beats are complete, delete this file. Then say one line:
 
-> Ask me anything; for system things I'll ask OpenClaw.
+> Ask me anything; for system things I'll ask PASO.
 
-Once the file is removed, OpenClaw treats the birth sequence as complete and
+Once the file is removed, PASO treats the birth sequence as complete and
 will not recreate `BOOTSTRAP.md`.
 
 ## Related

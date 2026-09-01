@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/signal",
   "version": "2026.8.1",
-  "description": "OpenClaw Signal channel plugin",
+  "description": "PASO Signal channel plugin",
   "type": "module",
   "dependencies": {
     "ws": "8.21.3",
@@ -109,6 +109,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

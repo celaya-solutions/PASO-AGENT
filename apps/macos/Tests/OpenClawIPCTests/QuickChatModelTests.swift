@@ -192,12 +192,12 @@ struct QuickChatModelTests {
     @Test func `cached agent display survives representation for the same session`() async {
         let model = self.makeModel()
         await self.prepare(model)
-        #expect(model.agentDisplay.name == "Molty")
+        #expect(model.agentDisplay.name == "PASO")
 
         model.endPresentation()
         _ = model.beginPresentation()
 
-        #expect(model.agentDisplay.name == "Molty")
+        #expect(model.agentDisplay.name == "PASO")
     }
 
     @Test func `selected agent resets to refreshed default when missing`() async {
@@ -400,14 +400,14 @@ struct QuickChatModelTests {
     @Test func `agent display parses avatar forms and monogram`() {
         let imageData = Data([0x89, 0x50, 0x4E, 0x47])
         let dataSummary = AgentSummary(
-            id: "molty",
-            name: "Molty",
+            id: "paso",
+            name: "PASO",
             identity: [
-                "emoji": AnyCodable("🦞"),
+                "emoji": AnyCodable("◈"),
                 "avatarUrl": AnyCodable("data:image/png;base64,\(imageData.base64EncodedString())"),
             ])
         let dataDisplay = QuickChatAgentDisplay(summary: dataSummary)
-        #expect(dataDisplay.emoji == "🦞")
+        #expect(dataDisplay.emoji == "◈")
         #expect(dataDisplay.avatar == .image(imageData))
         #expect(dataDisplay.monogram == "M")
 
@@ -638,10 +638,10 @@ struct QuickChatModelTests {
         QuickChatModel(
             sessionKeyProvider: { "agent:main:main" },
             agentsProvider: agentsProvider ?? {
-                Self.agentsResult(defaultID: "main", agentIDs: ["main"], names: ["Molty"])
+                Self.agentsResult(defaultID: "main", agentIDs: ["main"], names: ["PASO"])
             },
             agentIdentityProvider: { _ in
-                QuickChatAgentDisplay(id: "main", name: "Molty", emoji: "🦞")
+                QuickChatAgentDisplay(id: "main", name: "PASO", emoji: "◈")
             },
             sendProvider: sendHandler ?? { _, _, _, _, _, _ in
                 if let sendError { throw sendError }
@@ -674,7 +674,7 @@ struct QuickChatModelTests {
                     id: id,
                     kind: kinds.indices.contains(index) ? kinds[index] : nil,
                     name: names.indices.contains(index) ? names[index] : id,
-                    identity: ["emoji": AnyCodable("🦞")])
+                    identity: ["emoji": AnyCodable("◈")])
             })
     }
 }

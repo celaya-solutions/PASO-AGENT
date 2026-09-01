@@ -121,7 +121,7 @@ class AndroidScreenshotFixtureTest {
         listOf(
           "assistant",
           "The release check is ready:\n\n```kotlin\nval ready = lint && tests\n```\n\n" +
-            "Review https://openclaw.ai before tagging.",
+            "Review https://github.com/celaya-solutions/PASO-AGENT before tagging.",
           "1783555200000",
         ),
         listOf("system", "Compaction", "1783555220000"),

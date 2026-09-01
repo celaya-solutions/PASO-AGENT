@@ -22,7 +22,7 @@ Fastest path to unstuck, by symptom:
 
 ## Diagnostics
 
-- [Environment variables](/help/environment) - where OpenClaw loads env vars and precedence
+- [Environment variables](/help/environment) - where PASO loads env vars and precedence
 - [Diagnostics flags](/diagnostics/flags) - runtime diagnostics and verbose modes
 - [Node and tsx startup errors](/help/debugging#node-and-tsx-startup-errors) - capture runtime versions and the stack trace for startup failures
 
@@ -32,8 +32,9 @@ Fastest path to unstuck, by symptom:
 - [Update and plugin tests](/help/testing-updates-plugins) - package update, migration, and plugin install validation
 - [Live tests](/help/testing-live) - network-touching provider and CLI smokes
 
-## Community and meta
+## Project and contact
 
-- [OpenClaw lore](/start/lore) - the story
+- [PASO identity](/start/lore) - product name, stewardship, and compatibility naming
+- [Credits](/reference/credits) - project origin, license, and upstream attribution
 - [Docs hubs](/start/hubs) - how this documentation is organized
 - [Docs directory](/start/docs-directory) - full file map

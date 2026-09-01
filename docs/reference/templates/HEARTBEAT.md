@@ -7,7 +7,7 @@ read_when:
 
 # HEARTBEAT.md is retired
 
-OpenClaw no longer creates `HEARTBEAT.md` in new workspaces or reads it at runtime. Heartbeat instructions now live in the system-owned monitor's cron scratch in the shared state database.
+PASO no longer creates `HEARTBEAT.md` in new workspaces or reads it at runtime. Heartbeat instructions now live in the system-owned monitor's cron scratch in the shared state database.
 
 Manage the current scratch with the monitor job id from `openclaw cron list --all`:
 

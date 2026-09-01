@@ -10,7 +10,7 @@ scenario:
       - cli.package-manager-installs
     secondary:
       - cli.cli-entrypoint
-  objective: Build the real OpenClaw package artifact, install it globally with npm, pnpm, and Bun in clean containers, execute each manager-created PATH entrypoint, and record exact identities.
+  objective: Build the real PASO package artifact, install it globally with npm, pnpm, and Bun in clean containers, execute each manager-created PATH entrypoint, and record exact identities.
   successCriteria:
     - The canonical Docker package helper builds and validates the real npm tarball.
     - The scheduler prepares the package and bare target image through the shared planner and catalog.

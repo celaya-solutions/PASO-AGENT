@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       sync_website:
-        description: Sync openclaw.ai after verification
+        description: Sync the configured PASO website repository after verification
         required: false
         default: false
         type: boolean
@@ -357,40 +357,57 @@ jobs:
       (github.event_name == 'workflow_dispatch' && inputs.sync_website)
     runs-on: ubuntu-24.04
     env:
-      OPENCLAW_GH_TOKEN: ${{ secrets.OPENCLAW_GH_TOKEN }}
+      PASO_WEBSITE_REPOSITORY: ${{ vars.PASO_WEBSITE_REPOSITORY }}
+      PASO_WEBSITE_SYNC_TOKEN: ${{ secrets.PASO_WEBSITE_SYNC_TOKEN }}
     steps:
-      - name: Skip website sync without token
-        if: env.OPENCLAW_GH_TOKEN == ''
-        run: echo "OPENCLAW_GH_TOKEN is not configured; installer verification passed, skipping website sync."
+      - name: Resolve PASO website sync target
+        id: target
+        run: |
+          set -euo pipefail
+          if [[ -z "${PASO_WEBSITE_REPOSITORY// }" && -z "${PASO_WEBSITE_SYNC_TOKEN// }" ]]; then
+            echo "PASO website sync is disabled. Configure PASO_WEBSITE_REPOSITORY and PASO_WEBSITE_SYNC_TOKEN to enable it."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ -z "${PASO_WEBSITE_REPOSITORY// }" || -z "${PASO_WEBSITE_SYNC_TOKEN// }" ]]; then
+            echo "::error::PASO_WEBSITE_REPOSITORY and PASO_WEBSITE_SYNC_TOKEN must be configured together."
+            exit 1
+          fi
+          if [[ ! "$PASO_WEBSITE_REPOSITORY" =~ ^celaya-solutions/[A-Za-z0-9_.-]+$ ]]; then
+            echo "::error::PASO_WEBSITE_REPOSITORY must name a Celaya Solutions repository."
+            exit 1
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "repository=$PASO_WEBSITE_REPOSITORY" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout OpenClaw
-        if: env.OPENCLAW_GH_TOKEN != ''
+      - name: Checkout PASO
+        if: steps.target.outputs.enabled == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          path: openclaw
+          path: paso
 
-      - name: Checkout openclaw.ai
-        if: env.OPENCLAW_GH_TOKEN != ''
+      - name: Checkout PASO website
+        if: steps.target.outputs.enabled == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          repository: openclaw/openclaw.ai
+          repository: ${{ steps.target.outputs.repository }}
           ref: main
-          token: ${{ env.OPENCLAW_GH_TOKEN }}
-          path: openclaw.ai
+          token: ${{ env.PASO_WEBSITE_SYNC_TOKEN }}
+          path: paso-site
 
       - name: Sync installer scripts
-        if: env.OPENCLAW_GH_TOKEN != ''
+        if: steps.target.outputs.enabled == 'true'
         run: |
-          cp openclaw/scripts/install.sh openclaw.ai/public/install.sh
-          cp openclaw/scripts/install-cli.sh openclaw.ai/public/install-cli.sh
-          cp openclaw/scripts/install.ps1 openclaw.ai/public/install.ps1
-          rm -f openclaw.ai/public/install.cmd
-          chmod +x openclaw.ai/public/install.sh openclaw.ai/public/install-cli.sh
+          cp paso/scripts/install.sh paso-site/public/install.sh
+          cp paso/scripts/install-cli.sh paso-site/public/install-cli.sh
+          cp paso/scripts/install.ps1 paso-site/public/install.ps1
+          rm -f paso-site/public/install.cmd
+          chmod +x paso-site/public/install.sh paso-site/public/install-cli.sh
 
       - name: Check for changes
-        if: env.OPENCLAW_GH_TOKEN != ''
+        if: steps.target.outputs.enabled == 'true'
         id: changes
-        working-directory: openclaw.ai
+        working-directory: paso-site
         run: |
           if git diff --quiet -- public/install.sh public/install-cli.sh public/install.ps1 public/install.cmd; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -412,7 +429,7 @@ jobs:
 
       - name: Verify website with synced installers
         if: steps.changes.outputs.changed == 'true'
-        working-directory: openclaw.ai
+        working-directory: paso-site
         run: |
           bash -n public/install.sh public/install-cli.sh
           shellcheck -e SC1091 public/install.sh public/install-cli.sh
@@ -421,14 +438,14 @@ jobs:
 
       - name: Commit and push website sync
         if: steps.changes.outputs.changed == 'true'
-        working-directory: openclaw.ai
+        working-directory: paso-site
         run: |
-          git config user.name "openclaw-installer-sync[bot]"
-          git config user.email "openclaw-installer-sync[bot]@users.noreply.github.com"
+          git config user.name "paso-installer-sync[bot]"
+          git config user.email "paso-installer-sync[bot]@users.noreply.github.com"
           git add public/install.sh public/install-cli.sh public/install.ps1
           if git ls-files --error-unmatch public/install.cmd >/dev/null 2>&1; then
             git add -u -- public/install.cmd
           fi
-          git commit -m "chore: sync installers from openclaw ${GITHUB_SHA::12}"
+          git commit -m "chore: sync installers from PASO ${GITHUB_SHA::12}"
           git pull --rebase origin main
           git push origin HEAD:main

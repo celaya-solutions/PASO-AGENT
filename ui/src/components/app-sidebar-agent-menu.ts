@@ -31,22 +31,30 @@ import {
   trackDropdownKeyboardDismissal,
 } from "./web-awesome.ts";
 
-// External rows of the footer identity menu. Docs-first: public docs pages over
-// raw GitHub, matching the ClawSweeper docs-link policy for user-facing copy.
+// External rows of the footer identity menu stay within PASO-owned project and
+// support destinations.
 const IDENTITY_MENU_LINKS: ReadonlyArray<{
   href: string;
   icon: IconName;
   label: () => string;
 }> = [
-  { href: "https://docs.openclaw.ai", icon: "book", label: () => t("common.docs") },
   {
-    href: "https://docs.openclaw.ai/help",
+    href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    icon: "book",
+    label: () => t("common.docs"),
+  },
+  {
+    href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     icon: "messageSquare",
     label: () => t("agentChip.getHelp"),
   },
-  { href: "https://discord.gg/clawd", icon: "users", label: () => t("agentChip.discord") },
   {
-    href: "https://docs.openclaw.ai/releases",
+    href: "mailto:hello@celayasolutions.com",
+    icon: "mail",
+    label: () => t("agentChip.discord"),
+  },
+  {
+    href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     icon: "scrollText",
     label: () => t("agentChip.viewChangelog"),
   },

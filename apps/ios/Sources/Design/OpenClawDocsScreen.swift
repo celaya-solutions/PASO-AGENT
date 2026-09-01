@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct OpenClawDocsScreen: View {
-    private let docsURL = URL(string: "https://docs.openclaw.ai")!
-    private let gatewayURL = URL(string: "https://docs.openclaw.ai/gateway")!
-    private let pairingURL = URL(string: "https://docs.openclaw.ai/channels/pairing")!
+    private let docsURL = URL(string: "https://github.com/celaya-solutions/PASO-AGENT")!
+    private let gatewayURL = URL(string: "https://github.com/celaya-solutions/PASO-AGENT")!
+    private let pairingURL = URL(string: "https://github.com/celaya-solutions/PASO-AGENT")!
     let headerSidebarAction: OpenClawSidebarHeaderAction?
     let usesNativeNavigationChrome: Bool
     let gatewayAction: (() -> Void)?
@@ -93,7 +93,7 @@ struct OpenClawDocsScreen: View {
             VStack(spacing: 0) {
                 self.docsLinkRow(
                     title: "Docs Home",
-                    detail: "Browse the current OpenClaw reference.",
+                    detail: "Browse the current PASO reference.",
                     icon: "book",
                     url: self.docsURL)
                 Divider().padding(.leading, 58)

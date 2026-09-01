@@ -188,7 +188,7 @@ export async function finishUpdate(params: {
     if (params.result.reason === "not-git-install") {
       defaultRuntime.log(
         theme.warn(
-          `Skipped: this OpenClaw install isn't a git checkout, and the package manager couldn't be detected. Update via your package manager, then run \`${replaceCliName(formatCliCommand("openclaw doctor"), CLI_NAME)}\` and \`${replaceCliName(formatCliCommand("openclaw gateway restart"), CLI_NAME)}\`.`,
+          `Skipped: this PASO install isn't a git checkout, and the package manager couldn't be detected. Update via your package manager, then run \`${replaceCliName(formatCliCommand("openclaw doctor"), CLI_NAME)}\` and \`${replaceCliName(formatCliCommand("openclaw gateway restart"), CLI_NAME)}\`.`,
         ),
       );
       defaultRuntime.log(
@@ -426,7 +426,7 @@ export async function finishUpdate(params: {
       } else if (serviceUpdateVerdict.kind === "foreign") {
         serviceMutationAllowed = false;
         serviceMutationSkipMessage =
-          "Gateway service management skipped: the service belongs to a different OpenClaw installation and was left untouched.";
+          "Gateway service management skipped: the service belongs to a different PASO installation and was left untouched.";
       } else if (
         !skipLegacyServiceRestart &&
         shouldPrepareUpdatedInstallRestart({

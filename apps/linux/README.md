@@ -1,6 +1,6 @@
-# OpenClaw for Linux
+# PASO for Linux
 
-The Linux companion is a Tauri v2 desktop shell for local and remote OpenClaw Gateways. It discovers nearby Gateways over Bonjour, installs the CLI when local setup needs it, delegates local Gateway service management to `openclaw gateway`, opens the selected Gateway's Control UI, and stays available in the system tray.
+The PASO Linux companion is a Tauri v2 desktop shell for local and remote PASO Gateways. It discovers nearby Gateways over Bonjour, installs the CLI when local setup needs it, delegates local Gateway service management to `openclaw gateway`, opens the selected Gateway's Control UI, and stays available in the system tray.
 
 ## Linux prerequisites
 
@@ -49,7 +49,7 @@ Desktop notifications use each platform's system notification service. macOS 13+
 
 ## First-run setup
 
-The welcome screen explains what OpenClaw can do and asks where your assistant
+The welcome screen explains what PASO can do and asks where your assistant
 should live:
 
 - **On this computer** installs the CLI and managed Node runtime when needed,
@@ -72,7 +72,7 @@ file-backed secret references; exec and shared-store references must be
 resolved on their owning Gateway host. SSH connections use your existing
 OpenSSH configuration and host-key verification; keep the remote Gateway bound
 to loopback when possible. See the
-[remote access guide](https://docs.openclaw.ai/gateway/remote) for Gateway
+[remote access guide](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/remote.md) for Gateway
 authentication and network requirements.
 
 After connecting, Model Setup checks existing credentials and verifies a real
@@ -92,7 +92,7 @@ the additional sign-in options.
 
 ## Updates
 
-The companion checks the latest GitHub release shortly after launch and from **Check for Updates** in the tray menu. AppImage installs download and verify the signed update in place, then wait for **Restart to update**. Package-managed installs such as `.deb` stay owned by the system package manager and link to the release download page instead of replacing installed files. The macOS and Windows test builds use a separate opt-in desktop-test update channel; macOS self-updates like the AppImage build, while Windows downloads the update first and runs its installer only after **Restart to update**.
+The checked-in companion keeps automatic updates off and sends **Check for Updates** to the PASO release page. A release build enables verified updates only when its workflow injects the Celaya-owned Tauri public key; it refuses the inherited upstream OpenClaw key. AppImage installs can then download and verify the signed update in place, while package-managed installs such as `.deb` stay owned by the system package manager. The macOS and Windows test builds use a separate signed desktop-test channel under the same PASO key.
 
 ## Quick Chat widgets
 
@@ -105,8 +105,8 @@ Quick Chat advertises the Gateway `inline-widgets` capability and renders hosted
 ## Icons
 
 The icon sources of truth live next to the PNGs: `icons/icon.svg` (transparent
-claw mark, used by the tray) and `icons/icon-tile.svg` (claw mark on the dark
-brand tile, used for the app and package icons). Regenerate the committed PNGs
+PASO path mark, used by the tray) and `icons/icon-tile.svg` (PASO path mark on
+the dark brand tile, used for the app and package icons). Regenerate the committed PNGs
 with librsvg:
 
 ```bash
@@ -123,10 +123,10 @@ rsvg-convert -w 36 -h 36 tray-template.svg -o tray-template.png
 macOS gets its own tray asset, `icons/tray-template.svg`. AppKit template images
 are drawn from the alpha channel alone, so a colored or edge-to-edge opaque icon
 arrives in the menu bar as a featureless blob; the template source is a
-silhouette with the eyes knocked back out of it. Its geometry mirrors the native
-macOS app's `CritterIconRenderer` at rest so both clients wear the same face, and
-the 36px render is the 2× backing store for the 18pt slot `tray-icon` scales
-menu bar images into. Non-Apple platforms keep the full-color `32x32.png`.
+single-color PASO path-and-step mark. Its geometry mirrors the native macOS
+menu-bar mark, and the 36px render is the 2× backing store for the 18pt slot
+`tray-icon` scales menu bar images into. Non-Apple platforms keep the full-color
+`32x32.png`.
 
 ## Packaging
 

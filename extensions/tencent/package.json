@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/tencent-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Tencent Cloud provider plugin (TokenHub + Token Plan)",
+  "description": "PASO Tencent Cloud provider plugin (TokenHub + Token Plan)",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -31,6 +31,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

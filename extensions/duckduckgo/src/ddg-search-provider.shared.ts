@@ -13,7 +13,7 @@ export function createDuckDuckGoWebSearchProviderBase() {
     envVars: [],
     placeholder: "(no key needed)",
     signupUrl: "https://duckduckgo.com/",
-    docsUrl: "https://docs.openclaw.ai/tools/web",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     autoDetectOrder: 100,
     credentialPath: "",
     ...createWebSearchProviderContractFields({

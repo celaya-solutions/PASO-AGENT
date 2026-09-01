@@ -2,13 +2,13 @@
 summary: "Choose and configure Google Meet, Microsoft Teams, or Zoom meeting participation"
 doc-schema-version: 1
 read_when:
-  - You want an OpenClaw agent to join a video meeting
+  - You want a PASO agent to join a video meeting
   - You are choosing between the Google Meet, Microsoft Teams meetings, and Zoom meetings plugins
   - You need the shared Chrome, virtual-audio, or meeting-mode setup
 title: "Meeting plugins"
 ---
 
-OpenClaw has separate plugins for Google Meet, Microsoft Teams meetings, and Zoom. All three can join through Chrome, use the same participation modes, and run Chrome either on the Gateway host or on a paired node. Their platform URLs, installation model, and extra capabilities differ.
+PASO has separate plugins for Google Meet, Microsoft Teams meetings, and Zoom. All three can join through Chrome, use the same participation modes, and run Chrome either on the Gateway host or on a paired node. Their platform URLs, installation model, and extra capabilities differ.
 
 These plugins participate in meetings. They are separate from messaging channels such as the [Microsoft Teams channel](/channels/msteams) and from the [Voice call plugin](/plugins/voice-call).
 
@@ -28,11 +28,11 @@ The three plugins share the same modes:
 
 | Mode         | Behavior                                                                                              | Audio requirements                                           |
 | ------------ | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `agent`      | Realtime transcription goes to the configured OpenClaw agent; regular OpenClaw TTS speaks the reply.  | Chrome talk-back requires a supported virtual-audio backend. |
+| `agent`      | Realtime transcription goes to the configured PASO agent; regular PASO TTS speaks the reply.          | Chrome talk-back requires a supported virtual-audio backend. |
 | `bidi`       | A realtime voice model listens and replies directly.                                                  | Chrome talk-back requires a supported virtual-audio backend. |
 | `transcribe` | Joins observe-only and exposes a bounded live-caption transcript when the platform provides captions. | No virtual-audio bridge.                                     |
 
-Use `transcribe` when the agent only needs meeting text. Use `agent` for normal OpenClaw reasoning and tools. Use `bidi` when low-latency direct voice is more important than routing each turn through the regular agent.
+Use `transcribe` when the agent only needs meeting text. Use `agent` for normal PASO reasoning and tools. Use `bidi` when low-latency direct voice is more important than routing each turn through the regular agent.
 
 In `bidi` mode, recoverable provider diagnostics are logged without stopping the audio bridge. Providers that support reconnecting own that recovery. Terminal provider closure, exhausted recovery, failed initial setup, and local audio-transport failures still stop the bridge; leaving the meeting also stops it.
 
@@ -62,7 +62,7 @@ Chrome on a paired node:
       "teams-meetings": {
         config: {
           defaultMode: "agent",
-          chrome: { guestName: "OpenClaw Agent" },
+          chrome: { guestName: "PASO Agent" },
           chromeNode: { node: "meeting-node" },
         },
       },
@@ -78,7 +78,7 @@ Chrome on the Gateway host.
 | -------------------------------- | --------------------------------------------------------------------------------- |
 | `defaultMode`                    | `agent` (default), `bidi`, or `transcribe`                                        |
 | `chrome.guestName`               | Guest display name entered on the platform prejoin page                           |
-| `chrome.browserProfile`          | OpenClaw browser profile used for the meeting                                     |
+| `chrome.browserProfile`          | PASO browser profile used for the meeting                                         |
 | `chrome.audioBackend`            | `auto` (default), `blackhole-2ch`, or `pipewire-pulse`                            |
 | `chromeNode.node`                | Paired node id, name, or IP that owns Chrome and the native virtual-audio backend |
 | `realtime.transcriptionProvider` | Realtime transcription provider used by `agent` mode                              |
@@ -106,7 +106,7 @@ system_profiler SPAudioDataType | grep -i BlackHole
 command -v sox
 ```
 
-On a Linux desktop with PipeWire-Pulse, install the PulseAudio command-line tools. OpenClaw creates and reuses an `OpenClaw Meeting Audio` null sink and matching source in the desktop user's audio session:
+On a Linux desktop with PipeWire-Pulse, install the PulseAudio command-line tools. PASO creates and reuses an `PASO Meeting Audio` null sink and matching source in the desktop user's audio session:
 
 ```bash
 # Debian/Ubuntu
@@ -118,7 +118,7 @@ command -v pactl pacat parec
 
 Run the Gateway or paired node as the same desktop user that runs Chrome. A root service or headless service without that user's `XDG_RUNTIME_DIR` cannot access the PipeWire-Pulse socket and fails setup with an actionable error.
 
-The Gateway host still owns the OpenClaw agent and model credentials when Chrome runs on a paired node. Configure a realtime transcription provider and OpenClaw TTS for `agent` mode, or a realtime voice provider for `bidi` mode. The platform guides contain the provider and audio-command options.
+The Gateway host still owns the PASO agent and model credentials when Chrome runs on a paired node. Configure a realtime transcription provider and PASO TTS for `agent` mode, or a realtime voice provider for `bidi` mode. The platform guides contain the provider and audio-command options.
 
 ## Install or disable plugins
 
@@ -161,13 +161,13 @@ Browser automation handles the normal guest-name, prejoin camera and microphone,
 - Microsoft Teams may require tenant sign-in, email verification, or organizer admission.
 - Zoom may require authentication, email verification, a passcode, CAPTCHA completion, or host admission; an account can also disable browser join.
 
-When a join or status result includes `manualAction`, complete its reported step in the same OpenClaw Chrome profile before retrying. Repeatedly opening new tabs does not resolve an account, tenant, lobby, or CAPTCHA gate.
+When a join or status result includes `manualAction`, complete its reported step in the same PASO Chrome profile before retrying. Repeatedly opening new tabs does not resolve an account, tenant, lobby, or CAPTCHA gate.
 
 Only join meetings where the operator is authorized to add an agent. Tell participants when local policy or consent rules require disclosure of automated participation, transcription, or synthesized speech.
 
 ## Discord voice chat
 
-[Discord voice channels](/channels/discord#voice-channels) provide native, audio-only realtime conversation without browser meeting automation. OpenClaw can join a voice channel, listen, route turns through an OpenClaw agent or realtime voice model, and speak replies. It does not send or receive camera video or screen sharing, even when people use video in the same Discord channel, so Discord voice is a related live-conversation surface rather than a fourth browser meeting plugin.
+[Discord voice channels](/channels/discord#voice-channels) provide native, audio-only realtime conversation without browser meeting automation. PASO can join a voice channel, listen, route turns through a PASO agent or realtime voice model, and speak replies. It does not send or receive camera video or screen sharing, even when people use video in the same Discord channel, so Discord voice is a related live-conversation surface rather than a fourth browser meeting plugin.
 
 ## Platform guides
 

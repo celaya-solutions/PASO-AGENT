@@ -79,7 +79,7 @@ describe("MemorySettingsPage engine slot", () => {
             .querySelector("wa-radio-group.settings-segmented")
             ?.querySelectorAll("wa-radio") ?? []),
         ].map((radio) => radio.textContent?.trim()),
-      ).toEqual(["OpenClaw Memory", "Memory LanceDB", "Off"]);
+      ).toEqual(["PASO Memory", "Memory LanceDB", "Off"]);
     } finally {
       element.remove();
     }
@@ -840,16 +840,16 @@ describe("MemorySettingsPage dreaming support", () => {
       await waitForFast(() =>
         expect(
           element.querySelector(
-            '.settings-page__intro a[href="https://docs.openclaw.ai/concepts/dreaming"]',
+            '.settings-page__intro a[href="https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"]',
           ),
         ).not.toBeNull(),
       );
       const link = element.querySelector<HTMLAnchorElement>(
-        '.settings-page__intro a[href="https://docs.openclaw.ai/concepts/dreaming"]',
+        '.settings-page__intro a[href="https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"]',
       );
 
       expect(link?.textContent?.trim()).toBe("Learn more");
-      expect(link?.href).toBe("https://docs.openclaw.ai/concepts/dreaming");
+      expect(link?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
     } finally {
       element.remove();
     }

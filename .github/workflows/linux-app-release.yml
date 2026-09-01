@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing OpenClaw release tag to receive Linux companion bundles, for example v2026.7.1
+        description: Existing PASO release tag to receive Linux companion bundles, for example v2026.7.1
         required: true
         type: string
       desktop-test-bundles:
@@ -200,16 +200,28 @@ jobs:
           # appimagetool strips fail on CI runners; Tauri documents NO_STRIP for Actions.
           NO_STRIP: "true"
           RELEASE_TAG: ${{ inputs.tag }}
+          PASO_TAURI_UPDATER_ENABLED: "1"
+          PASO_TAURI_UPDATER_PUBLIC_KEY: ${{ vars.PASO_TAURI_UPDATER_PUBLIC_KEY }}
           # Sign the AppImage updater artifact so the companion can verify updates.
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
+          if [[ -z "${PASO_TAURI_UPDATER_PUBLIC_KEY}" ]]; then
+            echo "PASO_TAURI_UPDATER_PUBLIC_KEY must contain the Celaya-owned Tauri public key." >&2
+            exit 1
+          fi
+          if [[ "${PASO_TAURI_UPDATER_PUBLIC_KEY}" == "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDODJFMzU1QTQ0MUMwNkYKUldSdndFR2tWZU9DVE9RYnlIcHFoNG1xUlQzUlloa0plQmZjY0dPbHpjWlEzWFozdmt0cHBlY2gK" ]]; then
+            echo "Refusing the inherited upstream OpenClaw Tauri public key." >&2
+            exit 1
+          fi
+          export PASO_TAURI_VERSION="${version}"
+          tauri_config="$(node -e 'process.stdout.write(JSON.stringify({version: process.env.PASO_TAURI_VERSION, plugins: {updater: {pubkey: process.env.PASO_TAURI_UPDATER_PUBLIC_KEY, endpoints: ["https://github.com/celaya-solutions/PASO-AGENT/releases/latest/download/latest.json"]}}}))')"
           # Stamp the release version into the bundles; the committed manifests
           # keep a placeholder 0.1.0 so releases stay tag-driven.
           pnpm dlx @tauri-apps/cli@2.11.4 build --bundles deb,appimage \
-            --config "{\"version\":\"${version}\"}"
+            --config "${tauri_config}"
 
       - name: Verify and rename Linux bundles
         env:
@@ -227,6 +239,15 @@ jobs:
           deb_version=$(dpkg-deb -f "${debs[0]}" Version)
           if [[ "${deb_version}" != "${version}"* ]]; then
             echo "Debian package version '${deb_version}' does not match release version '${version}'"
+            exit 1
+          fi
+          deb_package=$(dpkg-deb -f "${debs[0]}" Package)
+          deb_provides=$(dpkg-deb -f "${debs[0]}" Provides)
+          deb_conflicts=$(dpkg-deb -f "${debs[0]}" Conflicts)
+          deb_replaces=$(dpkg-deb -f "${debs[0]}" Replaces)
+          if [[ "${deb_package}" != "paso" || "${deb_provides}" != "open-claw" || \
+                "${deb_conflicts}" != "open-claw" || "${deb_replaces}" != "open-claw" ]]; then
+            echo "Debian PASO package does not declare the required open-claw migration metadata"
             exit 1
           fi
           mkdir -p dist/linux-app/release dist/linux-app/signatures
@@ -273,13 +294,25 @@ jobs:
         working-directory: apps/linux/src-tauri
         env:
           RELEASE_TAG: ${{ inputs.tag }}
+          PASO_TAURI_UPDATER_ENABLED: "1"
+          PASO_TAURI_UPDATER_PUBLIC_KEY: ${{ vars.PASO_TAURI_UPDATER_PUBLIC_KEY }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
+          if [[ -z "${PASO_TAURI_UPDATER_PUBLIC_KEY}" ]]; then
+            echo "PASO_TAURI_UPDATER_PUBLIC_KEY must contain the Celaya-owned Tauri public key." >&2
+            exit 1
+          fi
+          if [[ "${PASO_TAURI_UPDATER_PUBLIC_KEY}" == "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDODJFMzU1QTQ0MUMwNkYKUldSdndFR2tWZU9DVE9RYnlIcHFoNG1xUlQzUlloa0plQmZjY0dPbHpjWlEzWFozdmt0cHBlY2gK" ]]; then
+            echo "Refusing the inherited upstream OpenClaw Tauri public key." >&2
+            exit 1
+          fi
+          export PASO_TAURI_VERSION="${version}"
+          tauri_config="$(node -e 'process.stdout.write(JSON.stringify({version: process.env.PASO_TAURI_VERSION, plugins: {updater: {pubkey: process.env.PASO_TAURI_UPDATER_PUBLIC_KEY, endpoints: ["https://github.com/celaya-solutions/PASO-AGENT/releases/download/desktop-test/latest-desktop-test.json"]}}}))')"
           pnpm dlx @tauri-apps/cli@2.11.4 build --bundles app,dmg \
-            --config "{\"version\":\"${version}\"}"
+            --config "${tauri_config}"
 
       - name: Verify and rename macOS bundles
         env:
@@ -342,13 +375,25 @@ jobs:
         shell: bash
         env:
           RELEASE_TAG: ${{ inputs.tag }}
+          PASO_TAURI_UPDATER_ENABLED: "1"
+          PASO_TAURI_UPDATER_PUBLIC_KEY: ${{ vars.PASO_TAURI_UPDATER_PUBLIC_KEY }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: |
           set -euo pipefail
           version="${RELEASE_TAG#v}"
+          if [[ -z "${PASO_TAURI_UPDATER_PUBLIC_KEY}" ]]; then
+            echo "PASO_TAURI_UPDATER_PUBLIC_KEY must contain the Celaya-owned Tauri public key." >&2
+            exit 1
+          fi
+          if [[ "${PASO_TAURI_UPDATER_PUBLIC_KEY}" == "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDODJFMzU1QTQ0MUMwNkYKUldSdndFR2tWZU9DVE9RYnlIcHFoNG1xUlQzUlloa0plQmZjY0dPbHpjWlEzWFozdmt0cHBlY2gK" ]]; then
+            echo "Refusing the inherited upstream OpenClaw Tauri public key." >&2
+            exit 1
+          fi
+          export PASO_TAURI_VERSION="${version}"
+          tauri_config="$(node -e 'process.stdout.write(JSON.stringify({version: process.env.PASO_TAURI_VERSION, plugins: {updater: {pubkey: process.env.PASO_TAURI_UPDATER_PUBLIC_KEY, endpoints: ["https://github.com/celaya-solutions/PASO-AGENT/releases/download/desktop-test/latest-desktop-test.json"]}}}))')"
           pnpm dlx @tauri-apps/cli@2.11.4 build --bundles nsis \
-            --config "{\"version\":\"${version}\"}"
+            --config "${tauri_config}"
 
       - name: Verify and rename Windows bundle
         shell: pwsh
@@ -521,7 +566,7 @@ jobs:
               --repo "${GITHUB_REPOSITORY}" \
               --target "${TAG_SHA}" \
               --prerelease \
-              --title "OpenClaw desktop test update channel" \
+              --title "PASO desktop test update channel" \
               --notes "Opt-in updater manifest for unsigned macOS and Windows Tauri test builds."
           fi
           gh release upload "${DESKTOP_TEST_CHANNEL_TAG}" \

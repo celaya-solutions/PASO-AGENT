@@ -1,4 +1,4 @@
-// OpenClaw operation tests cover rescue operation planning and execution.
+// PASO operation tests cover rescue operation planning and execution.
 import fs from "node:fs/promises";
 import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -141,7 +141,7 @@ vi.mock("./overview.js", () => ({
       error: "offline",
     },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
   })),
@@ -432,7 +432,7 @@ describe("parseSystemAgentOperation", () => {
           },
         },
       ),
-    ).rejects.toThrow("`openclaw onboard` on the machine running OpenClaw");
+    ).rejects.toThrow("`openclaw onboard` on the machine running PASO");
 
     expect(applySetup).not.toHaveBeenCalled();
   });

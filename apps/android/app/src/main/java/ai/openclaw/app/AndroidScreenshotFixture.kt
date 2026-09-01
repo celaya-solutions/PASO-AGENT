@@ -70,7 +70,7 @@ internal object AndroidScreenshotFixture {
     listOf(
       GatewayAgentSummary(
         id = "main",
-        name = "Molty",
+        name = "PASO",
         emoji = "M",
       ),
     )
@@ -166,7 +166,7 @@ internal object AndroidScreenshotFixture {
           "question",
           buildJsonObject {
             put("id", JsonPrimitive("help"))
-            put("header", JsonPrimitive("OpenClaw"))
+            put("header", JsonPrimitive("PASO"))
             put("question", JsonPrimitive("What should we look at first?"))
             put(
               "options",
@@ -325,7 +325,7 @@ internal object AndroidScreenshotFixture {
             chatMessage(
               "assistant",
               "The release check is ready:\n\n```kotlin\nval ready = lint && tests\n```\n\n" +
-                "Review https://openclaw.ai before tagging.",
+                "Review https://github.com/celaya-solutions/PASO-AGENT before tagging.",
               1_783_555_200_000,
             ),
           )

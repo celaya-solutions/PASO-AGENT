@@ -1,4 +1,5 @@
 // Shared execution helpers keep the public dispatcher small and reviewable.
+import { resolvePasoDocsUrl } from "../../packages/terminal-core/src/links.js";
 import { tryResolveAmbientOwnerAgentId } from "../agents/agent-scope-config.js";
 import type { AgentExecutionAuthBinding } from "../agents/execution-auth-binding.js";
 import type { ConfigSetOptions } from "../cli/config-set-input.js";
@@ -140,7 +141,7 @@ export async function resolveChannelSetupState(deps: SystemAgentCommandDeps | un
 }
 
 export function formatChannelDocsUrl(docsPath: string): string {
-  return `https://docs.openclaw.ai${docsPath.startsWith("/") ? docsPath : `/${docsPath}`}`;
+  return resolvePasoDocsUrl(docsPath);
 }
 
 export function formatConfigValidationLine(snapshot: ConfigFileSnapshot): string {
@@ -270,7 +271,7 @@ export async function applyPersistentOperation(params: {
     // The mutation already committed. Keep success truthful while making the
     // missing audit record visible to every CLI/chat capture surface.
     runtime.error(
-      `${outcome.summary}, but OpenClaw could not record its audit entry: ${formatErrorMessage(error)}`,
+      `${outcome.summary}, but PASO could not record its audit entry: ${formatErrorMessage(error)}`,
     );
   }
   runtime.log(`[openclaw] done: ${auditOperation}`);
@@ -368,7 +369,7 @@ export async function assertConfigWriteDoesNotBypassInferenceVerification(
       return;
     }
     throw new Error(
-      `Direct config writes cannot change plugin "${pluginId}" because it may back OpenClaw's own active inference route. Editing it is a human-only change, made with OpenClaw stopped from a trusted shell on the machine running it.`,
+      `Direct config writes cannot change plugin "${pluginId}" because it may back PASO's own active inference route. Editing it is a human-only change, made with PASO stopped from a trusted shell on the machine running it.`,
     );
   }
   const deniedRoot = segments[0]?.trim().toLowerCase() ?? "";
@@ -376,7 +377,7 @@ export async function assertConfigWriteDoesNotBypassInferenceVerification(
   throw new Error(
     denialReason
       ? `Direct config writes cannot change \`${deniedRoot}\` (${denialReason}).`
-      : "Direct config writes cannot change the default inference route or include alternate config. Use `set_default_model` (optionally with agentId) for an already configured route; changing provider or auth access is `openclaw onboard` on the machine running OpenClaw.",
+      : "Direct config writes cannot change the default inference route or include alternate config. Use `set_default_model` (optionally with agentId) for an already configured route; changing provider or auth access is `openclaw onboard` on the machine running PASO.",
   );
 }
 
@@ -392,14 +393,14 @@ async function verifyCurrentSetupInference(
   const before = await readConfigFileSnapshot();
   if (!before.exists || !before.valid) {
     throw new Error(
-      "OpenClaw setup requires a valid configured inference route. Run `openclaw onboard` on the machine running OpenClaw, then retry.",
+      "PASO setup requires a valid configured inference route. Run `openclaw onboard` on the machine running PASO, then retry.",
     );
   }
   const beforeConfig = before.runtimeConfig ?? before.config;
   const beforeRoute = await projectDefaultInferenceRoute(beforeConfig);
   if (!beforeRoute.route) {
     throw new Error(
-      "OpenClaw setup requires working inference first. Run `openclaw onboard` on the machine running OpenClaw, then retry.",
+      "PASO setup requires working inference first. Run `openclaw onboard` on the machine running PASO, then retry.",
     );
   }
   const verifyInferenceConfig =
@@ -408,7 +409,7 @@ async function verifyCurrentSetupInference(
   const verification = await verifyInferenceConfig({ config: beforeConfig, runtime });
   if (!verification.ok) {
     throw new Error(
-      `OpenClaw setup requires working inference first. The configured route failed a live check: ${verification.error} Run \`openclaw onboard\` on the machine running OpenClaw, then retry.`,
+      `PASO setup requires working inference first. The configured route failed a live check: ${verification.error} Run \`openclaw onboard\` on the machine running PASO, then retry.`,
     );
   }
 
@@ -444,13 +445,13 @@ export async function executeSetup(
   const defaultModel = overview.defaultModel?.trim();
   if (!defaultModel) {
     throw new Error(
-      "OpenClaw setup requires working inference first. Run `openclaw onboard` on the machine running OpenClaw to configure and verify a default model, then start OpenClaw again.",
+      "PASO setup requires working inference first. Run `openclaw onboard` on the machine running PASO to configure and verify a default model, then start PASO again.",
     );
   }
   const requestedModel = operation.model?.trim();
   if (requestedModel && requestedModel !== defaultModel) {
     throw new Error(
-      `OpenClaw setup will preserve the verified default model ${defaultModel}. Staging, live-testing, and saving a different inference route is \`openclaw onboard\` on the machine running OpenClaw.`,
+      `PASO setup will preserve the verified default model ${defaultModel}. Staging, live-testing, and saving a different inference route is \`openclaw onboard\` on the machine running PASO.`,
     );
   }
   if (!opts.approved) {
@@ -464,7 +465,7 @@ export async function executeSetup(
   const verified = await verifyCurrentSetupInference(runtime, opts.deps);
   if (requestedModel && requestedModel !== verified.modelRef) {
     throw new Error(
-      `The verified default model is now ${verified.modelRef}, not ${requestedModel}. Review the current route, or run \`openclaw onboard\` on the machine running OpenClaw, before retrying setup.`,
+      `The verified default model is now ${verified.modelRef}, not ${requestedModel}. Review the current route, or run \`openclaw onboard\` on the machine running PASO, before retrying setup.`,
     );
   }
   return await applyPersistentOperation({
@@ -626,7 +627,7 @@ export async function executeSetDefaultModel(
                 "The final live inference test did not return a reusable session binding, so the requested model was not saved. Retry the model change.",
               );
             }
-            // The live probe can outlive the original OpenClaw authority.
+            // The live probe can outlive the original PASO authority.
             // Re-check it last, immediately before the writer crosses to disk.
             await opts.beforePersistentApply?.();
             persistedVerification = latestVerification;

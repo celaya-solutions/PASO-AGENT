@@ -1,12 +1,12 @@
-# OpenClaw Inworld Plugin
+# PASO Inworld Plugin
 
-Official OpenClaw plugin for Inworld.
+Official PASO plugin for Inworld.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/inworld-speech
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/inworld> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/inworld.md> for setup and configuration.

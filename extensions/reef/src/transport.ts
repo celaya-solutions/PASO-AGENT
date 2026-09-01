@@ -203,7 +203,7 @@ export class ReefTransportClient {
           400,
           error.code,
           "reef-relay",
-          "The Reef relay is likely incompatible or outdated. Update OpenClaw and the Reef relay together, then approve the fresh pairing challenge again.",
+          "The Reef relay is likely incompatible or outdated. Update PASO and the Reef relay together, then approve the fresh pairing challenge again.",
         );
       }
       if (
@@ -215,7 +215,7 @@ export class ReefTransportClient {
           409,
           error.code,
           "openclaw-client",
-          "OpenClaw is outdated for this Reef relay. Update OpenClaw, then approve the fresh pairing challenge again.",
+          "PASO is outdated for this Reef relay. Update PASO, then approve the fresh pairing challenge again.",
         );
       }
       throw error;

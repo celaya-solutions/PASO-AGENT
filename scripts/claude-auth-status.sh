@@ -1,6 +1,6 @@
 #!/bin/bash
 # Claude Code Authentication Status Checker
-# Checks both Claude Code and OpenClaw auth status
+# Checks both Claude Code and PASO auth status
 
 set -euo pipefail
 
@@ -233,7 +233,7 @@ else
 fi
 
 echo ""
-echo "OpenClaw Auth (~/.openclaw/agents/main/agent/auth-profiles.json):"
+echo "PASO Auth (~/.openclaw/agents/main/agent/auth-profiles.json):"
 if [ "$USE_JSON" -eq 1 ]; then
     best_profile=$(json_best_anthropic_profile)
     expires=$(json_expires_for_anthropic_any)
@@ -279,7 +279,7 @@ fi
 echo ""
 echo "=== Service Status ==="
 if systemctl --user is-active openclaw >/dev/null 2>&1; then
-    echo -e "OpenClaw service: ${GREEN}running${NC}"
+    echo -e "PASO service: ${GREEN}running${NC}"
 else
-    echo -e "OpenClaw service: ${RED}NOT running${NC}"
+    echo -e "PASO service: ${RED}NOT running${NC}"
 fi

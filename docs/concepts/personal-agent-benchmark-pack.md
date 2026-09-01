@@ -51,7 +51,7 @@ lane. Do not point it at live chat services or real personal accounts.
 
 Scenarios use only fake users, fake preferences, fake secrets, and the
 temporary QA gateway workspace created by the suite. They must not read or
-write real OpenClaw user memory, sessions, credentials, launch agents, global
+write real PASO user memory, sessions, credentials, launch agents, global
 configs, or live gateway state.
 
 Artifacts stay under the existing QA suite artifact directory and are treated

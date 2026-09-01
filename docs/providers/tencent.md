@@ -2,7 +2,7 @@
 summary: "Tencent Cloud TokenHub and TokenPlan setup for hy3"
 title: "Tencent Cloud (TokenHub / TokenPlan)"
 read_when:
-  - You want to use Tencent hy3 with OpenClaw
+  - You want to use Tencent hy3 with PASO
   - You need the TokenHub or TokenPlan API key setup
 ---
 
@@ -104,14 +104,14 @@ openclaw onboard --non-interactive \
 hy3 is Tencent Hunyuan's large MoE language model for reasoning, long-context instruction following, code, and agent workflows. Tencent's OpenAI-compatible examples use `hy3` as the model id and support standard chat-completions tool calling plus `reasoning_effort`.
 
 <Tip>
-  The model id is `hy3`. Do not confuse it with Tencent's `HY-3D-*` models, which are 3D generation APIs and are not the OpenClaw chat model configured by this provider.
+  The model id is `hy3`. Do not confuse it with Tencent's `HY-3D-*` models, which are 3D generation APIs and are not the PASO chat model configured by this provider.
 </Tip>
 
 ## Advanced configuration
 
 <AccordionGroup>
   <Accordion title="Endpoint override">
-    OpenClaw's built-in catalog uses Tencent Cloud's `https://tokenhub.tencentmaas.com/v1` endpoint. Override it only if your TokenHub account or region requires a different one:
+    PASO's built-in catalog uses Tencent Cloud's `https://tokenhub.tencentmaas.com/v1` endpoint. Override it only if your TokenHub account or region requires a different one:
 
     ```bash
     openclaw config set models.providers.tencent-tokenhub.baseUrl "https://your-endpoint/v1"

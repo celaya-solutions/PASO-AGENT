@@ -1,7 +1,7 @@
 # @openclaw/comfy-provider
 
 Official ComfyUI image, video, and music generation provider plugin for
-OpenClaw.
+PASO.
 
 ## Install
 
@@ -17,10 +17,10 @@ Local ComfyUI workflows do not require credentials. Comfy Cloud workflows use
 
 Full workflow, model, and provider configuration:
 
-- https://docs.openclaw.ai/providers/comfy
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/comfy.md
 
 ## Package
 
 - Plugin id: `comfy`
 - Package: `@openclaw/comfy-provider`
-- Minimum OpenClaw host: `2026.7.2`
+- Minimum PASO host: `2026.7.2`

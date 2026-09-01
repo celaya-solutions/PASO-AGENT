@@ -136,7 +136,7 @@ export class DiscordRealtimeConsults {
     ) {
       await this.submitTerminalRealtimeToolResult(callId, session, {
         status: "cancelled",
-        message: "OpenClaw cancelled this consult before completion. Do not restart it.",
+        message: "PASO cancelled this consult before completion. Do not restart it.",
       });
       return;
     }
@@ -540,7 +540,7 @@ export class DiscordRealtimeConsults {
       }
       await this.submitTerminalRealtimeToolResult(callId, session, {
         status: "already_delivered",
-        message: "OpenClaw already delivered this answer to Discord voice. Do not repeat it.",
+        message: "PASO already delivered this answer to Discord voice. Do not repeat it.",
       });
     };
     const submitResult = async (result: RecentAgentProxyConsultResult): Promise<void> => {

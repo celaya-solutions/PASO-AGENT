@@ -1,6 +1,6 @@
-# OpenCode Zen OpenClaw provider
+# OpenCode Zen PASO provider
 
-Official OpenClaw provider plugin for the OpenCode Zen model catalog, image
+Official PASO provider plugin for the OpenCode Zen model catalog, image
 understanding, and native OpenCode session browsing.
 
 ## Install
@@ -12,5 +12,5 @@ openclaw gateway restart
 
 ## Docs
 
-See `docs/providers/opencode.md` in the OpenClaw repository, or the published
-docs at `https://docs.openclaw.ai/providers/opencode`.
+See `docs/providers/opencode.md` in the PASO repository, or the published
+docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/opencode.md`.

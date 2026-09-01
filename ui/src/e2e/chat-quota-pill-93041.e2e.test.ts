@@ -609,7 +609,7 @@ suite.define(() => {
             };
           }),
         )
-        .toEqual({ name: "OpenClaw", avatar: null, renderedAvatar: null });
+        .toEqual({ name: "PASO", avatar: null, renderedAvatar: null });
       await gateway.emitGatewayEvent("presence", {
         presence: [
           {

@@ -929,7 +929,7 @@ describe("release candidate checklist", () => {
       databaseId: 456,
       runAttempt: 2,
       repository: repo,
-      workflowName: "OpenClaw NPM Release",
+      workflowName: "PASO NPM Release",
       workflowPath: ".github/workflows/openclaw-npm-release.yml",
       event: "workflow_dispatch",
       status: "completed",
@@ -975,6 +975,15 @@ describe("release candidate checklist", () => {
         );
       },
     );
+
+    it("accepts the exact legacy npm workflow name for reusable preflight evidence", async () => {
+      await expect(
+        validateNpmPreflightRunSource({
+          ...source,
+          workflowRun: { ...workflowRun, workflowName: "OpenClaw NPM Release" },
+        }),
+      ).resolves.toEqual({ status: "passed", headSha, workflowRef: "main" });
+    });
 
     it("accepts and records a protected npm preflight tag from trusted main", async () => {
       const validated = await validateNpmPreflightRunSource(
@@ -1370,7 +1379,7 @@ describe("release candidate checklist", () => {
         tag_name: "v0.6.3",
         draft: false,
         prerelease: false,
-        html_url: "https://github.com/openclaw/openclaw-windows-node/releases/tag/v0.6.3",
+        html_url: "https://github.com/celaya-solutions/PASO-AGENT/releases/tag/v0.6.3",
         assets,
       });
     });
@@ -1383,7 +1392,7 @@ describe("release candidate checklist", () => {
       }),
     ).resolves.toEqual({
       tag: "v0.6.3",
-      url: "https://github.com/openclaw/openclaw-windows-node/releases/tag/v0.6.3",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/releases/tag/v0.6.3",
       assets,
     });
   });
@@ -1430,7 +1439,7 @@ describe("release candidate checklist", () => {
         tag_name: "v0.6.3",
         draft: false,
         prerelease: false,
-        html_url: "https://github.com/openclaw/openclaw-windows-node/releases/tag/v0.6.3",
+        html_url: "https://github.com/celaya-solutions/PASO-AGENT/releases/tag/v0.6.3",
         assets: [
           {
             name: "OpenClawCompanion-Setup-x64.exe",
@@ -1490,7 +1499,7 @@ describe("release candidate checklist", () => {
         "--plugins",
         "@openclaw/diffs",
       ]),
-    ).toThrow("release candidates publish OpenClaw with --plugin-publish-scope all-publishable");
+    ).toThrow("release candidates publish PASO with --plugin-publish-scope all-publishable");
   });
 
   it("extracts a workflow run id from gh dispatch output", () => {

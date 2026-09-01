@@ -157,25 +157,14 @@ async function resolveExplicitTarget(params: {
   for (const candidate of buildDevTargetRefResolutionCandidates(params.devTargetRef)) {
     const tagFetchRef = resolveTagFetchRef(candidate);
     if (tagFetchRef) {
-      const remoteStep = await runStep(
-        params.step("git remote", ["git", "-C", params.gitRoot, "remote"], params.gitRoot),
+      const fetchStep = await runStep(
+        params.step(
+          `git fetch origin ${tagFetchRef}`,
+          ["git", "-C", params.gitRoot, "fetch", "origin", `+${tagFetchRef}:${tagFetchRef}`],
+          params.gitRoot,
+        ),
       );
-      const remotes = normalizeStringEntries((remoteStep.stdoutTail ?? "").split("\n"));
-      let fetchedTag = false;
-      for (const remote of remotes) {
-        const fetchStep = await runStep(
-          params.step(
-            `git fetch ${remote} ${tagFetchRef}`,
-            ["git", "-C", params.gitRoot, "fetch", remote, `+${tagFetchRef}:${tagFetchRef}`],
-            params.gitRoot,
-          ),
-        );
-        if (fetchStep.exitCode === 0) {
-          fetchedTag = true;
-          break;
-        }
-      }
-      if (remotes.length > 0 && !fetchedTag) {
+      if (fetchStep.exitCode !== 0) {
         continue;
       }
     }
@@ -226,9 +215,9 @@ async function resolveUpstreamCandidates(params: {
       params.step("git remote", ["git", "-C", params.gitRoot, "remote"], params.gitRoot),
     );
     if (remoteStep.exitCode === 0) {
-      remoteBranchRefs = normalizeStringEntries((remoteStep.stdoutTail ?? "").split("\n")).map(
-        (remote) => `refs/remotes/${remote}/${DEV_BRANCH}`,
-      );
+      remoteBranchRefs = normalizeStringEntries((remoteStep.stdoutTail ?? "").split("\n"))
+        .filter((remote) => remote === "origin")
+        .map((remote) => `refs/remotes/${remote}/${DEV_BRANCH}`);
     }
   }
   const upstreamRefs = resolveDevUpstreamRefs(params.needsCheckoutMain, remoteBranchRefs);
@@ -253,6 +242,9 @@ async function resolveUpstreamCandidates(params: {
         ),
       );
       if (upstreamStep.exitCode !== 0) {
+        continue;
+      }
+      if (upstreamStep.stdoutTail?.trim() !== `origin/${DEV_BRANCH}`) {
         continue;
       }
       sawResolvableUpstreamRef = true;

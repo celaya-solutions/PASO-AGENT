@@ -90,6 +90,13 @@ describe("isHeartbeatUserMessage", () => {
     expect(
       isHeartbeatUserMessage({
         role: "user",
+        content: "[OpenClaw heartbeat poll]",
+      }),
+    ).toBe(true);
+
+    expect(
+      isHeartbeatUserMessage({
+        role: "user",
         content: HEARTBEAT_RESPONSE_TOOL_PROMPT,
       }),
     ).toBe(true);
@@ -824,7 +831,7 @@ describe("filterHeartbeatTranscriptArtifacts", () => {
         { type: "text", text: "what model are you" },
       ],
     };
-    const assistantMessage = { role: "assistant", content: "I am OpenClaw." };
+    const assistantMessage = { role: "assistant", content: "I am PASO." };
     const messages = [
       { role: "user", content: HEARTBEAT_TRANSCRIPT_PROMPT },
       {

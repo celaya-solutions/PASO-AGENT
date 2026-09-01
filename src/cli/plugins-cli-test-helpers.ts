@@ -260,10 +260,10 @@ vi.mock("../config/config.js", () => ({
     if (process.env.OPENCLAW_NIX_MODE === "1") {
       throw new Error(
         [
-          "Config is managed by Nix (`OPENCLAW_NIX_MODE=1`), so OpenClaw treats openclaw.json as immutable.",
+          "Config is managed by Nix (`OPENCLAW_NIX_MODE=1`), so PASO treats openclaw.json as immutable.",
           "Do not run setup, onboarding, openclaw update, plugin install/update/uninstall/enable, doctor repair/token-generation, or config set against this file.",
           "Agent-first Nix setup: https://github.com/openclaw/nix-openclaw#quick-start",
-          "OpenClaw Nix overview: https://docs.openclaw.ai/install/nix",
+          "PASO Nix overview: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         ].join("\n"),
       );
     }

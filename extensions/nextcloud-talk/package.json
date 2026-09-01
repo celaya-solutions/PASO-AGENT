@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/nextcloud-talk",
   "version": "2026.8.1",
-  "description": "OpenClaw Nextcloud Talk channel plugin for conversations.",
+  "description": "PASO Nextcloud Talk channel plugin for conversations.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

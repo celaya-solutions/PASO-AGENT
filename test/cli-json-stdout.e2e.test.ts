@@ -598,7 +598,7 @@ describe("cli json stdout contract", () => {
   });
 
   describe.each([
-    { context: "ordinary fresh home", env: {}, reason: "never-asked" },
+    { context: "ordinary fresh home", env: {}, reason: "endpoint-unconfigured" },
     { context: "automated fresh home", env: { CI: "1" }, reason: "automated-environment" },
     {
       context: "automation with an explicit endpoint",
@@ -646,8 +646,7 @@ describe("cli json stdout contract", () => {
           );
 
           expect(result.status, result.stderr).toBe(0);
-          const endpoint =
-            env.OPENCLAW_TELEMETRY_ENDPOINT ?? "https://telemetry.openclaw.ai/api/latest-version";
+          const endpoint = env.OPENCLAW_TELEMETRY_ENDPOINT ?? null;
           if (format === "JSON") {
             expect(result.stdout, result.stderr).not.toMatch(/[\u001B\u0007]/u);
             const payload = JSON.parse(result.stdout);
@@ -657,7 +656,7 @@ describe("cli json stdout contract", () => {
               endpoint,
               lastPingAt: null,
               request:
-                reason === "automated-environment"
+                reason === "automated-environment" || !endpoint
                   ? null
                   : {
                       method: "GET",
@@ -671,11 +670,13 @@ describe("cli json stdout contract", () => {
             const lines = report.trimEnd().split("\n");
             expect(lines).toEqual([
               "Feature stats: disabled",
-              `Reason: ${reason === "automated-environment" ? "disabled in an automated environment (CI is set)" : "consent has not been requested"}`,
-              `Endpoint: ${endpoint}`,
+              `Reason: ${reason === "automated-environment" ? "disabled in an automated environment (CI is set)" : reason === "endpoint-unconfigured" ? "no telemetry endpoint is configured" : "consent has not been requested"}`,
+              `Endpoint: ${endpoint ?? "not configured"}`,
               "Last ping: never",
-              ...(reason === "automated-environment"
-                ? ["Request: none (disabled in an automated environment (CI is set))"]
+              ...(reason === "automated-environment" || !endpoint
+                ? [
+                    `Request: none (${reason === "automated-environment" ? "disabled in an automated environment (CI is set)" : "no telemetry endpoint is configured"})`,
+                  ]
                 : [
                     `Request: GET ${endpoint}`,
                     expect.stringMatching(/^User-Agent: openclaw\/[^ ]+ \(.+; gateway\)$/u),
@@ -683,7 +684,7 @@ describe("cli json stdout contract", () => {
             ]);
           }
           if (tty && format === "text") {
-            expect(result.stdout).toContain("OpenClaw");
+            expect(result.stdout).toContain("PASO");
             expect(result.stderr).toContain("\u001B[?25h");
             expect(result.stderr).not.toContain("TELEMETRY_NETWORK_FORBIDDEN");
           } else {

@@ -45,8 +45,8 @@ Exec approvals are enforced locally on the execution host:
 - Approvals reduce accidental execution risk, but are **not** a per-user auth boundary or filesystem read-only policy.
 - Once approved, a command can mutate files according to the selected host or sandbox filesystem permissions.
 - Approved node-host runs bind canonical execution context: cwd, exact argv, env binding when present, and pinned executable path when applicable.
-- For shell scripts and direct interpreter/runtime file invocations, OpenClaw also tries to bind one concrete local file operand. If that file changes after approval but before execution, the run is denied instead of executing drifted content.
-- File binding is best-effort, not a complete model of every interpreter/runtime loader path. If exactly one concrete local file cannot be identified, OpenClaw refuses to mint an approval-backed run rather than pretend full coverage.
+- For shell scripts and direct interpreter/runtime file invocations, PASO also tries to bind one concrete local file operand. If that file changes after approval but before execution, the run is denied instead of executing drifted content.
+- File binding is best-effort, not a complete model of every interpreter/runtime loader path. If exactly one concrete local file cannot be identified, PASO refuses to mint an approval-backed run rather than pretend full coverage.
 
 ### macOS split
 
@@ -91,7 +91,7 @@ not that the command may have run.
 
 Approvals live in the shared SQLite state database on the execution host. When
 `OPENCLAW_STATE_DIR` is set, the database follows that state directory;
-otherwise it uses the default OpenClaw state directory:
+otherwise it uses the default PASO state directory:
 
 ```text
 $OPENCLAW_STATE_DIR/state/openclaw.sqlite#exec_approvals_config
@@ -109,7 +109,7 @@ The default approval socket follows the same root:
 `~/.openclaw/exec-approvals.sock` when the variable is unset.
 
 State directories are independent trust scopes. When `OPENCLAW_STATE_DIR`
-points somewhere else, OpenClaw never imports or archives approvals from the
+points somewhere else, PASO never imports or archives approvals from the
 default state directory; configure approvals separately for the custom state
 directory. After upgrading from a file-backed release, stop the Gateway and run
 `openclaw doctor --fix` once to import the active state directory's retired
@@ -170,13 +170,13 @@ Example schema:
 
 `tools.exec.mode` is the preferred normalized policy surface for host exec:
 
-| Value       | Behavior                                                                                                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `deny`      | Block host exec.                                                                                                                                                          |
-| `allowlist` | Run only allowlisted commands without asking.                                                                                                                             |
-| `ask`       | Use allowlist policy and ask on misses.                                                                                                                                   |
-| `auto`      | Use allowlist policy, run deterministic matches directly, and send approval misses through OpenClaw's native auto reviewer before falling back to a human approval route. |
-| `full`      | Run host exec without approval prompts.                                                                                                                                   |
+| Value       | Behavior                                                                                                                                                              |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `deny`      | Block host exec.                                                                                                                                                      |
+| `allowlist` | Run only allowlisted commands without asking.                                                                                                                         |
+| `ask`       | Use allowlist policy and ask on misses.                                                                                                                               |
+| `auto`      | Use allowlist policy, run deterministic matches directly, and send approval misses through PASO's native auto reviewer before falling back to a human approval route. |
+| `full`      | Run host exec without approval prompts.                                                                                                                               |
 
 Doctor migrates the retired persisted `tools.exec.security` / `tools.exec.ask`
 pair to `tools.exec.mode`.
@@ -233,7 +233,7 @@ Examples that strict mode catches: `python -c`, `node -e`/`--eval`/`-p`,
 
 In strict mode these commands need reviewer or explicit approval. With
 `tools.exec.mode: "auto"`, the reviewer may grant one low-risk execution when
-the command has an enforceable plan; otherwise OpenClaw asks a human.
+the command has an enforceable plan; otherwise PASO asks a human.
 `Codex app-server` command approvals that reach the reviewer fallback ask a
 human because their approval requests do not expose an enforceable resolved
 executable.
@@ -242,7 +242,7 @@ executable.
 ### `tools.exec.commandHighlighting`
 
 <ParamField path="commandHighlighting" type="boolean" default="false">
-  Presentation only: when enabled, OpenClaw may attach parser-derived
+  Presentation only: when enabled, PASO may attach parser-derived
   command spans so Web approval prompts can highlight command tokens. Does
   **not** change `security`, `ask`, allowlist matching, strict inline-eval
   behavior, approval forwarding, or command execution.
@@ -254,7 +254,7 @@ Set globally under `tools.exec.commandHighlighting` or per agent under
 ## YOLO mode (no-approval)
 
 To run host exec without approval prompts, open **both** policy layers:
-requested exec policy in OpenClaw config (`tools.exec.*`) **and**
+requested exec policy in PASO config (`tools.exec.*`) **and**
 host-local approvals policy in the execution host approvals document.
 
 Omitted `askFallback` defaults to `deny`. Set host `askFallback` to `full`
@@ -275,13 +275,13 @@ explicitly when a no-UI approval prompt should fall back to allow.
 
 </Warning>
 
-For OpenClaw-managed Claude sessions, the Claude Agent SDK always uses its
-`default` permission mode. OpenClaw's effective exec policy remains
+For PASO-managed Claude sessions, the Claude Agent SDK always uses its
+`default` permission mode. PASO's effective exec policy remains
 authoritative through its native tool approval callback, including YOLO and
 restrictive policies, even if raw Claude backend args request
 `bypassPermissions`.
 
-If you want a more conservative setup, tighten OpenClaw exec policy back to
+If you want a more conservative setup, tighten PASO exec policy back to
 `allowlist` / `on-miss` or `deny`.
 
 ### Persistent gateway-host "never prompt" setup
@@ -390,7 +390,7 @@ Examples:
 ### Restricting arguments with argPattern
 
 Add `argPattern` when an allowlist entry should match a binary and a
-specific argument shape. OpenClaw uses ECMAScript (JavaScript) regular
+specific argument shape. PASO uses ECMAScript (JavaScript) regular
 expression semantics on every host and evaluates the expression against
 the parsed command arguments, excluding the executable token (`argv[0]`).
 For hand-authored entries, arguments are joined with a single space, so
@@ -419,7 +419,7 @@ entry when the goal is to restrict the binary to the declared arguments.
 
 Entries saved by approval flows use an internal separator format for exact
 argv matching. Prefer the UI or approval flow to regenerate those entries
-instead of hand-editing the encoded value. If OpenClaw cannot parse argv
+instead of hand-editing the encoded value. If PASO cannot parse argv
 for a command segment, entries with `argPattern` do not match.
 
 Generated `allow-always` entries are bound to both the exact argv and the working
@@ -575,7 +575,7 @@ context when forwarding approved `system.run` requests:
 ## Approval scope summaries
 
 An approval owner can attach a typed, display-only scope describing the action's
-blast radius. OpenClaw renders the sanitized summary on channel approval cards
+blast radius. PASO renders the sanitized summary on channel approval cards
 and includes the bounded scope in the safe approval presentation available to
 Control UI clients. Scope never grants authorization or changes approval policy.
 
@@ -592,17 +592,17 @@ declared scope, approval cards render exactly as before.
 ## System events and denials
 
 Exec lifecycle posts an `Exec finished` system message to the agent's
-session after the node reports completion. OpenClaw can also emit an
+session after the node reports completion. PASO can also emit an
 in-progress notice once an approval is granted, after
 `tools.exec.approvalRunningNoticeMs` elapses (default `10000`, `0` disables
 it). Denied exec approvals are terminal for the host command: the command
 does not run.
 
-- For main-agent async approvals with an originating session, OpenClaw
+- For main-agent async approvals with an originating session, PASO
   posts the denial back into that session as an internal followup so the
   agent can stop waiting on the async command and avoid a missing-result
   repair.
-- If there is no session or the session cannot be resumed, OpenClaw can
+- If there is no session or the session cannot be resumed, PASO can
   still report a concise denial to the operator or direct chat route.
 - Denials for subagent and cron sessions are not posted back into that
   session.

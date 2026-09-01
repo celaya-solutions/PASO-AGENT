@@ -1,12 +1,12 @@
 ---
 summary: "Plugin manifest + JSON schema requirements (strict config validation)"
 read_when:
-  - You are building an OpenClaw plugin
+  - You are building a PASO plugin
   - You need to ship a plugin config schema or debug plugin validation errors
 title: "Plugin manifest"
 ---
 
-This page covers the **native OpenClaw plugin manifest**, `openclaw.plugin.json`. For compatible bundle layouts (Agent Plugins, Codex, Claude, Cursor), see [Plugin bundles](/plugins/bundles).
+This page covers the **native PASO plugin manifest**, `openclaw.plugin.json`. For compatible bundle layouts (Agent Plugins, Codex, Claude, Cursor), see [Plugin bundles](/plugins/bundles).
 
 Compatible bundle formats use their own manifest files instead:
 
@@ -15,15 +15,15 @@ Compatible bundle formats use their own manifest files instead:
 - Claude bundle: `.claude-plugin/plugin.json`, or the default Claude component layout with no manifest
 - Cursor bundle: `.cursor-plugin/plugin.json`
 
-OpenClaw auto-detects those layouts but does not validate them against the `openclaw.plugin.json` schema below. For a compatible bundle, OpenClaw reads bundle metadata, declared skill roots, Claude command roots, Claude `settings.json` defaults, Claude LSP defaults, and supported hook packs, when the layout matches OpenClaw's runtime expectations.
+PASO auto-detects those layouts but does not validate them against the `openclaw.plugin.json` schema below. For a compatible bundle, PASO reads bundle metadata, declared skill roots, Claude command roots, Claude `settings.json` defaults, Claude LSP defaults, and supported hook packs, when the layout matches PASO's runtime expectations.
 
-Every native OpenClaw plugin **must** ship `openclaw.plugin.json` in the **plugin root**. OpenClaw reads it to validate configuration **without executing plugin code**. A missing or invalid manifest blocks config validation and is treated as a plugin error.
+Every native PASO plugin **must** ship `openclaw.plugin.json` in the **plugin root**. PASO reads it to validate configuration **without executing plugin code**. A missing or invalid manifest blocks config validation and is treated as a plugin error.
 
 See [Plugins](/tools/plugin) for the full plugin system guide, and [Capability model](/plugins/architecture#public-capability-model) for the native capability model and current external-compatibility guidance.
 
 ## What this file does
 
-`openclaw.plugin.json` is metadata OpenClaw reads **before loading your plugin code**. Everything in it must be cheap enough to inspect without booting plugin runtime.
+`openclaw.plugin.json` is metadata PASO reads **before loading your plugin code**. Everything in it must be cheap enough to inspect without booting plugin runtime.
 
 **Use it for:**
 
@@ -160,7 +160,7 @@ See [Plugins](/tools/plugin) for the full plugin system guide, and [Capability m
 | `nonSecretAuthMarkers`               | No       | `string[]`                   | Bundled-plugin-owned placeholder API key values that represent non-secret local, OAuth, or ambient credential state.                                                                                                                                                                                                                                                                             |
 | `commandAliases`                     | No       | `object[]`                   | Command names owned by this plugin that should produce plugin-aware config and CLI diagnostics before runtime loads.                                                                                                                                                                                                                                                                             |
 | `cliCommands`                        | No       | `object[]`                   | Root CLI commands shown in `openclaw --help` before plugin code loads. Each row requires `name`, `description`, and `hasSubcommands`.                                                                                                                                                                                                                                                            |
-| `providerUsageAuthEnvVars`           | No       | `Record<string, string[]>`   | Usage/billing-only provider credentials. OpenClaw uses these names for usage discovery and secret scrubbing but never for inference auth.                                                                                                                                                                                                                                                        |
+| `providerUsageAuthEnvVars`           | No       | `Record<string, string[]>`   | Usage/billing-only provider credentials. PASO uses these names for usage discovery and secret scrubbing but never for inference auth.                                                                                                                                                                                                                                                            |
 | `providerAuthAliases`                | No       | `Record<string, string>`     | Provider ids that should reuse another provider id for auth lookup, for example a coding provider that shares the base provider API key and auth profiles.                                                                                                                                                                                                                                       |
 | `providerAuthChoices`                | No       | `object[]`                   | Cheap auth-choice metadata for onboarding pickers, preferred-provider resolution, and simple CLI flag wiring.                                                                                                                                                                                                                                                                                    |
 | `activation`                         | No       | `object`                     | Cheap activation planner metadata for startup, provider, command, channel, route, and capability-triggered loading. Metadata only; plugin runtime still owns actual behavior.                                                                                                                                                                                                                    |
@@ -192,8 +192,8 @@ Prefer top-level `sessionRouteStateOwners` for static doctor ownership. The
 older `doctorContract.sessionRouteStateOwners: true` declaration plus a
 `sessionRouteStateOwners` export from `doctor-contract-api` remains supported
 for external plugins, but is deprecated. When the manifest field is present,
-OpenClaw uses it without loading the doctor-contract module. Removal plan:
-remove the module fallback in OpenClaw 2027.1 after the external-plugin
+PASO uses it without loading the doctor-contract module. Removal plan:
+remove the module fallback in PASO 2027.1 after the external-plugin
 migration window.
 
 Set `doctorContract.configRepair: true` when the doctor-contract module exports
@@ -207,7 +207,7 @@ Codex health registration without preventing other checks; a declared but
 missing or broken API remains an error. This does not grant plugin capabilities
 or replace upgrade consent.
 
-Channel plugins maintained in the OpenClaw source tree also expose these config
+Channel plugins maintained in the PASO source tree also expose these config
 exports through a pure `config-doctor-api.ts` entrypoint. The core package retains
 that entrypoint alongside its channel schemas when the plugin runtime is
 distributed separately. This lets `doctor --fix` migrate older configuration
@@ -218,7 +218,7 @@ migrations, install plugins, or grant capabilities.
 ## backupResources reference
 
 Use `backupResources` to declare plugin-owned durable data that backups must
-include, or generated data that OpenClaw can safely omit and regenerate after
+include, or generated data that PASO can safely omit and regenerate after
 restore. The backup planner reads this metadata without loading plugin runtime
 or modifying plugin files. Only effectively activated, loadable plugins
 contribute resources; disabled or unloadable plugins cannot exclude data.
@@ -278,7 +278,7 @@ plugin can recreate.
 }
 ```
 
-OpenClaw includes these servers only while the owning plugin is enabled. Relative `command`, `args`, `cwd`, and `workingDirectory` paths resolve from the plugin root. User configuration remains authoritative: `mcp.servers.<name>` can replace a plugin default or set `enabled: false` to omit it. MCP App rendering and server-tool calls still require the normal MCP Apps setting and effective tool policy; declaring a server does not bypass either boundary.
+PASO includes these servers only while the owning plugin is enabled. Relative `command`, `args`, `cwd`, and `workingDirectory` paths resolve from the plugin root. User configuration remains authoritative: `mcp.servers.<name>` can replace a plugin default or set `enabled: false` to omit it. MCP App rendering and server-tool calls still require the normal MCP Apps setting and effective tool policy; declaring a server does not bypass either boundary.
 
 ## dashboard reference
 
@@ -312,7 +312,7 @@ OpenClaw includes these servers only while the owning plugin is enabled. Relativ
 }
 ```
 
-The manifest ids are plugin-local. Widget grants use `<plugin-id>.<id>`, such as `example.items.list` and `example.refresh`. To keep the persisted grant namespace unambiguous, OpenClaw escapes `%` and `.` in the plugin-id segment as `%25` and `%2E`; ordinary plugin ids keep the natural form. `paramShape` is an optional JSON Schema applied to the action params object before OpenClaw invokes the plugin RPC.
+The manifest ids are plugin-local. Widget grants use `<plugin-id>.<id>`, such as `example.items.list` and `example.refresh`. To keep the persisted grant namespace unambiguous, PASO escapes `%` and `.` in the plugin-id segment as `%25` and `%2E`; ordinary plugin ids keep the natural form. `paramShape` is an optional JSON Schema applied to the action params object before PASO invokes the plugin RPC.
 
 ## catalog reference
 
@@ -334,7 +334,7 @@ The manifest ids are plugin-local. Widget grants use `<plugin-id>.<id>`, such as
 
 ## Generation provider metadata reference
 
-The generation provider metadata fields describe static auth signals for providers declared in the matching `contracts.*GenerationProviders` list. OpenClaw reads these fields before provider runtime loads so core tools can decide whether a generation provider is available without importing every provider plugin.
+The generation provider metadata fields describe static auth signals for providers declared in the matching `contracts.*GenerationProviders` list. PASO reads these fields before provider runtime loads so core tools can decide whether a generation provider is available without importing every provider plugin.
 
 Use these fields only for cheap, declarative facts. Transport, request transforms, token refresh, credential validation, and actual generation behavior stay in the plugin runtime.
 
@@ -425,7 +425,7 @@ Each `providerBaseUrl` guard supports:
 
 ## Tool metadata reference
 
-`toolMetadata` uses the same `configSignals` and `authSignals` shapes as generation provider metadata, keyed by tool name. `contracts.tools` declares ownership. `toolMetadata` declares cheap availability evidence so OpenClaw can avoid importing a plugin runtime just to have its tool factory return `null`.
+`toolMetadata` uses the same `configSignals` and `authSignals` shapes as generation provider metadata, keyed by tool name. `contracts.tools` declares ownership. `toolMetadata` declares cheap availability evidence so PASO can avoid importing a plugin runtime just to have its tool factory return `null`.
 
 ```json
 {
@@ -469,18 +469,18 @@ Each `providerBaseUrl` guard supports:
 
 These fields supplement the shared `configSignals` and `authSignals` fields above.
 
-If a tool has no `toolMetadata`, OpenClaw preserves the existing behavior and loads the owning plugin when the tool contract matches policy. For hot-path tools whose factory depends on auth/config, plugin authors should declare `toolMetadata` instead of making core import runtime to ask.
+If a tool has no `toolMetadata`, PASO preserves the existing behavior and loads the owning plugin when the tool contract matches policy. For hot-path tools whose factory depends on auth/config, plugin authors should declare `toolMetadata` instead of making core import runtime to ask.
 
 ## providerAuthChoices reference
 
-Each `providerAuthChoices` entry describes one onboarding or auth choice. OpenClaw reads this before provider runtime loads. Provider setup lists use these manifest choices, descriptor-derived setup choices, and install-catalog metadata without loading provider runtime.
+Each `providerAuthChoices` entry describes one onboarding or auth choice. PASO reads this before provider runtime loads. Provider setup lists use these manifest choices, descriptor-derived setup choices, and install-catalog metadata without loading provider runtime.
 
 | Field                  | Required | Type                                                                  | What it means                                                                                             |
 | ---------------------- | -------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `provider`             | Yes      | `string`                                                              | Provider id this choice belongs to.                                                                       |
 | `method`               | Yes      | `string`                                                              | Auth method id to dispatch to.                                                                            |
 | `choiceId`             | Yes      | `string`                                                              | Stable auth-choice id used by onboarding and CLI flows.                                                   |
-| `choiceLabel`          | No       | `string`                                                              | User-facing label. If omitted, OpenClaw falls back to `choiceId`.                                         |
+| `choiceLabel`          | No       | `string`                                                              | User-facing label. If omitted, PASO falls back to `choiceId`.                                             |
 | `choiceHint`           | No       | `string`                                                              | Short helper text for the picker.                                                                         |
 | `icon`                 | No       | HTTPS URL                                                             | Artwork shown beside this choice in supported onboarding clients.                                         |
 | `website`              | No       | HTTPS URL                                                             | Product, sign-in, or installation page shown by supported onboarding clients.                             |
@@ -504,7 +504,7 @@ Each `providerAuthChoices` entry describes one onboarding or auth choice. OpenCl
 When `appGuidedDiscovery` is true, the matching provider auth method must expose
 `appGuidedSetup.detect` and `appGuidedSetup.prepare`. Detection must be
 read-only: no login, model pull, download, or config write. Preparation rechecks
-the exact selected model and returns a config proposal; OpenClaw live-tests that
+the exact selected model and returns a config proposal; PASO live-tests that
 proposal in isolation and commits it only after success. A provider can also
 expose `appGuidedSetup.detectAvailability` to mark its setup choice as detected
 when the local service is reachable but no model qualifies for automatic setup.
@@ -530,7 +530,7 @@ The manifest row is the canonical help text. Register the same command at runtim
 
 ## commandAliases reference
 
-Use `commandAliases` when a plugin owns a runtime command name that users may mistakenly put in `plugins.allow` or try to run as a root CLI command. OpenClaw uses this metadata for diagnostics without importing plugin runtime code.
+Use `commandAliases` when a plugin owns a runtime command name that users may mistakenly put in `plugins.allow` or try to run as a root CLI command. PASO uses this metadata for diagnostics without importing plugin runtime code.
 
 If a plugin fails to load, invoking its declared `runtime-slash` command in chat returns the plugin name, a short failure reason, and recovery guidance (`openclaw doctor` and gateway logs). Unknown commands and commands belonging to intentionally disabled plugins keep their normal handling; manifest ownership alone does not make a command executable.
 
@@ -667,13 +667,13 @@ Top-level `cliBackends` stays valid and continues to describe CLI inference back
 
 When present, `setup.providers` and `setup.cliBackends` are the preferred descriptor-first lookup surface for setup discovery. If the descriptor only narrows the candidate plugin and setup still needs richer setup-time runtime hooks, set `requiresRuntime: true` and keep `setup-api` in place as the fallback execution path.
 
-OpenClaw includes `setup.providers[].envVars` in generic provider auth and env-var lookups. Put setup and status env metadata there.
+PASO includes `setup.providers[].envVars` in generic provider auth and env-var lookups. Put setup and status env metadata there.
 
 Use `providerUsageAuthEnvVars` when a billing or organization-level credential must activate `resolveUsageAuth` without becoming an inference credential. These names join workspace dotenv blocking, ACP child-process stripping, sandbox secret filtering, and broad secret scrubbing. The provider runtime still reads and classifies the value inside `resolveUsageAuth`.
 
-OpenClaw can also derive simple setup choices from `setup.providers[].authMethods` when no setup entry is available, or when `setup.requiresRuntime: false` declares setup runtime unnecessary. Explicit `providerAuthChoices` entries stay preferred for custom labels, CLI flags, onboarding scope, and assistant metadata.
+PASO can also derive simple setup choices from `setup.providers[].authMethods` when no setup entry is available, or when `setup.requiresRuntime: false` declares setup runtime unnecessary. Explicit `providerAuthChoices` entries stay preferred for custom labels, CLI flags, onboarding scope, and assistant metadata.
 
-Set `requiresRuntime: false` only when those descriptors are sufficient for the setup surface. OpenClaw treats explicit `false` as a descriptor-only contract and will not execute `setup-api` or `openclaw.setupEntry` for setup lookup. If a descriptor-only plugin still ships one of those setup runtime entries, OpenClaw reports an additive diagnostic and continues ignoring it. Omitted `requiresRuntime` keeps legacy fallback behavior so existing plugins that added descriptors without the flag do not break.
+Set `requiresRuntime: false` only when those descriptors are sufficient for the setup surface. PASO treats explicit `false` as a descriptor-only contract and will not execute `setup-api` or `openclaw.setupEntry` for setup lookup. If a descriptor-only plugin still ships one of those setup runtime entries, PASO reports an additive diagnostic and continues ignoring it. Omitted `requiresRuntime` keeps legacy fallback behavior so existing plugins that added descriptors without the flag do not break.
 
 Because setup lookup can execute plugin-owned `setup-api` code, normalized `setup.providers[].id` and `setup.cliBackends[]` values must stay unique across discovered plugins. Ambiguous ownership fails closed instead of picking a winner from discovery order.
 
@@ -749,7 +749,7 @@ hosts, and webhooks still need their own hints.
 
 ## contracts reference
 
-Use `contracts` only for static capability ownership metadata that OpenClaw can read without importing the plugin runtime.
+Use `contracts` only for static capability ownership metadata that PASO can read without importing the plugin runtime.
 
 ```json
 {
@@ -922,14 +922,14 @@ Each provider entry can include:
 
 Use `channelConfigs` when a channel plugin needs cheap config metadata before runtime loads. Read-only channel setup/status discovery can use this metadata directly for configured external channels when no setup entry is available, or when `setup.requiresRuntime: false` declares setup runtime unnecessary.
 
-`channelConfigs` is plugin manifest metadata, not a new top-level user config section. Users still configure channel instances under `channels.<channel-id>`. OpenClaw reads manifest metadata to decide which plugin owns that configured channel before plugin runtime code executes.
+`channelConfigs` is plugin manifest metadata, not a new top-level user config section. Users still configure channel instances under `channels.<channel-id>`. PASO reads manifest metadata to decide which plugin owns that configured channel before plugin runtime code executes.
 
 For a channel plugin, `configSchema` and `channelConfigs` describe different paths:
 
 - `configSchema` validates `plugins.entries.<plugin-id>.config`
 - `channelConfigs.<channel-id>.schema` validates `channels.<channel-id>`
 
-Non-bundled plugins that declare `channels[]` should also declare matching `channelConfigs` entries. Without them, OpenClaw can still load the plugin, but cold-path config schema, setup, and Control UI surfaces cannot know the channel-owned option shape or display-only UI hints until plugin runtime executes.
+Non-bundled plugins that declare `channels[]` should also declare matching `channelConfigs` entries. Without them, PASO can still load the plugin, but cold-path config schema, setup, and Control UI surfaces cannot know the channel-owned option shape or display-only UI hints until plugin runtime executes.
 
 `channelConfigs.<channel-id>.commands.nativeCommandsAutoEnabled` and `nativeSkillsAutoEnabled` can declare static `auto` defaults for command config checks that run before channel runtime loads. Bundled channels can also publish the same defaults through `package.json#openclaw.channel.commands` alongside their other package-owned channel catalog metadata.
 
@@ -996,13 +996,13 @@ Use `preferOver` when your plugin is the preferred owner for a channel id that a
 }
 ```
 
-When `channels.chat` is configured, OpenClaw considers both the channel id and the preferred plugin id. If the lower-priority plugin was only selected because it is bundled or enabled by default, OpenClaw disables it in the effective runtime config so one plugin owns the channel and its tools. Explicit user selection still wins: if the user explicitly enables both plugins (via `plugins.allow` or a material `plugins.entries` config), OpenClaw preserves that choice and reports duplicate channel/tool diagnostics instead of silently changing the requested plugin set.
+When `channels.chat` is configured, PASO considers both the channel id and the preferred plugin id. If the lower-priority plugin was only selected because it is bundled or enabled by default, PASO disables it in the effective runtime config so one plugin owns the channel and its tools. Explicit user selection still wins: if the user explicitly enables both plugins (via `plugins.allow` or a material `plugins.entries` config), PASO preserves that choice and reports duplicate channel/tool diagnostics instead of silently changing the requested plugin set.
 
 Keep `preferOver` scoped to plugin ids that can really provide the same channel. It is not a general priority field and it does not rename user config keys.
 
 ## modelSupport reference
 
-Use `modelSupport` when OpenClaw should infer your provider plugin from shorthand model ids like `gpt-5.6-sol` or `claude-sonnet-4.6` before plugin runtime loads.
+Use `modelSupport` when PASO should infer your provider plugin from shorthand model ids like `gpt-5.6-sol` or `claude-sonnet-4.6` before plugin runtime loads.
 
 ```json
 {
@@ -1013,7 +1013,7 @@ Use `modelSupport` when OpenClaw should infer your provider plugin from shorthan
 }
 ```
 
-OpenClaw applies this precedence:
+PASO applies this precedence:
 
 - explicit `provider/model` refs use the owning `providers` manifest metadata
 - `modelPatterns` beat `modelPrefixes`
@@ -1031,7 +1031,7 @@ Fields:
 
 ## modelCatalog reference
 
-Use `modelCatalog` when OpenClaw should know provider model metadata before loading plugin runtime. This is the manifest-owned source for fixed catalog rows, provider aliases, suppression rules, and discovery mode. Runtime refresh still belongs in provider runtime code, but the manifest tells core when runtime is required.
+Use `modelCatalog` when PASO should know provider model metadata before loading plugin runtime. This is the manifest-owned source for fixed catalog rows, provider aliases, suppression rules, and discovery mode. Runtime refresh still belongs in provider runtime code, but the manifest tells core when runtime is required.
 
 ```json
 {
@@ -1090,7 +1090,7 @@ Top-level fields:
 | `discovery`      | `Record<string, "static" \| "refreshable" \| "runtime">` | Whether the provider catalog can be read from manifest metadata, refreshed into cache, or requires runtime. |
 | `runtimeAugment` | `boolean`                                                | Set to `true` only when the provider runtime must append catalog rows after manifest/config planning.       |
 
-`aliases` participates in provider ownership lookup for model-catalog planning. Alias targets must be top-level providers owned by the same plugin. When a provider-filtered list uses an alias, OpenClaw can read the owning manifest and apply alias API/base URL overrides without loading provider runtime. Aliases do not expand unfiltered catalog listings; broad lists emit the owning canonical provider rows only.
+`aliases` participates in provider ownership lookup for model-catalog planning. Alias targets must be top-level providers owned by the same plugin. When a provider-filtered list uses an alias, PASO can read the owning manifest and apply alias API/base URL overrides without loading provider runtime. Aliases do not expand unfiltered catalog listings; broad lists emit the owning canonical provider rows only.
 
 `suppressions` replaces the old provider runtime `suppressBuiltInModel` hook. Suppression entries are honored only when the provider is owned by the plugin or declared as a `modelCatalog.aliases` key that targets an owned provider. Runtime suppression hooks are no longer called during model resolution.
 
@@ -1122,7 +1122,7 @@ Model fields:
 | `maxTokens`            | `number`                                                       | Maximum output tokens when known.                                                    |
 | `thinkingLevelMap`     | `Record<string, string \| null>`                               | Optional per-thinking-level model-id or param overrides.                             |
 | `cost`                 | `object`                                                       | Optional USD per million token pricing, including optional `tieredPricing`.          |
-| `compat`               | `object`                                                       | Optional compatibility flags matching OpenClaw model config compatibility.           |
+| `compat`               | `object`                                                       | Optional compatibility flags matching PASO model config compatibility.               |
 | `upstreamModel`        | `string`                                                       | Optional `provider/model` ref of the same upstream model in another bundled catalog. |
 | `mediaInput`           | `object`                                                       | Optional per-modality input config, currently image-only.                            |
 | `status`               | `"available"` \| `"preview"` \| `"deprecated"` \| `"disabled"` | Listing status. Suppress only when the row must not appear at all.                   |
@@ -1143,7 +1143,7 @@ Suppression fields:
 
 `upstreamModel` marks a row that serves the same upstream model as a row in another bundled catalog under a different name, for example a subscription endpoint next to the vendor's API endpoint. It is authoring metadata: normalization drops it, and a contract test uses it to keep capability flags such as `compat.codeMode` from drifting between catalogs that ship the same model. Most rows need no marker, because matching ignores a leading vendor namespace and casing: `moonshotai/kimi-k3` and `zai-org/GLM-5.2` already match the first-party `kimi-k3` and `glm-5.2` rows. Reach for `upstreamModel` only when the vendor's own names genuinely differ. See [Code mode](/tools/code-mode#models-shipped-by-more-than-one-provider).
 
-Do not put runtime-only data in `modelCatalog`. Use `static` only when manifest rows are complete enough for provider-filtered list and picker surfaces to skip registry/runtime discovery. Use `refreshable` when manifest rows are useful listable seeds or supplements but a refresh/cache can add more rows later; refreshable rows are not authoritative by themselves. Use `runtime` when OpenClaw must load provider runtime to know the list.
+Do not put runtime-only data in `modelCatalog`. Use `static` only when manifest rows are complete enough for provider-filtered list and picker surfaces to skip registry/runtime discovery. Use `refreshable` when manifest rows are useful listable seeds or supplements but a refresh/cache can add more rows later; refreshable rows are not authoritative by themselves. Use `runtime` when PASO must load provider runtime to know the list.
 
 Capabilities belong to the declared API and base URL, not only the provider/model id. When model listing enriches a cached row, it uses manifest capabilities only for a matching route; a custom endpoint must supply its own limits and capabilities.
 
@@ -1228,7 +1228,7 @@ Provider fields:
 
 ## secretProviderIntegrations reference
 
-Use `secretProviderIntegrations` when a plugin can publish a reusable SecretRef exec provider preset. OpenClaw reads this metadata before plugin runtime loads, stores plugin ownership in `secrets.providers.<alias>.pluginIntegration`, and leaves actual secret resolution to the SecretRef runtime. Presets are exposed only for bundled plugins and installed plugins discovered from the managed plugin install roots, such as git and ClawHub installs.
+Use `secretProviderIntegrations` when a plugin can publish a reusable SecretRef exec provider preset. PASO reads this metadata before plugin runtime loads, stores plugin ownership in `secrets.providers.<alias>.pluginIntegration`, and leaves actual secret resolution to the SecretRef runtime. Presets are exposed only for bundled plugins and installed plugins discovered from the managed plugin install roots, such as git and ClawHub installs.
 
 ```json
 {
@@ -1244,9 +1244,9 @@ Use `secretProviderIntegrations` when a plugin can publish a reusable SecretRef 
 }
 ```
 
-The map key is the integration id. If `providerAlias` is omitted, OpenClaw uses the integration id as the SecretRef provider alias. Provider aliases must match the normal SecretRef provider alias pattern, for example `team-secrets` or `onepassword-work`.
+The map key is the integration id. If `providerAlias` is omitted, PASO uses the integration id as the SecretRef provider alias. Provider aliases must match the normal SecretRef provider alias pattern, for example `team-secrets` or `onepassword-work`.
 
-When an operator selects the preset, OpenClaw writes a provider reference like:
+When an operator selects the preset, PASO writes a provider reference like:
 
 ```json
 {
@@ -1264,11 +1264,11 @@ When an operator selects the preset, OpenClaw writes a provider reference like:
 }
 ```
 
-At startup/reload, OpenClaw resolves that provider by loading current plugin manifest metadata, checking that the owning plugin is installed and active, and materializing the exec command from the manifest. Disabling or removing the plugin revokes the provider for active SecretRefs. Operators who want standalone exec configuration can still write manual `command`/`args` providers directly.
+At startup/reload, PASO resolves that provider by loading current plugin manifest metadata, checking that the owning plugin is installed and active, and materializing the exec command from the manifest. Disabling or removing the plugin revokes the provider for active SecretRefs. Operators who want standalone exec configuration can still write manual `command`/`args` providers directly.
 
-Only `source: "exec"` presets are currently supported. `command` must be `${node}`, and `args[0]` must be a `./` plugin-root-relative resolver script. OpenClaw materializes it at startup/reload to the current Node executable and the absolute in-plugin script path. Node options such as `--require`, `--import`, `--loader`, `--env-file`, `--eval`, and `--print` are not part of the manifest preset contract. Operators who need non-Node commands can configure standalone manual exec providers directly.
+Only `source: "exec"` presets are currently supported. `command` must be `${node}`, and `args[0]` must be a `./` plugin-root-relative resolver script. PASO materializes it at startup/reload to the current Node executable and the absolute in-plugin script path. Node options such as `--require`, `--import`, `--loader`, `--env-file`, `--eval`, and `--print` are not part of the manifest preset contract. Operators who need non-Node commands can configure standalone manual exec providers directly.
 
-OpenClaw derives `trustedDirs` for manifest presets from the plugin root and, for `${node}` presets, the current Node executable directory. Manifest-authored `trustedDirs` are ignored. Other exec provider options such as `timeoutMs`, `noOutputTimeoutMs`, `maxOutputBytes`, `jsonOnly`, `env`, and `passEnv` pass through to the normal SecretRef exec provider config.
+PASO derives `trustedDirs` for manifest presets from the plugin root and, for `${node}` presets, the current Node executable directory. Manifest-authored `trustedDirs` are ignored. Other exec provider options such as `timeoutMs`, `noOutputTimeoutMs`, `maxOutputBytes`, `jsonOnly`, `env`, and `passEnv` pass through to the normal SecretRef exec provider config.
 
 ## modelPricing reference
 
@@ -1307,11 +1307,11 @@ Provider fields:
 
 Source fields:
 
-| Field                      | Type               | What it means                                                                                                        |
-| -------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `provider`                 | `string`           | External catalog provider id when it differs from the OpenClaw provider id, for example `z-ai` for a `zai` provider. |
-| `passthroughProviderModel` | `boolean`          | Treat slash-containing model ids as nested provider/model refs, useful for proxy providers such as OpenRouter.       |
-| `modelIdTransforms`        | `"version-dots"[]` | Extra external catalog model-id variants. `version-dots` tries dotted version ids like `claude-opus-4.6`.            |
+| Field                      | Type               | What it means                                                                                                    |
+| -------------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `provider`                 | `string`           | External catalog provider id when it differs from the PASO provider id, for example `z-ai` for a `zai` provider. |
+| `passthroughProviderModel` | `boolean`          | Treat slash-containing model ids as nested provider/model refs, useful for proxy providers such as OpenRouter.   |
+| `modelIdTransforms`        | `"version-dots"[]` | Extra external catalog model-id variants. `version-dots` tries dotted version ids like `claude-opus-4.6`.        |
 
 A declared provider policy enables only its declared source mappings. Without a
 policy, publication tries OpenRouter, then LiteLLM. Each selected price is a
@@ -1349,16 +1349,16 @@ stop publication, leaving the previous hosted catalog intact. Explicit operator
 rates remain unchanged. This authoring metadata adds no operator setting and does
 not change the Gateway's existing refresh and restart lifecycle.
 
-### OpenClaw Provider Index
+### PASO Provider Index
 
-The OpenClaw Provider Index is OpenClaw-owned preview metadata for providers whose plugins may not be installed yet. It is not part of a plugin manifest. Plugin manifests remain the installed-plugin authority. The Provider Index is the internal fallback contract that future installable-provider and pre-install model picker surfaces will consume when a provider plugin is not installed.
+The PASO Provider Index is PASO-owned preview metadata for providers whose plugins may not be installed yet. It is not part of a plugin manifest. Plugin manifests remain the installed-plugin authority. The Provider Index is the internal fallback contract that future installable-provider and pre-install model picker surfaces will consume when a provider plugin is not installed.
 
 Catalog authority order:
 
 1. User config.
 2. Installed plugin manifest `modelCatalog`.
 3. Model catalog cache from explicit refresh.
-4. OpenClaw Provider Index preview rows.
+4. PASO Provider Index preview rows.
 
 The Provider Index must not contain secrets, enabled state, runtime hooks, or live account-specific model data. Its preview catalogs use the same `modelCatalog` provider row shape as plugin manifests, but should stay limited to stable display metadata unless runtime adapter fields such as `api`, `baseUrl`, pricing, or compatibility flags are intentionally kept aligned with the installed plugin manifest. Providers with live `/models` discovery should write refreshed rows through the explicit model catalog cache path instead of making normal listing or onboarding call provider APIs.
 
@@ -1377,12 +1377,12 @@ The two files serve different jobs:
 
 If you are unsure where a piece of metadata belongs, use this rule:
 
-- if OpenClaw must know it before loading plugin code, put it in `openclaw.plugin.json`
+- if PASO must know it before loading plugin code, put it in `openclaw.plugin.json`
 - if it is about packaging, entry files, or npm install behavior, put it in `package.json`
 
 ### package.json fields that affect discovery
 
-Some pre-runtime plugin metadata intentionally lives in `package.json` under the `openclaw` block instead of `openclaw.plugin.json`. `openclaw.bundle` and `openclaw.bundle.json` are not OpenClaw plugin contracts; native plugins must use `openclaw.plugin.json` plus the supported `package.json#openclaw` fields below.
+Some pre-runtime plugin metadata intentionally lives in `package.json` under the `openclaw` block instead of `openclaw.plugin.json`. `openclaw.bundle` and `openclaw.bundle.json` are not PASO plugin contracts; native plugins must use `openclaw.plugin.json` plus the supported `package.json#openclaw` fields below.
 
 Important examples:
 
@@ -1400,8 +1400,8 @@ Important examples:
 | `openclaw.channel.persistedAuthState`                                                      | Lightweight persisted-auth checker metadata that can answer "is anything already signed in?" without loading the full channel runtime.                                                    |
 | `openclaw.install.clawhubSpec` / `openclaw.install.npmSpec` / `openclaw.install.localPath` | Install/update hints for bundled and externally published plugins.                                                                                                                        |
 | `openclaw.install.defaultChoice`                                                           | Preferred install path when multiple install sources are available.                                                                                                                       |
-| `openclaw.install.minHostVersion`                                                          | Minimum supported OpenClaw host version, using a semver floor like `>=2026.3.22` or `>=2026.5.1-beta.1`.                                                                                  |
-| `openclaw.compat.pluginApi`                                                                | Minimum OpenClaw plugin API range required by this package, using a semver floor like `>=2026.5.27`.                                                                                      |
+| `openclaw.install.minHostVersion`                                                          | Minimum supported PASO host version, using a semver floor like `>=2026.3.22` or `>=2026.5.1-beta.1`.                                                                                      |
+| `openclaw.compat.pluginApi`                                                                | Minimum PASO plugin API range required by this package, using a semver floor like `>=2026.5.27`.                                                                                          |
 | `openclaw.install.expectedIntegrity`                                                       | Expected npm dist integrity string such as `sha512-...`; install and update flows verify the fetched artifact against it.                                                                 |
 | `openclaw.install.allowInvalidConfigRecovery`                                              | Allows a narrow bundled-plugin reinstall recovery path when config is invalid.                                                                                                            |
 | `openclaw.install.requiredPlatformPackages`                                                | npm package aliases that must materialize when their lockfile platform constraints match the current host.                                                                                |
@@ -1414,9 +1414,9 @@ For `openclaw.channel.cliAddOptions`, use Commander's long-option syntax, such a
 
 `openclaw.install.minHostVersion` is enforced during install and manifest registry loading for non-bundled plugin sources. Invalid values are rejected; newer-but-valid values skip external plugins on older hosts. Bundled source plugins are assumed to be co-versioned with the host checkout.
 
-`openclaw.install.requiredPlatformPackages` is for npm packages that expose required native binaries through optional, platform-specific aliases. List the bare npm package name for every supported platform alias. During npm install, OpenClaw verifies only the declared alias whose lockfile constraints match the current host. If npm reports success but omits that alias, OpenClaw retries once with a fresh cache and rolls back the install if the alias is still missing.
+`openclaw.install.requiredPlatformPackages` is for npm packages that expose required native binaries through optional, platform-specific aliases. List the bare npm package name for every supported platform alias. During npm install, PASO verifies only the declared alias whose lockfile constraints match the current host. If npm reports success but omits that alias, PASO retries once with a fresh cache and rolls back the install if the alias is still missing.
 
-`openclaw.compat.pluginApi` is enforced during package install for non-bundled plugin sources. Use it for the OpenClaw plugin SDK/runtime API floor that the package was built against. It can be stricter than `minHostVersion` when a plugin package needs a newer API but still keeps a lower install hint for other flows. Official OpenClaw release sync bumps existing official plugin API floors to the OpenClaw release version by default, but plugin-only releases can keep a lower floor when the package intentionally supports older hosts. Do not use the package version alone as the compatibility contract. `peerDependencies.openclaw` remains npm package metadata; OpenClaw uses the `openclaw.compat.pluginApi` contract for install compatibility decisions.
+`openclaw.compat.pluginApi` is enforced during package install for non-bundled plugin sources. Use it for the PASO plugin SDK/runtime API floor that the package was built against. It can be stricter than `minHostVersion` when a plugin package needs a newer API but still keeps a lower install hint for other flows. Official PASO release sync bumps existing official plugin API floors to the PASO release version by default, but plugin-only releases can keep a lower floor when the package intentionally supports older hosts. Do not use the package version alone as the compatibility contract. `peerDependencies.openclaw` remains npm package metadata; PASO uses the `openclaw.compat.pluginApi` contract for install compatibility decisions.
 
 Official install-on-demand metadata should use `clawhubSpec` when the plugin is published on ClawHub; onboarding treats that as the preferred remote source and records ClawHub artifact facts after install. `npmSpec` remains the compatibility fallback for packages that have not moved to ClawHub yet.
 
@@ -1463,18 +1463,18 @@ Use it when setup, doctor, status, or read-only presence flows need a cheap yes/
 }
 ```
 
-Use `env.allOf` when every listed variable is required and `env.anyOf` when any one non-empty variable is enough. If a tiny non-runtime check needs more than environment metadata, use `specifier` plus `exportName` as shown for `persistedAuthState`; when `env` is present, OpenClaw uses it without loading that module. If the check needs full config resolution or the real channel runtime, keep that logic in the plugin `config.hasConfiguredState` hook instead.
+Use `env.allOf` when every listed variable is required and `env.anyOf` when any one non-empty variable is enough. If a tiny non-runtime check needs more than environment metadata, use `specifier` plus `exportName` as shown for `persistedAuthState`; when `env` is present, PASO uses it without loading that module. If the check needs full config resolution or the real channel runtime, keep that logic in the plugin `config.hasConfiguredState` hook instead.
 
 ## Discovery precedence (duplicate plugin ids)
 
-OpenClaw discovers plugins from explicit `plugins.load.paths` entries, the current workspace root (`<workspace>/.openclaw/extensions`), bundled plugins shipped with OpenClaw, and global install locations (`~/.openclaw/extensions` plus tracked install paths). Discovery order alone does not determine which copy loads.
+PASO discovers plugins from explicit `plugins.load.paths` entries, the current workspace root (`<workspace>/.openclaw/extensions`), bundled plugins shipped with PASO, and global install locations (`~/.openclaw/extensions` plus tracked install paths). Discovery order alone does not determine which copy loads.
 
 If two distinct plugin roots share the same `id`, only the **highest-precedence** manifest is kept; lower-precedence duplicates are dropped instead of loading beside it. Precedence, highest to lowest:
 
 1. **Config-selected** — a path explicitly selected in `plugins.load.paths`
 2. **Development-source bundled** — a bundled plugin inside the checkout selected by `OPENCLAW_DEV_SOURCE_ROOT`
 3. **Global install matching a tracked install record** — an installed global candidate whose path matches its install record, managed by `openclaw plugins install`/`openclaw plugins update`
-4. **Bundled** — other plugins shipped with OpenClaw
+4. **Bundled** — other plugins shipped with PASO
 5. **Workspace** — plugins discovered relative to the current workspace
 6. **Untracked global** — other plugins discovered in the global root
 
@@ -1509,7 +1509,7 @@ Example schema extension:
 
 ## Validation behavior
 
-- Unknown `channels.*` keys are **errors**, unless the channel id is declared by a plugin manifest. If the same id also appears in `plugins.allow`, `plugins.entries`, or `plugins.installs` (a plugin that is referenced but not currently discoverable), OpenClaw downgrades this to a **warning** instead.
+- Unknown `channels.*` keys are **errors**, unless the channel id is declared by a plugin manifest. If the same id also appears in `plugins.allow`, `plugins.entries`, or `plugins.installs` (a plugin that is referenced but not currently discoverable), PASO downgrades this to a **warning** instead.
 - `plugins.entries.<id>`, `plugins.allow`, and `plugins.deny` referencing unknown plugin ids are **warnings** ("stale config entry ignored"), not errors, so upgrades and removed/renamed plugins do not block gateway startup.
 - `plugins.slots.memory` referencing an unknown plugin id is an **error**, except for the known `memory-lancedb` official external plugin, which warns instead.
 - If a plugin is installed but has a broken or missing manifest or schema, validation fails and Doctor reports the plugin error.
@@ -1519,7 +1519,7 @@ See [Configuration reference](/gateway/configuration) for the full `plugins.*` s
 
 ## Notes
 
-- The manifest is **required for native OpenClaw plugins**, including local filesystem loads. Runtime still loads the plugin module separately; the manifest is only for discovery + validation.
+- The manifest is **required for native PASO plugins**, including local filesystem loads. Runtime still loads the plugin module separately; the manifest is only for discovery + validation.
 - Native manifests are parsed with JSON5, so comments, trailing commas, and unquoted keys are accepted as long as the final value is still an object.
 - Only documented manifest fields are read by the manifest loader. Avoid custom top-level keys.
 - `channels`, `providers`, `cliBackends`, and `skills` can all be omitted when a plugin does not need them.

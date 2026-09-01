@@ -98,7 +98,7 @@ export type RespondFn = (
   meta?: Record<string, unknown>,
 ) => void;
 
-/** Minimal hosted OpenClaw contract retained by the gateway request router. */
+/** Minimal hosted PASO contract retained by the gateway request router. */
 /**
  * Structural mirror of the engine's SystemAgentAssistantTurn. Kept local as a
  * leaf contract: importing the assistant module here closes a madge cycle

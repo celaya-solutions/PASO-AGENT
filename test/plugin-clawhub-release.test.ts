@@ -498,7 +498,7 @@ describe("collectPluginClawHubReleasePlan", () => {
             status: 200,
             body: {
               trustedPublisher: {
-                repository: "openclaw/openclaw",
+                repository: "celaya-solutions/PASO-AGENT",
                 workflowFilename: "plugin-clawhub-release.yml",
               },
             },
@@ -570,7 +570,7 @@ describe("collectPluginClawHubReleasePlan", () => {
           status: 200,
           body: {
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           },
@@ -630,7 +630,7 @@ describe("collectPluginClawHubReleasePlan", () => {
           status: 200,
           body: {
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           },
@@ -680,7 +680,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -738,7 +738,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -797,7 +797,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -841,7 +841,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -949,7 +949,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -999,7 +999,7 @@ describe("collectPluginClawHubReleasePlan", () => {
         return new Response(
           JSON.stringify({
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           }),
@@ -1144,7 +1144,7 @@ describe("collectPluginClawHubReleasePlan", () => {
           status: 200,
           body: {
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
               environment: "clawhub-plugin-release",
             },
@@ -1266,7 +1266,7 @@ describe("collectPluginClawHubReleasePlan", () => {
             status: 200,
             body: {
               trustedPublisher: {
-                repository: "openclaw/openclaw",
+                repository: "celaya-solutions/PASO-AGENT",
                 workflowFilename: "plugin-clawhub-release.yml",
               },
             },
@@ -1316,7 +1316,7 @@ describe("buildOpenClawReleaseClawHubPlan", () => {
           status: 200,
           body: {
             trustedPublisher: {
-              repository: "openclaw/openclaw",
+              repository: "celaya-solutions/PASO-AGENT",
               workflowFilename: "plugin-clawhub-release.yml",
             },
           },
@@ -1602,7 +1602,7 @@ describe("runPluginClawHubReleaseCheck", () => {
 describe("buildOpenClawReleaseClawHubRuntimeState", () => {
   it("includes the normal ClawHub run in verifier args when the release waits for it", () => {
     const state = buildOpenClawReleaseClawHubRuntimeState({
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       waitForClawHub: true,
       forceSkipClawHub: false,
       normalRunId: "111",
@@ -1612,14 +1612,14 @@ describe("buildOpenClawReleaseClawHubRuntimeState", () => {
 
     expect(state.verifierArgs).toEqual(["--plugin-clawhub-run", "111"]);
     expect(state.proofLines.normal).toBe(
-      "- plugin ClawHub publish: https://github.com/openclaw/openclaw/actions/runs/111",
+      "- plugin ClawHub publish: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/111",
     );
     expect(state.proofLines.bootstrap).toBe("- plugin ClawHub bootstrap: not needed");
   });
 
   it("includes a completed bootstrap run even when there is no normal ClawHub run", () => {
     const state = buildOpenClawReleaseClawHubRuntimeState({
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       waitForClawHub: false,
       forceSkipClawHub: false,
       normalRunId: "",
@@ -1630,13 +1630,13 @@ describe("buildOpenClawReleaseClawHubRuntimeState", () => {
     expect(state.verifierArgs).toEqual(["--plugin-clawhub-bootstrap-run", "222"]);
     expect(state.proofLines.normal).toBe("- plugin ClawHub publish: no normal OIDC candidates");
     expect(state.proofLines.bootstrap).toBe(
-      "- plugin ClawHub bootstrap: https://github.com/openclaw/openclaw/actions/runs/222",
+      "- plugin ClawHub bootstrap: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/222",
     );
   });
 
   it("skips ClawHub verification for non-awaited incomplete runs while keeping proof links", () => {
     const state = buildOpenClawReleaseClawHubRuntimeState({
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       waitForClawHub: false,
       forceSkipClawHub: false,
       normalRunId: "111",
@@ -1646,16 +1646,16 @@ describe("buildOpenClawReleaseClawHubRuntimeState", () => {
 
     expect(state.verifierArgs).toEqual(["--skip-clawhub"]);
     expect(state.proofLines.normal).toBe(
-      "- plugin ClawHub publish: dispatched separately, not awaited by this proof: https://github.com/openclaw/openclaw/actions/runs/111",
+      "- plugin ClawHub publish: dispatched separately, not awaited by this proof: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/111",
     );
     expect(state.proofLines.bootstrap).toBe(
-      "- plugin ClawHub bootstrap: dispatched separately, not awaited by this proof: https://github.com/openclaw/openclaw/actions/runs/222",
+      "- plugin ClawHub bootstrap: dispatched separately, not awaited by this proof: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/222",
     );
   });
 
   it("keeps completed bootstrap run evidence when the normal ClawHub run is not awaited", () => {
     const state = buildOpenClawReleaseClawHubRuntimeState({
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       waitForClawHub: false,
       forceSkipClawHub: false,
       normalRunId: "111",
@@ -1665,16 +1665,16 @@ describe("buildOpenClawReleaseClawHubRuntimeState", () => {
 
     expect(state.verifierArgs).toEqual(["--skip-clawhub", "--plugin-clawhub-bootstrap-run", "222"]);
     expect(state.proofLines.normal).toBe(
-      "- plugin ClawHub publish: dispatched separately, not awaited by this proof: https://github.com/openclaw/openclaw/actions/runs/111",
+      "- plugin ClawHub publish: dispatched separately, not awaited by this proof: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/111",
     );
     expect(state.proofLines.bootstrap).toBe(
-      "- plugin ClawHub bootstrap: https://github.com/openclaw/openclaw/actions/runs/222",
+      "- plugin ClawHub bootstrap: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/222",
     );
   });
 
   it("forces skip-clawhub after a failed child run even if ClawHub runs completed", () => {
     const state = buildOpenClawReleaseClawHubRuntimeState({
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       waitForClawHub: true,
       forceSkipClawHub: true,
       normalRunId: "111",
@@ -1684,10 +1684,10 @@ describe("buildOpenClawReleaseClawHubRuntimeState", () => {
 
     expect(state.verifierArgs).toEqual(["--skip-clawhub"]);
     expect(state.proofLines.normal).toBe(
-      "- plugin ClawHub publish: https://github.com/openclaw/openclaw/actions/runs/111",
+      "- plugin ClawHub publish: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/111",
     );
     expect(state.proofLines.bootstrap).toBe(
-      "- plugin ClawHub bootstrap: https://github.com/openclaw/openclaw/actions/runs/222",
+      "- plugin ClawHub bootstrap: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/222",
     );
   });
 });

@@ -460,7 +460,7 @@ describe("google gemini cli backend auth bridge", () => {
     },
   );
 
-  it("rejects native tools because Gemini exact policy only exposes OpenClaw MCP", async () => {
+  it("rejects native tools because Gemini exact policy only exposes PASO MCP", async () => {
     await withTempDir("openclaw-test-workspace-", async (workspaceDir) => {
       const inheritedSettingsPath = path.join(workspaceDir, "generated-mcp-settings.json");
       await fs.writeFile(
@@ -483,7 +483,7 @@ describe("google gemini cli backend auth bridge", () => {
     });
   });
 
-  it("enforces an exact empty tool cap without an OpenClaw MCP server", async () => {
+  it("enforces an exact empty tool cap without a PASO MCP server", async () => {
     await withTempDir("openclaw-test-workspace-", async (workspaceDir) => {
       const inheritedSettingsPath = path.join(workspaceDir, "system-settings.json");
       await fs.writeFile(
@@ -539,7 +539,7 @@ describe("google gemini cli backend auth bridge", () => {
     });
   });
 
-  it("materializes selected OpenClaw OAuth credentials into a persistent profile-scoped Gemini CLI home", async () => {
+  it("materializes selected PASO OAuth credentials into a persistent profile-scoped Gemini CLI home", async () => {
     const backend = buildGoogleGeminiCliBackend();
     const workspaceDir = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-test-workspace-"));
     let home: string | undefined;
@@ -924,7 +924,7 @@ describe("google gemini cli backend auth bridge", () => {
       } as never);
       await expect(preparation).rejects.toBeInstanceOf(CliBackendAuthProfilePreparationError);
       await expect(preparation).rejects.toThrow(
-        /OAuth profile is incomplete and cannot be repaired by OpenClaw.*AI Studio API key/,
+        /OAuth profile is incomplete and cannot be repaired by PASO.*AI Studio API key/,
       );
     } finally {
       await fs.rm(workspaceDir, { recursive: true, force: true });

@@ -32,8 +32,8 @@ import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-// Canonical 120x120 mascot geometry from ui/public/favicon.svg; parts stay
-// separate paths so claws, antennae, and eyes can animate independently.
+// The public APIs and legacy pose channels remain stable, while rendering uses
+// the neutral PASO path-and-step mark.
 private val BodyPath =
   PathParser()
     .parsePathString(
@@ -66,7 +66,7 @@ private val RightAntennaPivot = Offset(82.5f, 11f)
 private val LeftEyeCenter = Offset(45f, 35f)
 private val RightEyeCenter = Offset(75f, 35f)
 
-/** Animated 120x120 OpenClaw mascot. [tint] keeps the single-color icon rendering path. */
+/** Animated 120x120 PASO mark. [tint] keeps the single-color icon rendering path. */
 @Composable
 fun OpenClawMascot(
   modifier: Modifier = Modifier,
@@ -116,6 +116,9 @@ private fun DrawScope.drawMascot(
   pose: MascotPose,
   tint: Color?,
 ) {
+  drawPasoMark(tint)
+  return
+
   val stretchY = pose.bodyStretch.toFloat()
   val stretchX = (1.0 + (1.0 - pose.bodyStretch) * 0.5).coerceIn(0.97, 1.03).toFloat()
   withTransform({
@@ -175,6 +178,47 @@ private fun DrawScope.drawMascot(
       drawEffect(pose)
     }
   }
+}
+
+private fun DrawScope.drawPasoMark(tint: Color?) {
+  if (tint == null) {
+    drawRoundRect(
+      color = Color(0xFF0E1015),
+      topLeft = Offset.Zero,
+      size = Size(120f, 120f),
+      cornerRadius = CornerRadius(26.25f, 26.25f),
+    )
+  }
+
+  val path =
+    Path().apply {
+      moveTo(33.75f, 93.75f)
+      lineTo(33.75f, 26.25f)
+      lineTo(67.5f, 26.25f)
+      cubicTo(84.07f, 26.25f, 97.5f, 39.68f, 97.5f, 56.25f)
+      cubicTo(97.5f, 72.82f, 84.07f, 86.25f, 67.5f, 86.25f)
+      lineTo(56.25f, 86.25f)
+    }
+  drawPath(
+    path = path,
+    color = tint ?: Color(0xFFE8590C),
+    style = Stroke(width = 13.125f, cap = StrokeCap.Round, join = StrokeJoin.Round),
+  )
+
+  val steps =
+    Path().apply {
+      moveTo(33.75f, 93.75f)
+      lineTo(52.5f, 93.75f)
+      lineTo(52.5f, 75f)
+      lineTo(71.25f, 75f)
+      lineTo(71.25f, 56.25f)
+      lineTo(93.75f, 56.25f)
+    }
+  drawPath(
+    path = steps,
+    color = tint ?: Color(0xFFFAF9F7),
+    style = Stroke(width = 9.375f, cap = StrokeCap.Square, join = StrokeJoin.Miter),
+  )
 }
 
 private fun DrawScope.drawEye(

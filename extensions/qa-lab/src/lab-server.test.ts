@@ -1084,7 +1084,7 @@ describe("qa-lab server", () => {
     expect(bootstrap.defaults.senderId).toBe("qa-operator");
     expect(bootstrap.controlUiUrl).toBe("https://gateway.example.test/?panel=chat");
     expect(bootstrap.controlUiEmbeddedUrl).toBe("https://gateway.example.test/?panel=chat");
-    expect(bootstrap.kickoffTask).toContain("Lobster Invaders");
+    expect(bootstrap.kickoffTask).toContain("PASO Task Board");
     expect(bootstrap.scenarios.length).toBeGreaterThanOrEqual(10);
     expect(bootstrap.scenarios.map((scenario) => scenario.id)).toContain("dm-chat-baseline");
     expect(bootstrap.runner.status).toBe("idle");
@@ -1486,7 +1486,7 @@ describe("qa-lab server", () => {
       messages: Array<{ text: string }>;
     };
     expect(manualSnapshot.messages.map((message) => message.text).join("\n")).toContain(
-      "Lobster Invaders",
+      "PASO Task Board",
     );
   });
 

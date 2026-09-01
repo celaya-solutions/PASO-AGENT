@@ -1,14 +1,14 @@
 ---
 name: command-logger
 description: "Log emitted command events to a centralized audit file"
-homepage: https://docs.openclaw.ai/automation/hooks#command-logger
+homepage: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/automation/hooks.md#command-logger
 metadata:
   {
     "openclaw":
       {
         "emoji": "📝",
         "events": ["command"],
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with PASO" }],
       },
   }
 ---
@@ -19,7 +19,7 @@ Logs emitted command events to a centralized audit log file for debugging and mo
 
 ## What It Does
 
-Every time OpenClaw emits a command event:
+Every time PASO emits a command event:
 
 1. **Captures event details** - Command action, timestamp, session key, sender ID, source
 2. **Appends to log file** - Writes a JSON line to `~/.openclaw/logs/commands.log`

@@ -94,14 +94,14 @@ class SecurePrefsTest {
     val prefs = testPrefs(context)
 
     assertFalse(prefs.voiceWakeEnabled.value)
-    assertEquals(listOf("openclaw", "claude", "computer"), prefs.voiceWakeWords.value)
+    assertEquals(listOf("paso"), prefs.voiceWakeWords.value)
 
     prefs.setVoiceWakeEnabled(true)
-    prefs.setVoiceWakeWords(listOf(" hey claw ", "computer"))
+    prefs.setVoiceWakeWords(listOf(" hey paso ", "computer"))
 
     val restored = testPrefs(context)
     assertTrue(restored.voiceWakeEnabled.value)
-    assertEquals(listOf("hey claw", "computer"), restored.voiceWakeWords.value)
+    assertEquals(listOf("hey paso", "computer"), restored.voiceWakeWords.value)
   }
 
   @Test

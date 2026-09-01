@@ -103,7 +103,7 @@ const SLACK_HISTORY_MEDIA_MAX_BYTES = 10 * 1024 * 1024;
 const SLACK_HISTORY_MEDIA_IDLE_TIMEOUT_MS = 1_000;
 const SLACK_HISTORY_MEDIA_TOTAL_TIMEOUT_MS = 3_000;
 const SLACK_CHANNEL_ACCESS_DOCS_URL =
-  "https://docs.openclaw.ai/channels/slack#access-control-and-routing";
+  "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 function resolveSlackGroupSessionSubject(params: {
   channelId: string;
@@ -620,7 +620,7 @@ async function authorizeSlackInboundMessage(params: {
       !isBotMessage &&
       message.user
     ) {
-      let subject = "This OpenClaw bot";
+      let subject = "This PASO bot";
       if (ctx.botUserId) {
         try {
           const botIdentity = await ctx.resolveUserName(ctx.botUserId, params.eventScope);
@@ -637,7 +637,7 @@ async function authorizeSlackInboundMessage(params: {
           token: ctx.botToken,
           channel: message.channel,
           user: message.user,
-          text: `${subject} can’t reply here because this channel isn’t in its OpenClaw channel allowlist. Ask the OpenClaw owner to allow this channel. <${SLACK_CHANNEL_ACCESS_DOCS_URL}|Learn how to configure Slack channel access.>`,
+          text: `${subject} can’t reply here because this channel isn’t in its PASO channel allowlist. Ask the PASO owner to allow this channel. <${SLACK_CHANNEL_ACCESS_DOCS_URL}|Learn how to configure Slack channel access.>`,
         });
         params.onVisibleDrop?.();
       } catch (error) {

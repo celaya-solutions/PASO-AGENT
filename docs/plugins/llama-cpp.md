@@ -1,15 +1,15 @@
 ---
 summary: "Run GGUF chat with managed or existing llama.cpp servers and managed local embeddings"
 read_when:
-  - You want OpenClaw to install and manage a local llama.cpp server
-  - You want OpenClaw to connect to an existing llama-server
+  - You want PASO to install and manage a local llama.cpp server
+  - You want PASO to connect to an existing llama-server
   - You want memory search embeddings from a local GGUF model
   - You are configuring memory.search.provider = "local"
 title: "llama.cpp Provider"
 sidebarTitle: "llama.cpp Provider"
 ---
 
-The `llama-cpp` plugin provides one `llama-cpp` model provider. OpenClaw can
+The `llama-cpp` plugin provides one `llama-cpp` model provider. PASO can
 manage a local `llama-server` or connect to one that you operate. Both choices
 use `llama-cpp/<model>` references and the OpenAI-compatible transport.
 
@@ -22,28 +22,28 @@ openclaw onboard
 
 | Setup choice          | Process owner                 | Local embeddings |
 | --------------------- | ----------------------------- | ---------------- |
-| Managed local server  | OpenClaw                      | Yes              |
+| Managed local server  | PASO                          | Yes              |
 | Existing llama-server | You or an external supervisor | No               |
 
 `models.providers.llama-cpp.localService` is the ownership discriminator. If
-it exists, OpenClaw manages the process. Without it, `baseUrl` identifies an
+it exists, PASO manages the process. Without it, `baseUrl` identifies an
 existing endpoint. Switching choices rewrites ownership-specific state on the
 same provider; it never creates another provider namespace.
 
 ## Managed local server
 
-Choose **Managed local server** when OpenClaw should install, start, and stop
+Choose **Managed local server** when PASO should install, start, and stop
 the server. After consent, setup verifies a pinned llama.cpp build, writes the
 loopback endpoint and `localService` definition, and probes the result before
 saving it.
 
 The default chat model is Gemma 4 E4B IT Q4_K_M (about 5.0 GB) with a 65,536
-token context cap. OpenClaw offers it only on machines with at least 16 GiB of
+token context cap. PASO offers it only on machines with at least 16 GiB of
 RAM. This setup downloads the chat model and the managed EmbeddingGemma model
 (about 0.3 GB).
 
 When `memory.search.provider` is `local` and chat setup cannot proceed or is
-declined, OpenClaw offers a separate embedding-only setup. It installs only the
+declined, PASO offers a separate embedding-only setup. It installs only the
 managed server and EmbeddingGemma after explicit consent. It does not add a
 llama.cpp chat model or change the current chat model. Setup discovery remains
 read-only and never installs or downloads anything.
@@ -51,7 +51,7 @@ read-only and never installs or downloads anything.
 If the llama.cpp provider has any configured chat models, embedding-only setup
 leaves it unchanged. Move any chat routes to another provider and remove those
 model entries before retrying. An existing external llama.cpp server config
-must also be removed before OpenClaw can manage embeddings.
+must also be removed before PASO can manage embeddings.
 
 ### Use another managed GGUF
 
@@ -98,7 +98,7 @@ manager, or machine owns the process.
     ```
 
   </Step>
-  <Step title="Configure OpenClaw">
+  <Step title="Configure PASO">
     Run `openclaw onboard`, choose **Existing llama-server**, and enter the
     endpoint. Enable API-key authentication only when the server or proxy
     requires it.
@@ -112,7 +112,7 @@ manager, or machine owns the process.
   </Step>
 </Steps>
 
-OpenClaw reads `/health`, `/models` (falling back to `/v1/models`), and
+PASO reads `/health`, `/models` (falling back to `/v1/models`), and
 `/props`. Router property probes use `autoload=false`; discovery never loads,
 wakes, unloads, downloads, or reloads models. Explicit configured model rows
 remain authoritative over discovered rows with the same ID.
@@ -179,7 +179,7 @@ declarations](/gateway/config-tools#custom-provider-capability-declarations).
 
 ## Requests and local embeddings
 
-Both ownership choices use OpenClaw's normal chat, image, streaming, and tool
+Both ownership choices use PASO's normal chat, image, streaming, and tool
 transport. The llama.cpp compatibility family cleans unsupported tool-schema
 constraints, maps thinking-off requests to the Qwen chat-template flag, and
 adapts JSON Schema requests for older llama-server builds.
@@ -214,7 +214,7 @@ embedding model.
   builds require the Microsoft Visual C++ 2015-2022 Redistributable.
 - Platforms without a verified managed build should use an existing server.
 
-OpenClaw does not auto-select CUDA, ROCm, SYCL, OpenVINO, or Vulkan archives.
+PASO does not auto-select CUDA, ROCm, SYCL, OpenVINO, or Vulkan archives.
 
 ## Related
 

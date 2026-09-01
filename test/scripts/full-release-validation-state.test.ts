@@ -248,6 +248,82 @@ function runPlanSubprocess(overrides: Record<string, unknown>) {
 }
 
 describe("full release execution plan", () => {
+  it("emits PASO child names for both execution-plan shapes", () => {
+    const unphased = plan();
+    expect(unphased.children.find((entry) => entry.key === "releaseChecks")).toMatchObject({
+      displayTitle: "PASO Release Checks full-release-validation-77-2-release-checks",
+    });
+    expect(unphased.children.find((entry) => entry.key === "productPerformance")).toMatchObject({
+      dispatchName: "Dispatch PASO Performance",
+      displayTitle: "PASO Performance full-release-validation-77-2",
+    });
+
+    const current = plan({ childPhaseVersion: 3, children: {} });
+    expect(current.children.filter((entry) => entry.key.startsWith("releaseChecks"))).toEqual([
+      expect.objectContaining({
+        displayTitle: "PASO Release Checks full-release-validation-77-2-release-checks-independent",
+      }),
+      expect.objectContaining({
+        displayTitle: "PASO Release Checks full-release-validation-77-2-release-checks-candidate",
+      }),
+    ]);
+    expect(current.children.find((entry) => entry.key === "productPerformance")).toMatchObject({
+      dispatchName: "Dispatch PASO Performance",
+      displayTitle: "PASO Performance full-release-validation-77-2",
+    });
+  });
+
+  it.each([2, 3])(
+    "accepts only exact legacy child-name aliases in signed version %i evidence",
+    (attemptEvidenceVersion) => {
+      const candidate = candidateBinding();
+      const artifact = executionPlan(
+        {
+          candidateAcquisitionResult: "success",
+          candidateRequired: attemptEvidenceVersion === 3,
+          childPhaseVersion: attemptEvidenceVersion,
+          children: {},
+        },
+        {
+          attemptEvidenceVersion,
+          candidate,
+          candidateRequest: candidate.request,
+        },
+      );
+      const legacy = structuredClone(artifact);
+      for (const child of legacy.children) {
+        if (child.key.startsWith("releaseChecks")) {
+          child.displayTitle = child.displayTitle.replace(
+            "PASO Release Checks",
+            "OpenClaw Release Checks",
+          );
+        }
+        if (child.key === "productPerformance") {
+          child.dispatchName = "Dispatch OpenClaw Performance";
+          child.displayTitle = child.displayTitle.replace(
+            "PASO Performance",
+            "OpenClaw Performance",
+          );
+        }
+      }
+      legacy.sha256 = releaseExecutionPlanSha256(legacy);
+      expect(validateReleaseExecutionPlanArtifact(legacy)).toMatchObject({
+        attemptEvidenceVersion,
+      });
+
+      const nearby = structuredClone(legacy);
+      const releaseChecks = nearby.children.find((child) => child.key.startsWith("releaseChecks"));
+      releaseChecks.displayTitle = releaseChecks.displayTitle.replace(
+        "OpenClaw Release Checks",
+        "OpenClaw Release Check",
+      );
+      nearby.sha256 = releaseExecutionPlanSha256(nearby);
+      expect(() => validateReleaseExecutionPlanArtifact(nearby)).toThrow(
+        "release execution plan child identity is invalid",
+      );
+    },
+  );
+
   it("omits only the owner-waived Telegram child from stable package validation", () => {
     const input = {
       releaseProfile: "stable",

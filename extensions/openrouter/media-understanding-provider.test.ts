@@ -97,8 +97,8 @@ describe("openrouter media understanding provider", () => {
       defaultHeaders: {
         Authorization: "Bearer sk-openrouter",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://openclaw.ai",
-        "X-OpenRouter-Title": "OpenClaw",
+        "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+        "X-OpenRouter-Title": "PASO",
       },
       provider: "openrouter",
       api: "openrouter-stt",
@@ -127,8 +127,8 @@ describe("openrouter media understanding provider", () => {
       throw new Error("expected OpenRouter request headers");
     }
     expect(headers.get("authorization")).toBe("Bearer sk-openrouter");
-    expect(headers.get("http-referer")).toBe("https://openclaw.ai");
-    expect(headers.get("x-openrouter-title")).toBe("OpenClaw");
+    expect(headers.get("http-referer")).toBe("https://github.com/celaya-solutions/PASO-AGENT");
+    expect(headers.get("x-openrouter-title")).toBe("PASO");
     expect(release).toHaveBeenCalledOnce();
   });
 

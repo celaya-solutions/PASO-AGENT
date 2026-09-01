@@ -1,14 +1,14 @@
 ---
 summary: "Place outbound and accept inbound voice calls via Twilio, Telnyx, or Plivo, with optional realtime voice and streaming transcription"
 read_when:
-  - You want to place an outbound voice call from OpenClaw
+  - You want to place an outbound voice call from PASO
   - You are configuring or developing the voice-call plugin
   - You need realtime voice or streaming transcription on telephony
 title: "Voice call plugin"
 sidebarTitle: "Voice call"
 ---
 
-Voice calls for OpenClaw via a plugin: outbound notifications, multi-turn
+Voice calls for PASO via a plugin: outbound notifications, multi-turn
 conversations, full-duplex realtime voice, streaming transcription, and
 inbound calls with allowlist policies.
 
@@ -278,7 +278,7 @@ Current runtime behavior:
 - Bundled realtime voice providers: Google Gemini Live (`google`) and OpenAI (`openai`), registered by their provider plugins.
 - Provider-owned raw config lives under `realtime.providers.<providerId>`.
 - Voice Call exposes the built-in `openclaw_end_call` realtime tool on every call. It takes no arguments or call ID; the active voice bridge binds it to the current call.
-- Voice Call exposes the shared `openclaw_agent_consult` realtime tool by default. The realtime model can call it when the caller asks for deeper reasoning, current information, or normal OpenClaw tools.
+- Voice Call exposes the shared `openclaw_agent_consult` realtime tool by default. The realtime model can call it when the caller asks for deeper reasoning, current information, or normal PASO tools.
 - `realtime.consultPolicy` optionally adds guidance for when the realtime model should call `openclaw_agent_consult`.
 - `realtime.agentContext.enabled` is default-off. When enabled, Voice Call injects a bounded agent identity and selected workspace-file capsule into the realtime provider instructions at session setup.
 - `realtime.fastContext.enabled` is default-off. When enabled, Voice Call first searches indexed memory/session context for the consult question and returns authorized snippets to the realtime model within `realtime.fastContext.timeoutMs` before falling back to the full consult agent only if `realtime.fastContext.fallbackToConsult` is true. The active memory plugin authorizes session-transcript hits; plugins without that capability fail closed for session hits while ordinary memory hits remain available.
@@ -297,10 +297,10 @@ controls; selecting GPT-Live does not make them available through delegation.
 
 Realtime calls normally end when the carrier sends a stream stop event or closes
 the media WebSocket. If an intermediary does not promptly forward that close,
-OpenClaw treats 30 seconds without inbound media as a disconnect, waits a
+PASO treats 30 seconds without inbound media as a disconnect, waits a
 2-second grace period for media to resume, and then ends the call.
 
-If the realtime provider ends its session first, OpenClaw also ends the carrier
+If the realtime provider ends its session first, PASO also ends the carrier
 call, including when the provider reports a normal close. This prevents a silent
 phone connection from remaining open after its voice session has finished.
 
@@ -314,7 +314,7 @@ the caller. Configured `realtime.tools` cannot replace this built-in by name.
 For inbound Twilio numbers, also configure a Status Callback using `POST` to
 your public webhook URL with `?type=status` appended, for example
 `https://voice.example.com/voice/webhook?type=status`. Include the `completed`
-call event. OpenClaw-created outbound calls configure their callback
+call event. PASO-created outbound calls configure their callback
 automatically. The callback provides the fastest teardown signal, while stream
 close and the inactivity backstop remain independent of it.
 
@@ -340,10 +340,10 @@ close and the inactivity backstop remain independent of it.
 ### Agent voice context
 
 Enable `realtime.agentContext` when the voice bridge should sound like the
-configured OpenClaw agent without paying a full agent-consult round trip on
+configured PASO agent without paying a full agent-consult round trip on
 ordinary turns. The context capsule is added once when the realtime session
 is created, so it does not add per-turn latency. Calls to
-`openclaw_agent_consult` still run the full OpenClaw agent and should be used
+`openclaw_agent_consult` still run the full PASO agent and should be used
 for tool work, current information, memory lookups, or workspace state.
 
 ```json5
@@ -815,7 +815,7 @@ Example with a stable public host:
 ## CLI
 
 ```bash
-openclaw voicecall call --to "+15555550123" --message "Hello from OpenClaw"
+openclaw voicecall call --to "+15555550123" --message "Hello from PASO"
 openclaw voicecall start --to "+15555550123"   # alias for call
 openclaw voicecall continue --call-id <id> --message "Any questions?"
 openclaw voicecall speak --call-id <id> --message "One moment"
@@ -992,7 +992,7 @@ under your control.
 
 Twilio and Plivo URL signatures use `publicUrl` when it is configured: its
 scheme, host, and path are preserved, while the request query is applied.
-Without `publicUrl`, OpenClaw reconstructs the URL from the request. Telnyx
+Without `publicUrl`, PASO reconstructs the URL from the request. Telnyx
 signatures do not include the request URL. If signatures fail:
 
 - Confirm the provider webhook URL exactly matches `publicUrl`, including scheme, host, and path.

@@ -65,10 +65,10 @@ Use these checks only for the regular orchestrated release track.
      Prefer `matrix` unless that plugin is not in the expected set.
 5. Release workflows:
    - Verify conclusions for release notes evidence links:
-     Full Release Validation, OpenClaw Release Checks, OpenClaw NPM Release,
+     Full Release Validation, PASO Release Checks, PASO NPM Release,
      Plugin NPM Release, Plugin ClawHub Release, mac preflight/validation/publish
      when stable mac assets are expected.
-   - For stable, verify `OpenClaw Stable Main Closeout` succeeded and its
+   - For stable, verify `PASO Stable Main Closeout` succeeded and its
      manifest records the matching release tag, current rollback drill, stable
      soak, and blocking performance evidence.
    - Summarize only relevant successful/failed jobs; ignore routine skipped

@@ -700,16 +700,16 @@ describe("short-term promotion", () => {
       projectResult("path:/Users/alice/repo"),
     ]);
     await recordMemoryRecalls(workspaceDir, "mixed case repository", [
-      projectResult("github.com/OpenClaw/OpenClaw"),
+      projectResult("github.com/celaya-solutions/PASO-AGENT"),
     ]);
     const candidates = await rankAllCandidates(workspaceDir);
     expect(candidates[0]?.projectKey).toBe(
-      "path:/Users/Alice/Repo; path:/Users/alice/repo; github.com/OpenClaw/OpenClaw",
+      "path:/Users/Alice/Repo; path:/Users/alice/repo; github.com/celaya-solutions/PASO-AGENT",
     );
 
     await applyAllCandidates(workspaceDir, candidates);
     await expect(fs.readFile(path.join(workspaceDir, "MEMORY.md"), "utf8")).resolves.toContain(
-      "<!-- project: path:/Users/Alice/Repo; path:/Users/alice/repo; github.com/OpenClaw/OpenClaw -->",
+      "<!-- project: path:/Users/Alice/Repo; path:/Users/alice/repo; github.com/celaya-solutions/PASO-AGENT -->",
     );
   });
 

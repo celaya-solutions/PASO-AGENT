@@ -643,7 +643,7 @@ export function loadWorkspaceSkills(
   );
 }
 
-/** Loads agent-workspace skills first, then execution-directory OpenClaw skills. */
+/** Loads agent-workspace skills first, then execution-directory PASO skills. */
 export function loadMergedWorkspaceSkills(
   params: WorkspaceSkillRoots & WorkspaceSkillLoadOptions,
 ): SkillEntry[] {

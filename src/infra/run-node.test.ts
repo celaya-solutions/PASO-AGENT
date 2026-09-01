@@ -644,9 +644,7 @@ describe("run-node script", () => {
     await expect(fs.readFile(outputPath, "utf-8")).resolves.toContain(childStderr);
   });
 
-  it("adds Node CPU profiling flags to the launched OpenClaw child when requested", async ({
-    tmp,
-  }) => {
+  it("adds Node CPU profiling flags to the launched PASO child when requested", async ({ tmp }) => {
     await setupStampedProject(tmp, {
       files: {
         [DIST_CHANNEL_CATALOG]: '{"entries":[]}\n',
@@ -734,7 +732,7 @@ describe("run-node script", () => {
     expect(fsSync.existsSync(path.join(profileDir, "openclaw-models-old.cpuprofile"))).toBe(true);
   });
 
-  it("adds Node sync I/O tracing flag to the launched OpenClaw child when requested", async ({
+  it("adds Node sync I/O tracing flag to the launched PASO child when requested", async ({
     tmp,
   }) => {
     await setupStampedProject(tmp, { oldPaths: [ROOT_SRC, ROOT_TSCONFIG, ROOT_PACKAGE] });
@@ -1843,9 +1841,7 @@ describe("run-node script", () => {
     });
   });
 
-  it("does not require OpenClaw SDK alias outputs when dist extensions are absent", async ({
-    tmp,
-  }) => {
+  it("does not require PASO SDK alias outputs when dist extensions are absent", async ({ tmp }) => {
     await setupStampedProject(tmp, {
       files: {
         [DIST_PLUGIN_SDK_CORE]: "export const core = true;\n",
@@ -1865,9 +1861,7 @@ describe("run-node script", () => {
     });
   });
 
-  it("reports missing OpenClaw SDK alias outputs when runtime stamps match HEAD", async ({
-    tmp,
-  }) => {
+  it("reports missing PASO SDK alias outputs when runtime stamps match HEAD", async ({ tmp }) => {
     await setupTrackedProject(tmp, {
       files: {
         [ROOT_SRC]: "export const value = 1;\n",
@@ -1899,9 +1893,7 @@ describe("run-node script", () => {
     });
   });
 
-  it("does not require private OpenClaw SDK dist files that package exports omit", async ({
-    tmp,
-  }) => {
+  it("does not require private PASO SDK dist files that package exports omit", async ({ tmp }) => {
     await setupStampedProject(tmp, {
       files: {
         [ROOT_PACKAGE]: JSON.stringify(

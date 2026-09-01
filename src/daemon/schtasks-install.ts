@@ -186,7 +186,7 @@ async function updateExistingScheduledTask(params: {
   // Best effort: failure keeps the prior settings rather than losing the task.
   const upgradeXmlPath = await writeTaskXmlTempFile(
     buildScheduledTaskXml({
-      taskDescription: params.description ?? "OpenClaw Gateway",
+      taskDescription: params.description ?? "PASO Gateway",
       taskUser: resolveTaskUser(params.env),
       launchPath: params.taskLaunchPath,
     }),
@@ -219,7 +219,7 @@ async function activateScheduledTask(params: {
   taskLaunchPath: string;
   description?: string;
 }): Promise<ScheduledTaskActivation | "startup-fallback"> {
-  const taskDescription = params.description ?? "OpenClaw Gateway";
+  const taskDescription = params.description ?? "PASO Gateway";
   const taskName = resolveTaskName(params.env);
   const quotedLaunchPath = quoteSchtasksArg(params.taskLaunchPath);
   const existingActivation = await updateExistingScheduledTask({

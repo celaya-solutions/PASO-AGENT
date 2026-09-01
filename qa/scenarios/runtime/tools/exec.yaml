@@ -7,7 +7,7 @@ scenario:
   coverage:
     secondary:
       - tools.exec-routing-exec
-  objective: Verify command execution behavior is tracked across OpenClaw and Codex while Codex owns exec/process natively.
+  objective: Verify command execution behavior is tracked across PASO and Codex while Codex owns exec/process natively.
   successCriteria:
     - OpenClaw may expose OpenClaw exec while Codex app-server mode may omit duplicate OpenClaw dynamic exec/process.
     - Mock provider exec plans are reported as fixture intent, not as actual runtime tool calls.

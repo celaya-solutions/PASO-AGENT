@@ -1,23 +1,23 @@
 ---
-summary: "Step-by-step guide to building a model provider plugin for OpenClaw"
+summary: "Step-by-step guide to building a model provider plugin for PASO"
 title: "Building provider plugins"
 sidebarTitle: "Provider plugins"
 read_when:
   - You are building a new model provider plugin
-  - You want to add an OpenAI-compatible proxy or custom LLM to OpenClaw
+  - You want to add an OpenAI-compatible proxy or custom LLM to PASO
   - You need to understand provider auth, catalogs, and runtime hooks
 ---
 
-Build a provider plugin to add a model provider (LLM) to OpenClaw: a model
+Build a provider plugin to add a model provider (LLM) to PASO: a model
 catalog, API-key auth, and dynamic model resolution.
 
 <Info>
-  New to OpenClaw plugins? Read [Getting Started](/plugins/building-plugins)
+  New to PASO plugins? Read [Getting Started](/plugins/building-plugins)
   first for package structure and manifest setup.
 </Info>
 
 <Tip>
-  Provider plugins add models to OpenClaw's normal inference loop. If the
+  Provider plugins add models to PASO's normal inference loop. If the
   model must run through a native agent daemon that owns threads, compaction,
   or tool events, pair the provider with an [agent
   harness](/plugins/sdk-agent-harness) instead of putting daemon protocol
@@ -92,10 +92,10 @@ catalog, API-key auth, and dynamic model resolution.
     ```
     </CodeGroup>
 
-    `setup.providers[].envVars` lets OpenClaw detect credentials without
+    `setup.providers[].envVars` lets PASO detect credentials without
     loading your plugin runtime. Add `providerAuthAliases` when a provider
     variant should reuse another provider id's auth. `modelSupport` is
-    optional and lets OpenClaw auto-load your provider plugin from shorthand
+    optional and lets PASO auto-load your provider plugin from shorthand
     model ids like `acme-large` before runtime hooks exist. `openclaw.compat`
     and `openclaw.build` in `package.json` are required for ClawHub
     publishing (`openclaw.compat.pluginApi` and `openclaw.build.openclawVersion`
@@ -199,7 +199,7 @@ catalog, API-key auth, and dynamic model resolution.
     `registerModelCatalogProvider` is the newer control-plane catalog surface
     for list/help/picker UI, covering `text`, `voice`, `image_generation`,
     `video_generation`, and `music_generation` rows. Keep vendor endpoint
-    calls and response mapping in the plugin; OpenClaw owns the shared row
+    calls and response mapping in the plugin; PASO owns the shared row
     shape, source labels, and help rendering.
 
     That is a working provider. Users can now run
@@ -224,10 +224,10 @@ catalog, API-key auth, and dynamic model resolution.
     };
     ```
 
-    OpenClaw keeps the inline value only while staged validation runs. At the
+    PASO keeps the inline value only while staged validation runs. At the
     final persistence boundary it writes the value to the protected local store
     and saves a `tokenRef` or `keyRef` in the auth profile. `namePrefix` must be
-    an uppercase environment-style name. OpenClaw adds a stable suffix derived
+    an uppercase environment-style name. PASO adds a stable suffix derived
     from the provider and final profile id so multiple profiles remain separate.
     Use this only for provider-minted static credentials, not rotating OAuth
     credentials or values already supplied as SecretRefs.
@@ -260,7 +260,7 @@ catalog, API-key auth, and dynamic model resolution.
     | --- | --- |
     | Credentials | Discovery uses the catalog's resolved provider credential, preferring `discoveryApiKey` when auth supplies one. Secret-reference markers are never sent as tokens. The default request uses `Authorization: Bearer <token>`; use `buildRequestHeaders` for another vendor auth scheme. |
     | Endpoint | The default URL is `models` relative to the effective provider `baseUrl`, including an operator override when `allowExplicitBaseUrl` is enabled. Use `endpointPath` for another relative path. Use `endpointUrl: { url, requireBaseUrl }` only for a fixed vendor URL; discovery is skipped unless the effective base URL still equals `requireBaseUrl`, so a custom proxy credential is not sent to the vendor. |
-    | Network limits | Fetches use OpenClaw's SSRF guard, one 5-second timeout budget across pagination, a 4 MiB response limit per page, and a 50-page limit. Cross-origin pagination links are rejected; credentials are removed after a cross-origin redirect. |
+    | Network limits | Fetches use PASO's SSRF guard, one 5-second timeout budget across pagination, a 4 MiB response limit per page, and a 50-page limit. Cross-origin pagination links are rejected; credentials are removed after a cross-origin redirect. |
     | Cache | Successful, non-empty catalogs are cached for 60 seconds by provider, endpoint, and resolved credential. Empty or unusable results are not cached. |
     | Filtering | Exact live IDs keep their trusted static metadata. New rows are projected conservatively as text/chat models. Disabled, archived, deprecated, explicitly non-chat, embedding, reranking, moderation, speech, image-only, and video-only rows are excluded. Use `readRows` only to select rows from a nonstandard response envelope; provider-specific model semantics still belong in a custom catalog. |
     | Admission | Optional. Set `acceptUnknownModel: ({ id, record }) => boolean` when your request shaping is model-version specific, so discovery cannot publish a model you cannot yet build a valid request for. It is called only for IDs your static catalog does not already publish; known IDs bypass it and keep their published metadata. Return `false` to drop the row. Providers that omit it keep the previous behavior unchanged. Prefer comparing the vendor's advertised capabilities against your own contract checks over a hand-maintained model list, and fail closed when the row carries no capability data. |
@@ -433,10 +433,10 @@ catalog, API-key auth, and dynamic model resolution.
     When `ctx.providerIds` is present, it contains the normalized provider
     identities selected for that catalog owner. Return `null` before resolving
     credentials or making network requests when the hook serves none of them;
-    OpenClaw also filters returned identities to that scope. An absent scope
+    PASO also filters returned identities to that scope. An absent scope
     means the caller requested the full catalog.
 
-    If the upstream provider uses different control tokens than OpenClaw, add a
+    If the upstream provider uses different control tokens than PASO, add a
     small bidirectional text transform instead of replacing the stream path:
 
     ```typescript
@@ -456,7 +456,7 @@ catalog, API-key auth, and dynamic model resolution.
 
     `input` rewrites the final system prompt and text message content before
     transport. `output` rewrites assistant text deltas and final text before
-    OpenClaw parses its own control markers or channel delivery.
+    PASO parses its own control markers or channel delivery.
 
     For bundled providers that only register one text provider with API-key
     auth plus a single catalog-backed runtime, prefer the narrower
@@ -500,11 +500,11 @@ catalog, API-key auth, and dynamic model resolution.
     });
     ```
 
-    `buildProvider` is the live catalog path used when OpenClaw can resolve real
+    `buildProvider` is the live catalog path used when PASO can resolve real
     provider auth. It may perform provider-specific discovery. Use
     `buildStaticProvider` only for offline rows that are safe to show before auth
     is configured; it must not require credentials or make network requests.
-    OpenClaw's `models list --all` display currently executes static catalogs
+    PASO's `models list --all` display currently executes static catalogs
     only for bundled provider plugins, with an empty config, empty env, and no
     agent/workspace paths.
 
@@ -553,7 +553,7 @@ catalog, API-key auth, and dynamic model resolution.
     ```
 
     If resolving requires a network call, return the requested model directly
-    from `prepareDynamicModel`. OpenClaw applies the same configured overrides
+    from `prepareDynamicModel`. PASO applies the same configured overrides
     and normalization as synchronous dynamic resolution. Existing hooks that
     return nothing still retry `resolveDynamicModel` after preparation.
 
@@ -617,7 +617,7 @@ catalog, API-key auth, and dynamic model resolution.
 
       For Gemini-family providers, keep the reasoning-output mode aligned with
       the transport. Direct Google Gemini API providers should use `native`
-      reasoning output so OpenClaw consumes native thought parts without adding
+      reasoning output so PASO consumes native thought parts without adding
       `<think>` / `<final>` prompt directives. Text-only Gemini CLI-style
       backends that parse a final JSON/text response can keep the shared
       `google-gemini` tagged contract.
@@ -705,12 +705,12 @@ catalog, API-key auth, and dynamic model resolution.
         non-secret plan metadata from the resolved profile into
         `fetchUsageSnapshot`). Return
         `{ handled: true }` only when the provider has definitively handled usage
-        auth but has no usable usage token, and OpenClaw must skip generic
+        auth but has no usable usage token, and PASO must skip generic
         API-key/OAuth fallback. Return `null` or `undefined` when the provider did
-        not handle the request and OpenClaw should continue with generic fallback.
+        not handle the request and PASO should continue with generic fallback.
 
         Declare the provider id in `contracts.usageProviders`. When that manifest
-        contract and **both** hooks are present, OpenClaw automatically includes
+        contract and **both** hooks are present, PASO automatically includes
         the provider in usage collection without loading unrelated provider
         plugins. No core allowlist update is required.
         `fetchUsageSnapshot` returns the shared provider-neutral shape:
@@ -725,17 +725,17 @@ catalog, API-key auth, and dynamic model resolution.
         Keep currency semantics exact. A provider credit is not USD unless the
         upstream contract says so. A plugin that implements only
         `fetchUsageSnapshot` remains available for explicit/synthetic callers but
-        is not auto-discovered, because OpenClaw cannot resolve its usage credential.
+        is not auto-discovered, because PASO cannot resolve its usage credential.
       </Tab>
     </Tabs>
 
     <Accordion title="Common provider hooks">
-      OpenClaw calls hooks in roughly this order for model/provider plugins.
+      PASO calls hooks in roughly this order for model/provider plugins.
       Most providers only use 2-3. This is not the full `ProviderPlugin`
       contract - see [Internals: Provider Runtime
       Hooks](/plugins/architecture-internals#provider-runtime-hooks) for the
       complete, currently-accurate hook list and fallback notes.
-      Compatibility-only provider fields that OpenClaw no longer calls, such as
+      Compatibility-only provider fields that PASO no longer calls, such as
       `ProviderPlugin.capabilities` and `suppressBuiltInModel`, are not listed
       here.
 
@@ -802,7 +802,7 @@ catalog, API-key auth, and dynamic model resolution.
 
     A provider plugin can register embeddings, speech, realtime transcription,
     realtime voice, media understanding, image generation, video generation,
-    web fetch, and web search alongside text inference. OpenClaw classifies this as a
+    web fetch, and web search alongside text inference. PASO classifies this as a
     **hybrid-capability** plugin - the recommended pattern for company plugins
     (one plugin per vendor). See
     [Internals: Capability Ownership](/plugins/architecture#capability-ownership-model).
@@ -961,7 +961,7 @@ catalog, API-key auth, and dynamic model resolution.
         confirming a final result or clearing the linked run; reject it when
         submission fails.
         Set `supportsToolResultSuppression: false` when the provider cannot
-        honor `options.suppressResponse`. OpenClaw then avoids suppression for
+        honor `options.suppressResponse`. PASO then avoids suppression for
         internal forced-consult and cancellation results, and rejects direct
         suppressed-result requests instead of silently starting a response.
         Consumers of `createRealtimeVoiceBridgeSession` may likewise return a
@@ -972,7 +972,7 @@ catalog, API-key auth, and dynamic model resolution.
         later responses return to the session's configured tool choice.
         Set `handlesInputAudioBargeIn` only when provider VAD confirms an
         interruption by calling `onClearAudio("barge-in")`. Providers that omit
-        the flag use OpenClaw's local input-audio fallback detection.
+        the flag use PASO's local input-audio fallback detection.
 
         A browser-session request can include `gatewayControl` when the host has
         explicitly negotiated server-owned provider control. The provider keeps
@@ -994,7 +994,7 @@ catalog, API-key auth, and dynamic model resolution.
 
         Local or self-hosted media providers that intentionally do not require
         credentials can expose `resolveAuth` and return `kind: "none"`.
-        OpenClaw still keeps the normal auth gate for providers that do not
+        PASO still keeps the normal auth gate for providers that do not
         explicitly opt in. Existing providers can keep reading `req.apiKey`;
         new providers should prefer `req.auth`.
 
@@ -1201,7 +1201,7 @@ catalog, API-key auth, and dynamic model resolution.
         Both tool definitions accept `execute(args, context?)`, where the optional
         context carries `signal?: AbortSignal`. Forward that signal to network
         requests and check cancellation after asynchronous work. Existing
-        one-argument implementations remain valid; OpenClaw rejects late fetch
+        one-argument implementations remain valid; PASO rejects late fetch
         results after cancellation before publishing them to its fetch cache.
       </Tab>
     </Tabs>

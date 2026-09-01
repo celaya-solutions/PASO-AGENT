@@ -3,13 +3,13 @@ doc-schema-version: 1
 summary: "Automations: scheduled jobs, webhooks, and Gmail PubSub triggers for the Gateway scheduler"
 read_when:
   - Scheduling background jobs or wakeups
-  - Wiring external triggers (webhooks, Gmail) into OpenClaw
+  - Wiring external triggers (webhooks, Gmail) into PASO
   - Deciding between heartbeat and automations for scheduled work
 title: "Automations"
 sidebarTitle: "Automations"
 ---
 
-Automations are OpenClaw's built-in scheduler. The scheduler persists jobs, wakes the agent at the right time, and can deliver output to a chat channel, a webhook, or nowhere.
+Automations are PASO's built-in scheduler. The scheduler persists jobs, wakes the agent at the right time, and can deliver output to a chat channel, a webhook, or nowhere.
 
 Manage automations with the `openclaw automations` CLI; `openclaw cron` remains an alias for the same commands.
 
@@ -43,7 +43,7 @@ Manage automations with the `openclaw automations` CLI; `openclaw cron` remains 
 ## How automations work
 
 - Automations run **inside the Gateway process**, not inside the model. The Gateway must be running for schedules to fire.
-- Job definitions, runtime state, and run history persist in OpenClaw's shared SQLite state database, so restarts do not lose schedules.
+- Job definitions, runtime state, and run history persist in PASO's shared SQLite state database, so restarts do not lose schedules.
 - Every automation run creates a [background task](/automation/tasks) record.
 - One-shot jobs (`--at`) auto-delete after successful completion: delivery is confirmed, not requested, intentionally suppressed, or explicitly best-effort. Failed or unknown required delivery retains the job disabled for inspection without replaying the payload. Pass `--keep-after-run` to keep successful jobs too.
 - Per-run wall-clock budget: `--timeout-seconds` when set. Otherwise, isolated/detached agent-turn jobs are bounded by the scheduler's own 60-minute watchdog before the underlying agent-turn timeout (`agents.defaults.timeoutSeconds`, default 48 hours) would ever apply; command jobs default to 10 minutes, and script payloads default to 5 minutes.
@@ -54,7 +54,7 @@ Manage automations with the `openclaw automations` CLI; `openclaw cron` remains 
   <Accordion title="Isolated run hardening">
     - Isolated runs best-effort close tracked browser tabs/processes for their `cron:<jobId>` session on completion, and dispose any bundled MCP runtime instances created for the job through the same shared teardown path used by main-session and custom-session runs. Cleanup failures are ignored so the run result still wins.
     - Isolated runs with the narrow automation self-cleanup grant can read scheduler status, a self-filtered list containing only their own job, and that job's run history, and may remove only their own job.
-    - Isolated runs guard against stale acknowledgement replies: if the first result is only an interim status update (`on it`, `pulling everything together`, and similar hints) and no descendant subagent is still responsible for the final answer, OpenClaw re-prompts once for the actual result before delivery.
+    - Isolated runs guard against stale acknowledgement replies: if the first result is only an interim status update (`on it`, `pulling everything together`, and similar hints) and no descendant subagent is still responsible for the final answer, PASO re-prompts once for the actual result before delivery.
     - Structured execution-denial metadata (including node-host `UNAVAILABLE` wrappers whose nested error starts with `SYSTEM_RUN_DENIED` or `INVALID_REQUEST`) is recognized so a blocked command is not reported as a green run, while ordinary assistant prose is not mistaken for a denial.
     - Run-level agent failures count as job errors even with no reply payload, so model/provider failures increment error counters and trigger failure notifications instead of clearing the job as successful.
     - When a job hits `timeoutSeconds`, the scheduler aborts the run and gives it a short cleanup window. If it does not drain, Gateway-owned cleanup force-clears that run's session ownership before the scheduler records the timeout, so queued chat work is not stuck behind a stale processing session.
@@ -118,7 +118,7 @@ When a stream job also has `trigger.script`, the gate runs once per closed batch
 
 Recurring jobs can set `pacing.min` and/or `pacing.max` to duration strings such as `15m` or `4h`; at least one bound is required. Use `--pacing-min` and `--pacing-max` with `automations add|edit` (`--clear-pacing` removes both bounds).
 
-During an agent-turn run, a paced job can call the `automations` tool with `action: "next_check"` and `in: "30m"`. The proposal applies only to that currently running job and is measured from successful run completion. OpenClaw silently clamps it to the configured bounds.
+During an agent-turn run, a paced job can call the `automations` tool with `action: "next_check"` and `in: "30m"`. The proposal applies only to that currently running job and is measured from successful run completion. PASO silently clamps it to the configured bounds.
 
 Pacing without a proposal leaves the normal schedule unchanged. Failed, timed-out, and skipped runs discard the proposal, so existing retry and error-backoff behavior takes precedence. Manually forcing a recurring job is out-of-band and preserves its pending natural or paced slot. For condition-triggered jobs, the built-in minimum interval remains a lower bound even when a proposal requests an earlier check.
 
@@ -272,7 +272,7 @@ unrestricted `*` policy; `automations edit --clear-tools` restores that explicit
 policy. Existing jobs that predate an explicit tool policy retain their current behavior
 until their tool policy is explicitly edited or the job is recreated.
 
-`--model` sets the job's primary model; it does not replace a session `/model` override, so configured fallback chains still apply on top of it. An unresolved or disallowed model fails the run with an explicit validation error rather than silently falling back to the default. If a job has `--model` but no explicit or configured fallback list, OpenClaw passes an empty fallback override instead of silently appending the agent primary as a hidden retry target.
+`--model` sets the job's primary model; it does not replace a session `/model` override, so configured fallback chains still apply on top of it. An unresolved or disallowed model fails the run with an explicit validation error rather than silently falling back to the default. If a job has `--model` but no explicit or configured fallback list, PASO passes an empty fallback override instead of silently appending the agent primary as a hidden retry target.
 
 Pick the model for the job's difficulty, not the agent's default. Routine
 automation - summaries, triage, classification, status checks - runs well on a
@@ -291,7 +291,7 @@ Fast mode follows the resolved live selection. Isolated automation resolves it i
 
 If a run hits a live model-switch handoff, the scheduler retries with the switched provider/model and persists that selection (and any new auth profile) for the active run. Retries are bounded: after the initial attempt plus 2 switch retries, the scheduler aborts instead of looping.
 
-Before an isolated run starts, OpenClaw checks reachable local endpoints for configured `api: "ollama"` and `api: "openai-completions"` providers whose `baseUrl` is loopback, private-network, or `.local`. This preflight walks the job's configured fallback chain and only marks the run `skipped` once every candidate is unreachable; `--fallbacks ""` keeps that walk strict to just the primary model. A down endpoint records the run as `skipped` with a clear error instead of starting a model call. The result is cached for 5 minutes per endpoint (not per job or model), so many due jobs sharing a dead local Ollama/vLLM/SGLang/LM Studio server cost one probe instead of a request storm. Skipped preflight runs do not increment execution-error backoff; set `failureAlert.includeSkipped` to opt into repeated skip alerts.
+Before an isolated run starts, PASO checks reachable local endpoints for configured `api: "ollama"` and `api: "openai-completions"` providers whose `baseUrl` is loopback, private-network, or `.local`. This preflight walks the job's configured fallback chain and only marks the run `skipped` once every candidate is unreachable; `--fallbacks ""` keeps that walk strict to just the primary model. A down endpoint records the run as `skipped` with a clear error instead of starting a model call. The result is cached for 5 minutes per endpoint (not per job or model), so many due jobs sharing a dead local Ollama/vLLM/SGLang/LM Studio server cost one probe instead of a request storm. Skipped preflight runs do not increment execution-error backoff; set `failureAlert.includeSkipped` to opt into repeated skip alerts.
 
 ### Command payloads
 
@@ -347,7 +347,7 @@ Throws, timeouts, exhausted tool budgets, invalid results, and `nextCheck` witho
 ### Codex apps in scheduled automations
 
 Codex-created automations can retain the app IDs and permission ceiling
-available to the authenticated creator thread. At execution, OpenClaw requires
+available to the authenticated creator thread. At execution, PASO requires
 the same prepared Codex profile and account, then narrows the stored cap against
 current app policy. Revoked apps, account/runtime changes, and interactive
 approval requirements fail closed with a recovery message; they never fall
@@ -375,7 +375,7 @@ Agent-turn jobs default to the creating conversation when the create request car
 
   </Accordion>
   <Accordion title="What 'fresh session' means for isolated jobs">
-    A new transcript/session id per run. OpenClaw carries safe preferences (thinking/fast/verbose settings, labels, explicit user-selected model/auth overrides), but does not inherit ambient conversation context from an older automation session row: channel/group routing, send or queue policy, elevation, origin, or ACP runtime binding. Use `current` or `session:<id>` when a recurring job should deliberately build on the same conversation context.
+    A new transcript/session id per run. PASO carries safe preferences (thinking/fast/verbose settings, labels, explicit user-selected model/auth overrides), but does not inherit ambient conversation context from an older automation session row: channel/group routing, send or queue policy, elevation, origin, or ACP runtime binding. Use `current` or `session:<id>` when a recurring job should deliberately build on the same conversation context.
   </Accordion>
   <Accordion title="Unattended run contract">
     Isolated automation and hook agent turns are explicitly unattended: no one is present to clarify or approve. The final reply must be the deliverable rather than a plan, acknowledgement, or request for input. The agent returns `NO_REPLY` when nothing needs doing and states failures plainly; the scheduler owns retry and failure-alert policy.
@@ -384,9 +384,9 @@ Agent-turn jobs default to the creating conversation when the create request car
 
   </Accordion>
   <Accordion title="Subagent and Discord delivery">
-    When isolated automation runs orchestrate subagents, delivery prefers the final descendant output over stale parent interim text. If descendants are still running, OpenClaw suppresses that partial parent update instead of announcing it.
+    When isolated automation runs orchestrate subagents, delivery prefers the final descendant output over stale parent interim text. If descendants are still running, PASO suppresses that partial parent update instead of announcing it.
 
-    For text-only Discord announce targets, OpenClaw sends the canonical final assistant text once instead of replaying both streamed/intermediate text and the final answer. Media and structured Discord payloads are still delivered separately so attachments and components are not dropped.
+    For text-only Discord announce targets, PASO sends the canonical final assistant text once instead of replaying both streamed/intermediate text and the final answer. Media and structured Discord payloads are still delivered separately so attachments and components are not dropped.
 
   </Accordion>
 </AccordionGroup>
@@ -406,11 +406,11 @@ notifications include an `Inspect` link into the Control UI. Command and script
 completion announcements open the automation run; isolated agent announcements
 open the run's session.
 
-For a `current` job using `announce` (the default), the final assistant result is a first-class session completion, not a WebChat-specific outbound message. OpenClaw waits for active turns in the creation-bound conversation, verifies that the same session generation still owns the key, and commits the result through the canonical transcript writer with cron job/run provenance and a job/run idempotency key. A retry cannot append the same result twice.
+For a `current` job using `announce` (the default), the final assistant result is a first-class session completion, not a WebChat-specific outbound message. PASO waits for active turns in the creation-bound conversation, verifies that the same session generation still owns the key, and commits the result through the canonical transcript writer with cron job/run provenance and a job/run idempotency key. A retry cannot append the same result twice.
 
 WebChat receives the committed `session.message` event immediately. The same assistant result comes from `chat.history` after a refresh or reconnect; no follow-up user message is required. Delivery is successful only after that transcript/event commit succeeds.
 
-If the bound conversation is an external channel, OpenClaw also performs its normal durable channel send. That send still happens at most once, and the required session commit does not create a second external message. A verified `message` tool send suppresses the automatic channel resend but does not suppress the session commit. The run is reported delivered only after both the external recipient handoff (when required) and the canonical session commit succeed.
+If the bound conversation is an external channel, PASO also performs its normal durable channel send. That send still happens at most once, and the required session commit does not create a second external message. A verified `message` tool send suppresses the automatic channel resend but does not suppress the session commit. The run is reported delivered only after both the external recipient handoff (when required) and the canonical session commit succeed.
 
 When the bound conversation has no external channel route — WebChat/Control UI conversations, or a gateway with no channel plugins configured — the session commit alone completes delivery and the run succeeds without attempting an external send. If the conversation does name an external route that cannot be resolved at run time, the committed result stays in the conversation and the run records the resolution failure as its delivery error: a delivery failure, not a turn failure.
 
@@ -437,7 +437,7 @@ every configured automation webhook may reach trusted private-network
 services. Leaving the policy unset keeps strict behavior.
 </Warning>
 
-Use `--announce --channel telegram --to "-1001234567890"` for channel delivery. For Telegram forum topics, use `-1001234567890:topic:123`; OpenClaw also accepts the Telegram-owned `-1001234567890:123` shorthand. Direct RPC/config callers may pass `delivery.threadId` as a string or number. Slack/Discord/Mattermost targets use explicit prefixes (`channel:<id>`, `user:<id>`). Matrix room IDs are case-sensitive; use the exact room ID or `room:!room:server` form from Matrix.
+Use `--announce --channel telegram --to "-1001234567890"` for channel delivery. For Telegram forum topics, use `-1001234567890:topic:123`; PASO also accepts the Telegram-owned `-1001234567890:123` shorthand. Direct RPC/config callers may pass `delivery.threadId` as a string or number. Slack/Discord/Mattermost targets use explicit prefixes (`channel:<id>`, `user:<id>`). Matrix room IDs are case-sensitive; use the exact room ID or `room:!room:server` form from Matrix.
 
 On hosts with multiple configured channels, isolated announce jobs created with `automations add|create` or changed with `automations edit` must set `--channel <channel-plugin-id>` unless a provider-prefixed `--to` or a preserved session route selects the channel. Use `--best-effort-deliver` only when unresolved fallback delivery is acceptable; it does not choose a channel, and a delivery failure does not fail the job.
 
@@ -445,9 +445,9 @@ Channel announcements retry transient failures only when no payload may have rea
 
 When announce delivery uses `channel: "last"` or omits `channel`, a provider-prefixed target such as `telegram:123` can select the channel before the scheduler falls back to session history or a single configured channel. Only prefixes advertised by the loaded plugin are provider selectors. If `delivery.channel` is explicit, the target prefix must name the same provider; `channel: "whatsapp"` with `to: "telegram:123"` is rejected instead of letting WhatsApp interpret the Telegram ID as a phone number. Target-kind and service prefixes (`channel:<id>`, `user:<id>`, `imessage:<handle>`, `sms:<number>`) stay channel-owned target syntax, not provider selectors.
 
-For isolated jobs, chat delivery is shared: if a chat route is available, the agent can use the `message` tool even with `--no-deliver`. If the agent sends to the configured/current target, OpenClaw skips the fallback announce. Otherwise `announce`, `webhook`, and `none` only control what the runner does with the final reply after the agent turn.
+For isolated jobs, chat delivery is shared: if a chat route is available, the agent can use the `message` tool even with `--no-deliver`. If the agent sends to the configured/current target, PASO skips the fallback announce. Otherwise `announce`, `webhook`, and `none` only control what the runner does with the final reply after the agent turn.
 
-When an agent creates an isolated reminder from an active chat, OpenClaw stores the preserved live delivery target for the fallback announce route. Internal session keys may be lowercase; provider delivery targets are not reconstructed from those keys when current chat context is available.
+When an agent creates an isolated reminder from an active chat, PASO stores the preserved live delivery target for the fallback announce route. Internal session keys may be lowercase; provider delivery targets are not reconstructed from those keys when current chat context is available.
 
 Implicit announce delivery uses configured channel allowlists to validate and reroute stale targets. DM pairing-store approvals are not fallback automation recipients; set `delivery.to` or configure the channel `allowFrom` entry when a scheduled job should proactively send to a DM.
 
@@ -627,7 +627,7 @@ Gateway HTTP hooks let an external service wake an agent or submit an agent turn
 They are disabled by default. These endpoints are separate from [internal event
 hooks](/automation/hooks) (`HOOK.md` handlers) and the [Webhooks
 plugin](/plugins/webhooks), which manages TaskFlow records. They also differ from
-outbound automation webhook delivery: here, the external service calls OpenClaw.
+outbound automation webhook delivery: here, the external service calls PASO.
 
 ### Enable and test an agent hook
 
@@ -801,12 +801,12 @@ for remote calls and expose only the required path.
 
 ## Gmail PubSub integration
 
-Wire Gmail inbox triggers to OpenClaw through Google Pub/Sub and `gog gmail watch serve`. Pub/Sub calls the watcher; the watcher forwards email data to the [Gateway HTTP hook](/automation/cron-jobs#webhooks). This does not load or invoke an internal `HOOK.md` handler.
+Wire Gmail inbox triggers to PASO through Google Pub/Sub and `gog gmail watch serve`. Pub/Sub calls the watcher; the watcher forwards email data to the [Gateway HTTP hook](/automation/cron-jobs#webhooks). This does not load or invoke an internal `HOOK.md` handler.
 
 Not on Gmail? The [IMAP email trigger plugin](/automation/imap) watches an existing IMAP mailbox without Google PubSub or a public webhook.
 
 <Note>
-**Prerequisites:** `gcloud` CLI, `gog` (gogcli) authorized for the watched Gmail account, OpenClaw hooks enabled, an HTTPS push endpoint reachable by Pub/Sub (Tailscale Funnel in the recommended setup), and a working sandbox backend. The example below uses the default Docker backend; build its image first by following [Sandbox images and setup](/gateway/sandboxing#images-and-setup), or configure another supported backend.
+**Prerequisites:** `gcloud` CLI, `gog` (gogcli) authorized for the watched Gmail account, PASO hooks enabled, an HTTPS push endpoint reachable by Pub/Sub (Tailscale Funnel in the recommended setup), and a working sandbox backend. The example below uses the default Docker backend; build its image first by following [Sandbox images and setup](/gateway/sandboxing#images-and-setup), or configure another supported backend.
 </Note>
 
 ### Configure a restricted Gmail reader (recommended)
@@ -898,7 +898,7 @@ openclaw webhooks gmail setup --account reader@example.com
 
 This writes `hooks.gmail` transport settings, enables the Gmail preset, preserves the restricted mapping above, and defaults to Tailscale Funnel for the push endpoint (`--tailscale funnel|serve|off`). The wizard does not create a reader agent or session-key policy, so apply the restricted configuration first. `--tailscale serve` is tailnet-only; it is not a publicly reachable Pub/Sub endpoint without another ingress arrangement. Use `--tailscale off --push-endpoint <url>` for an externally managed endpoint. See [all setup flags](/cli/webhooks).
 
-The two tokens protect different hops: `hooks.gmail.pushToken` authenticates Pub/Sub to the watcher, while `hooks.token` authenticates the watcher to OpenClaw using a header. A token-bearing Pub/Sub push URL is not an example for `/hooks` authentication; query-string tokens are rejected by OpenClaw. Setup output can contain these tokens, so redact it before sharing.
+The two tokens protect different hops: `hooks.gmail.pushToken` authenticates Pub/Sub to the watcher, while `hooks.token` authenticates the watcher to PASO using a header. A token-bearing Pub/Sub push URL is not an example for `/hooks` authentication; query-string tokens are rejected by PASO. Setup output can contain these tokens, so redact it before sharing.
 
 <Warning>
 The built-in Gmail preset's per-message session separates conversation context; it does not restrict the target agent's tools or workspace. Without a custom mapping that sets `agentId`, Gmail hooks run as the default agent.
@@ -1048,14 +1048,14 @@ openclaw doctor
     - For Matrix, copied or legacy jobs with lowercased `delivery.to` room IDs can fail because Matrix room IDs are case-sensitive. Edit the job to the exact `!room:server` or `room:!room:server` value from Matrix.
     - Channel auth errors (`unauthorized`, `Forbidden`) mean delivery was blocked by credentials.
     - When the dispatcher records intentional suppression, job state, run history, and finished events include `deliverySuppressionReason` (`empty`, `silent`, `heartbeat`, or `channel_transform`). This is separate from `lastDeliveryError` / `deliveryError`; required delivery failures also log an error when they happen.
-    - If the isolated run returns only the silent token (`NO_REPLY` / `no_reply`), OpenClaw suppresses direct outbound delivery and the fallback queued-summary path, so nothing is posted back to chat.
+    - If the isolated run returns only the silent token (`NO_REPLY` / `no_reply`), PASO suppresses direct outbound delivery and the fallback queued-summary path, so nothing is posted back to chat.
     - If the agent should message the user itself, check that the job has a usable route (`channel: "last"` with a previous chat, or an explicit channel/target).
 
   </Accordion>
   <Accordion title="Automations or heartbeat appear to prevent /new-style rollover">
     - Daily and idle reset freshness is not based on `updatedAt`; see [Session management](/concepts/session#session-lifecycle).
     - Automation wakeups, heartbeat runs, exec notifications, and gateway bookkeeping may update the session row for routing/status, but they do not extend `sessionStartedAt` or `lastInteractionAt`.
-    - For legacy rows created before those fields existed, OpenClaw can recover `sessionStartedAt` from the transcript JSONL session header when the file is still available. Legacy idle rows without `lastInteractionAt` use that recovered start time as their idle baseline.
+    - For legacy rows created before those fields existed, PASO can recover `sessionStartedAt` from the transcript JSONL session header when the file is still available. Legacy idle rows without `lastInteractionAt` use that recovered start time as their idle baseline.
 
   </Accordion>
   <Accordion title="Timezone gotchas">

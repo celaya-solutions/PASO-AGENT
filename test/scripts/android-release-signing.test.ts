@@ -92,6 +92,8 @@ function writeManifest(tempRoot: string, signingRepo: string): string {
     manifestPath,
     `${JSON.stringify(
       {
+        releaseEnabled: true,
+        releaseOwner: "test-celaya-owner",
         signingRepo,
         signingBranch: "main",
         assetPath: "android/openclaw",
@@ -200,11 +202,20 @@ describe("scripts/android-release-signing.mjs", () => {
     const result = runNode(["--mode", "plan"]);
 
     expect(result.ok).toBe(true);
+    expect(result.stdout).toContain("Release enabled: no");
+    expect(result.stdout).toContain("Release owner: upstream-openclaw-compatibility");
     expect(result.stdout).toContain("Signing repo: git@github.com:openclaw/apps-signing.git");
     expect(result.stdout).toContain("Signing assets: android/openclaw");
     expect(result.stdout).toContain(`Pinned APK certificate SHA-256: ${APK_CERTIFICATE_SHA256}`);
     expect(result.stdout).toContain("Materialized output: apps/android/build/release-signing");
     expect(result.stdout).toContain("ORG_GRADLE_PROJECT_*");
+  });
+
+  it("blocks the inherited signing manifest from publishing PASO", () => {
+    const result = runNode(["--mode", "check"]);
+
+    expect(result.ok).toBe(false);
+    expect(result.stderr).toContain("PASO Android publishing is disabled");
   });
 
   it.runIf(commandAvailable("openssl"))(

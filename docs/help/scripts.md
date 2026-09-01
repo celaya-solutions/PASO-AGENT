@@ -19,8 +19,8 @@ title: "Scripts"
 General model auth is covered in [Authentication](/gateway/authentication). The scripts below are a separate, optional system for monitoring a **Claude Code CLI subscription token** on a remote/headless host and re-authenticating from a phone:
 
 - `scripts/setup-auth-system.sh` - one-time setup: checks current auth, helps generate a long-lived `claude setup-token`, and prints systemd/Termux install steps.
-- `scripts/claude-auth-status.sh [full|json|simple]` - checks Claude Code + OpenClaw auth status.
-- `scripts/auth-monitor.sh` - polls status and sends a notification (via OpenClaw send, and/or ntfy.sh) when the token nears expiry. Env: `WARN_HOURS` (default `2`), `NOTIFY_PHONE`, `NOTIFY_NTFY`. Run on a schedule via the bundled `scripts/systemd/openclaw-auth-monitor.{service,timer}` (every 30 minutes).
+- `scripts/claude-auth-status.sh [full|json|simple]` - checks Claude Code + PASO auth status.
+- `scripts/auth-monitor.sh` - polls status and sends a notification (via PASO send, and/or ntfy.sh) when the token nears expiry. Env: `WARN_HOURS` (default `2`), `NOTIFY_PHONE`, `NOTIFY_NTFY`. Run on a schedule via the bundled `scripts/systemd/openclaw-auth-monitor.{service,timer}` (every 30 minutes).
 - `scripts/mobile-reauth.sh` - re-runs `claude setup-token` and prints URLs to open on a phone, for use over SSH from Termux.
 - `scripts/termux-quick-auth.sh`, `scripts/termux-auth-widget.sh`, `scripts/termux-sync-widget.sh` - Termux:Widget scripts that SSH to the host, show a status toast, and open the re-auth console/instructions when auth has expired.
 
@@ -47,8 +47,8 @@ Repo resolution order:
 Examples:
 
 - `scripts/gh-read pr view 123`
-- `scripts/gh-read run list -R openclaw/openclaw`
-- `scripts/gh-read api repos/openclaw/openclaw/pulls/123`
+- `scripts/gh-read run list -R celaya-solutions/PASO-AGENT`
+- `scripts/gh-read api repos/celaya-solutions/PASO-AGENT/pulls/123`
 
 ## When adding scripts
 

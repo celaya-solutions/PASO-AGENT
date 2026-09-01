@@ -157,7 +157,8 @@ export function formatCompletionReloadCommand(shell: CompletionShell, profilePat
 }
 
 function isCompletionProfileHeader(line: string): boolean {
-  return line.trim() === "# OpenClaw Completion";
+  const trimmed = line.trim();
+  return trimmed === "# PASO Completion" || trimmed === "# OpenClaw Completion";
 }
 
 function isCompletionProfileLine(line: string, binName: string, cachePath: string | null): boolean {
@@ -301,7 +302,7 @@ function updateCompletionProfile(
   }
 
   const trimmed = filtered.join("\n").trimEnd();
-  const block = `# OpenClaw Completion\n${sourceLine}`;
+  const block = `# PASO Completion\n${sourceLine}`;
   const next = trimmed ? `${trimmed}\n\n${block}\n` : `${block}\n`;
   return { next, changed: next !== content, hadExisting };
 }
@@ -338,7 +339,7 @@ async function resolveCompletionProfileWritePath(profilePath: string): Promise<s
   return path.join(await fs.realpath(targetDir), path.basename(targetPath));
 }
 
-/** Resolves the shell startup profile path that should contain the OpenClaw completion block. */
+/** Resolves the shell startup profile path that should contain the PASO completion block. */
 export function resolveCompletionProfilePath(
   shell: CompletionShell,
   options: {
@@ -410,7 +411,7 @@ export function resolveCompletionProfileHint(shell: CompletionShell): string {
     : profilePath;
 }
 
-/** Returns whether a shell profile already contains an OpenClaw completion block or source line. */
+/** Returns whether a shell profile already contains a PASO completion block or source line. */
 export async function isCompletionInstalled(
   shell: CompletionShell,
   binName = "openclaw",

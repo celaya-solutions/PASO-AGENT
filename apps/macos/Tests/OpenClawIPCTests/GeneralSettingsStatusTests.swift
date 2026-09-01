@@ -10,7 +10,7 @@ struct GeneralSettingsStatusTests {
             controlState: .connected,
             localFailure: "Profile p2380 cannot use Gateway port 55636")
 
-        #expect(status.title == "OpenClaw needs attention")
+        #expect(status.title == "PASO needs attention")
         #expect(status.subtitle.contains("55636"))
         #expect(status.tone == .attention)
         #expect(status.showsConnectionAction)
@@ -22,7 +22,7 @@ struct GeneralSettingsStatusTests {
             isPaused: false,
             controlState: .connected)
 
-        #expect(status.title == "OpenClaw active")
+        #expect(status.title == "PASO active")
         #expect(status.subtitle == "Connected to your remote Gateway.")
         #expect(status.tone == .healthy)
         #expect(!status.showsConnectionAction)
@@ -35,7 +35,7 @@ struct GeneralSettingsStatusTests {
             isPaused: false,
             controlState: .degraded(reason))
 
-        #expect(status.title == "OpenClaw needs attention")
+        #expect(status.title == "PASO needs attention")
         #expect(status.subtitle.contains(reason))
         #expect(status.subtitle.contains("Open Connection settings"))
         #expect(status.tone == .attention)
@@ -48,7 +48,7 @@ struct GeneralSettingsStatusTests {
             isPaused: false,
             controlState: .connecting)
 
-        #expect(status.title == "OpenClaw connecting")
+        #expect(status.title == "PASO connecting")
         #expect(status.subtitle == "Connecting to your remote Gateway…")
         #expect(status.tone == .transient)
         #expect(!status.showsConnectionAction)

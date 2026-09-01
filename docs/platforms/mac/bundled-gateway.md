@@ -1,14 +1,15 @@
 ---
 summary: "Gateway runtime on macOS (external launchd service)"
 read_when:
-  - Packaging OpenClaw.app
+  - Packaging PASO (technical bundle filename: OpenClaw.app)
   - Debugging the macOS gateway launchd service
   - Installing the gateway CLI for macOS
 title: "Gateway on macOS"
 ---
 
-OpenClaw.app bundles a private Node runtime and matching OpenClaw package for
-its app-owned `node worker` helper. Rebuilding or replacing the app replaces
+The PASO macOS app (technical bundle filename: `OpenClaw.app`) includes a
+private Node runtime and matching PASO source runtime for its app-owned `node
+worker` helper. Rebuilding or replacing the app replaces
 that helper too, including rebuilds with the same public version. The helper
 runs from the signed bundle, so moving the app or removing its build checkout
 does not change which worker it uses.
@@ -41,7 +42,7 @@ then installs and starts the per-user launchd service. This path needs no
 Terminal, Homebrew, or administrator access.
 
 Gateway setup still needs an internet connection to download its separate
-runtime and matching OpenClaw package. The bundled installer owns that setup;
+runtime and matching PASO source checkout. The bundled installer owns that setup;
 the private worker is not a replacement for a CLI or Gateway installation.
 
 Remote connections and attachment to an independently managed local Gateway
@@ -54,18 +55,19 @@ of being treated as a missing service; check the LaunchAgent and retry.
 
 ## Manual recovery
 
-For a manual install, use Node 26 (recommended) or another supported release:
-Node 22.22.3+, Node 24.15+, or Node 25.9+. Install `openclaw` globally:
-
-The command below is for npm 12 or npm 11.16+. On npm 11.15 and earlier,
-omit `--allow-scripts=openclaw`.
+For manual recovery, install the CLI from the PASO source repository. The
+installer provisions a supported Node runtime when needed:
 
 ```bash
-npm install -g openclaw@<version> --allow-scripts=openclaw
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh \
+  | bash -s -- --install-method git --version main --no-onboard
 ```
 
+The lowercase `openclaw` package on npm is the upstream OpenClaw compatibility
+package, not a PASO release or recovery artifact.
+
 Use **Retry setup** after a failed automatic setup. If that still fails,
-install the CLI manually with the command above, then choose **Check again**
+install the PASO source CLI with the command above, then choose **Check again**
 in onboarding.
 
 ## Launchd (Gateway as LaunchAgent)
@@ -82,7 +84,7 @@ Local mode. The CLI can also install it directly: `openclaw gateway install`
 
 Behavior:
 
-- "OpenClaw Active" enables/disables the LaunchAgent.
+- "PASO Active" enables/disables the LaunchAgent.
 - Quitting the app does **not** stop the Gateway (launchd keeps it alive).
 - If a Gateway is already running on the configured port, the app attaches to
   it instead of starting a new one.
@@ -136,7 +138,7 @@ installation, or **Recheck** in Connection settings after repairing it.
 
 ## State directory on macOS
 
-Keep OpenClaw state on a local, non-synced disk. Avoid iCloud Drive and other
+Keep PASO state on a local, non-synced disk. Avoid iCloud Drive and other
 cloud-synced folders; sync latency and file locks can affect sessions,
 credentials, and Gateway state.
 

@@ -589,7 +589,7 @@ describeControlUiE2e("Control UI Plugins mocked Gateway E2E", () => {
       await page.getByRole("searchbox", { name: "Search plugins" }).fill("calendar");
       const searchRequest = await gateway.waitForRequest("plugins.search");
       expect(requestParams(searchRequest)).toEqual({ query: "calendar", limit: 20 });
-      await page.getByRole("heading", { name: /^From ClawHub/u }).waitFor();
+      await page.getByRole("heading", { name: /^From plugin registry/u }).waitFor();
       const searchRow = page.locator('[data-package-name="calendar-plus"]');
       await searchRow.waitFor({ state: "visible" });
       expect(await searchRow.textContent()).toContain("Calendar Plus");

@@ -144,7 +144,7 @@ export async function startOrResumeThread(
       });
     };
     if (!binding && bindingIdentity.kind === "session" && bindingIdentity.sessionKey) {
-      // Reset may rotate the OpenClaw session while this plugin is unloaded. Only
+      // Reset may rotate the PASO session while this plugin is unloaded. Only
       // the authoritative session store may let its successor displace that stale owner.
       const reclaimed = await lifecycleTiming.measure("reclaim-binding-generation", () =>
         reclaimCurrentCodexSessionGeneration({
@@ -214,7 +214,7 @@ export async function startOrResumeThread(
           cwd: params.cwd,
           ...(clientId ? { clientId } : {}),
           // Supervised threads stay on the native user-home connection. Never
-          // persist an outer OpenClaw auth profile onto that private ownership.
+          // persist an outer PASO auth profile onto that private ownership.
           authProfileId: undefined,
           agentWorkspaceDeveloperInstructions: params.agentWorkspaceDeveloperInstructions,
           preserveNativeModel: true,
@@ -427,7 +427,7 @@ export async function startOrResumeThread(
           binding.configuredMcpOwnershipVersion === 1));
     if (configuredMcpOwnershipChanged && binding?.threadId) {
       const predecessorBinding = binding;
-      // Scheduled configured MCP moved from Codex-native config to OpenClaw dynamic tools.
+      // Scheduled configured MCP moved from Codex-native config to PASO dynamic tools.
       // A persistent main/named session has one binding: rotate its exact predecessor instead
       // of retaining native and scheduled variants that could diverge or widen authority.
       assertCodexBindingMayBeReplaced(predecessorBinding, "changing configured MCP ownership");

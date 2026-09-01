@@ -1,15 +1,15 @@
-# OpenClaw Kimi Coding Provider
+# PASO Kimi Coding Provider
 
-Official OpenClaw provider plugin for Kimi Coding.
+Official PASO provider plugin for Kimi Coding.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/kimi-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/moonshot> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/moonshot.md> for setup and configuration.
 
 ## Catalog notes
 

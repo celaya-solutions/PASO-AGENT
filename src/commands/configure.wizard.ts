@@ -197,8 +197,8 @@ async function runGatewayHealthCheck(params: {
     note(
       [
         "Docs:",
-        "https://docs.openclaw.ai/gateway/health",
-        "https://docs.openclaw.ai/gateway/troubleshooting",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Health check help",
     );
@@ -272,7 +272,7 @@ async function promptWebToolsConfig(
       "Web search lets your agent look things up online using the `web_search` tool.",
       "Codex-capable models can use native Codex web search.",
       "Other models use a separate web search provider, which you can configure here.",
-      "Docs: https://docs.openclaw.ai/tools/web",
+      "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     ].join("\n"),
     "Web search",
   );
@@ -301,7 +301,7 @@ async function promptWebToolsConfig(
         [
           "Codex-capable models can use native Codex web search instead of a separate provider.",
           "Other models need a separate web search provider.",
-          "If you do not choose one, OpenClaw can select a provider from available credentials; otherwise other models may not have web search.",
+          "If you do not choose one, PASO can select a provider from available credentials; otherwise other models may not have web search.",
           ...(describeCodexNativeWebSearch(nextConfig)
             ? [describeCodexNativeWebSearch(nextConfig)!]
             : []),
@@ -377,7 +377,7 @@ async function promptWebToolsConfig(
           [
             "No web search providers are currently available under this plugin policy.",
             "Enable plugins or remove deny rules, then rerun configure.",
-            "Docs: https://docs.openclaw.ai/tools/web",
+            "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           ].join("\n"),
           "Web search",
         );
@@ -447,7 +447,7 @@ export async function runConfigureWizard(
   runtime: RuntimeEnv = defaultRuntime,
 ) {
   try {
-    intro(opts.command === "update" ? "OpenClaw update wizard" : "OpenClaw configure");
+    intro(opts.command === "update" ? "PASO update wizard" : "PASO configure");
     const prompter = createClackPrompter();
 
     const prepared = await readConfigFileSnapshotForWrite();
@@ -474,7 +474,7 @@ export async function runConfigureWizard(
           [
             ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
             "",
-            "Docs: https://docs.openclaw.ai/gateway/configuration",
+            "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           ].join("\n"),
           "Config issues",
         );
@@ -902,9 +902,11 @@ export async function runConfigureWizard(
       const remoteUrl = normalizeOptionalString(nextConfig.gateway?.remote?.url);
       if (remoteUrl) {
         note(
-          ["Remote Gateway:", remoteUrl, "Docs: https://docs.openclaw.ai/gateway/remote"].join(
-            "\n",
-          ),
+          [
+            "Remote Gateway:",
+            remoteUrl,
+            "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+          ].join("\n"),
           "Gateway",
         );
       }
@@ -977,7 +979,7 @@ export async function runConfigureWizard(
         `Gateway WS: ${displayLinks.wsUrl}`,
         gatewayStatusLine,
         ...windowsFirewallLines,
-        "Docs: https://docs.openclaw.ai/web/control-ui",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Control UI",
     );

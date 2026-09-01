@@ -1,9 +1,7 @@
 import OpenClawChatUI
 import SwiftUI
 
-/// Onboarding hero mascot with the openclaw.ai hero treatment: the animated
-/// mascot plus its coral silhouette glow (drop-shadow at ~10% of size).
-/// Interactive: it reacts to clicks and its eyes follow the pointer.
+/// Onboarding hero using the PASO path-and-step mark and orange glow.
 struct GlowingOpenClawIcon: View {
     @Environment(\.colorScheme) private var colorScheme
 

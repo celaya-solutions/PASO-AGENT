@@ -287,7 +287,7 @@ export function buildAssistantText(input: ResponsesInputItem[], body: Record<str
       : buildStrandedFinalRecoveryText();
   }
   if (/tool continuity check/i.test(prompt) && toolOutput) {
-    return `Protocol note: model switch handoff confirmed on ${model || "the requested model"}. QA mission from QA_KICKOFF_TASK.md still applies: understand this OpenClaw repo from source + docs before acting.`;
+    return `Protocol note: model switch handoff confirmed on ${model || "the requested model"}. QA mission from QA_KICKOFF_TASK.md still applies: understand this PASO repo from source + docs before acting.`;
   }
   if (toolOutput && promptExactReplyDirective) {
     return promptExactReplyDirective;
@@ -392,11 +392,11 @@ export function buildAssistantText(input: ResponsesInputItem[], body: Record<str
   if (toolOutput && /worked, failed, blocked|worked\/failed\/blocked|follow-up/i.test(prompt)) {
     return `Worked:\n- Read seeded QA material.\n- Expanded the report structure.\nFailed:\n- None observed in mock mode.\nBlocked:\n- No live provider evidence in this lane.\nFollow-up:\n- Re-run with a real model for qualitative coverage.`;
   }
-  if (toolOutput && /lobster invaders/i.test(prompt)) {
+  if (toolOutput && /paso task board/i.test(prompt)) {
     if (toolOutput.includes("QA mission") || toolOutput.includes("Testing")) {
       return "";
     }
-    return `Protocol note: Lobster Invaders built at lobster-invaders.html.`;
+    return `Protocol note: PASO Task Board built at paso-task-board.html.`;
   }
   if (
     toolOutput &&

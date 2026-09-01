@@ -71,7 +71,7 @@ import type { AgentsRouteData } from "./route.ts";
 import { clearAgentSkillFilter, loadAgentSkills } from "./skills.ts";
 import { renderAgents } from "./view.ts";
 
-const AGENTS_DOCS_URL = "https://docs.openclaw.ai/concepts/multi-agent";
+const AGENTS_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 type AgentsRequestSources = Partial<
   Pick<ApplicationContext, "agents" | "agentIdentity" | "sessions">
 >;

@@ -3,7 +3,7 @@ summary: "FAQ: quick-start and first-run setup — install, onboard, auth, subsc
 read_when:
   - New install, onboarding stuck, or first-run errors
   - Choosing auth and provider subscriptions
-  - Cannot access docs.openclaw.ai, cannot open dashboard, install stuck
+  - Cannot access the upstream framework docs, cannot open dashboard, or install is stuck
 title: "FAQ: first-run setup"
 sidebarTitle: "First-run FAQ"
 ---
@@ -17,7 +17,7 @@ and troubleshooting see the main [FAQ](/help/faq).
   <Accordion title="I am stuck, fastest way to get unstuck">
     Use a local AI agent that can **see your machine**. Most "I'm stuck" cases are
     **local config or environment issues** a remote helper cannot inspect, so this beats
-    asking in Discord.
+    asking a remote helper to guess.
 
     - **Claude Code**: [https://www.anthropic.com/claude-code/](https://www.anthropic.com/claude-code/)
     - **OpenAI Codex**: [https://openai.com/codex/](https://openai.com/codex/)
@@ -26,13 +26,13 @@ and troubleshooting see the main [FAQ](/help/faq).
     code + docs and reason about the exact version you run:
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
 
     Ask the agent to plan and supervise the fix step-by-step, then execute only the
     necessary commands - smaller diffs are easier to audit.
 
-    Share these outputs when asking for help (in Discord or a GitHub issue):
+    Share these sanitized outputs in a PASO GitHub issue:
 
     | Command | Shows |
     | --- | --- |
@@ -45,8 +45,8 @@ and troubleshooting see the main [FAQ](/help/faq).
     | `openclaw health --verbose` | Detailed health report |
 
     Found a real bug or fix? File an issue or send a PR:
-    [Issues](https://github.com/openclaw/openclaw/issues) /
-    [Pull requests](https://github.com/openclaw/openclaw/pulls).
+    [Issues](https://github.com/celaya-solutions/PASO-AGENT/issues) /
+    [Pull requests](https://github.com/celaya-solutions/PASO-AGENT/pulls).
 
     Quick debug loop: [First 60 seconds if something is broken](/help/faq#first-60-seconds-if-something-is-broken).
     Install docs: [Install](/install), [Installer flags](/install/installer), [Updating](/install/updating).
@@ -66,17 +66,17 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="Recommended way to install and set up OpenClaw">
+  <Accordion title="Recommended way to install and set up PASO">
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     openclaw onboard --install-daemon
     ```
 
     From source (contributors/dev):
 
     ```bash
-    git clone https://github.com/openclaw/openclaw.git
-    cd openclaw
+    git clone https://github.com/celaya-solutions/PASO-AGENT.git
+    cd PASO-AGENT
     pnpm install
     pnpm build
     pnpm ui:build
@@ -212,7 +212,7 @@ and troubleshooting see the main [FAQ](/help/faq).
   <Accordion title="Can I migrate my setup to a new machine without redoing onboarding?">
     Yes. Copy the **state directory** and **workspace**, then run Doctor once:
 
-    1. Install OpenClaw on the new machine.
+    1. Install PASO on the new machine.
     2. Copy `$OPENCLAW_STATE_DIR` (default: `~/.openclaw`) from the old machine.
     3. Copy your workspace (default: `~/.openclaw/workspace`).
     4. Run `openclaw doctor` and restart the Gateway service.
@@ -233,7 +233,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   <Accordion title="Where do I see what is new in the latest version?">
     Check the GitHub changelog:
-    [https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
+    [https://github.com/celaya-solutions/PASO-AGENT/blob/main/CHANGELOG.md](https://github.com/celaya-solutions/PASO-AGENT/blob/main/CHANGELOG.md)
 
     Newest entries are at the top. If the top section is **Unreleased**, the next dated
     section is the latest shipped version. Entries group under **Highlights**, **Changes**,
@@ -241,48 +241,30 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="Cannot access docs.openclaw.ai (SSL error)">
-    Some Comcast/Xfinity connections incorrectly block `docs.openclaw.ai` via Xfinity
-    Advanced Security. Disable it or allowlist `docs.openclaw.ai`, then retry. Help us
-    get it unblocked: [https://spa.xfinity.com/check_url_status](https://spa.xfinity.com/check_url_status).
+  <Accordion title="PASO source versus framework npm channels">
+    PASO installs from the Celaya Solutions Research source repository. Use an explicit
+    commit or PASO release tag when you need a fixed revision; use `main` when you want
+    the current reviewed fork branch.
 
-    Still blocked? Docs are mirrored on GitHub:
-    [https://github.com/openclaw/openclaw/tree/main/docs](https://github.com/openclaw/openclaw/tree/main/docs)
+    The npm dist-tags `latest`, `beta`, and `dev` belong to the lowercase upstream
+    framework package. They are compatibility channels, not PASO release channels.
 
-  </Accordion>
-
-  <Accordion title="Difference between stable and beta">
-    **Stable** and **beta** are **npm dist-tags**, not separate code lines:
-
-    - `latest` = stable
-    - `beta` = early build for testing (falls back to `latest` when beta is missing or older than the current stable release)
-
-    A stable release usually lands on **beta** first, then an explicit promotion step
-    moves that same version to `latest` without changing the version number. Maintainers
-    can also publish straight to `latest`. That is why beta and stable can point at the
-    **same version** after promotion.
-
-    See what changed: [CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md).
-
-    For install one-liners and the difference between beta and dev, see the next accordion.
+    See what changed in PASO: [CHANGELOG.md](https://github.com/celaya-solutions/PASO-AGENT/blob/main/CHANGELOG.md).
 
   </Accordion>
 
-  <Accordion title="How do I install the beta version and what is the difference between beta and dev?">
-    **Beta** is the npm dist-tag `beta` (may match `latest` after promotion).
-    **Dev** is the moving head of `main` (git); when published to npm it uses dist-tag `dev`.
-
-    One-liners (macOS/Linux):
+  <Accordion title="How do I install the current PASO source?">
+    Use the fork's `main` branch, or replace `main` with an explicit PASO commit or release tag:
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --beta
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
 
-    ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
-    ```
+    Windows installer (PowerShell):
 
-    Windows installer (PowerShell): `iwr -useb https://openclaw.ai/install.ps1 | iex`
+    ```powershell
+    & ([scriptblock]::Create((iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -InstallMethod git -Tag main
+    ```
 
     More detail: [Development channels](/install/development-channels) and [Installer flags](/install/installer).
 
@@ -303,14 +285,14 @@ and troubleshooting see the main [FAQ](/help/faq).
     2. **Hackable (git) install (fresh machine):**
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
 
     Prefer a manual clone:
 
     ```bash
-    git clone https://github.com/openclaw/openclaw.git
-    cd openclaw
+    git clone https://github.com/celaya-solutions/PASO-AGENT.git
+    cd PASO-AGENT
     pnpm install
     pnpm build
     ```
@@ -337,9 +319,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     Re-run with `--verbose`:
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --verbose
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --beta --verbose
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --verbose
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --verbose
     ```
 
     `install.ps1` has no dedicated verbose switch; wrap it in `Set-PSDebug -Trace 1` /
@@ -388,7 +368,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     openclaw gateway restart
     ```
 
-    Still reproducing this on latest OpenClaw? Track/report it: [Issue #30640](https://github.com/openclaw/openclaw/issues/30640).
+    Still reproducing this on latest PASO? Track/report it: [Issue #30640](https://github.com/openclaw/openclaw/issues/30640).
 
   </Accordion>
 
@@ -397,21 +377,21 @@ and troubleshooting see the main [FAQ](/help/faq).
     your bot (or Claude/Codex) **from that folder** so it can read the repo and answer precisely.
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     ```
 
     More detail: [Install](/install) and [Installer flags](/install/installer).
 
   </Accordion>
 
-  <Accordion title="How do I install OpenClaw on Linux?">
+  <Accordion title="How do I install PASO on Linux?">
     - Linux quick path + service install: [Linux](/platforms/linux).
     - Full walkthrough: [Getting Started](/start/getting-started).
     - Installer + updates: [Install & updates](/install/updating).
 
   </Accordion>
 
-  <Accordion title="How do I install OpenClaw on a VPS?">
+  <Accordion title="How do I install PASO on a VPS?">
     Any Linux VPS works. Install on the server, then reach the Gateway over SSH/Tailscale.
 
     Guides: [exe.dev](/install/exe-dev), [Hetzner](/install/hetzner), [Fly.io](/install/fly).
@@ -440,7 +420,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="Can I ask OpenClaw to update itself?">
+  <Accordion title="Can I ask PASO to update itself?">
     Possible, not recommended. The update flow can restart the Gateway (dropping the
     active session), may need a clean git checkout, and can prompt for confirmation.
     Safer to run updates from a shell as the operator.
@@ -482,7 +462,7 @@ and troubleshooting see the main [FAQ](/help/faq).
   </Accordion>
 
   <Accordion title="Do I need a Claude or OpenAI subscription to run this?">
-    No. Run OpenClaw with **API keys** (Anthropic/OpenAI/others) or **local-only models**
+    No. Run PASO with **API keys** (Anthropic/OpenAI/others) or **local-only models**
     so your data stays on your device. Subscriptions (Claude Pro/Max, ChatGPT/Codex) are
     optional ways to authenticate those providers.
 
@@ -494,7 +474,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     automation, an Anthropic API key is the more predictable choice.
 
     OpenAI Codex OAuth (ChatGPT/Codex subscription) is fully supported for agent models.
-    OpenClaw also supports hosted subscription-style options including **Qwen Cloud
+    PASO also supports hosted subscription-style options including **Qwen Cloud
     Coding Plan**, **MiniMax Coding Plan**, and **Z.AI / GLM Coding Plan**.
 
     Docs: [Anthropic](/providers/anthropic), [OpenAI](/providers/openai),
@@ -504,8 +484,8 @@ and troubleshooting see the main [FAQ](/help/faq).
   </Accordion>
 
   <Accordion title="Can I use Claude Max subscription without an API key?">
-    Yes. OpenClaw supports Claude CLI reuse for Pro/Max/Team/Enterprise plans. Anthropic
-    currently treats the `claude -p` path OpenClaw uses as subscription-plan usage subject
+    Yes. PASO supports Claude CLI reuse for Pro/Max/Team/Enterprise plans. Anthropic
+    currently treats the `claude -p` path PASO uses as subscription-plan usage subject
     to your plan's limits, not a separate free allowance - see
     [Anthropic](/providers/anthropic) for the current billing detail and links to
     Anthropic's own support articles. For the most predictable server-side setup, use an
@@ -518,7 +498,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     dated links to Anthropic's support articles before relying on specific billing
     behavior.
 
-    Anthropic setup-token auth is also still a supported token path, but OpenClaw prefers
+    Anthropic setup-token auth is also still a supported token path, but PASO prefers
     Claude CLI reuse and `claude -p` when available. For production or multi-user
     workloads, an Anthropic API key remains the safer, more predictable choice. Other
     subscription-style hosted options: [OpenAI](/providers/openai), [Qwen Cloud](/providers/qwen),
@@ -541,28 +521,28 @@ and troubleshooting see the main [FAQ](/help/faq).
     model, or legacy `params.context1m: true` config), and your current credential is not
     eligible for long-context billing.
 
-    Set a **fallback model** so OpenClaw keeps replying while a provider is rate-limited.
+    Set a **fallback model** so PASO keeps replying while a provider is rate-limited.
     See [Models](/cli/models), [OAuth](/concepts/oauth), and
     [Anthropic 429 extra usage required for long context](/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
   </Accordion>
 
   <Accordion title="Is AWS Bedrock supported?">
-    Yes. OpenClaw has a bundled **Amazon Bedrock (Converse)** provider. With AWS env
+    Yes. PASO has a bundled **Amazon Bedrock (Converse)** provider. With AWS env
     markers present (`AWS_ACCESS_KEY_ID`, `AWS_PROFILE`, `AWS_BEARER_TOKEN_BEDROCK`),
-    OpenClaw auto-enables the implicit Bedrock provider for model discovery; otherwise
+    PASO auto-enables the implicit Bedrock provider for model discovery; otherwise
     set `plugins.entries.amazon-bedrock.config.discovery.enabled: true` or add a manual
     provider entry. See [Amazon Bedrock](/providers/bedrock) and [Model providers](/providers/models).
     An OpenAI-compatible proxy in front of Bedrock is still a valid option if you prefer a managed key flow.
   </Accordion>
 
   <Accordion title="How does Codex auth work?">
-    OpenClaw supports **OpenAI Codex** via OAuth (ChatGPT sign-in). A fresh
+    PASO supports **OpenAI Codex** via OAuth (ChatGPT sign-in). A fresh
     setup with no primary model uses exact `openai/gpt-5.6-sol` for
     ChatGPT/Codex subscription auth plus native Codex app-server execution.
     Reauthentication preserves an existing explicit model, including
     `openai/gpt-5.5`. If the Codex workspace does not expose GPT-5.6, select
-    `openai/gpt-5.5` explicitly; OpenClaw does not silently downgrade. Legacy
+    `openai/gpt-5.5` explicitly; PASO does not silently downgrade. Legacy
     Codex-prefixed model refs are legacy config repaired by `openclaw doctor
     --fix`. Direct OpenAI API-key access remains available for non-agent OpenAI
     API surfaces and, through an ordered `openai` API-key profile, for agent
@@ -570,7 +550,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     [Onboarding (CLI)](/start/wizard).
   </Accordion>
 
-  <Accordion title="Why does OpenClaw still mention legacy OpenAI Codex prefix?">
+  <Accordion title="Why does PASO still mention legacy OpenAI Codex prefix?">
     `openai` is the current provider and auth-profile id for both OpenAI API keys and
     ChatGPT/Codex OAuth - OpenAI Codex is folded into it. You may still see a legacy
     `openai-codex` prefix in older config and migration warnings:
@@ -601,19 +581,19 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   <Accordion title="Do you support OpenAI subscription auth (Codex OAuth)?">
     Yes, fully. OpenAI explicitly allows subscription OAuth usage in external
-    tools/workflows like OpenClaw. Onboarding can run the OAuth flow for you.
+    tools/workflows like PASO. Onboarding can run the OAuth flow for you.
 
     See [OAuth](/concepts/oauth), [Model providers](/concepts/model-providers), and [Onboarding (CLI)](/start/wizard).
 
   </Accordion>
 
   <Accordion title="Can I use Gemini CLI or Antigravity OAuth?">
-    OpenClaw does not offer new Gemini CLI OAuth or Antigravity OAuth setup.
+    PASO does not offer new Gemini CLI OAuth or Antigravity OAuth setup.
     Connect Google with an AI Studio API key or Vertex AI instead.
 
     The optional `google-gemini-cli` runtime remains available for advanced
     setups using a supported Google API-key profile. Existing valid legacy
-    Gemini CLI OAuth profiles remain executable for compatibility, but OpenClaw
+    Gemini CLI OAuth profiles remain executable for compatibility, but PASO
     cannot create or repair them.
 
     Details: [Google](/providers/google), [Model providers](/concepts/model-providers).
@@ -621,7 +601,7 @@ and troubleshooting see the main [FAQ](/help/faq).
   </Accordion>
 
   <Accordion title="Is a local model OK for casual chats?">
-    Usually no. OpenClaw needs large context + strong safety; small cards truncate context
+    Usually no. PASO needs large context + strong safety; small cards truncate context
     and skip provider-side safety filters. If you must, run the **largest** model build you
     can locally (LM Studio) - see [Local models](/gateway/local-models). Smaller/quantized
     models raise prompt-injection risk - see [Security](/gateway/security).
@@ -635,7 +615,7 @@ and troubleshooting see the main [FAQ](/help/faq).
   </Accordion>
 
   <Accordion title="Do I have to buy a Mac Mini to install this?">
-    No. OpenClaw runs on macOS or Linux (Windows via WSL2). A Mac mini is a popular
+    No. PASO runs on macOS or Linux (Windows via WSL2). A Mac mini is a popular
     always-on host choice, but a small VPS, home server, or Raspberry Pi-class box works too.
 
     You only need a Mac **for macOS-only tools**. For iMessage, use [iMessage](/channels/imessage)
@@ -661,7 +641,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="If I buy a Mac mini to run OpenClaw, can I connect it to my MacBook Pro?">
+  <Accordion title="If I buy a Mac mini to run PASO, can I connect it to my MacBook Pro?">
     Yes. The **Mac mini can run the Gateway**, and your MacBook Pro connects as a **node**
     (companion device). Nodes do not run the Gateway - they add capabilities like
     screen/camera and `system.run` on that device. A Mac node can also present
@@ -696,7 +676,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="Can multiple people use one WhatsApp number with different OpenClaw instances?">
+  <Accordion title="Can multiple people use one WhatsApp number with different PASO instances?">
     Yes, via **multi-agent routing**. Bind each sender's WhatsApp DM (`peer: { kind: "direct", id: "+15551234567" }`) to a different `agentId`, giving each person their own workspace and session store. Replies still come from the **same WhatsApp account**; DM access control (`channels.whatsapp.dmPolicy` / `channels.whatsapp.allowFrom`) is global per account. See [Multi-Agent Routing](/concepts/multi-agent) and [WhatsApp](/channels/whatsapp).
   </Accordion>
 
@@ -717,7 +697,7 @@ and troubleshooting see the main [FAQ](/help/faq).
     brew install <formula>
     ```
 
-    Running OpenClaw via systemd: make sure the service PATH includes
+    Running PASO via systemd: make sure the service PATH includes
     `/home/linuxbrew/.linuxbrew/bin` (or your brew prefix) so `brew`-installed tools
     resolve in non-login shells. Recent builds also prepend common user bin dirs on Linux
     systemd services (for example `~/.local/bin`, `~/.npm-global/bin`,
@@ -736,7 +716,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   <Accordion title="Can I switch between npm and git installs later?">
     Yes, with `openclaw update --channel ...` on an existing install. This does **not
-    delete your data** - only the OpenClaw code install changes. State (`~/.openclaw`) and
+    delete your data** - only the PASO code install changes. State (`~/.openclaw`) and
     workspace (`~/.openclaw/workspace`) stay untouched.
 
     npm to git:
@@ -758,8 +738,8 @@ and troubleshooting see the main [FAQ](/help/faq).
     The installer can force either mode too:
 
     ```bash
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
-    curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method npm
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
+    curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method npm
     ```
 
     Backup tips: [Where things live on disk](/help/faq#where-things-live-on-disk).
@@ -789,7 +769,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="How important is it to run OpenClaw on a dedicated machine?">
+  <Accordion title="How important is it to run PASO on a dedicated machine?">
     Not required, but recommended for reliability and isolation.
 
     - **Dedicated host (VPS/Mac mini/Raspberry Pi):** always-on, fewer sleep/reboot interruptions, cleaner permissions, easier to keep running.
@@ -810,7 +790,7 @@ and troubleshooting see the main [FAQ](/help/faq).
 
   </Accordion>
 
-  <Accordion title="Can I run OpenClaw in a VM and what are the requirements?">
+  <Accordion title="Can I run PASO in a VM and what are the requirements?">
     Yes. Treat a VM like a VPS: it needs to be always on, reachable, and have enough RAM
     for the Gateway and any channels you enable.
 

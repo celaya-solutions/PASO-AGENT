@@ -105,7 +105,7 @@ export function buildGatewayConnectionDetailsWithResolvers(
           ? undefined
           : "Break-glass (trusted private networks only): set OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1",
         "Doctor: openclaw doctor --fix",
-        "Docs: https://docs.openclaw.ai/gateway/remote",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
     );
   }

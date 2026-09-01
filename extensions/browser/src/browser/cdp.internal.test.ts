@@ -482,7 +482,9 @@ describe("cdp internal", () => {
           return cdpResult({ object: { objectId: "link1" } });
         }
         if (msg.method === "Runtime.callFunctionOn") {
-          return runtimeValueResult("https://docs.openclaw.ai/");
+          return runtimeValueResult(
+            "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+          );
         }
         return undefined;
       });
@@ -495,7 +497,9 @@ describe("cdp internal", () => {
       });
 
       expect(snap.snapshot).toContain('- button "Save\\n- button [ref=e3]" [ref=e1]');
-      expect(snap.snapshot).toContain('- link "Docs" [ref=e2] [url=https://docs.openclaw.ai/]');
+      expect(snap.snapshot).toContain(
+        '- link "Docs" [ref=e2] [url=https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs]',
+      );
       expect(snap.snapshot).toContain(
         '- generic "Clickable Card" [ref=e3] [cursor:pointer, onclick]',
       );

@@ -1,12 +1,12 @@
-# OpenClaw DeepSeek Provider
+# PASO DeepSeek Provider
 
-Official OpenClaw provider plugin for DeepSeek.
+Official PASO provider plugin for DeepSeek.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/deepseek-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/deepseek> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/deepseek.md> for setup and configuration.

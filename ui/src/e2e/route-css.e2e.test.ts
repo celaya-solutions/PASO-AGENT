@@ -90,7 +90,7 @@ suite.define(() => {
 
         const skillsResponse = await page.goto(`${suite.server.baseUrl}skills`);
         expect(skillsResponse?.status()).toBe(200);
-        await page.locator(".settings-section__heading", { hasText: "ClawHub" }).waitFor();
+        await page.locator(".settings-section__heading", { hasText: "Plugin registry" }).waitFor();
 
         const skillsStyles = await page.evaluate(() => {
           const probe = document.createElement("article");

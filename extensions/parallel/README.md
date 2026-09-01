@@ -1,12 +1,12 @@
-# OpenClaw Parallel Plugin
+# PASO Parallel Plugin
 
-Official OpenClaw plugin for Parallel.
+Official PASO plugin for Parallel.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/parallel-plugin
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/tools/parallel-search> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/parallel-search.md> for setup and configuration.

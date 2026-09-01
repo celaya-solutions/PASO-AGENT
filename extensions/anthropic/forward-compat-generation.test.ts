@@ -75,7 +75,7 @@ describe("unreleased Claude generations", () => {
     expect(resolveModel("claude-opus-5")?.compat).toEqual({ codeMode: "preferred" });
     expect(resolveModel("claude-sonnet-5")?.compat).toEqual({ codeMode: "preferred" });
     // The Claude CLI provider rows are intentionally unflagged: those runs use
-    // the CLI harness where OpenClaw code mode does not apply.
+    // the CLI harness where PASO code mode does not apply.
     expect(resolveModel("claude-opus-5", "claude-cli")?.compat).toBeUndefined();
   });
 

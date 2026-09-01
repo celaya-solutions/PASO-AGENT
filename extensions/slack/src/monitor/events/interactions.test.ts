@@ -898,7 +898,7 @@ describe("registerSlackInteractionEvents", () => {
     });
   });
 
-  it("registers a matcher that accepts plugin action ids beyond the OpenClaw prefix", () => {
+  it("registers a matcher that accepts plugin action ids beyond the PASO prefix", () => {
     const { ctx, getActionMatcher } = createContext();
     registerSlackInteractionEvents({ ctx: ctx as never });
 
@@ -3823,7 +3823,7 @@ describe("registerSlackInteractionEvents", () => {
               url_block: {
                 url_input: {
                   type: "url_text_input",
-                  value: "https://docs.openclaw.ai",
+                  value: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
                 },
               },
               richtext_block: {
@@ -3909,7 +3909,7 @@ describe("registerSlackInteractionEvents", () => {
     });
     expectRecordFields(inputByActionId(inputs, "url_input"), {
       inputKind: "url",
-      inputUrl: "https://docs.openclaw.ai/",
+      inputUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     });
     expectRecordFields(inputByActionId(inputs, "richtext_input"), {
       inputKind: "rich_text",

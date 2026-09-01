@@ -1,5 +1,5 @@
 ---
-summary: "Run OpenClaw embedded agent turns through the official Codex app-server harness"
+summary: "Run PASO embedded agent turns through the official Codex app-server harness"
 title: "Codex harness"
 read_when:
   - You want to use the official Codex app-server harness
@@ -8,14 +8,14 @@ read_when:
 ---
 
 The official `codex` plugin runs embedded OpenAI agent turns through Codex
-app-server instead of the built-in OpenClaw harness. Codex owns the
+app-server instead of the built-in PASO harness. Codex owns the
 low-level agent session: native thread resume, native tool continuation,
-native compaction, and app-server execution. OpenClaw still owns chat
-channels, session files, model selection, OpenClaw dynamic tools, approvals,
+native compaction, and app-server execution. PASO still owns chat
+channels, session files, model selection, PASO dynamic tools, approvals,
 media delivery, and the visible transcript mirror.
 
 Remote Codex app-servers can run on a different machine from the Gateway. Set
-`remoteWorkspaceRoot` to validate remote workspace attachment paths. OpenClaw
+`remoteWorkspaceRoot` to validate remote workspace attachment paths. PASO
 transfers authoritative attachment bytes over the existing app-server connection
 using a fixed, no-shell `command/exec` reader. The reader rejects symlinks,
 enforces file and response size limits before allocation, and stages immutable
@@ -37,25 +37,25 @@ authored provider request override. Valid model-scoped `params.fastMode` /
 controls, so they do not count as authored provider request params or select a
 runtime by themselves. See
 [OpenAI implicit agent runtime](/providers/openai#implicit-agent-runtime).
-If Codex owns auth before Platform versus ChatGPT routing is known, OpenClaw
+If Codex owns auth before Platform versus ChatGPT routing is known, PASO
 still requires every candidate route to declare Codex compatibility. Native
 auth ownership alone never bypasses that route check.
 
-When no OpenClaw sandbox is active, OpenClaw starts Codex app-server threads
+When no PASO sandbox is active, PASO starts Codex app-server threads
 with Codex native code mode enabled (code-mode-only stays off by default), so
-native workspace/code capabilities remain available alongside OpenClaw
+native workspace/code capabilities remain available alongside PASO
 dynamic tools routed through the app-server `item/tool/call` bridge. An
-ordinary OpenClaw sandbox or restricted tool policy disables native code mode
+ordinary PASO sandbox or restricted tool policy disables native code mode
 unless you opt into the experimental sandbox exec-server path. Node-backed
 `remote-exec` on a paired device or cloud worker instead uses its
 placement-owned environment without that experimental flag.
 
 Eligible native-shell turns also retain `gateway_exec` and `gateway_process`
-as a distinct OpenClaw execution path. Use `gateway_exec` only when a command
-needs OpenClaw-managed Gateway environment access, including Secret Store
+as a distinct PASO execution path. Use `gateway_exec` only when a command
+needs PASO-managed Gateway environment access, including Secret Store
 agent-readable environment values or protected egress sentinels. It is pinned
-to the Gateway host and follows OpenClaw exec policy. `gateway_process` uses the
-existing per-session OpenClaw process scope for background follow-up. Prefer
+to the Gateway host and follows PASO exec policy. `gateway_process` uses the
+existing per-session PASO process scope for background follow-up. Prefer
 Codex native shell for ordinary local work.
 
 Stopping an active Codex run interrupts its turn, then stops the native background
@@ -66,30 +66,30 @@ claiming cleanup succeeded. Inspect that thread's running terminals before
 starting more work. This uses Codex's terminal ownership; it does not guarantee
 cleanup of commands that deliberately detach from that ownership.
 
-With the default `tools.exec.host: "auto"` and no active OpenClaw sandbox,
+With the default `tools.exec.host: "auto"` and no active PASO sandbox,
 Codex also receives `node_exec` for commands on paired nodes. Native shell
 remains on the Codex app-server host and workspace
 (Gateway-local for the default stdio deployment); `node_exec` selects a node by
-name or id, keeps OpenClaw's node approval policy in force, and waits for the
+name or id, keeps PASO's node approval policy in force, and waits for the
 remote command to finish. Remote-node background follow-up is not available. If
 a finite runtime allowlist disables native Code Mode and leaves the turn without
-an execution environment, OpenClaw keeps its policy-filtered `exec` and
+an execution environment, PASO keeps its policy-filtered `exec` and
 `process` tools available instead for direct, unsandboxed execution.
 
 When `tools.exec.host: "node"` or `/exec host=node` makes the node the session
-default, OpenClaw hides the Codex-native shell and exposes `node_exec` as the
+default, PASO hides the Codex-native shell and exposes `node_exec` as the
 shell path. This keeps the configured execution host from silently falling
 back to the app-server or Gateway machine.
 
-`gateway_exec` is not exposed when an active OpenClaw sandbox, a node-default
+`gateway_exec` is not exposed when an active PASO sandbox, a node-default
 execution policy, memory-flush restrictions, tool allow/deny policy, or
 `codexDynamicToolsExclude` would make Gateway host access a bypass. Secret
 Store environment values never enter the Codex app-server process, native
 shell, sandbox exec-server, ACP children, sandbox exec, or node exec.
 
 This Codex-native feature is separate from
-[OpenClaw Code Mode](/tools/code-mode), an opt-in QuickJS-WASI runtime
-for generic OpenClaw runs with a different `exec` input shape. For the
+[PASO Code Mode](/tools/code-mode), an opt-in QuickJS-WASI runtime
+for generic PASO runs with a different `exec` input shape. For the
 broader model/provider/runtime split, start with
 [Agent runtimes](/concepts/agent-runtimes): `openai/gpt-5.6-sol` is the model
 ref, `codex` is the runtime, and Telegram, Discord, Slack, or another
@@ -210,7 +210,7 @@ by local policy, use an ordinary session permission mode to request approval,
 or deliberately change the node's local policy and reconnect it.
 Policy tightening during launch preparation refuses the stale launch.
 
-Codex launches its node exec-server directly rather than starting an OpenClaw
+Codex launches its node exec-server directly rather than starting a PASO
 worker, so a paired host remains eligible when all worker slots are occupied.
 The command must still be effectively invocable: declaring it without the
 approved pairing surface and Gateway allowlist is insufficient.
@@ -233,7 +233,7 @@ The node starts the same managed, pinned Codex binary with
 `codex exec-server --listen stdio` in the placement workspace. The Gateway
 relays complete Codex JSON-RPC messages through the existing authenticated,
 approval-gated duplex node channel, with a 64 MiB limit per message. It does not
-start an OpenClaw worker child, open a reverse tunnel, or copy provider, cloud,
+start a PASO worker child, open a reverse tunnel, or copy provider, cloud,
 or GitHub credentials to the device. Authenticated remote HTTP is unavailable:
 the Gateway rejects requests containing bearer/OAuth authorization, cookies,
 API keys, or other sensitive authentication headers before sending them to the
@@ -256,7 +256,7 @@ See [Cloud workers and paired-device placement](/gateway/cloud-workers) and
 
 ## Run Codex on a cloud worker
 
-The bundled Crabbox provider supports both OpenClaw `worker-turn` and Codex
+The bundled Crabbox provider supports both PASO `worker-turn` and Codex
 `remote-exec`, so one configured cloud-worker profile is selectable for either
 harness. Choose the same **Cloud · profile** destination in New Session or
 Move Session after selecting a Codex model. Profile placement requires
@@ -276,7 +276,7 @@ per-attempt approval or explicitly selected Full access rules apply, including
 the cloud node's local exec policy and approvals floors.
 
 Codex runs its managed exec-server over the enrolled node's authenticated
-outbound connection without starting an OpenClaw worker child or consuming a
+outbound connection without starting a PASO worker child or consuming a
 worker slot. Its app-server, model connection, provider authentication, and
 transcript remain Gateway-owned. Process and filesystem access still have the
 node operating-system account's permissions, and only credential-free HTTP is
@@ -289,7 +289,7 @@ placement lifecycle, and cleanup.
 
 ## Share threads with Codex Desktop and CLI
 
-The default `appServer.homeScope: "agent"` isolates each OpenClaw agent from
+The default `appServer.homeScope: "agent"` isolates each PASO agent from
 the operator's native Codex state. To let an owner inspect and manage the
 same native threads shown by Codex Desktop and the Codex CLI, opt into the
 user Codex home:
@@ -313,8 +313,8 @@ user Codex home:
 
 User-home mode supports a local managed stdio process or the shared Unix-socket
 transport. It uses `$CODEX_HOME` when set and `~/.codex` otherwise, including
-that home's native Codex auth, config, plugins, and thread store. OpenClaw does
-not inject an OpenClaw auth profile into this app-server, even when the agent's
+that home's native Codex auth, config, plugins, and thread store. PASO does
+not inject a PASO auth profile into this app-server, even when the agent's
 model route has a stored OpenAI profile. The native account is verified against
 the route instead, in both directions:
 
@@ -323,16 +323,16 @@ the route instead, in both directions:
 - A Platform (API-key) route refuses a native home signed in with a ChatGPT
   subscription, so an API-billed route never silently spends the plan. Sign that
   home in with `codex login --with-api-key`, or switch to `homeScope: "agent"`
-  and let OpenClaw inject the key it already holds.
+  and let PASO inject the key it already holds.
 
-A stored OpenAI profile is fine alongside `homeScope: "user"`; OpenClaw keeps it
+A stored OpenAI profile is fine alongside `homeScope: "user"`; PASO keeps it
 for agent-scoped connections and simply does not hand it to the native home. Use
 `openclaw models auth list --provider openai` to inspect stored profiles and
 `openclaw models auth logout <profileId> --yes` to remove one you no longer want.
 
 Owner turns gain the `codex_threads` tool: list, search, read, fork, rename,
 archive, and restore native threads. Fork a thread to continue it in
-OpenClaw; the fork attaches to the current OpenClaw session and stays
+PASO; the fork attaches to the current PASO session and stays
 visible to other native Codex clients. Archiving requires explicit
 confirmation that the thread is closed elsewhere. When supervision is also
 enabled, transcript fields and mutations require the matching
@@ -345,7 +345,7 @@ user-home stdio sessions.
 
 `appServer.homeScope: "user"` alone does not control the fleet catalog. Native
 session discovery is enabled while the plugin is active; set
-`sessionCatalog.enabled: false` to remove it from the OpenClaw sidebar without
+`sessionCatalog.enabled: false` to remove it from the PASO sidebar without
 disabling Codex. The catalog uses a separate supervision connection; without
 explicit `appServer` connection settings, that connection defaults to managed
 user-home stdio while the ordinary harness stays agent-scoped. Explicit
@@ -361,7 +361,7 @@ history. Its private binding uses the supervision connection for the native
 snapshot, canonical branch, and later turns while ordinary Codex sessions remain
 agent-scoped. The first canonical start uses exactly the model and provider that
 Codex returns for the snapshot fork. Later resumes leave selection to Codex's
-native configuration; the outer OpenClaw model and fallback chain never replace
+native configuration; the outer PASO model and fallback chain never replace
 it. Stored and idle local rows can be archived after explicit no-other-runner
 confirmation. Active sources cannot create a branch or be archived; an existing
 supervised Chat can still be opened. Paired-node sessions expose bounded,
@@ -376,20 +376,20 @@ rules, paired-node limits, metadata exposure, and troubleshooting.
 
 ## Configuration
 
-| Need                                                | Set                                                                                                       | Where                              |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| Enable the harness                                  | `plugins.entries.codex.enabled: true`                                                                     | OpenClaw config                    |
-| Hide native Codex session discovery                 | `plugins.entries.codex.config.sessionCatalog.enabled: false`                                              | Codex plugin config                |
-| Include additional local Codex stores (stdio only)  | `plugins.entries.codex.config.sessionCatalog.homes`                                                       | Codex plugin config                |
-| Keep an allowlisted plugin install                  | Include `codex` in `plugins.allow`                                                                        | OpenClaw config                    |
-| Allow eligible OpenAI turns to use Codex implicitly | Exact official HTTPS Responses/ChatGPT route, no authored provider request override, runtime unset/`auto` | OpenAI provider/model config       |
-| Sign in with ChatGPT/Codex OAuth                    | `openclaw models auth login --provider openai`                                                            | CLI auth profile                   |
-| Add API-key backup for Codex runs                   | `openai:*` API-key profile listed after subscription auth in `auth.order.openai`                          | CLI auth profile + OpenClaw config |
-| Fail closed when Codex is unavailable               | Provider or model `agentRuntime.id: "codex"`                                                              | OpenClaw model/provider config     |
-| Use direct OpenAI API traffic                       | Provider or model `agentRuntime.id: "openclaw"` with normal OpenAI auth                                   | OpenClaw model/provider config     |
-| Tune app-server behavior                            | `plugins.entries.codex.config.appServer.*`                                                                | Codex plugin config                |
-| Enable native Codex plugin apps                     | `plugins.entries.codex.config.codexPlugins.*`                                                             | Codex plugin config                |
-| Enable Codex Computer Use                           | `plugins.entries.codex.config.computerUse.*`                                                              | Codex plugin config                |
+| Need                                                | Set                                                                                                       | Where                          |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Enable the harness                                  | `plugins.entries.codex.enabled: true`                                                                     | PASO config                    |
+| Hide native Codex session discovery                 | `plugins.entries.codex.config.sessionCatalog.enabled: false`                                              | Codex plugin config            |
+| Include additional local Codex stores (stdio only)  | `plugins.entries.codex.config.sessionCatalog.homes`                                                       | Codex plugin config            |
+| Keep an allowlisted plugin install                  | Include `codex` in `plugins.allow`                                                                        | PASO config                    |
+| Allow eligible OpenAI turns to use Codex implicitly | Exact official HTTPS Responses/ChatGPT route, no authored provider request override, runtime unset/`auto` | OpenAI provider/model config   |
+| Sign in with ChatGPT/Codex OAuth                    | `openclaw models auth login --provider openai`                                                            | CLI auth profile               |
+| Add API-key backup for Codex runs                   | `openai:*` API-key profile listed after subscription auth in `auth.order.openai`                          | CLI auth profile + PASO config |
+| Fail closed when Codex is unavailable               | Provider or model `agentRuntime.id: "codex"`                                                              | PASO model/provider config     |
+| Use direct OpenAI API traffic                       | Provider or model `agentRuntime.id: "openclaw"` with normal OpenAI auth                                   | PASO model/provider config     |
+| Tune app-server behavior                            | `plugins.entries.codex.config.appServer.*`                                                                | Codex plugin config            |
+| Enable native Codex plugin apps                     | `plugins.entries.codex.config.codexPlugins.*`                                                             | Codex plugin config            |
+| Enable Codex Computer Use                           | `plugins.entries.codex.config.computerUse.*`                                                              | Codex plugin config            |
 
 Prefer `auth.order.openai` for subscription-first/API-key-backup ordering.
 Existing legacy Codex auth profile ids and legacy Codex auth order are
@@ -413,13 +413,13 @@ cutoff controls are runtime controls, not request overrides.
 
 ### Restricted turns and ring zero
 
-OpenClaw applies Codex restrictions per turn, not as a permanent session mode.
+PASO applies Codex restrictions per turn, not as a permanent session mode.
 An existing session can therefore run one restricted turn and return to its
 normal Codex thread on the next unrestricted turn. When a restriction is
-temporary, OpenClaw preserves the normal thread binding and uses a temporary
+temporary, PASO preserves the normal thread binding and uses a temporary
 restricted thread where necessary.
 
-An ordinary **policy-restricted turn** occurs when an explicit OpenClaw tool
+An ordinary **policy-restricted turn** occurs when an explicit PASO tool
 policy cannot be mapped safely onto Codex's native tool surface. Common
 triggers include:
 
@@ -431,20 +431,20 @@ triggers include:
   scheduled, or runtime tool policy with one of those restrictions
 
 Default tool-profile narrowing alone does not trigger this mode. A deny list
-containing only audited OpenClaw-owned tools can also stay on the normal native
+containing only audited PASO-owned tools can also stay on the normal native
 surface; the harness enforces those denies without disabling unrelated Codex
 capabilities. See [Native tool-policy enforcement](/plugins/sdk-agent-harness#native-tool-policy-enforcement)
 for the generic harness contract and [Codex harness reference](/plugins/codex-harness-reference#restricted-turns)
 for the current Codex rules.
 
-For an ordinary policy-restricted turn, OpenClaw disables Codex native Code
+For an ordinary policy-restricted turn, PASO disables Codex native Code
 Mode, removes environment selections, disables and verifies inherited and
-configured MCP servers, disables native hook relays, and filters OpenClaw
+configured MCP servers, disables native hook relays, and filters PASO
 dynamic tools through the effective policy. The bounded workspace `AGENTS.md`
 snapshot still reaches the model as thread-level developer instructions because
 project instructions are context, not tool authority.
 
-**Ring zero** is stronger and separate. It is the host-owned OpenClaw system
+**Ring zero** is stronger and separate. It is the host-owned PASO system
 agent used for setup and repair operations. The host activates it with the
 single `openclaw` tool; normal agent config cannot opt a chat into ring zero.
 Ring-zero turns keep only that host-scoped tool, replace ambient Codex
@@ -460,12 +460,12 @@ synonyms for ring zero.
 ### Project instructions
 
 Codex loads `AGENTS.md` files through native project-document discovery. For
-normal app-server threads, OpenClaw raises Codex's aggregate root-to-working-
+normal app-server threads, PASO raises Codex's aggregate root-to-working-
 directory budget from the upstream 32 KiB default to a bounded 128 KiB so later
 scoped instructions are not silently clipped. Ordinary conversation tool-policy
 restrictions preserve that budget because project instructions are context, not
 tool authority. Their isolated native environment cannot read workspace files,
-so OpenClaw supplies the bounded workspace `AGENTS.md` snapshot as thread-level
+so PASO supplies the bounded workspace `AGENTS.md` snapshot as thread-level
 developer instructions. Lightweight, ring-zero, message-only, and tool-disabled
 internal turns set the native project-document budget to zero instead.
 
@@ -481,13 +481,13 @@ whether any individual file was fully loaded or truncated.
 
 Do not set `compaction.model` or `compaction.provider` on Codex-backed
 agents. Codex compacts through its native app-server thread state, so
-OpenClaw ignores those local summarizer overrides at runtime, and
+PASO ignores those local summarizer overrides at runtime, and
 `openclaw doctor --fix` removes them when the agent uses Codex.
 
 An authored `models.providers.*.models[].contextTokens` cap is forwarded to
 Codex thread start and resume as `model_context_window`. Codex clamps the value
 to the model's native maximum and derives automatic compaction from the capped
-window. When the model entry has no authored cap, OpenClaw sends no override.
+window. When the model entry has no authored cap, PASO sends no override.
 
 Lossless remains supported as a context engine for assembly, ingestion, and
 maintenance around Codex turns, configured through
@@ -503,7 +503,7 @@ do not provide that host capability.
 For Codex-backed agents, `/compact` starts native Codex app-server
 compaction on the bound thread and waits for its terminal result. The shared
 `agents.defaults.compaction.timeoutSeconds` budget applies; on timeout,
-OpenClaw asks Codex to interrupt the native turn and keeps the per-thread fence
+PASO asks Codex to interrupt the native turn and keeps the per-thread fence
 until termination is confirmed. It never falls back to a context engine or
 public OpenAI summarizer. If the native Codex thread binding is missing or
 stale, the command fails closed instead of silently switching compaction
@@ -573,8 +573,8 @@ refresh_interval_ms = 300000
 
 The auth helper must print only the key to stdout. Do not put it in TOML.
 
-For the OpenClaw Codex app-server harness, keep the default agent-scoped Codex
-home and let OpenClaw inject an `openai` API-key profile. Create the profile by
+For the PASO Codex app-server harness, keep the default agent-scoped Codex
+home and let PASO inject an `openai` API-key profile. Create the profile by
 the normal OpenAI API-key auth flow, put its actual id first in
 `auth.order.openai`, and pass the catalog and context limits as native Codex
 app-server arguments:
@@ -632,7 +632,7 @@ rather than relying on `homeScope: "user"` to provide the intended credential.
 
 The model catalog, `model_context_window`, total-scope automatic compaction
 limit, exact `openai/gpt-5.6-sol` route, and API-key profile order form one
-configuration unit. Apply them together. OpenClaw can keep embedded and native
+configuration unit. Apply them together. PASO can keep embedded and native
 long-context choices at the same time only when their model refs or agent
 configurations are distinguishable; one model entry cannot carry both
 runtime-owned compaction strategies.
@@ -651,7 +651,7 @@ of `875900`. Active context grew from `197032` to `377386`, `561957`, and
 automatic compaction to `75980` active tokens, with a minimum after-compaction
 snapshot of `68375`. Compaction took `2810` ms and persisted a count of one. A
 durable marker survived compaction and restart, a deterministic long response
-produced `5442` output tokens, and OpenClaw sent the Codex app-server tier
+produced `5442` output tokens, and PASO sent the Codex app-server tier
 `priority` on every call. That request evidence does not prove which upstream
 tier processed each call. The full suite took `401.37` seconds. These timings
 are observations, not service-level guarantees.
@@ -662,7 +662,7 @@ OpenAI bills the entire request at 2× input and cache rates and 1.5× output
 rates. Fast-mode pricing is model-specific; GPT-5.6 Sol API Fast mode (formerly
 Priority processing) is currently another 2× over Standard, so this recipe is
 4× short-context Standard input-side pricing and 3× short-context Standard
-output pricing. OpenClaw currently sends the wire value
+output pricing. PASO currently sends the wire value
 `service_tier: "priority"`. ChatGPT/Codex-credit Fast mode is separate: GPT-5.6
 and GPT-5.5 currently consume 2.5× Standard credits, while this API-key Codex
 route uses API token pricing. The API remains authoritative for access, actual
@@ -696,7 +696,7 @@ Then check Codex app-server state:
 /codex binding
 ```
 
-After installing or updating OpenClaw, explicitly verify the managed package
+After installing or updating PASO, explicitly verify the managed package
 binary before cutover:
 
 ```bash
@@ -705,10 +705,10 @@ openclaw doctor --lint --only codex/managed-app-server --json
 
 For an effective Codex route using the managed stdio app-server, this
 default-disabled check resolves the platform-native executable and requires the
-exact Codex version pinned by OpenClaw. It does not execute custom, remote, or
+exact Codex version pinned by PASO. It does not execute custom, remote, or
 macOS desktop-owned app-servers.
 
-`/status` reports the resolved OpenClaw Fast policy (`on`, `off`, or `auto`)
+`/status` reports the resolved PASO Fast policy (`on`, `off`, or `auto`)
 and the selected runtime. It does not report the upstream service tier actually
 honored or returned for a completed request. `/codex binding` reports the
 attached native thread and current model settings. `/codex status` reports
@@ -733,7 +733,7 @@ Keep provider refs and runtime policy separate:
 - `agentRuntime.id: "codex"` makes Codex a fail-closed requirement for a
   compatible route. It does not make an incompatible effective route compatible.
 - `agentRuntime.id: "openclaw"` opts a provider or model into the embedded
-  OpenClaw runtime when that is intentional.
+  PASO runtime when that is intentional.
 - `/codex ...` controls native Codex app-server conversations from chat.
 - ACP/acpx is a separate external harness path. Use it only when the user
   asks for ACP/acpx or an external harness adapter.
@@ -761,7 +761,7 @@ Keep provider refs and runtime policy separate:
 | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | --------------------------------------- | ---------------------------------------------------------- |
 | Eligible OpenAI route with native Codex runtime | Exact official HTTPS Responses/ChatGPT route with no authored provider request override, plus enabled `codex` plugin | `/status` shows `Runtime: OpenAI Codex` | Valid Fast runtime controls do not disqualify this path    |
 | Fail closed if Codex is unavailable             | Provider or model `agentRuntime.id: "codex"`                                                                         | Missing harness fails the turn          | Authored request overrides may still use declared fallback |
-| Direct OpenAI API-key traffic through OpenClaw  | Provider or model `agentRuntime.id: "openclaw"` and normal OpenAI auth                                               | `/status` shows OpenClaw runtime        | Use only when OpenClaw is intentional                      |
+| Direct OpenAI API-key traffic through PASO      | Provider or model `agentRuntime.id: "openclaw"` and normal OpenAI auth                                               | `/status` shows PASO runtime            | Use only when PASO is intentional                          |
 | Legacy config                                   | legacy Codex GPT refs                                                                                                | `openclaw doctor --fix` rewrites it     | Do not write new config this way                           |
 | ACP/acpx Codex adapter                          | ACP `sessions_spawn({ runtime: "acp" })`                                                                             | ACP task/session status                 | Separate from native Codex harness                         |
 
@@ -859,16 +859,16 @@ fail-closed rule:
 }
 ```
 
-With Codex forced, OpenClaw fails early if the plugin is disabled, the app-server
+With Codex forced, PASO fails early if the plugin is disabled, the app-server
 is too old or cannot start, or route/auth support is rejected without a declared
 fallback. Authored request overrides may instead use the
-[selection-time OpenClaw fallback](/concepts/agent-runtimes#runtime-selection)
+[selection-time PASO fallback](/concepts/agent-runtimes#runtime-selection)
 that preserves the exact request. Once Codex starts, its failures are not replayed
-through OpenClaw.
+through PASO.
 
 ## App-server policy
 
-By default, the plugin starts OpenClaw's managed Codex binary locally with
+By default, the plugin starts PASO's managed Codex binary locally with
 stdio transport. Set `appServer.command` only to intentionally run a
 different executable. Codex classifies WebSocket transport as experimental
 and unsupported; use it only for non-production testing against an app-server
@@ -907,15 +907,15 @@ transports do not perform these remote connection checks.
 Local stdio app-server sessions default to the trusted local operator
 posture: `approvalPolicy: "never"`, `approvalsReviewer: "user"`, and
 `sandbox: "danger-full-access"`. If local Codex requirements disallow that
-implicit YOLO posture, OpenClaw selects allowed guardian permissions
-instead. When an OpenClaw sandbox is active for the session, OpenClaw
+implicit YOLO posture, PASO selects allowed guardian permissions
+instead. When a PASO sandbox is active for the session, PASO
 disables Codex native Code Mode, user MCP servers, and app-backed plugin
 execution for that turn instead of relying on Codex host-side sandboxing.
-Shell access instead goes through OpenClaw sandbox-backed dynamic tools such
+Shell access instead goes through PASO sandbox-backed dynamic tools such
 as `sandbox_exec` and `sandbox_process` when the normal exec/process tools
 are available.
 
-Use normalized OpenClaw exec mode for Codex native auto-review before
+Use normalized PASO exec mode for Codex native auto-review before
 sandbox escapes or extra permissions:
 
 ```json5
@@ -939,11 +939,11 @@ For Codex app-server sessions, `tools.exec.mode: "auto"` maps to Codex
 Guardian-reviewed approvals: usually `approvalPolicy: "on-request"`,
 `approvalsReviewer: "auto_review"`, and `sandbox: "workspace-write"` when
 local requirements allow those values. In `tools.exec.mode: "auto"`,
-OpenClaw does not preserve legacy unsafe Codex `approvalPolicy: "never"` or
+PASO does not preserve legacy unsafe Codex `approvalPolicy: "never"` or
 `sandbox: "danger-full-access"` overrides; use `tools.exec.mode: "full"` for
 an intentional no-approval Codex posture. The legacy
 `plugins.entries.codex.config.appServer.mode: "guardian"` preset still
-works, but `tools.exec.mode: "auto"` is the normalized OpenClaw surface.
+works, but `tools.exec.mode: "auto"` is the normalized PASO surface.
 
 For the mode-level comparison with host exec approvals and ACPX
 permissions, see [Permission modes](/tools/permission-modes). For every
@@ -953,7 +953,7 @@ see [Codex harness reference](/plugins/codex-harness-reference).
 ### Native approval audit evidence
 
 With `tools.exec.mode: "ask"` and the Codex user reviewer, native command and
-file prompts use OpenClaw's two-phase operator approval route. The prompt shows
+file prompts use PASO's two-phase operator approval route. The prompt shows
 only decisions that the native request can preserve. For example, a command
 that permits one execution but not session trust offers allow-once and deny;
 byte-bound script approvals also remain one-shot. File prompts support both
@@ -966,7 +966,7 @@ inspect the admitted run with
 can report allow-once, allow-always, denial, no-route, expiry, or cancellation
 without exposing command text, patch content, paths, or native request ids.
 
-Codex auto-review, full-access policy, and native hook or OpenClaw policy
+Codex auto-review, full-access policy, and native hook or PASO policy
 decisions do not create an operator approval row. Missing or stale native turn
 context is rejected before routing. These cases therefore do not produce an
 enforced operator-approval receipt; audit inspection does not reconstruct one
@@ -975,7 +975,7 @@ from later tool events.
 ## Commands and diagnostics
 
 The `codex` plugin registers `/codex` as a slash command on any channel that
-supports OpenClaw text commands.
+supports PASO text commands.
 
 Native execution, control, and host-wide inspection require an owner or an
 `operator.admin` Gateway client. This includes binding or resuming threads,
@@ -993,8 +993,8 @@ Common forms:
   limits, MCP servers, and skills.
 - `/codex models` lists live Codex app-server models.
 - `/codex threads [filter]` lists recent Codex app-server threads.
-- `/codex goal` reads or updates the attached thread's native Codex goal. Codex automatic goal continuation stays disabled; OpenClaw does not own autonomous follow-on turns yet.
-- `/codex resume <thread-id>` attaches the current OpenClaw session to an
+- `/codex goal` reads or updates the attached thread's native Codex goal. Codex automatic goal continuation stays disabled; PASO does not own autonomous follow-on turns yet.
+- `/codex resume <thread-id>` attaches the current PASO session to an
   existing Codex thread.
 - `/codex bind [thread-id] [--cwd <path>] [--model <model>] [--provider <provider>]`
   attaches the current chat.
@@ -1035,27 +1035,27 @@ Use [Codex supervision](/plugins/codex-supervision) or native Codex to continue
 threads in a shared user home or on another app-server.
 
 Native child threads controlled by a parent cannot be attached with `/codex
-resume` or `/codex bind`. OpenClaw reports that restriction and keeps the current
+resume` or `/codex bind`. PASO reports that restriction and keeps the current
 binding. Continue the child through its native parent instead.
 
 Codex cannot replace a thread's dynamic tool catalog during resume. If that
 catalog differs from the current harness tools, its metadata cannot be read,
-or Codex cannot confirm that it applied the configuration, OpenClaw reports
+or Codex cannot confirm that it applied the configuration, PASO reports
 the problem and keeps the selected native thread intact. It does not silently
 start another thread. Use `/new` to start with the current harness tools, or
 continue the preserved thread in native Codex.
 
 ### Shared Fast mode and Codex fast mode
 
-`/fast` controls the shared OpenClaw policy. A directive-only `/fast off`
-persists `off` in the OpenClaw session and sends `null` on affected Codex
-harness turns to clear the OpenClaw-owned service-tier override. `/fast default`
+`/fast` controls the shared PASO policy. A directive-only `/fast off`
+persists `off` in the PASO session and sends `null` on affected Codex
+harness turns to clear the PASO-owned service-tier override. `/fast default`
 clears only that session layer, so lower-precedence shared defaults may still
 resolve to `on`, `off`, or `auto`.
 
 `/codex fast` instead changes the bound native Codex conversation preference.
 `/codex fast off` stores `flex` for later conversation-bound native turns; it
-is not a synonym for `/fast off`, and it does not change the shared OpenClaw
+is not a synonym for `/fast off`, and it does not change the shared PASO
 session policy. When a shared Fast-mode run control reaches a Codex harness
 turn, it supersedes `plugins.entries.codex.config.appServer.serviceTier` and
 any binding preference that applies to that turn: Fast on sends `priority`,
@@ -1101,7 +1101,7 @@ In the default per-agent home, auth is selected in this order:
    `OPENAI_API_KEY`, when no app-server account is present and OpenAI auth
    is still required.
 
-When OpenClaw sees a ChatGPT subscription-style Codex auth profile, it
+When PASO sees a ChatGPT subscription-style Codex auth profile, it
 removes `CODEX_API_KEY` and `OPENAI_API_KEY` from the spawned Codex child
 process. That keeps Gateway-level API keys available for embeddings or
 direct OpenAI models without making native Codex app-server turns bill
@@ -1111,13 +1111,13 @@ child-process env. WebSocket app-server connections do not receive Gateway
 env API-key fallback; use an explicit auth profile or the remote
 app-server's own account.
 
-If a subscription profile hits a Codex usage limit, OpenClaw records the
+If a subscription profile hits a Codex usage limit, PASO records the
 reset time when Codex reports one and tries the next ordered auth profile
 for the same Codex run. When the reset time passes, the subscription
 profile becomes eligible again without changing the selected `openai/gpt-*`
 model or Codex runtime.
 
-When native Codex plugins are configured, OpenClaw reads and caches one
+When native Codex plugins are configured, PASO reads and caches one
 runtime-and-workspace-scoped `plugin/installed` snapshot. That one snapshot
 covers configured plugins from Codex-discovered marketplaces, including
 disabled plugin ownership. `plugin/read` resolves only explicitly configured
@@ -1127,47 +1127,47 @@ owner- or administrator-authorized installation path. Routine thread setup
 retains existing explicitly configured curated-plugin recovery.
 
 `app/installed` supplies the installed app runtime snapshot, and `app/read`
-supplies authenticated app metadata in batches of at most 100 app IDs. OpenClaw
+supplies authenticated app metadata in batches of at most 100 app IDs. PASO
 force-refreshes a cold snapshot once and consolidates successful curated
 installations into one app-inventory refresh. Ordinary cached reads do not
 force a connector refresh for every thread.
 
 An authorized app can initially appear disabled or non-callable because Codex
 has not yet applied the target thread's restrictive app configuration.
-OpenClaw provisionally admits only explicitly allowed, ownership-proven apps,
+PASO provisionally admits only explicitly allowed, ownership-proven apps,
 starts the thread with `_default.enabled = false`, and reads `app/installed`
 once with that thread's ID and `forceRefresh: false`. An app is exposed only
 after Codex confirms it is enabled and callable for the actual thread. Missing
 metadata, revoked auth, managed restrictions, workspace policy, and unavailable
 tools remain fail-closed.
 
-The check runs before OpenClaw starts a turn or commits a thread binding. A
+The check runs before PASO starts a turn or commits a thread binding. A
 failed persistent provisional thread is deleted; an ephemeral thread is
-unsubscribed. If cleanup cannot be confirmed, OpenClaw retires the app-server
+unsubscribed. If cleanup cannot be confirmed, PASO retires the app-server
 connection instead of reusing an unsafe thread.
 
 Account-wide app access never overrides an explicitly disabled configured
-workspace plugin. When `app/read` omits that plugin's ownership, OpenClaw uses
+workspace plugin. When `app/read` omits that plugin's ownership, PASO uses
 the `plugin/installed` snapshot and reads only the exact configured plugin's
 details to keep its apps denied. This check never installs, enables, or
 authenticates the plugin.
 
-OpenClaw does not install unknown apps or let the model authorize new plugin
+PASO does not install unknown apps or let the model authorize new plugin
 installs. Owner-approved plugin installation refreshes the target runtime
 inventory. Missing inventory methods, authentication errors, transport
 failures, and connector refresh failures fail closed.
 
 ### Environment isolation
 
-For local stdio app-server launches, OpenClaw sets `CODEX_HOME` to a
+For local stdio app-server launches, PASO sets `CODEX_HOME` to a
 per-agent directory so Codex config, auth/account files, plugin cache/data,
 and native thread state do not read or write the operator's personal
-`~/.codex` by default. OpenClaw preserves the normal process `HOME`;
+`~/.codex` by default. PASO preserves the normal process `HOME`;
 Codex-run subprocesses can still find user-home config and tokens, and
 Codex may discover shared `$HOME/.agents/skills` and
 `$HOME/.agents/plugins/marketplace.json` entries. With
-`appServer.homeScope: "user"`, OpenClaw instead uses the native user Codex
-home and its existing account without injecting an OpenClaw auth profile.
+`appServer.homeScope: "user"`, PASO instead uses the native user Codex
+home and its existing account without injecting a PASO auth profile.
 
 If a deployment needs additional environment isolation, add those
 variables to `appServer.clearEnv`:
@@ -1190,7 +1190,7 @@ variables to `appServer.clearEnv`:
 ```
 
 `appServer.clearEnv` only affects the spawned Codex app-server child
-process. OpenClaw removes `CODEX_HOME` and `HOME` from this list during
+process. PASO removes `CODEX_HOME` and `HOME` from this list during
 local launch normalization: `CODEX_HOME` stays pointed at the selected
 agent or user scope, and `HOME` stays inherited so subprocesses can use
 normal user-home state.
@@ -1206,34 +1206,34 @@ Malformed or unknown options and code-loading options such as `--require` or
 
 ### Dynamic tools and web search
 
-Codex dynamic tools default to `searchable` loading. OpenClaw normally does
+Codex dynamic tools default to `searchable` loading. PASO normally does
 not expose dynamic tools that duplicate Codex-native workspace operations:
 `read`, `write`, `edit`, `apply_patch`, `exec`, `process`,
 `get_goal`, `create_goal`, `update_goal`, `tool_call`, `tool_describe`,
 `tool_search`, and `tool_search_code`. Goal operations stay native to Codex,
-so OpenClaw does not project a second goal store into Codex turns. Most
-remaining OpenClaw integration tools, such as messaging, media, cron,
+so PASO does not project a second goal store into Codex turns. Most
+remaining PASO integration tools, such as messaging, media, cron,
 browser, nodes, gateway, `progress_card`, and `heartbeat_respond` are available through
 Codex tool search under the `openclaw` namespace, keeping the initial model
 context smaller. The restricted-turn shell fallback is the exception for
 `exec` and `process` when a finite allowlist disables native Code Mode;
 runtime allowlists and `codexDynamicToolsExclude` still apply.
 When native shell remains active and Gateway access is policy-eligible,
-OpenClaw instead publishes the distinct `gateway_exec` and `gateway_process`
-names so native shell and the OpenClaw-managed environment path cannot be
+PASO instead publishes the distinct `gateway_exec` and `gateway_process`
+names so native shell and the PASO-managed environment path cannot be
 confused.
 
-Tools marked `catalogMode: "direct-only"`, including the OpenClaw `computer`
+Tools marked `catalogMode: "direct-only"`, including the PASO `computer`
 tool, use the `openclaw_direct` namespace instead. Codex treats that namespace
 as `DirectModelOnly`, so those tools stay directly model-visible in normal and
 code-mode-only threads rather than crossing nested Code Mode `tools.*` calls.
 
 Web search uses Codex's hosted `web_search` tool by default when search is
 enabled and no managed provider is selected. Native hosted search and
-OpenClaw's managed `web_search` dynamic tool are mutually exclusive so
-managed search cannot bypass native domain restrictions. OpenClaw uses the
+PASO's managed `web_search` dynamic tool are mutually exclusive so
+managed search cannot bypass native domain restrictions. PASO uses the
 managed tool when hosted search is unavailable, explicitly disabled, or
-replaced by a selected managed provider. OpenClaw keeps Codex's standalone
+replaced by a selected managed provider. PASO keeps Codex's standalone
 `web.run` extension disabled because production app-server traffic rejects
 its user-defined `web` namespace. `tools.web.search.enabled: false`
 disables both paths, as do tool-disabled LLM-only runs. Codex treats
@@ -1247,8 +1247,8 @@ restricted thread and preserve the existing binding for later resume.
 `sessions_yield`, `sessions_spawn`, and message-tool-only source replies stay
 direct because they are turn-control or delegation contracts. Guidance still
 prefers Codex's native `spawn_agent` as the primary Codex subagent surface,
-while explicit OpenClaw or ACP delegation remains directly callable through
-`sessions_spawn`. In Codex Code Mode, generic OpenClaw
+while explicit PASO or ACP delegation remains directly callable through
+`sessions_spawn`. In Codex Code Mode, generic PASO
 dynamic-tool results are JSON text rather than JavaScript objects, so parse
 JSON-looking results before reading fields. Codex also serializes nested
 dynamic calls; submit several `sessions_spawn` calls in a bounded loop rather
@@ -1266,44 +1266,44 @@ debugging the full tool payload.
 
 Supported top-level Codex plugin fields:
 
-| Field                      | Default        | Meaning                                                                                  |
-| -------------------------- | -------------- | ---------------------------------------------------------------------------------------- |
-| `codexDynamicToolsLoading` | `"searchable"` | Use `"direct"` to put OpenClaw dynamic tools directly in the initial Codex tool context. |
-| `codexDynamicToolsExclude` | `[]`           | Additional OpenClaw dynamic tool names to omit from Codex app-server turns.              |
-| `codexPlugins`             | disabled       | Native Codex plugin/app support for migrated source-installed curated plugins.           |
-| `sessionCatalog`           | enabled        | Sidebar discovery for native Codex sessions on this Gateway and eligible paired nodes.   |
-| `supervision`              | disabled       | Agent-facing native-session transcript and write-control policy.                         |
+| Field                      | Default        | Meaning                                                                                |
+| -------------------------- | -------------- | -------------------------------------------------------------------------------------- |
+| `codexDynamicToolsLoading` | `"searchable"` | Use `"direct"` to put PASO dynamic tools directly in the initial Codex tool context.   |
+| `codexDynamicToolsExclude` | `[]`           | Additional PASO dynamic tool names to omit from Codex app-server turns.                |
+| `codexPlugins`             | disabled       | Native Codex plugin/app support for migrated source-installed curated plugins.         |
+| `sessionCatalog`           | enabled        | Sidebar discovery for native Codex sessions on this Gateway and eligible paired nodes. |
+| `supervision`              | disabled       | Agent-facing native-session transcript and write-control policy.                       |
 
 Supported `appServer` fields:
 
 | Field                                         | Default                                                | Meaning                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | --------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `transport`                                   | `"stdio"`                                              | `"stdio"` spawns Codex; explicit `"unix"` connects to the local control socket; `"websocket"` connects to `url`.                                                                                                                                                                                                                                                                                                                   |
-| `homeScope`                                   | `"agent"`                                              | `"agent"` isolates ordinary harness state per OpenClaw agent. `"user"` is an explicit opt-in that shares the native `$CODEX_HOME` or `~/.codex`, uses native auth, and enables owner-only thread management. User scope supports local stdio or Unix transport. For the separate supervision connection, an unset value resolves to `"user"` for stdio or Unix and `"agent"` for WebSocket.                                        |
+| `homeScope`                                   | `"agent"`                                              | `"agent"` isolates ordinary harness state per PASO agent. `"user"` is an explicit opt-in that shares the native `$CODEX_HOME` or `~/.codex`, uses native auth, and enables owner-only thread management. User scope supports local stdio or Unix transport. For the separate supervision connection, an unset value resolves to `"user"` for stdio or Unix and `"agent"` for WebSocket.                                            |
 | `command`                                     | managed Codex binary                                   | Executable for stdio transport. Leave unset to use the managed binary; set it only for an explicit override.                                                                                                                                                                                                                                                                                                                       |
 | `args`                                        | `["app-server", "--listen", "stdio://"]`               | Arguments for stdio transport.                                                                                                                                                                                                                                                                                                                                                                                                     |
 | `url`                                         | unset                                                  | WebSocket App Server URL or `unix://` URL. An empty explicit Unix path selects the canonical user-home control socket.                                                                                                                                                                                                                                                                                                             |
 | `authToken`                                   | unset                                                  | Bearer token for WebSocket transport. Accepts a literal string or SecretInput such as `${CODEX_APP_SERVER_TOKEN}`.                                                                                                                                                                                                                                                                                                                 |
 | `headers`                                     | `{}`                                                   | Extra WebSocket headers. Header values accept literal strings or SecretInput values, for example `x-codex-client-session-token: "${CODEX_CLIENT_SESSION_TOKEN}"`.                                                                                                                                                                                                                                                                  |
-| `clearEnv`                                    | `[]`                                                   | Extra environment variable names removed from the spawned stdio app-server process after OpenClaw builds its inherited environment. OpenClaw keeps the selected `CODEX_HOME` and inherited `HOME` for local launches.                                                                                                                                                                                                              |
-| `codeModeOnly`                                | `false`                                                | Opt into Codex's code-mode-only tool surface. Ordinary OpenClaw dynamic tools remain available through nested `tools.*` calls; `openclaw_direct` tools stay directly model-visible.                                                                                                                                                                                                                                                |
-| `remoteWorkspaceRoot`                         | unset                                                  | Remote Codex app-server workspace root. OpenClaw maps the local cwd into this root and transfers authoritative remote attachments over an output-capped, no-shell `command/exec` reader. Paths escaping either workspace, symbolic links, oversized files, and unbounded attachment batches fail closed; uploads retain the configured channel identity and app-server request timeout.                                            |
+| `clearEnv`                                    | `[]`                                                   | Extra environment variable names removed from the spawned stdio app-server process after PASO builds its inherited environment. PASO keeps the selected `CODEX_HOME` and inherited `HOME` for local launches.                                                                                                                                                                                                                      |
+| `codeModeOnly`                                | `false`                                                | Opt into Codex's code-mode-only tool surface. Ordinary PASO dynamic tools remain available through nested `tools.*` calls; `openclaw_direct` tools stay directly model-visible.                                                                                                                                                                                                                                                    |
+| `remoteWorkspaceRoot`                         | unset                                                  | Remote Codex app-server workspace root. PASO maps the local cwd into this root and transfers authoritative remote attachments over an output-capped, no-shell `command/exec` reader. Paths escaping either workspace, symbolic links, oversized files, and unbounded attachment batches fail closed; uploads retain the configured channel identity and app-server request timeout.                                                |
 | `requestTimeoutMs`                            | `60000`                                                | Timeout for app-server control-plane calls.                                                                                                                                                                                                                                                                                                                                                                                        |
-| `turnCompletionIdleTimeoutMs`                 | `60000`                                                | Quiet window after Codex accepts a turn or after a turn-scoped app-server request while OpenClaw waits for `turn/completed`.                                                                                                                                                                                                                                                                                                       |
-| `turnAssistantCompletionIdleTimeoutMs`        | `10000`                                                | Quiet window after a final/non-commentary assistant item or pre-tool raw assistant completion arms the assistant-output release while OpenClaw still waits for `turn/completed`. Raising it gives Codex more time to emit `turn/completed` before OpenClaw interrupts and releases the session lane.                                                                                                                               |
-| `postToolRawAssistantCompletionIdleTimeoutMs` | `300000`                                               | Completion-idle and progress guard used after a tool handoff, native tool completion, post-tool raw assistant progress, raw reasoning completion, or reasoning progress while OpenClaw waits for `turn/completed`. Use this for trusted or heavy workloads where post-tool synthesis can legitimately stay quiet longer than the final assistant release budget.                                                                   |
+| `turnCompletionIdleTimeoutMs`                 | `60000`                                                | Quiet window after Codex accepts a turn or after a turn-scoped app-server request while PASO waits for `turn/completed`.                                                                                                                                                                                                                                                                                                           |
+| `turnAssistantCompletionIdleTimeoutMs`        | `10000`                                                | Quiet window after a final/non-commentary assistant item or pre-tool raw assistant completion arms the assistant-output release while PASO still waits for `turn/completed`. Raising it gives Codex more time to emit `turn/completed` before PASO interrupts and releases the session lane.                                                                                                                                       |
+| `postToolRawAssistantCompletionIdleTimeoutMs` | `300000`                                               | Completion-idle and progress guard used after a tool handoff, native tool completion, post-tool raw assistant progress, raw reasoning completion, or reasoning progress while PASO waits for `turn/completed`. Use this for trusted or heavy workloads where post-tool synthesis can legitimately stay quiet longer than the final assistant release budget.                                                                       |
 | `mode`                                        | `"yolo"` unless local Codex requirements disallow YOLO | Preset for YOLO or guardian-reviewed execution. Local stdio requirements that omit `danger-full-access`, `never` approval, or the `user` reviewer make the implicit default guardian.                                                                                                                                                                                                                                              |
 | `approvalPolicy`                              | `"never"` or an allowed guardian approval policy       | Native Codex approval policy sent to thread start/resume/turn. Guardian defaults prefer `"on-request"` when allowed.                                                                                                                                                                                                                                                                                                               |
-| `sandbox`                                     | `"danger-full-access"` or an allowed guardian sandbox  | Native Codex sandbox mode sent to thread start/resume. Guardian defaults prefer `"workspace-write"` when allowed, otherwise `"read-only"`. When an OpenClaw sandbox is active, `danger-full-access` turns use Codex `workspace-write` with network access derived from the OpenClaw sandbox egress setting.                                                                                                                        |
+| `sandbox`                                     | `"danger-full-access"` or an allowed guardian sandbox  | Native Codex sandbox mode sent to thread start/resume. Guardian defaults prefer `"workspace-write"` when allowed, otherwise `"read-only"`. When a PASO sandbox is active, `danger-full-access` turns use Codex `workspace-write` with network access derived from the PASO sandbox egress setting.                                                                                                                                 |
 | `approvalsReviewer`                           | `"user"` or an allowed guardian reviewer               | Use `"auto_review"` to let Codex review native approval prompts when allowed, otherwise `guardian_subagent` or `user`. `guardian_subagent` remains a legacy alias.                                                                                                                                                                                                                                                                 |
 | `serviceTier`                                 | unset                                                  | Native Codex app-server preference only. Any non-empty string passes through for forward compatibility; documented values are `"priority"` and `"flex"`. `null` clears the override, and legacy `"fast"` normalizes to `"priority"`. This is neither the shared Fast-mode setting nor a direct embedded OpenAI setting. A shared Fast run control supersedes it with `priority` or `null`, or decides per model call in auto mode. |
-| `networkProxy`                                | disabled                                               | Opt into Codex permissions-profile networking for app-server commands. OpenClaw defines the selected `permissions.<profile>.network` config and selects it with `default_permissions` instead of sending `sandbox`.                                                                                                                                                                                                                |
-| `experimental.sandboxExecServer`              | `false`                                                | Preview opt-in that registers an OpenClaw sandbox-backed Codex environment with the supported Codex app-server so native Codex execution can run inside the active OpenClaw sandbox.                                                                                                                                                                                                                                               |
+| `networkProxy`                                | disabled                                               | Opt into Codex permissions-profile networking for app-server commands. PASO defines the selected `permissions.<profile>.network` config and selects it with `default_permissions` instead of sending `sandbox`.                                                                                                                                                                                                                    |
+| `experimental.sandboxExecServer`              | `false`                                                | Preview opt-in that registers a PASO sandbox-backed Codex environment with the supported Codex app-server so native Codex execution can run inside the active PASO sandbox.                                                                                                                                                                                                                                                        |
 
 `appServer.networkProxy` is explicit because it changes the Codex sandbox
-contract. When enabled, OpenClaw also sets `features.network_proxy.enabled`
+contract. When enabled, PASO also sets `features.network_proxy.enabled`
 and `default_permissions` in the Codex thread config so the generated
-permission profile can start Codex managed networking. By default, OpenClaw
+permission profile can start Codex managed networking. By default, PASO
 generates a collision-resistant `openclaw-network-<fingerprint>` profile
 name from the profile body; use `profileName` only when a stable local name
 is required.
@@ -1347,40 +1347,40 @@ Domain entries use `allow` or `deny`; Unix socket entries use Codex's
 ### Image loader ownership
 
 For image-capable models with Codex native tools enabled, Codex owns
-`view_image` and OpenClaw suppresses its duplicate loader. The native Codex
+`view_image` and PASO suppresses its duplicate loader. The native Codex
 schema accepts one local filesystem `path`. For text-only models, or when the
-native tool surface is disabled, OpenClaw supplies `view_image` with its
+native tool surface is disabled, PASO supplies `view_image` with its
 `path`/`paths` schema and delegated vision route. Callers must use the schema
 advertised for the active run.
 
 ### Dynamic tool call timeouts
 
-OpenClaw-owned dynamic tool calls are bounded independently from
+PASO-owned dynamic tool calls are bounded independently from
 `appServer.requestTimeoutMs`: Codex `item/tool/call` requests use a 90
-second OpenClaw watchdog by default. A positive per-call `timeoutMs`
+second PASO watchdog by default. A positive per-call `timeoutMs`
 argument extends or shortens that specific tool budget, capped at 600000 ms.
 The `image_generate` tool uses `agents.defaults.mediaModels.image.timeoutMs`
 when the tool call does not provide its own timeout, or a 120 second
 image-generation default otherwise. The media-understanding `view_image` tool
 uses the selected image-capable `tools.media.models[]` entry's `timeoutSeconds` or its 60 second media default; for
 image understanding, that timeout applies to the request itself and is not
-reduced by earlier preparation work. On timeout, OpenClaw aborts the tool
+reduced by earlier preparation work. On timeout, PASO aborts the tool
 signal where supported and returns a failed dynamic-tool response to Codex
 so the turn can continue instead of leaving the session in `processing`.
 This watchdog is the outer dynamic `item/tool/call` budget; provider-specific
 request timeouts run inside that call and keep their own timeout semantics.
 
-After Codex accepts a turn, and after OpenClaw responds to a turn-scoped
+After Codex accepts a turn, and after PASO responds to a turn-scoped
 app-server request, the harness expects Codex to make current-turn progress
 and eventually finish the native turn with `turn/completed`. If the
-app-server goes quiet for `appServer.turnCompletionIdleTimeoutMs`, OpenClaw
+app-server goes quiet for `appServer.turnCompletionIdleTimeoutMs`, PASO
 best-effort interrupts the Codex turn, records a diagnostic timeout, and
-releases the OpenClaw session lane so follow-up chat messages are not
+releases the PASO session lane so follow-up chat messages are not
 queued behind a stale native turn. Most non-terminal notifications for the
 same turn disarm that short watchdog because Codex has proven the turn is
 still alive.
 
-Tool handoffs use a longer post-tool idle budget: after OpenClaw returns an
+Tool handoffs use a longer post-tool idle budget: after PASO returns an
 `item/tool/call` response, after native tool items such as
 `commandExecution` complete, after raw `custom_tool_call_output`
 completions, and after post-tool raw assistant progress, raw reasoning
@@ -1397,9 +1397,9 @@ immediately.
 
 Only final/non-commentary completed `agentMessage` items and pre-tool raw
 assistant completions arm the assistant-output release: if Codex then goes
-quiet without `turn/completed`, OpenClaw best-effort interrupts the native
+quiet without `turn/completed`, PASO best-effort interrupts the native
 turn and releases the session lane. If another turn watch wins that release
-race, OpenClaw still accepts the completed final assistant item once no
+race, PASO still accepts the completed final assistant item once no
 native request, item, or dynamic tool completion remains active and the
 assistant-output release still belongs to the latest completed item, with
 no later item completion. This can preserve the final answer after
@@ -1409,7 +1409,7 @@ stale earlier replies, and empty later completions do not qualify.
 Replay-safe stdio app-server failures, including turn-completion idle
 timeouts without assistant, tool, active-item, or side-effect evidence, are
 retried once on a fresh app-server attempt. Unsafe timeouts still retire the
-stuck app-server client and release the OpenClaw session lane; they also
+stuck app-server client and release the PASO session lane; they also
 clear the stale native thread binding instead of being replayed
 automatically. Completion-watch timeouts surface Codex-specific timeout
 text: replay-safe cases say the response may be incomplete, while unsafe
@@ -1438,8 +1438,8 @@ behavior in the same reviewed file as the rest of the Codex harness setup.
 ## Native Codex plugins
 
 Native Codex plugin support uses Codex app-server's own app and plugin
-capabilities in the same Codex thread as the OpenClaw harness turn. OpenClaw
-does not translate Codex plugins into synthetic `codex_plugin_*` OpenClaw
+capabilities in the same Codex thread as the PASO harness turn. PASO
+does not translate Codex plugins into synthetic `codex_plugin_*` PASO
 dynamic tools.
 
 `codexPlugins` affects only sessions that select the native Codex harness.
@@ -1473,7 +1473,7 @@ Minimal migrated config:
 }
 ```
 
-Thread app config is computed when OpenClaw establishes a Codex harness
+Thread app config is computed when PASO establishes a Codex harness
 session or replaces a stale Codex thread binding; it is not recomputed on
 every turn. After changing `codexPlugins`, use `/new`, `/reset`, or restart
 the gateway so future Codex harness sessions start with the updated app
@@ -1494,7 +1494,7 @@ for OpenAI's account and workspace-control overview.
 Computer Use has its own setup guide:
 [Codex Computer Use](/plugins/codex-computer-use).
 
-Short version: OpenClaw does not vendor the desktop-control app or execute
+Short version: PASO does not vendor the desktop-control app or execute
 desktop actions itself. It prepares Codex app-server, verifies that the
 `computer-use` MCP server is available, and then lets Codex own the native
 MCP tool calls during Codex-mode turns.
@@ -1503,24 +1503,24 @@ MCP tool calls during Codex-mode turns.
 
 The Codex harness changes the low-level embedded agent executor only.
 
-- OpenClaw dynamic tools are supported. Codex asks OpenClaw to execute
-  those tools, so OpenClaw remains in the execution path.
+- PASO dynamic tools are supported. Codex asks PASO to execute
+  those tools, so PASO remains in the execution path.
 - Codex-native shell, patch, MCP, and native app tools are owned by Codex.
-  OpenClaw can observe or block selected native events through the
+  PASO can observe or block selected native events through the
   supported relay, but it does not rewrite native tool arguments.
-- `gateway_exec` and `gateway_process` are OpenClaw-owned dynamic tools. They
+- `gateway_exec` and `gateway_process` are PASO-owned dynamic tools. They
   deliberately re-enter Gateway exec preparation for agent-readable Secret
   Store environment and protected egress; those values never flow into Codex
   native shell.
-- Codex owns native compaction. OpenClaw keeps a transcript mirror for
+- Codex owns native compaction. PASO keeps a transcript mirror for
   channel history, search, `/new`, `/reset`, and future model or harness
-  switching, but does not replace Codex compaction with an OpenClaw or
+  switching, but does not replace Codex compaction with a PASO or
   context-engine summarizer.
   Completed commentary and tool activity are saved during the turn rather than
   waiting for its final answer, preserving completed work across Gateway interruption.
 - Media generation, media understanding, TTS, approvals, and messaging-tool
-  output continue through the matching OpenClaw provider/model settings.
-- `tool_result_persist` applies to OpenClaw-owned transcript tool results,
+  output continue through the matching PASO provider/model settings.
+- `tool_result_persist` applies to PASO-owned transcript tool results,
   not Codex-native tool result records.
 
 For hook layers, supported V1 surfaces, native permission handling, queue
@@ -1534,12 +1534,12 @@ configs. Select an `openai/gpt-*` model, enable
 `plugins.entries.codex.enabled`, and check whether `plugins.allow` excludes
 `codex`.
 
-**OpenClaw uses the built-in harness instead of Codex:** confirm the effective
+**PASO uses the built-in harness instead of Codex:** confirm the effective
 route is an exact official HTTPS Platform Responses or ChatGPT Responses route,
 has no authored provider request override, and that the Codex plugin is installed
 and enabled. Affirmative reasoning support and native reasoning-effort metadata
 do not count as request overrides. Headers, request parameters, timeouts, and
-payload compatibility switches still do: Codex declares an OpenClaw fallback
+payload compatibility switches still do: Codex declares a PASO fallback
 that preserves the exact request, including for explicit runtime selections.
 Other unsupported routes/authentication and missing explicit harnesses fail
 closed. The `openai/gpt-*` prefix and `agentRuntime.id: "codex"` alone are not
@@ -1549,7 +1549,7 @@ execution proof; inspect the actual harness in the completed result. See
 **OpenAI Codex runtime falls back to the API-key path:** collect a redacted
 gateway excerpt that shows the model, runtime, selected provider, and
 failure. Ask affected collaborators to run this read-only command on their
-OpenClaw host:
+PASO host:
 
 ```bash
 (
@@ -1584,7 +1584,7 @@ whole-agent runtime pins, and preserves existing auth-profile overrides.
 **The app-server is rejected:** use Codex `0.149.0` or newer. Older, malformed,
 and unversioned servers are rejected. Newer semantic versions continue with a
 compatibility warning and normal runtime validation against the Codex version
-OpenClaw ships. Update or remove custom, remote, or desktop
+PASO ships. Update or remove custom, remote, or desktop
 binary overrides that select another version.
 
 **`/codex status` cannot connect:** check that the `codex` plugin
@@ -1593,7 +1593,7 @@ configured, and that any custom `appServer.command`, `url`, `authToken`, or
 headers are valid.
 
 **The Codex app-server uses too much memory:** distinguish the two processes
-first. OpenClaw runs the local Codex app-server as a separate Rust child.
+first. PASO runs the local Codex app-server as a separate Rust child.
 `NODE_OPTIONS=--max-old-space-size=...` changes only the Gateway's Node.js V8
 heap; it does not cap or enlarge Codex. Managed Gateway installs already choose
 an adaptive V8 heap, and raising it can leave less host memory for Codex. Use
@@ -1602,7 +1602,7 @@ for Gateway pressure, and inspect host or container memory for the Codex child.
 
 The bundled Codex has no heap or RSS limit and no configurable idle-unload
 delay. After the last client unsubscribes, an inactive thread can remain loaded
-for up to 30 minutes. OpenClaw independently keeps up to 64 idle conversation
+for up to 30 minutes. PASO independently keeps up to 64 idle conversation
 threads subscribed on each Codex app-server for 30 minutes after their last
 activity. This preserves warm sessions and session-scoped approvals when several
 conversations alternate. Active turns and parents with unfinished native
@@ -1642,7 +1642,7 @@ allocation. An OS hard limit can terminate Codex rather than backpressure it.
 See [Codex harness reference](/plugins/codex-harness-reference#model-discovery).
 
 **Codex plugin state has reached its row limit:** run `openclaw doctor` to
-check for bindings left behind by deleted or expired OpenClaw sessions. Stop
+check for bindings left behind by deleted or expired PASO sessions. Stop
 the Gateway, then run `openclaw doctor --fix` to remove proven orphaned session
 bindings after session repair. Doctor preserves supervised bindings, active
 leases, ambiguous ownership, and bindings whose session store cannot be read.
@@ -1656,19 +1656,19 @@ and unsupported; prefer managed stdio or the local Unix control socket.
 
 **Native shell or patch tools are blocked with `Native hook relay
 unavailable`:** the Codex thread is still trying to use a native hook relay
-id that OpenClaw no longer has registered. This is a native Codex hook
+id that PASO no longer has registered. This is a native Codex hook
 transport problem, not an ACP backend, provider, GitHub, or shell-command
 failure. Start a fresh session in the affected chat with `/new` or `/reset`,
 then retry a harmless command. If that works once but the next native tool
 call fails again, treat `/new` as a temporary workaround only: copy the
 prompt into a fresh session after restarting the Codex app-server or
-OpenClaw Gateway so old threads are dropped and native hook registrations
+PASO Gateway so old threads are dropped and native hook registrations
 are recreated.
 
 **Codex tool calls create too many short-lived hook processes:** set
 `plugins.entries.codex.config.appServer.loopDetectionPreToolUseRelay: false`
 and restart the gateway. This disables only the Codex `PreToolUse` subprocess
-used for OpenClaw loop detection and its no-policy marker. Required
+used for PASO loop detection and its no-policy marker. Required
 `before_tool_call` and trusted-tool policy relays remain enabled.
 
 **A non-Codex model uses the built-in harness:** expected unless provider

@@ -35,7 +35,7 @@ if (isProd && "serviceWorker" in navigator) {
   void navigator.serviceWorker
     .register(swUrl, { updateViaCache: "none" })
     .catch((error: unknown) => {
-      console.warn("OpenClaw service worker registration failed.", error);
+      console.warn("PASO service worker registration failed.", error);
     });
 } else if (!isProd && "serviceWorker" in navigator) {
   // Unregister any leftover dev SW to avoid stale cache issues.
@@ -48,8 +48,6 @@ if (isProd && "serviceWorker" in navigator) {
 
 function syncDocumentPublicAssetLinks() {
   setDocumentLinkHref('link[rel="icon"][type="image/svg+xml"]', "favicon.svg");
-  setDocumentLinkHref('link[rel="icon"][type="image/png"]', "favicon-32.png");
-  setDocumentLinkHref('link[rel="apple-touch-icon"]', "apple-touch-icon.png");
   setDocumentLinkHref('link[rel="manifest"]', "manifest.webmanifest");
 }
 

@@ -20,6 +20,9 @@ import {
 } from "./update-runner.js";
 
 const execFileSyncMock = vi.hoisted(() => vi.fn(() => "/tmp/openclaw-test-global-npmrc\n"));
+const ensurePasoGitOriginMock = vi.hoisted(() =>
+  vi.fn(async () => ({ status: "ok" as const, migrated: false })),
+);
 
 vi.mock("node:child_process", async (importOriginal) => {
   const actual = await importOriginal<typeof import("node:child_process")>();
@@ -28,6 +31,10 @@ vi.mock("node:child_process", async (importOriginal) => {
     execFileSync: execFileSyncMock,
   };
 });
+
+vi.mock("./paso-git-origin.js", () => ({
+  ensurePasoGitOrigin: ensurePasoGitOriginMock,
+}));
 
 type CommandResponse = { stdout?: string; stderr?: string; code?: number | null };
 type CommandResult = { stdout: string; stderr: string; code: number | null };
@@ -100,6 +107,8 @@ describe("runGatewayUpdate", () => {
 
   beforeEach(async () => {
     execFileSyncMock.mockClear();
+    ensurePasoGitOriginMock.mockClear();
+    ensurePasoGitOriginMock.mockResolvedValue({ status: "ok", migrated: false });
     tempDir = await fixtureRootTracker.make("case");
     await fs.writeFile(path.join(tempDir, "openclaw.mjs"), "export {};\n", "utf-8");
   });
@@ -125,8 +134,12 @@ describe("runGatewayUpdate", () => {
       if (key === `git -C ${tempDir} rev-parse HEAD`) {
         return { stdout: "abc123", stderr: "", code: 0 };
       }
-      if (key === `git -C ${tempDir} tag --list v* --sort=-v:refname`) {
-        return { stdout: `${params.stableTag}\n`, stderr: "", code: 0 };
+      if (key === `git -C ${tempDir} ls-remote --tags --refs origin refs/tags/v*`) {
+        return {
+          stdout: `abc123\trefs/tags/${params.stableTag}\n`,
+          stderr: "",
+          code: 0,
+        };
       }
       if (key === "pnpm --version") {
         return { stdout: PNPM_VERSION, stderr: "", code: 0 };
@@ -326,14 +339,18 @@ describe("runGatewayUpdate", () => {
     stableTag: string,
     options?: { additionalTags?: string[] },
   ): Record<string, CommandResponse> {
-    const tagOutput = [stableTag, ...(options?.additionalTags ?? [])].join("\n");
+    const tagOutput = [stableTag, ...(options?.additionalTags ?? [])]
+      .map((tag) => `abc123\trefs/tags/${tag}`)
+      .join("\n");
     return {
       "pnpm --version": { stdout: PNPM_VERSION },
       [`git -C ${tempDir} rev-parse --show-toplevel`]: { stdout: tempDir },
       [`git -C ${tempDir} rev-parse HEAD`]: { stdout: "abc123" },
       [`git -C ${tempDir} status --porcelain -- :!dist/control-ui/`]: { stdout: "" },
-      [`git -C ${tempDir} fetch --all --prune --tags`]: { stdout: "" },
-      [`git -C ${tempDir} tag --list v* --sort=-v:refname`]: { stdout: `${tagOutput}\n` },
+      [`git -C ${tempDir} fetch origin --prune --force --tags`]: { stdout: "" },
+      [`git -C ${tempDir} ls-remote --tags --refs origin refs/tags/v*`]: {
+        stdout: `${tagOutput}\n`,
+      },
       [`git -C ${tempDir} checkout --detach ${stableTag}`]: { stdout: "" },
     };
   }
@@ -478,7 +495,7 @@ describe("runGatewayUpdate", () => {
     const sourceRoot = await fixtureRootTracker.make("tracked-source");
     const localRoot = await fixtureRootTracker.make("tracked-local");
     await runRealGit(sourceRoot, "init", "--initial-branch=main");
-    await runRealGit(sourceRoot, "config", "user.name", "OpenClaw Test");
+    await runRealGit(sourceRoot, "config", "user.name", "PASO Test");
     await runRealGit(sourceRoot, "config", "user.email", "openclaw@example.com");
     await fs.writeFile(
       path.join(sourceRoot, "package.json"),
@@ -490,7 +507,7 @@ describe("runGatewayUpdate", () => {
     await runRealGit(sourceRoot, "commit", "-m", "base");
     const baseSha = await runRealGit(sourceRoot, "rev-parse", "HEAD");
     await runRealGit(path.dirname(localRoot), "clone", "--quiet", sourceRoot, localRoot);
-    await runRealGit(localRoot, "config", "user.name", "OpenClaw Test");
+    await runRealGit(localRoot, "config", "user.name", "PASO Test");
     await runRealGit(localRoot, "config", "user.email", "openclaw@example.com");
     if (detached) {
       await runRealGit(localRoot, "checkout", "--detach", baseSha);
@@ -756,6 +773,20 @@ describe("runGatewayUpdate", () => {
     },
   );
 
+  it("refuses a foreign source origin before fetching", async () => {
+    await setupGitCheckout();
+    ensurePasoGitOriginMock.mockResolvedValueOnce({
+      status: "error",
+      reason: "paso-origin-invalid",
+    });
+    const { runner, calls } = createRunner(buildGitWorktreeProbeResponses());
+
+    const result = await runWithRunner(runner);
+
+    expect(result).toMatchObject({ status: "error", reason: "paso-origin-invalid" });
+    expect(calls.some((call) => call.includes(" fetch "))).toBe(false);
+  });
+
   it("uses the supplied update cwd when the process cwd disappeared", async () => {
     await setupGitCheckout();
     const cwdSpy = vi.spyOn(process, "cwd").mockImplementation(() => {
@@ -787,7 +818,7 @@ describe("runGatewayUpdate", () => {
     { name: "target ref", options: { devTarget: { mode: "detached", ref: "main" } } },
   ] as const)("stops dev update when fetch fails before resolving $name", async ({ options }) => {
     await setupGitCheckout();
-    const fetchCommand = `git -C ${tempDir} fetch --all --prune --no-tags`;
+    const fetchCommand = `git -C ${tempDir} fetch origin --prune --no-tags`;
     const { runner, calls } = createRunner({
       ...buildGitWorktreeProbeResponses(),
       [fetchCommand]: {
@@ -814,7 +845,7 @@ describe("runGatewayUpdate", () => {
     });
     const { runner, calls } = createRunner({
       ...buildGitWorktreeProbeResponses(),
-      [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
       [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: {
         stdout: "origin/main",
       },
@@ -842,8 +873,8 @@ describe("runGatewayUpdate", () => {
     expect(beforeGitMutation).toHaveBeenCalledWith({
       schemaVersions: { state: 3, agent: 11 },
     });
-    expect(calls).toContain(`git -C ${tempDir} fetch --all --prune --no-tags`);
-    expect(calls).not.toContain(`git -C ${tempDir} fetch --all --prune --tags`);
+    expect(calls).toContain(`git -C ${tempDir} fetch origin --prune --no-tags`);
+    expect(calls).not.toContain(`git -C ${tempDir} fetch origin --prune --force --tags`);
     const cleanupIndex = calls.findIndex(
       (call) =>
         call.startsWith(`git -C ${tempDir} worktree remove --force `) &&
@@ -903,7 +934,7 @@ describe("runGatewayUpdate", () => {
     });
     const { runner } = createRunner({
       ...buildGitWorktreeProbeResponses(),
-      [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
       [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: {
         stdout: "origin/main",
       },
@@ -930,7 +961,7 @@ describe("runGatewayUpdate", () => {
     const beforeGitMutation = vi.fn<() => Promise<void>>();
     const { runner, calls } = createRunner({
       ...buildGitWorktreeProbeResponses({ branch: "feature" }),
-      [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
       [`git -C ${tempDir} show-ref --verify refs/heads/main`]: { stdout: "main\n" },
       [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name main@{upstream}`]: {
         code: 1,
@@ -1124,7 +1155,7 @@ describe("runGatewayUpdate", () => {
     const doctorCommand = `${doctorNodePath} ${path.join(tempDir, "openclaw.mjs")} doctor --non-interactive --fix`;
     const { runner, calls } = createRunner({
       ...buildGitWorktreeProbeResponses(),
-      [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
       [`git -C ${tempDir} remote`]: { stdout: "origin\n" },
       [`git -C ${tempDir} fetch origin +refs/tags/v2026.5.19-beta.2:refs/tags/v2026.5.19-beta.2`]: {
         stdout: "",
@@ -1149,8 +1180,8 @@ describe("runGatewayUpdate", () => {
     });
 
     expect(result.status).toBe("ok");
-    expect(calls).toContain(`git -C ${tempDir} fetch --all --prune --no-tags`);
-    expect(calls).not.toContain(`git -C ${tempDir} fetch --all --prune --tags`);
+    expect(calls).toContain(`git -C ${tempDir} fetch origin --prune --no-tags`);
+    expect(calls).not.toContain(`git -C ${tempDir} fetch origin --prune --force --tags`);
     expect(calls).toContain(
       `git -C ${tempDir} fetch origin +refs/tags/v2026.5.19-beta.2:refs/tags/v2026.5.19-beta.2`,
     );
@@ -1161,7 +1192,7 @@ describe("runGatewayUpdate", () => {
     await setupGitCheckout();
     const { runner, calls } = createRunner({
       ...buildGitWorktreeProbeResponses(),
-      [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
       [`git -C ${tempDir} remote`]: { stdout: "origin\n" },
       [`git -C ${tempDir} fetch origin +refs/tags/v2026.5.19-beta.2:refs/tags/v2026.5.19-beta.2`]: {
         code: 1,
@@ -1190,7 +1221,7 @@ describe("runGatewayUpdate", () => {
       [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: {
         stdout: "origin/main",
       },
-      [`git -C ${tempDir} fetch --all --prune --tags`]: { stdout: "" },
+      [`git -C ${tempDir} fetch origin --prune --force --tags`]: { stdout: "" },
       [`git -C ${tempDir} rev-parse @{upstream}`]: { stdout: "upstream123" },
       [`git -C ${tempDir} rev-list --max-count=10 upstream123`]: { stdout: "upstream123\n" },
       [`git -C ${tempDir} rebase upstream123`]: { code: 1, stderr: "conflict" },
@@ -1242,7 +1273,7 @@ describe("runGatewayUpdate", () => {
       reason: "unsupported_git_channel",
       steps: [],
     });
-    expect(calls).not.toContain(`git -C ${tempDir} fetch --all --prune --tags`);
+    expect(calls).not.toContain(`git -C ${tempDir} fetch origin --prune --force --tags`);
     expect(calls.some((call) => call.includes("checkout"))).toBe(false);
   });
 
@@ -1621,8 +1652,9 @@ describe("runGatewayUpdate", () => {
       await writePreflightPackageManagerFixture(checkout);
       await fs.copyFile(path.join(tempDir, "openclaw.mjs"), path.join(checkout, "openclaw.mjs"));
       await runRealGit(checkout, "init", "--initial-branch=main");
-      await runRealGit(checkout, "config", "user.name", "OpenClaw Test");
+      await runRealGit(checkout, "config", "user.name", "PASO Test");
       await runRealGit(checkout, "config", "user.email", "openclaw@example.com");
+      await runRealGit(checkout, "remote", "add", "origin", checkout);
       await fs.symlink(checkout, alias, "dir");
       await fs.mkdir(artifacts);
       await fs.copyFile(
@@ -1898,7 +1930,7 @@ describe("runGatewayUpdate", () => {
       calls.push(key);
       const responses = {
         ...buildGitWorktreeProbeResponses(),
-        [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+        [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
         [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: {
           stdout: "origin/main",
         },
@@ -1979,7 +2011,7 @@ describe("runGatewayUpdate", () => {
       calls.push(key);
       const responses = {
         ...buildGitWorktreeProbeResponses(),
-        [`git -C ${tempDir} fetch --all --prune --no-tags`]: { stdout: "" },
+        [`git -C ${tempDir} fetch origin --prune --no-tags`]: { stdout: "" },
         [`git -C ${tempDir} rev-parse --abbrev-ref --symbolic-full-name @{upstream}`]: {
           stdout: "origin/main",
         },
@@ -2928,7 +2960,7 @@ describe("runGatewayUpdate", () => {
   });
 
   it("updates global npm installs from the GitHub main package spec", async () => {
-    const sourceSpec = "github:openclaw/openclaw#main";
+    const sourceSpec = "github:celaya-solutions/PASO-AGENT#main";
     const { calls, result } = await runNpmGlobalUpdateCase({
       expectedInstallCommand: (argv) =>
         argv[0] === "npm" &&
@@ -3486,8 +3518,8 @@ describe("runGatewayUpdate", () => {
         if (key === `git -C ${tempDir} rev-parse --abbrev-ref HEAD`) {
           return toCommandResult({ stdout: "main\n" });
         }
-        if (key === `git -C ${tempDir} tag --list v* --sort=-v:refname`) {
-          return toCommandResult({ stdout: `${stableTag}\n` });
+        if (key === `git -C ${tempDir} ls-remote --tags --refs origin refs/tags/v*`) {
+          return toCommandResult({ stdout: `abc123\trefs/tags/${stableTag}\n` });
         }
         if (key === `git -C ${tempDir} checkout --detach ${stableTag}`) {
           currentHead = targetSha;

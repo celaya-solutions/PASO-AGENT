@@ -26,7 +26,7 @@ type CoordinatorOptions = {
 
 export class StateDatabaseCoordinatorContentionError extends SqliteCoordinatorError {
   constructor(family: CoordinatorFamily) {
-    super(`another OpenClaw process owns ${family}`);
+    super(`another PASO process owns ${family}`);
     this.name = "StateDatabaseCoordinatorContentionError";
   }
 }
@@ -34,7 +34,7 @@ export class StateDatabaseCoordinatorContentionError extends SqliteCoordinatorEr
 class StateSchemaMutationConflictError extends SqliteCoordinatorError {
   constructor(databasePath: string, cause: unknown) {
     super(
-      `OpenClaw refused shared state schema mutation at ${databasePath} because another Gateway owns that state directory. Stop that Gateway or perform the update through its managed restart path, then retry.`,
+      `PASO refused shared state schema mutation at ${databasePath} because another Gateway owns that state directory. Stop that Gateway or perform the update through its managed restart path, then retry.`,
       cause,
     );
     this.name = "StateSchemaMutationConflictError";

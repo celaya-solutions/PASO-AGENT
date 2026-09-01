@@ -332,7 +332,7 @@ export function createHooksRequestHandler(
       res.statusCode = 400;
       res.setHeader("Content-Type", "text/plain; charset=utf-8");
       res.end(
-        "Hook token must be provided via Authorization: Bearer <token> or X-OpenClaw-Token header (query parameters are not allowed).",
+        "Hook token must be provided via Authorization: Bearer <token>, X-PASO-Token, or the legacy X-OpenClaw-Token header (query parameters are not allowed).",
       );
       return true;
     }

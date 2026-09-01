@@ -10,7 +10,7 @@ import {
 import type { MemoryExtraPath } from "./types.js";
 export { normalizeAgentId };
 
-// Shared OpenClaw config helpers used by memory host and agent context code.
+// Shared PASO config helpers used by memory host and agent context code.
 
 type DmScope = "main" | "per-peer" | "per-channel-peer" | "per-account-channel-peer";
 /** Citation injection behavior for memory search results. */
@@ -72,7 +72,7 @@ type AgentConfig = {
   contextLimits?: AgentContextLimitsConfig;
 };
 
-/** Narrow OpenClaw config shape consumed by memory host utilities. */
+/** Narrow PASO config shape consumed by memory host utilities. */
 export type OpenClawConfig = {
   agents?: {
     defaults?: {
@@ -139,7 +139,7 @@ function normalizeHomeValue(value: string | undefined): string | undefined {
   return trimmed;
 }
 
-/** Resolve the underlying OS home before applying OpenClaw-specific overrides. */
+/** Resolve the underlying OS home before applying PASO-specific overrides. */
 function resolveRawOsHomeDir(env: NodeJS.ProcessEnv, homedir: () => string): string | undefined {
   return (
     normalizeHomeValue(env.HOME) ??

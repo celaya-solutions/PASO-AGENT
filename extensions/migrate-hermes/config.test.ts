@@ -603,7 +603,7 @@ describe("Hermes migration config mapping", () => {
     expect(providers?.custom?.api).toBe("anthropic-messages");
   });
 
-  it("keeps built-in Hermes provider overrides on OpenClaw's canonical provider IDs", async () => {
+  it("keeps built-in Hermes provider overrides on PASO's canonical provider IDs", async () => {
     const { root, source } = await makeHermesPaths();
     await writeFile(
       path.join(source, "config.yaml"),
@@ -1051,7 +1051,7 @@ describe("Hermes migration config mapping", () => {
     expect(providers?.moonshot?.baseUrl).toBe("https://api.moonshot.cn/v1");
   });
 
-  it("maps the Hermes MiniMax China route to OpenClaw's canonical provider", async () => {
+  it("maps the Hermes MiniMax China route to PASO's canonical provider", async () => {
     const { root, source } = await makeHermesPaths();
     await writeFile(
       path.join(source, "config.yaml"),

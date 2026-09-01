@@ -262,7 +262,9 @@ export async function runCiGitStep(options: {
       if (docsPublish) {
         env.GITHUB_SHA = candidate;
         // Never let a caller's credential reach fixture command reports.
-        env.OPENCLAW_DOCS_SYNC_TOKEN = "fixture-docs-token";
+        env.PASO_DOCS_SYNC_TOKEN = "fixture-docs-token";
+        env.PASO_DOCS_PUBLISH_REPOSITORY = "celaya-solutions/PASO-DOCS";
+        env.PASO_CLAWHUB_SOURCE_REPOSITORY = "celaya-solutions/PASO-PLUGINS";
         mkdirSync(path.join(workspace, "clawhub-source/.git"), { recursive: true });
         const publish = path.join(workspace, "publish");
         if (options.publishPath === "file") {

@@ -1,5 +1,5 @@
 /**
- * Native Codex app-server compaction bridge for bound OpenClaw sessions.
+ * Native Codex app-server compaction bridge for bound PASO sessions.
  */
 import { AsyncLocalStorage } from "node:async_hooks";
 import {
@@ -369,7 +369,7 @@ function warnIfIgnoringOpenClawCompactionOverrides(
     return;
   }
   embeddedAgentLog.warn(
-    "ignoring OpenClaw compaction overrides for Codex app-server compaction; Codex uses native server-side compaction",
+    "ignoring PASO compaction overrides for Codex app-server compaction; Codex uses native server-side compaction",
     {
       sessionId: params.sessionId,
       sessionKey: params.sessionKey,
@@ -589,7 +589,7 @@ async function compactCodexNativeThread(
             }
             if (usesSupervisionConnection) {
               // A supervised thread is native user-home state, not an
-              // OpenClaw-owned remote binding. Keep the lifecycle fence held
+              // PASO-owned remote binding. Keep the lifecycle fence held
               // rather than detach and permit a second writer.
               throw new Error("cannot detach an unconfirmed supervised codex thread");
             }

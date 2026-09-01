@@ -197,7 +197,7 @@ describe("Codex supervision actions", () => {
         control: createEligibleControl(),
         threadId: "thread-1",
       }),
-    ).rejects.toThrow("OpenClaw session is already bound to Codex thread thread-1");
+    ).rejects.toThrow("PASO session is already bound to Codex thread thread-1");
     expect(entries).toEqual([]);
   });
 
@@ -463,7 +463,7 @@ describe("Codex supervision actions", () => {
         control,
         threadId: "thread-1",
       }),
-    ).rejects.toThrow("failed to bind OpenClaw session to Codex thread thread-1");
+    ).rejects.toThrow("failed to bind PASO session to Codex thread thread-1");
     expect(entries).toEqual([]);
     expect(createSessionEntry).toHaveBeenCalledOnce();
     expect(transcriptMirrorMocks.importCodexThreadHistoryToTranscript).toHaveBeenCalledOnce();

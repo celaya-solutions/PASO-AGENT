@@ -1,6 +1,6 @@
-# Fireworks OpenClaw provider
+# Fireworks PASO provider
 
-Official OpenClaw provider plugin for Fireworks.
+Official PASO provider plugin for Fireworks.
 
 ## Install
 
@@ -10,4 +10,4 @@ openclaw plugins install @openclaw/fireworks-provider
 
 ## Docs
 
-See `docs/providers/fireworks.md` in the OpenClaw repository, or the published docs at `https://docs.openclaw.ai/providers/fireworks`.
+See `docs/providers/fireworks.md` in the PASO repository, or the published docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/fireworks.md`.

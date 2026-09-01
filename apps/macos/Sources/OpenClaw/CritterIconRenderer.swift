@@ -142,19 +142,7 @@ enum CritterIconRenderer {
         context.cgContext.setShouldAntialias(true)
 
         let canvas = self.makeCanvas(for: rep, context: context)
-        let geometry = Geometry(
-            canvas: canvas,
-            legWiggle: legWiggle,
-            earWiggle: earWiggle,
-            earScale: earScale,
-            antennaDroop: antennaDroop)
-
-        self.drawBody(in: canvas, geometry: geometry)
-        let face = FaceOptions(
-            blink: blink,
-            eyesClosedLines: eyesClosedLines,
-            happyEyes: happyEyes)
-        self.drawFace(in: canvas, geometry: geometry, options: face)
+        self.drawPasoMark(in: canvas)
 
         if let badge {
             self.drawBadge(badge, canvas: canvas)
@@ -164,6 +152,50 @@ enum CritterIconRenderer {
         image.addRepresentation(rep)
         image.isTemplate = true
         return image
+    }
+
+    private static func drawPasoMark(in canvas: Canvas) {
+        let sx = canvas.w / 64
+        let sy = canvas.h / 64
+        func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
+            CGPoint(x: x * sx, y: (64 - y) * sy)
+        }
+
+        let path = CGMutablePath()
+        path.move(to: point(18, 50))
+        path.addLine(to: point(18, 14))
+        path.addLine(to: point(36, 14))
+        path.addCurve(
+            to: point(52, 30),
+            control1: point(44.837, 14),
+            control2: point(52, 21.163))
+        path.addCurve(
+            to: point(36, 46),
+            control1: point(52, 38.837),
+            control2: point(44.837, 46))
+        path.addLine(to: point(30, 46))
+
+        let context = canvas.context
+        context.setShouldAntialias(true)
+        context.setStrokeColor(NSColor.labelColor.cgColor)
+        context.setLineWidth(7 * min(sx, sy))
+        context.setLineCap(.round)
+        context.setLineJoin(.round)
+        context.addPath(path)
+        context.strokePath()
+
+        let steps = CGMutablePath()
+        steps.move(to: point(18, 50))
+        steps.addLine(to: point(28, 50))
+        steps.addLine(to: point(28, 40))
+        steps.addLine(to: point(38, 40))
+        steps.addLine(to: point(38, 30))
+        steps.addLine(to: point(50, 30))
+        context.setLineWidth(5 * min(sx, sy))
+        context.setLineCap(.square)
+        context.setLineJoin(.miter)
+        context.addPath(steps)
+        context.strokePath()
     }
 
     private static func makeBitmapRep() -> NSBitmapImageRep? {

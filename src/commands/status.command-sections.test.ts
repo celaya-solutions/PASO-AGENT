@@ -141,7 +141,7 @@ describe("status.command-sections", () => {
           updatedAt: 2,
           age: 7_000,
           model: "gpt-5.5",
-          runtime: "OpenClaw Default",
+          runtime: "PASO Default",
           totalTokens: null,
           totalTokensFresh: false,
           remainingTokens: null,
@@ -176,7 +176,7 @@ describe("status.command-sections", () => {
         Kind: "cron",
         Age: "7000ms",
         Model: "gpt-5.5",
-        Runtime: "OpenClaw Default",
+        Runtime: "PASO Default",
         Tokens: "12k",
         Cache: "cache ok",
       },
@@ -207,7 +207,7 @@ describe("status.command-sections", () => {
           configuredModel: "zhipu/glm-4.5-air",
           selectedModel: "deepseek/deepseek-v4-flash",
           modelSelectionReason: "session override",
-          runtime: "OpenClaw Default",
+          runtime: "PASO Default",
           totalTokens: null,
           totalTokensFresh: false,
           remainingTokens: null,
@@ -227,7 +227,7 @@ describe("status.command-sections", () => {
       "  Session selected: deepseek/deepseek-v4-flash",
       "  Reason: session override",
       "  Clear with: /model default",
-      "  Docs: https://docs.openclaw.ai/concepts/models#selection-source-and-fallback-behavior",
+      "  Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     ]);
   });
 
@@ -243,7 +243,7 @@ describe("status.command-sections", () => {
           configuredModel: "minimax/MiniMax-M3",
           selectedModel: "ollama/qwen3.6-blue:35b-a3b",
           modelSelectionReason: "fallback selected",
-          runtime: "OpenClaw Default",
+          runtime: "PASO Default",
           totalTokens: null,
           totalTokensFresh: false,
           remainingTokens: null,
@@ -263,7 +263,7 @@ describe("status.command-sections", () => {
       "  Session selected: ollama/qwen3.6-blue:35b-a3b",
       "  Reason: fallback selected",
       "  Action: check provider availability or retry with /model",
-      "  Docs: https://docs.openclaw.ai/concepts/models#selection-source-and-fallback-behavior",
+      "  Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     ]);
   });
 
@@ -433,8 +433,8 @@ describe("status.command-sections", () => {
         gatewayReachable: false,
       }),
     ).toEqual([
-      "FAQ: https://docs.openclaw.ai/faq",
-      "Troubleshooting: https://docs.openclaw.ai/troubleshooting",
+      "FAQ: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+      "Troubleshooting: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       "",
       "warn(upgrade ready)",
       "Next steps:",

@@ -9,7 +9,7 @@ title: "Skill Workshop"
 sidebarTitle: "Skill Workshop"
 ---
 
-Skill Workshop is OpenClaw's governed path for creating and updating workspace
+Skill Workshop is PASO's governed path for creating and updating workspace
 skills. Through this path, agents and operators create a **proposal** (pending
 draft with content, target binding, scanner state, hashes, and rollback
 metadata) that becomes a live skill only when applied.
@@ -86,7 +86,7 @@ skills it creates and records from now on.
 Shared workspaces use the union of each agent's allowed skills only when
 provider, model, and resolved auth identity match. Reconciliation must leave
 every sharing agent at least one visible skill.
-OpenClaw validates and scans every write before changing the workspace,
+PASO validates and scans every write before changing the workspace,
 serializes collection edits with a workspace lease, and retains one backup
 under the state directory. The changed collection appears in new agent runs;
 running sessions keep their existing skill snapshot.
@@ -100,7 +100,7 @@ Each attempt is persisted per workspace before the model starts. Review is admit
 The reconciled result must stay inside the same byte limit.
 
 Every completed review records its kept, written, and dropped skill names in
-the shared state database, including the reason for each drop. OpenClaw retains
+the shared state database, including the reason for each drop. PASO retains
 the latest 90 outcomes per workspace.
 
 Collection rewrites and merges produce `SKILL.md` files at or below 10,000
@@ -233,7 +233,7 @@ tree, so any live skill asset drift requires a fresh evaluation.
 The lifecycle supports external optimization loops without embedding one.
 Controllers can consume `skills.proposals.events.list`, evaluate an exact
 `revisionHash`, revise with `expectedRevisionHash` and `correlationId`, then continue
-from the returned event sequence. OpenClaw does not schedule, auto-revise, or
+from the returned event sequence. PASO does not schedule, auto-revise, or
 decide when such a loop should stop.
 
 ## Proposal content
@@ -355,10 +355,10 @@ the available history is exhausted, the action becomes **Scan new work**.
 Historical review is manual even when
 `skills.workshop.autonomous.mode` is `off`. Each click starts a model run,
 so provider pricing and data-handling terms apply. The cursor and coverage counts
-are stored in the shared OpenClaw state database; transcript content is not copied
+are stored in the shared PASO state database; transcript content is not copied
 into scan state.
 
-In `propose` and `auto` modes, OpenClaw can review one finished substantial turn
+In `propose` and `auto` modes, PASO can review one finished substantial turn
 after the agent system becomes idle. The review continues the foreground request
 prefix, so the provider can reuse its prompt cache. Review transcript and session
 metadata changes stay detached. It can draft one pending create, patch, or update.
@@ -472,7 +472,7 @@ Default state directory: `~/.openclaw`.
 - Each generation contains one `PROPOSAL.md` and all of that revision's support
   files. Revision publication never overwrites the active generation in place.
 - Generation files are flushed before publication. After the complete bundle is
-  renamed into place, OpenClaw syncs the `generations/` parent directory where
+  renamed into place, PASO syncs the `generations/` parent directory where
   the platform supports directory flushing, before committing SQLite state.
   Platforms that report directory synchronization as unsupported retain atomic
   rename and process-interruption safety, but do not claim power-loss durability

@@ -50,9 +50,9 @@ extension OnboardingView {
             return "Finish the remote Gateway connection before continuing."
         }
         if state.connectionMode == .remote {
-            return "AI access is configured on the remote Gateway. OpenClaw will use that existing setup."
+            return "AI access is configured on the remote Gateway. PASO will use that existing setup."
         }
-        return "OpenClaw needs an AI account to think. " +
+        return "PASO needs an AI account to think. " +
             "It reuses what you already have — nothing new to sign up for if " +
             "Claude Code, Codex, or an API key is on this Mac."
     }

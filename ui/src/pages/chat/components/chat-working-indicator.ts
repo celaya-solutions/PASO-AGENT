@@ -81,7 +81,7 @@ export function renderChatWorkingIndicator(
               })}"
               aria-hidden="true"
             >
-              ${icons.claw}
+              ${icons.spark}
             </div>
           `}
       <span class="chat-working-indicator__status">
@@ -113,7 +113,7 @@ export function renderChatWorkingIndicator(
   `;
 }
 
-/** Post-turn recap row: once the run settles, the parked claw reports how
+/** Post-turn recap row: once the run settles, the status mark reports how
  * long the turn took and its latest known output usage. Sticky until the
  * next run replaces it. */
 export function renderTurnRecapRow(
@@ -134,7 +134,7 @@ export function renderTurnRecapRow(
     >
       ${continuation
         ? nothing
-        : html`<span class="chat-tasks-status__claw" aria-hidden="true">${icons.claw}</span>`}
+        : html`<span class="chat-tasks-status__claw" aria-hidden="true">${icons.spark}</span>`}
       <span>${t("chat.turnRecap.doneIn", { duration })}</span>
       ${tokens === null
         ? nothing

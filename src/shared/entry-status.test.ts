@@ -31,7 +31,7 @@ describe("shared/entry-status", () => {
         },
         frontmatter: {
           emoji: "🙂",
-          homepage: "https://docs.openclaw.ai",
+          homepage: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         },
       },
       hasLocalBin: (bin) => bin === "bun",
@@ -95,7 +95,7 @@ describe("shared/entry-status", () => {
           },
         },
         frontmatter: {
-          website: " https://docs.openclaw.ai ",
+          website: " https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs ",
           emoji: "🙂",
         },
       },
@@ -106,7 +106,7 @@ describe("shared/entry-status", () => {
 
     expect(result).toEqual({
       emoji: "🙂",
-      homepage: "https://docs.openclaw.ai",
+      homepage: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       required: {
         bins: ["missing-bin"],
         anyBins: [],
@@ -178,7 +178,7 @@ describe("shared/entry-status", () => {
       entry: {
         frontmatter: {
           homepage: " ",
-          website: "https://docs.openclaw.ai",
+          website: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
           url: "https://openclaw.ai/install",
         },
       },

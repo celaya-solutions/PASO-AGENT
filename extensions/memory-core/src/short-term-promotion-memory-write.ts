@@ -150,7 +150,7 @@ export async function writeMemoryContent(params: {
         ) {
           throw new MemoryWriteConflictError();
         }
-        // OpenClaw writers are serialized. The recoverable preimage covers the
+        // PASO writers are serialized. The recoverable preimage covers the
         // accepted race with external editors between this check and rename.
       },
       fileSystem: {

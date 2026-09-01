@@ -1,12 +1,12 @@
 ---
-summary: "Step-by-step Fly.io deployment for OpenClaw with persistent storage and HTTPS"
+summary: "Step-by-step Fly.io deployment for PASO with persistent storage and HTTPS"
 title: Fly.io
 read_when:
-  - Deploying OpenClaw on Fly.io
+  - Deploying PASO on Fly.io
   - Setting up Fly volumes, secrets, and first-run config
 ---
 
-**Goal:** OpenClaw Gateway running on a [Fly.io](https://fly.io) machine with persistent storage, automatic HTTPS, and Discord/channel access.
+**Goal:** PASO Gateway running on a [Fly.io](https://fly.io) machine with persistent storage, automatic HTTPS, and Discord/channel access.
 
 ## What you need
 
@@ -25,14 +25,14 @@ read_when:
 <Steps>
   <Step title="Create the Fly app">
     ```bash
-    git clone https://github.com/openclaw/openclaw.git
-    cd openclaw
+    git clone https://github.com/celaya-solutions/PASO-AGENT.git
+    cd PASO-AGENT
 
     # pick your own name
-    fly apps create my-openclaw
+    fly apps create my-paso
 
     # 1GB is usually enough
-    fly volumes create openclaw_data --size 1 --region iad
+    fly volumes create paso_data --size 1 --region iad
     ```
 
     Choose a region close to you. Common options: `lhr` (London), `iad` (Virginia), `sjc` (San Jose).
@@ -43,7 +43,7 @@ read_when:
     Edit `fly.toml` to match your app name and requirements. The repo's tracked `fly.toml` is the public template shown below; `deploy/fly.private.toml` is the hardened, no-public-IP variant (see [Private deployment](#private-deployment-hardened)).
 
     ```toml
-    app = "my-openclaw"  # your app name
+    app = "my-paso"  # your app name
     primary_region = "iad"
 
     [build]
@@ -78,11 +78,11 @@ read_when:
       memory = "2048mb"
 
     [mounts]
-      source = "openclaw_data"
+      source = "paso_data"
       destination = "/data"
     ```
 
-    The OpenClaw Docker image entrypoint is `tini`, running `node openclaw.mjs gateway` by default. Fly `[processes]` replaces the Docker `CMD` (here it runs `node dist/index.js gateway ...` directly, the same compiled entrypoint) without touching `ENTRYPOINT`, so the process still runs under `tini`.
+    The PASO Docker image entrypoint is `tini`, running `node openclaw.mjs gateway` by default. Fly `[processes]` replaces the Docker `CMD` (here it runs `node dist/index.js gateway ...` directly, the same compiled entrypoint) without touching `ENTRYPOINT`, so the process still runs under `tini`.
 
     **Key settings:**
 
@@ -189,7 +189,7 @@ read_when:
         "bind": "auto",
         "controlUi": {
           "allowedOrigins": [
-            "https://my-openclaw.fly.dev",
+            "https://my-paso.fly.dev",
             "http://localhost:3000",
             "http://127.0.0.1:3000"
           ]
@@ -202,7 +202,7 @@ read_when:
 
     With `OPENCLAW_STATE_DIR=/data`, the config path is `/data/openclaw.json`.
 
-    Replace `https://my-openclaw.fly.dev` with your real Fly app origin. Gateway startup seeds local Control UI origins from the runtime `--bind` and `--port` values so first boot can proceed before config exists, but browser access through Fly still needs the exact HTTPS origin listed in `gateway.controlUi.allowedOrigins`.
+    Replace `https://my-paso.fly.dev` with your real Fly app origin. Gateway startup seeds local Control UI origins from the runtime `--bind` and `--port` values so first boot can proceed before config exists, but browser access through Fly still needs the exact HTTPS origin listed in `gateway.controlUi.allowedOrigins`.
 
     The `channels.discord` block above enables Discord. Its token can come from either:
 
@@ -225,7 +225,7 @@ read_when:
     fly open
     ```
 
-    Or visit `https://my-openclaw.fly.dev/`.
+    Or visit `https://my-paso.fly.dev/`.
 
     Authenticate with the configured shared secret: the gateway token from `OPENCLAW_GATEWAY_TOKEN`, or your password if you switched to password auth.
 
@@ -283,7 +283,7 @@ fly machine update <machine-id> --vm-memory 2048 -y
 Gateway refuses to start with "already running" errors after a container restart.
 
 With `OPENCLAW_STATE_DIR=/data`, the lock tree lives under
-`/data/tmp/openclaw-<uid>` and persists with the volume. OpenClaw normally
+`/data/tmp/openclaw-<uid>` and persists with the volume. PASO normally
 reclaims stale owners automatically. If startup continues to report an owner,
 first use `fly status` and `fly logs` to verify that no other machine or Gateway
 process is using the volume. Do not delete the lock tree while an owner may
@@ -373,17 +373,17 @@ Or convert an existing deployment:
 
 ```bash
 # list current IPs
-fly ips list -a my-openclaw
+fly ips list -a my-paso
 
 # release public IPs
-fly ips release <public-ipv4> -a my-openclaw
-fly ips release <public-ipv6> -a my-openclaw
+fly ips release <public-ipv4> -a my-paso
+fly ips release <public-ipv6> -a my-paso
 
 # switch to the private config so future deploys do not re-allocate public IPs
 fly deploy -c deploy/fly.private.toml
 
 # allocate private-only IPv6
-fly ips allocate-v6 --private -a my-openclaw
+fly ips allocate-v6 --private -a my-paso
 ```
 
 After this, `fly ips list` should show only a `private` type IP:
@@ -398,7 +398,7 @@ v6       fdaa:x:x:x:x::x      private          global
 **Option 1: local proxy (simplest)**
 
 ```bash
-fly proxy 3000:3000 -a my-openclaw
+fly proxy 3000:3000 -a my-paso
 # open http://localhost:3000 in a browser
 ```
 
@@ -413,7 +413,7 @@ fly wireguard create
 **Option 3: SSH only**
 
 ```bash
-fly ssh console -a my-openclaw
+fly ssh console -a my-paso
 ```
 
 ### Webhooks with private deployment
@@ -471,7 +471,7 @@ With the recommended config (`shared-cpu-2x`, 2GB RAM), expect roughly $10-15/mo
 
 - Set up messaging channels: [Channels](/channels)
 - Configure the Gateway: [Gateway configuration](/gateway/configuration)
-- Keep OpenClaw up to date: [Updating](/install/updating)
+- Keep PASO up to date: [Updating](/install/updating)
 
 ## Related
 

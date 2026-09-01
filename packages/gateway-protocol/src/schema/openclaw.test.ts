@@ -15,7 +15,7 @@ import {
   SystemAgentSetupVerifyResultSchema,
 } from "./openclaw.js";
 
-describe("OpenClaw chat params protocol", () => {
+describe("PASO chat params protocol", () => {
   const base = { sessionId: "session-1", message: "What about this page?" };
 
   it("accepts the additive page context and remains backward compatible", () => {
@@ -72,7 +72,7 @@ describe("OpenClaw chat params protocol", () => {
   });
 });
 
-describe("OpenClaw chat question protocol", () => {
+describe("PASO chat question protocol", () => {
   const question = {
     id: "onboarding-next-step",
     header: "Next step",
@@ -91,7 +91,7 @@ describe("OpenClaw chat question protocol", () => {
   });
 });
 
-describe("OpenClaw chat history protocol", () => {
+describe("PASO chat history protocol", () => {
   it("accepts the default request and bounds explicit limits", () => {
     expect(validateSystemAgentChatHistoryParams({})).toBe(true);
     expect(validateSystemAgentChatHistoryParams({ limit: 1 })).toBe(true);
@@ -117,7 +117,7 @@ describe("OpenClaw chat history protocol", () => {
   });
 });
 
-describe("OpenClaw setup detection protocol", () => {
+describe("PASO setup detection protocol", () => {
   it("accepts an explicit owner across the structured setup family", () => {
     expect(validateSystemAgentSetupDetectParams({ agentId: "research" })).toBe(true);
     expect(validateSystemAgentSetupVerifyParams({ agentId: "research" })).toBe(true);
@@ -159,7 +159,7 @@ describe("OpenClaw setup detection protocol", () => {
           brandId: "google-gemini-cli",
           label: "Gemini CLI",
           detail: "installed; login status unavailable",
-          reason: "Reconnect through OpenClaw or use a Gemini API key.",
+          reason: "Reconnect through PASO or use a Gemini API key.",
           authOptionId: "google-gemini-cli",
           manualProviderId: "gemini-api-key",
         },
@@ -233,7 +233,7 @@ describe("OpenClaw setup detection protocol", () => {
   });
 });
 
-describe("OpenClaw setup verification protocol", () => {
+describe("PASO setup verification protocol", () => {
   it("accepts only an empty request", () => {
     expect(validateSystemAgentSetupVerifyParams({})).toBe(true);
     expect(validateSystemAgentSetupVerifyParams({ modelRef: "openai/gpt-5.5" })).toBe(false);

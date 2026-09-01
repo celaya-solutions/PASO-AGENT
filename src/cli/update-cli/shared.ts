@@ -82,7 +82,7 @@ export function parseTimeoutMsOrExit(timeout?: string): number | undefined | nul
   return seconds * 1000;
 }
 
-const OPENCLAW_REPO_URL = "https://github.com/openclaw/openclaw.git";
+const OPENCLAW_REPO_URL = "https://github.com/celaya-solutions/PASO-AGENT.git";
 // Keep the full commit graph for dev ref switching while deferring historical blobs.
 // A shallow clone would make older or non-default dev targets unreachable.
 const GIT_CLONE_BLOB_FILTER = "--filter=blob:none";
@@ -189,7 +189,7 @@ export function tryResolveInvocationCwd(): string | undefined {
   }
 }
 
-/** Locate the installed OpenClaw package root that should receive update operations. */
+/** Locate the installed PASO package root that should receive update operations. */
 export async function resolveUpdateRoot(): Promise<string> {
   // Preserve the lexical package path from the invoking shim. pnpm 11 package
   // modules realpath into a shared store, which is not the install owner.
@@ -320,7 +320,7 @@ async function cloneGitCheckoutTransactionally(params: {
   }
 }
 
-/** Ensure the configured source-update directory exists and points at an OpenClaw checkout. */
+/** Ensure the configured source-update directory exists and points at a PASO checkout. */
 export async function ensureGitCheckout(params: {
   dir: string;
   timeoutMs: number;
@@ -361,7 +361,7 @@ export async function ensureGitCheckout(params: {
   return { checkoutDir: await fs.realpath(params.dir), step: null };
 }
 
-/** Detect the package manager that owns a global/package OpenClaw install. */
+/** Detect the package manager that owns a global/package PASO install. */
 export async function resolveGlobalManager(params: {
   root: string;
   installKind: "git" | "package" | "unknown";
@@ -377,7 +377,7 @@ export async function resolveGlobalManager(params: {
     );
     if (!detected) {
       throw new Error(
-        "Update refused: package manager owner is unknown; no changes were made. Run this OpenClaw install through its active npm, pnpm, or Bun global shim, or reinstall it with that package manager, then retry.",
+        "Update refused: package manager owner is unknown; no changes were made. Run this PASO install through its active npm, pnpm, or Bun global shim, or reinstall it with that package manager, then retry.",
       );
     }
     return detected;

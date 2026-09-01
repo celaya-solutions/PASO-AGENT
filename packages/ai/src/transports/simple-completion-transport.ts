@@ -1,7 +1,7 @@
 /**
  * Simple completion transport preparation.
  *
- * Registers provider-specific stream functions and rewrites models that need OpenClaw-managed transport semantics.
+ * Registers provider-specific stream functions and rewrites models that need PASO-managed transport semantics.
  */
 import type { Api, Model, StreamFn } from "@openclaw/llm-core";
 import type { ApiRegistry } from "../api-registry.js";
@@ -138,7 +138,7 @@ function prepareCodexSimpleTransportModel<TApi extends Api>(
   }
 
   // Static Codex provider catalogs intentionally omit credentials; the simple
-  // completion path must use OpenClaw's transport so resolved request auth is applied.
+  // completion path must use PASO's transport so resolved request auth is applied.
   const transportModel = projectModel(model, {
     baseUrl: normalizeCodexResponsesBaseUrlForOpenAISdk(model.baseUrl),
   });

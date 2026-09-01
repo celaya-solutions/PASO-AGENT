@@ -32,7 +32,7 @@ const report: HookStatusReport = {
       handlerPath: "/tmp/hooks/session-memory/handler.js",
       hookKey: "session-memory",
       emoji: "💾",
-      homepage: "https://docs.openclaw.ai/automation/hooks#session-memory",
+      homepage: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       events: ["command:new"],
       unknownEvents: [],
       always: false,

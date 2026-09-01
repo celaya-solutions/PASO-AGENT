@@ -242,7 +242,7 @@ final class WatchDirectNode {
         self.connectTask = nil
         self.isConnected = false
         if self.isEnabled, self.isConfigured {
-            self.statusText = String(localized: "Reconnects when OpenClaw is active")
+            self.statusText = String(localized: "Reconnects when PASO is active")
         }
     }
 

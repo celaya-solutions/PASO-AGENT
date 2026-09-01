@@ -1,4 +1,4 @@
-// Matrix plugin entrypoint registers its OpenClaw integration.
+// Matrix plugin entrypoint registers its PASO integration.
 import {
   defineBundledChannelEntry,
   type OpenClawPluginApi,

@@ -72,7 +72,7 @@ When the user asks for a "voice" reply (e.g., "crazy scientist voice", "explain 
 
 ```bash
 # Generate audio file
-sag -v Clawd -o /tmp/voice-reply.mp3 "Your message here"
+sag -v lj2rcrvANS3gaWWnczSX -o /tmp/voice-reply.mp3 "Your message here"
 
 # Then include in reply:
 # MEDIA:/tmp/voice-reply.mp3
@@ -84,4 +84,4 @@ Voice character tips:
 - Calm: Use `[whispers]` or slower pacing
 - Dramatic: Use `[sings]` or `[shouts]` sparingly
 
-Default voice for Clawd: `lj2rcrvANS3gaWWnczSX` (or just `-v Clawd`)
+Example ElevenLabs voice ID: `lj2rcrvANS3gaWWnczSX`

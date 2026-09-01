@@ -582,13 +582,15 @@ describe("renderPlugins", () => {
 
     const heading =
       [...container.querySelectorAll(".settings-section__heading")].find((candidate) =>
-        normalizedText(candidate).startsWith("From ClawHub"),
+        normalizedText(candidate).startsWith("From plugin registry"),
       ) ?? null;
-    expect(normalizedText(heading)).toBe("From ClawHub 1");
+    expect(normalizedText(heading)).toBe("From plugin registry 1");
     const link = heading
       ?.closest(".settings-section")
       ?.querySelector<HTMLAnchorElement>(".plugins-group__link");
-    expect(link?.href).toBe("https://clawhub.ai/plugins");
+    expect(link?.href).toBe(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs/plugins",
+    );
     expect(link?.target).toBe("_blank");
 
     const result = container.querySelector<HTMLElement>(

@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw Featherless AI provider plugin."
+summary: "PASO Featherless AI provider plugin."
 read_when:
   - You are installing, configuring, or auditing the featherless plugin
 title: "Featherless plugin"
@@ -7,7 +7,7 @@ title: "Featherless plugin"
 
 # Featherless plugin
 
-OpenClaw Featherless AI provider plugin.
+PASO Featherless AI provider plugin.
 
 ## Distribution
 

@@ -1,12 +1,12 @@
-# OpenClaw Groq Provider
+# PASO Groq Provider
 
-Official OpenClaw provider plugin for Groq.
+Official PASO provider plugin for Groq.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/groq-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/groq> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/groq.md> for setup and configuration.

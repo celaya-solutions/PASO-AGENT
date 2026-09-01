@@ -12,7 +12,7 @@ Generate setup codes and approve device pairing requests.
 ## Distribution
 
 - Package: `openclaw`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

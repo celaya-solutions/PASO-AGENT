@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/sms",
   "version": "2026.8.1",
-  "description": "OpenClaw SMS/MMS channel plugin for Twilio messages.",
+  "description": "PASO SMS/MMS channel plugin for Twilio messages.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

@@ -1,4 +1,4 @@
-// OpenClaw agent database tests cover agent-scoped DB storage and migrations.
+// PASO agent database tests cover agent-scoped DB storage and migrations.
 import { execFileSync, spawn } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -4903,7 +4903,9 @@ describe("openclaw agent database", () => {
     }
     expect(firstFailure).toMatchObject({
       name: "SqliteSchemaVersionError",
-      message: expect.stringContaining("https://docs.openclaw.ai/reference/database-schemas"),
+      message: expect.stringContaining(
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+      ),
     });
     expect(isOpenClawAgentDatabaseOpen(databasePath)).toBe(false);
     expect(

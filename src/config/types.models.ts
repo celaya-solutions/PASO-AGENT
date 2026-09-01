@@ -91,7 +91,7 @@ export type ModelCompatConfig = SupportedOpenAICompatFields &
     thinkingFormat?: SupportedThinkingFormat;
     /** Provider-accepted reasoning effort labels. */
     supportedReasoningEfforts?: string[];
-    /** Maps OpenClaw reasoning effort labels to provider-specific labels. */
+    /** Maps PASO reasoning effort labels to provider-specific labels. */
     reasoningEffortMap?: Record<string, string>;
     /** Reasoning detail block types safe to expose in visible transcripts. */
     visibleReasoningDetailTypes?: string[];
@@ -178,7 +178,7 @@ export type ModelDefinitionConfig = {
   contextTokens?: number;
   /** Maximum completion/output token budget. */
   maxTokens: number;
-  /** Maps OpenClaw thinking levels to provider/model-specific values. */
+  /** Maps PASO thinking levels to provider/model-specific values. */
   thinkingLevelMap?: ThinkingLevelMap;
   /** Provider-specific request/runtime parameters passed through to provider plugins. */
   params?: Record<string, unknown>;
@@ -255,9 +255,9 @@ export type DiscoveryToggleConfig = {
 };
 
 export type ModelCatalogRefreshConfig = {
-  /** Fetch model catalog updates from the hosted OpenClaw catalog. Default: true. */
+  /** Fetch model catalog updates from the explicitly configured URL. Default: false. */
   enabled?: boolean;
-  /** Override the hosted catalog URL (HTTPS mirrors, or localhost HTTP for testing). */
+  /** Operator-selected catalog URL (HTTPS, or localhost HTTP for testing). */
   url?: string;
 };
 
@@ -266,7 +266,7 @@ export type ModelsConfig = {
   mode?: "merge" | "replace";
   /** Configured provider catalog keyed by provider id. */
   providers?: Record<string, ModelProviderConfig>;
-  /** Hosted model catalog refresh settings. */
+  /** Opt-in remote model catalog refresh settings. */
   catalogRefresh?: ModelCatalogRefreshConfig;
 };
 

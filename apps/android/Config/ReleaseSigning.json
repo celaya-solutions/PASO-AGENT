@@ -1,4 +1,6 @@
 {
+  "releaseEnabled": false,
+  "releaseOwner": "upstream-openclaw-compatibility",
   "signingRepo": "git@github.com:openclaw/apps-signing.git",
   "signingBranch": "main",
   "assetPath": "android/openclaw",

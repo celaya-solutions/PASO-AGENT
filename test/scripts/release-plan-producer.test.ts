@@ -176,7 +176,7 @@ function buildFixtureRepo(root: string, version: string, options: FixtureOptions
         version,
         type: "commonjs",
         private: true,
-        repository: { type: "git", url: "https://github.com/openclaw/openclaw" },
+        repository: { type: "git", url: "https://github.com/celaya-solutions/PASO-AGENT" },
         openclaw: {
           extensions: ["./index.ts"],
           compat: { pluginApi: `>=${version}` },
@@ -293,7 +293,7 @@ function trustedToolingGh(toolingFullRef: string, toolingSha: string) {
     const endpoint = args[1];
     if (
       endpoint ===
-      `repos/openclaw/openclaw/git/ref/tags/${toolingFullRef.slice("refs/tags/".length)}`
+      `repos/celaya-solutions/PASO-AGENT/git/ref/tags/${toolingFullRef.slice("refs/tags/".length)}`
     ) {
       return JSON.stringify({
         ref: toolingFullRef,
@@ -683,7 +683,7 @@ describe("release plan producer", () => {
           corePath,
           readFileSync(corePath, "utf8").replace(
             "const params = { ...request.params, runGh: runtime.runGh };",
-            'runtime.runGh(["api", "repos/openclaw/openclaw"]);\nconst params = { ...request.params, runGh: runtime.runGh };',
+            'runtime.runGh(["api", "repos/celaya-solutions/PASO-AGENT"]);\nconst params = { ...request.params, runGh: runtime.runGh };',
           ),
         );
       },

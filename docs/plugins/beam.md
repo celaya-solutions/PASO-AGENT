@@ -1,5 +1,5 @@
 ---
-summary: "Publish redacted local coding sessions into a shared read-only OpenClaw catalog"
+summary: "Publish redacted local coding sessions into a shared read-only PASO catalog"
 read_when:
   - Sharing a Claude Code or Codex session with trusted Gateway operators
   - Configuring an authenticated session-ingest endpoint without connecting a node
@@ -7,9 +7,9 @@ read_when:
 title: "Beam plugin"
 ---
 
-The bundled `beam` plugin receives a sanitized coding-session snapshot over authenticated HTTP and presents it in the Control UI's existing external-session catalog. The source computer sends text out; OpenClaw never connects back to that computer and receives no filesystem, terminal, tool, or node capability.
+The bundled `beam` plugin receives a sanitized coding-session snapshot over authenticated HTTP and presents it in the Control UI's existing external-session catalog. The source computer sends text out; PASO never connects back to that computer and receives no filesystem, terminal, tool, or node capability.
 
-Beam ships with OpenClaw but is disabled by default. When enabled, it registers:
+Beam ships with PASO but is disabled by default. When enabled, it registers:
 
 - `POST /api/v1/beam/sessions`
 - the read-only **Beam** session catalog in the Control UI sidebar
@@ -44,7 +44,7 @@ openclaw gateway restart
 
 The receiver uses normal Gateway HTTP authentication. It is not an anonymous upload endpoint.
 
-- With `gateway.auth.mode: "trusted-proxy"`, send requests through the configured identity-aware proxy. Beam records the verified uploader's OpenClaw profile ID, when available; it does not retain proxy identity headers or credentials.
+- With `gateway.auth.mode: "trusted-proxy"`, send requests through the configured identity-aware proxy. Beam records the verified uploader's PASO profile ID, when available; it does not retain proxy identity headers or credentials.
 - With token or password auth, send `Authorization: Bearer <gateway-token-or-password>`.
 - Do not enable Beam with `gateway.auth.mode: "none"` unless another private ingress fully authenticates every request.
 
@@ -109,14 +109,14 @@ Uploading the same `beamId` updates the existing catalog row. A completed upload
 
 ## Storage and visibility
 
-Beam stores sanitized payloads in OpenClaw's shared SQLite-backed plugin state:
+Beam stores sanitized payloads in PASO's shared SQLite-backed plugin state:
 
 - at most 500 sessions
 - seven-day retention refreshed by each update
 - oldest-entry eviction when the catalog reaches its bound
 - server receipt time controls catalog ordering; clients cannot move themselves ahead with a forged timestamp
 
-The catalog is intentionally shared across the Gateway operator domain. Every client with `operator.read` can view every beamed session, while uploads require `operator.write` or `operator.admin`. Any write-authorized operator that knows a Beam id can update that row. Uploader attribution does not grant ownership or change access. OpenClaw operator scopes are not tenant isolation; use a separate Gateway when sessions must be isolated between teams or machines.
+The catalog is intentionally shared across the Gateway operator domain. Every client with `operator.read` can view every beamed session, while uploads require `operator.write` or `operator.admin`. Any write-authorized operator that knows a Beam id can update that row. Uploader attribution does not grant ownership or change access. PASO operator scopes are not tenant isolation; use a separate Gateway when sessions must be isolated between teams or machines.
 
 User turns are attributed to the verified publisher of the current snapshot, using their current profile name and avatar, including merged profiles. Beam's upload format does not identify individual authors within a multi-user transcript. The uploader reference shares the snapshot's seven-day retention and is replaced on each upload. Shared-token uploads, failed profile resolution, and older snapshots without a recorded uploader display **User**; they never inherit the viewer's identity or a previous uploader's identity. Reupload an older snapshot through personal authentication to attribute it.
 
@@ -159,7 +159,7 @@ Beam can also act as the sender: an opt-in mirror that continuously publishes th
 - `pollSeconds` (default 30, minimum 10): how often the mirror scans local catalogs.
 - `activeWindowMinutes` (default 180): sessions with newer activity than this window count as live and stay mirrored; when a session goes idle past the window the running mirror service retries its final `completed` update until the receiver accepts it or the seven-day retention window ends. Retry state is process-local: a Gateway restart clears pending terminal retries, so the remote row remains live until its normal seven-day retention expires.
 
-The mirror uploads user and agent message text, replacing structured reasoning, tool calls, tool results, and raw payloads with compact counts. Titles and messages pass through OpenClaw's built-in credential masking and configured `logging.redactPatterns` before clipping, even when log redaction is disabled. The manual beam skill additionally strips setup wrappers, local paths, contact identifiers, and opaque values; automatic mirroring does not apply those additional rules. Enable it only for catalogs whose visible message text you intend to share.
+The mirror uploads user and agent message text, replacing structured reasoning, tool calls, tool results, and raw payloads with compact counts. Titles and messages pass through PASO's built-in credential masking and configured `logging.redactPatterns` before clipping, even when log redaction is disabled. The manual beam skill additionally strips setup wrappers, local paths, contact identifiers, and opaque values; automatic mirroring does not apply those additional rules. Enable it only for catalogs whose visible message text you intend to share.
 
 The mirror converts newest-first catalog pages into chronological uploads before applying the receiver limits (200 items, 56 KiB), dropping oldest entries first. It marks the upload `truncated` whenever older pages remain, the source reports truncation, or text or items were clipped. Claude catalog pages count individual text, reasoning, and tool blocks and bound their text size. Sessions on paired nodes are not mirrored; the mirror shares only sessions from this Gateway's machine, newest 32 first. A listed session that leaves the active window receives its final completed update even when its catalog has more pages; an absent session is finalized only after a complete, successful host listing.
 

@@ -339,7 +339,7 @@ Resolution order:
 
 <Steps>
   <Step title="Config">
-    `browser.executablePath` in OpenClaw config.
+    `browser.executablePath` in PASO config.
   </Step>
   <Step title="Environment variables">
     - `OPENCLAW_BROWSER_EXECUTABLE_PATH`

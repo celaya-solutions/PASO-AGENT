@@ -31,7 +31,7 @@ export const EXTERNAL_CODE_PLUGIN_REQUIRED_FIELD_PATHS = [
   "openclaw.build.openclawVersion",
 ] as const;
 
-/** Read OpenClaw package.json blocks without trusting caller input shape. */
+/** Read PASO package.json blocks without trusting caller input shape. */
 function readOpenClawBlock(packageJson: unknown) {
   const root = isRecord(packageJson) ? packageJson : undefined;
   const openclaw = isRecord(root?.openclaw) ? root.openclaw : undefined;

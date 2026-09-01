@@ -1,14 +1,16 @@
 ---
-summary: "CLI reference for `openclaw docs` (search the live docs index)"
+summary: "CLI reference for `openclaw docs` (search the upstream framework docs index)"
 read_when:
-  - You want to search the live OpenClaw docs from the terminal
+  - You want to search the upstream OpenClaw framework docs from the terminal
   - You need to know which hosted search API the docs CLI calls
 title: "Docs"
 ---
 
 # `openclaw docs`
 
-Search the live OpenClaw docs index from the terminal.
+Search the upstream OpenClaw framework docs index from the terminal. PASO keeps
+this endpoint for CLI compatibility; the canonical PASO documentation source is
+the [fork's `docs/` tree](https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs).
 
 ## Usage
 
@@ -36,7 +38,10 @@ openclaw docs gateway token secretref
 
 ## How it works
 
-`openclaw docs` calls `https://docs.openclaw.ai/api/search` and renders the JSON results. The search request uses a fixed 30 second timeout.
+`openclaw docs` calls the upstream compatibility endpoint
+`https://docs.openclaw.ai/api/search` and renders the JSON results. Search
+results can use upstream OpenClaw branding and may differ from PASO. The search
+request uses a fixed 30 second timeout.
 
 ## Output
 
@@ -66,4 +71,5 @@ stay on stderr so stdout can be piped directly to a JSON parser.
 ## Related
 
 - [CLI reference](/cli)
-- [Live docs](https://docs.openclaw.ai)
+- [PASO documentation source](https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs)
+- [Upstream framework docs](https://docs.openclaw.ai)

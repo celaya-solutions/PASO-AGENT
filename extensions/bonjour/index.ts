@@ -7,19 +7,20 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 function formatBonjourInstanceName(displayName: string) {
   const trimmed = displayName.trim();
   if (!trimmed) {
-    return "OpenClaw";
+    return "PASO";
   }
-  if (/openclaw/i.test(trimmed)) {
-    return trimmed;
+  const branded = trimmed.replace(/\bopenclaw\b/gi, "PASO");
+  if (/\bPASO\b/.test(branded)) {
+    return branded;
   }
-  return `${trimmed} (OpenClaw)`;
+  return `${branded} (PASO)`;
 }
 
 /** Plugin entry for Bonjour/mDNS gateway discovery. */
 export default definePluginEntry({
   id: "bonjour",
   name: "Bonjour Gateway Discovery",
-  description: "Advertise the local OpenClaw gateway over Bonjour/mDNS.",
+  description: "Advertise the local PASO gateway over Bonjour/mDNS.",
   register(api) {
     api.registerGatewayDiscoveryService({
       id: "bonjour",

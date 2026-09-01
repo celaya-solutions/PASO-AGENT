@@ -2,7 +2,7 @@
 #
 # Shared Docker E2E image.
 # `bare` is a clean Node/Git runner for install/update lanes. `functional`
-# installs the prepared OpenClaw npm tarball into /app for built-app lanes.
+# installs the prepared PASO npm tarball into /app for built-app lanes.
 
 FROM node:24-bookworm-slim@sha256:3638d9a6fe4030bd716be989438248074489337ba3275657f93595428be4fc03 AS e2e-runner
 

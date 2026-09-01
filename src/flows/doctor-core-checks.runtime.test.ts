@@ -833,7 +833,7 @@ describe("doctor gateway runtime checks", () => {
     expect(mocks.readGatewayServiceState).not.toHaveBeenCalled();
   });
 
-  it("skips host-service findings for a container without an OpenClaw service", async () => {
+  it("skips host-service findings for a container without a PASO service", async () => {
     mocks.isContainerEnvironment.mockReturnValue(true);
 
     await expect(

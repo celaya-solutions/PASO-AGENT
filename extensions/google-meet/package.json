@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/google-meet",
   "version": "2026.8.1",
-  "description": "OpenClaw Google Meet participant plugin for joining calls through Chrome or Twilio transports.",
+  "description": "PASO Google Meet participant plugin for joining calls through Chrome or Twilio transports.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

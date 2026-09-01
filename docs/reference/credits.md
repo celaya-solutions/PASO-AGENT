@@ -1,31 +1,28 @@
 ---
-summary: "Project origin, contributors, and license."
+summary: "PASO stewardship, upstream foundation, and license credits"
 read_when:
-  - You want the project backstory or contributor credits
+  - You want project origin or license information
 title: "Credits"
 ---
 
-OpenClaw = CLAW + TARDIS: every space lobster needs a time and space machine.
+# Credits
 
-## Credits
+PASO is an AI agent developed and maintained by **Celaya Solutions Research** in El Paso, Texas.
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Creator, lobster whisperer
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Pi creator, security pen tester
-- **Clawd** - The space lobster who demanded a better name
+- Source: [celaya-solutions/PASO-AGENT](https://github.com/celaya-solutions/PASO-AGENT)
+- Contact: [hello@celayasolutions.com](mailto:hello@celayasolutions.com)
 
-## Core contributors
+## Upstream and third-party work
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Blogwatcher skill
-- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Location parsing (Telegram and WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents, telemetry, hooks, security
+PASO is based on the open-source [OpenClaw framework](https://github.com/openclaw/openclaw). The project also incorporates or adapts other open-source components, including the Pi agent runtime. Their authors, licenses, and required notices remain credited in `LICENSE` and `THIRD_PARTY_NOTICES.md`.
+
+Compatibility names such as the lowercase `openclaw` CLI and package identifiers remain in place so existing framework integrations continue to work. Actual third-party tool names, including the Lobster workflow tool, are not PASO branding and remain unchanged.
 
 ## License
 
-MIT, copyright OpenClaw Foundation. Third-party notices for incorporated or adapted code are in `THIRD_PARTY_NOTICES.md`.
-
-> "We are all just playing with our own prompts." (An AI, probably high on tokens)
+PASO is distributed under the MIT license included in the repository. See `THIRD_PARTY_NOTICES.md` for incorporated and adapted code.
 
 ## Related
 
 - [Token use and costs](/reference/token-use)
-- [Release policy](/reference/RELEASING)
+- [Security](/gateway/security)

@@ -308,10 +308,10 @@ function formatCodexDiagnosticsTargetBlock(
     lines.push(`Channel: ${formatCodexValueForDisplay(target.channel)}`);
   }
   if (target.sessionKey) {
-    lines.push(`OpenClaw session key: ${formatCodexCopyableValueForDisplay(target.sessionKey)}`);
+    lines.push(`PASO session key: ${formatCodexCopyableValueForDisplay(target.sessionKey)}`);
   }
   if (target.sessionId) {
-    lines.push(`OpenClaw session id: ${formatCodexCopyableValueForDisplay(target.sessionId)}`);
+    lines.push(`PASO session id: ${formatCodexCopyableValueForDisplay(target.sessionId)}`);
   }
   lines.push(`Codex thread id: ${formatCodexCopyableValueForDisplay(target.threadId)}`);
   lines.push(`Inspect locally: ${formatCodexResumeCommandForDisplay(target.threadId)}`);
@@ -325,7 +325,7 @@ function formatCodexDiagnosticsTargetLine(target: CodexDiagnosticsTarget): strin
   }
   const sessionLabel = target.sessionId || target.sessionKey;
   if (sessionLabel) {
-    parts.push(`OpenClaw session ${formatCodexValueForDisplay(sessionLabel)}`);
+    parts.push(`PASO session ${formatCodexValueForDisplay(sessionLabel)}`);
   }
   parts.push(`Codex thread ${formatCodexThreadIdForDisplay(target.threadId)}`);
   return `- ${parts.join(", ")}`;

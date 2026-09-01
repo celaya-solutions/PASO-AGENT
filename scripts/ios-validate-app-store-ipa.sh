@@ -235,7 +235,7 @@ assert_localized_plists_resolve_build_settings() {
 }
 
 assert_plist_string "${info_plist}" "CFBundleIdentifier" "${EXPECTED_BUNDLE_ID}" "bundle identifier mismatch"
-assert_plist_string "${info_plist}" "CFBundleDisplayName" "OpenClaw" "display name mismatch"
+assert_plist_string "${info_plist}" "CFBundleDisplayName" "PASO" "display name mismatch"
 assert_plist_string "${info_plist}" "OpenClawPushMode" "${EXPECTED_PUSH_MODE}" "push mode mismatch"
 assert_plist_nonempty_string "${info_plist}" "NSHealthShareUsageDescription" "Health share usage description"
 assert_plist_nonempty_string "${info_plist}" "NSHealthUpdateUsageDescription" "Health update usage description"

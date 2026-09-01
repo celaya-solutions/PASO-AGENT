@@ -1,12 +1,12 @@
 ---
-summary: "End-to-end guide for running OpenClaw as a personal assistant with safety cautions"
+summary: "End-to-end guide for running PASO as a personal assistant with safety cautions"
 read_when:
   - Onboarding a new assistant instance
   - Reviewing safety/permission implications
 title: "Personal assistant setup"
 ---
 
-OpenClaw is a self-hosted gateway that connects Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more to AI agents. This guide covers the "personal assistant" setup: a dedicated WhatsApp number that behaves like your always-on AI assistant. Setting up a shared gateway for several people instead? See [Team setup](/start/teams).
+PASO is a self-hosted gateway that connects Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more to AI agents. This guide covers the "personal assistant" setup: a dedicated WhatsApp number that behaves like your always-on AI assistant. Setting up a shared gateway for several people instead? See [Team setup](/start/teams).
 
 ## Good defaults first
 
@@ -18,7 +18,7 @@ A connected agent is a capable one: depending on your tool policy it can run com
 
 ## Prerequisites
 
-- OpenClaw installed and onboarded - see [Getting Started](/start/getting-started) if you haven't done this yet
+- PASO installed and onboarded - see [Getting Started](/start/getting-started) if you haven't done this yet
 - A second phone number (SIM/eSIM/prepaid) for the assistant
 
 ## The two-phone setup (recommended)
@@ -28,10 +28,10 @@ You want this:
 ```mermaid
 flowchart TB
     A["<b>Your Phone (personal)<br></b><br>Your WhatsApp<br>+1-555-YOU"] -- message --> B["<b>Second Phone (assistant)<br></b><br>Assistant WA<br>+1-555-ASSIST"]
-    B -- linked via QR --> C["<b>Your Mac (openclaw)<br></b><br>AI agent"]
+    B -- linked via QR --> C["<b>Your Mac (PASO)<br></b><br>AI agent"]
 ```
 
-If you link your personal WhatsApp to OpenClaw, every message to you becomes "agent input". That's rarely what you want.
+If you link your personal WhatsApp to PASO, every message to you becomes "agent input". That's rarely what you want.
 
 ## 5-minute quick start
 
@@ -58,16 +58,16 @@ openclaw gateway --port 18789
 
 Now message the assistant number from your allowlisted phone.
 
-When onboarding finishes, OpenClaw auto-opens the dashboard and prints a clean (non-tokenized) link. If the dashboard prompts for auth, paste the configured shared secret into Control UI settings. Onboarding uses a token by default (`gateway.auth.token`), but password auth works too if you switched `gateway.auth.mode` to `password`. To reopen later: `openclaw dashboard`.
+When onboarding finishes, PASO auto-opens the dashboard and prints a clean (non-tokenized) link. If the dashboard prompts for auth, paste the configured shared secret into Control UI settings. Onboarding uses a token by default (`gateway.auth.token`), but password auth works too if you switched `gateway.auth.mode` to `password`. To reopen later: `openclaw dashboard`.
 
 ## Give the agent a workspace (AGENTS)
 
-OpenClaw reads operating instructions and "memory" from its workspace directory.
+PASO reads operating instructions and "memory" from its workspace directory.
 
-By default, OpenClaw uses `~/.openclaw/workspace` as the agent workspace, and creates it (plus starter `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`) automatically on onboarding or first agent run. Put environment-specific tool notes in the `## Tools` section of `AGENTS.md`. `BOOTSTRAP.md` is only created for a brand-new workspace and should not come back after you delete it. `MEMORY.md` is optional and never auto-created; when present, it loads for normal sessions. Subagent sessions only inject `AGENTS.md`.
+By default, PASO uses `~/.openclaw/workspace` as the agent workspace, and creates it (plus starter `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`) automatically on onboarding or first agent run. Put environment-specific tool notes in the `## Tools` section of `AGENTS.md`. `BOOTSTRAP.md` is only created for a brand-new workspace and should not come back after you delete it. `MEMORY.md` is optional and never auto-created; when present, it loads for normal sessions. Subagent sessions only inject `AGENTS.md`.
 
 <Tip>
-Treat this folder like OpenClaw's memory and make it a git repo (ideally private) so your `AGENTS.md` and memory files are backed up. If git is installed, brand-new workspaces are auto-initialized with `git init`.
+Treat this folder like PASO's memory and make it a git repo (ideally private) so your `AGENTS.md` and memory files are backed up. If git is installed, brand-new workspaces are auto-initialized with `git init`.
 </Tip>
 
 To create the workspace and config folders without running the full onboarding wizard:
@@ -107,7 +107,7 @@ If you already ship your own workspace files from a repo, you can disable bootst
 
 ## The config that turns it into "an assistant"
 
-OpenClaw defaults to a good assistant setup, but you'll usually want to tune:
+PASO defaults to a good assistant setup, but you'll usually want to tune:
 
 - persona/instructions in [`SOUL.md`](/concepts/soul)
 - thinking defaults (if desired)
@@ -160,18 +160,18 @@ Example:
 - Session rows, transcript rows, and metadata (token usage, last route, etc): `~/.openclaw/agents/<agentId>/agent/openclaw-agent.sqlite`
 - Legacy/archive transcript artifacts: `~/.openclaw/agents/<agentId>/sessions/`
 - Legacy row migration source: `~/.openclaw/agents/<agentId>/sessions/sessions.json`
-- `/new` or `/reset` starts a fresh session for that chat (configurable via `session.resetTriggers`). If sent alone, OpenClaw acknowledges the reset without invoking the model.
+- `/new` or `/reset` starts a fresh session for that chat (configurable via `session.resetTriggers`). If sent alone, PASO acknowledges the reset without invoking the model.
 - `/compact [instructions]` compacts the session context and reports the remaining context budget.
 
 ## Heartbeats (proactive mode)
 
-By default, OpenClaw runs a heartbeat every 30 minutes with the prompt:
+By default, PASO runs a heartbeat every 30 minutes with the prompt:
 `Follow the heartbeat monitor scratch context when provided. Recurring tasks are automations; create or change their schedules with the automations tool, not heartbeat scratch. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply NO_REPLY.`
 Set `agents.defaults.heartbeat.every: "0m"` to disable recurring cadence. Targeted event-driven wakes, such as background exec completion follow-ups, remain available and do not create a recurring schedule. Heartbeat checklists live in the monitor's cron scratch (see [Heartbeat](/gateway/heartbeat)); `openclaw doctor --fix` migrates a legacy workspace `HEARTBEAT.md` into it.
 
-- If the monitor scratch exists but is effectively empty (only blank lines, Markdown/HTML comments, Markdown headings like `# Heading`, fence markers, or empty checklist stubs), OpenClaw skips the heartbeat run to save API calls.
+- If the monitor scratch exists but is effectively empty (only blank lines, Markdown/HTML comments, Markdown headings like `# Heading`, fence markers, or empty checklist stubs), PASO skips the heartbeat run to save API calls.
 - If no scratch exists, the heartbeat still runs and the model decides what to do.
-- If the agent replies with `NO_REPLY`, OpenClaw suppresses outbound delivery for that heartbeat. Legacy `HEARTBEAT_OK` replies remain supported with a fixed 300-character acknowledgment budget.
+- If the agent replies with `NO_REPLY`, PASO suppresses outbound delivery for that heartbeat. Legacy `HEARTBEAT_OK` replies remain supported with a fixed 300-character acknowledgment budget.
 - By default, heartbeat delivery to DM-style `user:<id>` targets is allowed. Set `agents.defaults.heartbeat.directPolicy: "block"` to suppress direct-target delivery while keeping heartbeat runs active.
 - Heartbeats run full agent turns - shorter intervals burn more tokens.
 
@@ -208,7 +208,7 @@ Outbound attachments from the agent use structured media fields on the message t
 }
 ```
 
-OpenClaw sends structured media alongside the text. Legacy final assistant replies may still be normalized for compatibility, but tool output, browser output, streaming blocks, and message actions do not parse text as attachment commands.
+PASO sends structured media alongside the text. Legacy final assistant replies may still be normalized for compatibility, but tool output, browser output, streaming blocks, and message actions do not parse text as attachment commands.
 
 If you must use a legacy final-reply `MEDIA:` line, keep it as standalone plain
 text. Markdown wrappers, code fences, and inline prose such as
@@ -218,7 +218,7 @@ text. Markdown wrappers, code fences, and inline prose such as
 
 Local-path behavior follows the same file-read trust model as the agent:
 
-- If `tools.fs.workspaceOnly` is `true`, outbound local media paths stay restricted to the OpenClaw temp root, the media cache, agent workspace paths, and sandbox-generated files.
+- If `tools.fs.workspaceOnly` is `true`, outbound local media paths stay restricted to the PASO temp root, the media cache, agent workspace paths, and sandbox-generated files.
 - If `tools.fs.workspaceOnly` is `false`, outbound local media can use host-local files the agent is already allowed to read.
 - Local paths can be absolute, workspace-relative, or home-relative with `~/`.
 - Host-local sends still only allow media and safe document types (images, audio, video, PDF, Office documents, and validated text documents such as Markdown/MD, TXT, JSON, YAML, and YML). This is an extension of the existing host-read trust boundary, not a secret scanner: if the agent can read a host-local `secret.txt` or `config.json`, it can attach that file when the extension and content validation match.
@@ -242,7 +242,7 @@ profile and `openclaw-<profile>-YYYY-MM-DD.log` for named profiles.
 - WebChat: [WebChat](/web/webchat)
 - Gateway ops: [Gateway runbook](/gateway)
 - Cron + wakeups: [Cron jobs](/automation/cron-jobs)
-- macOS menu bar companion: [OpenClaw macOS app](/platforms/macos)
+- macOS menu bar companion: [PASO macOS app](/platforms/macos)
 - iOS node app: [iOS app](/platforms/ios)
 - Android node app: [Android app](/platforms/android)
 - Windows Hub: [Windows](/platforms/windows)

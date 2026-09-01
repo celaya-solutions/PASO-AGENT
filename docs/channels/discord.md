@@ -5,7 +5,7 @@ read_when:
 title: "Discord"
 ---
 
-OpenClaw connects to Discord as a bot over the official Discord gateway. DMs and guild channels are supported.
+PASO connects to Discord as a bot over the official Discord gateway. DMs and guild channels are supported.
 
 <CardGroup cols={3}>
   <Card title="Pairing" icon="link" href="/channels/pairing">
@@ -21,11 +21,11 @@ OpenClaw connects to Discord as a bot over the official Discord gateway. DMs and
 
 ## Quick setup
 
-Create a Discord application with a bot, add the bot to your server, and pair it with OpenClaw. Use a private server if you can; [create one first](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (**Create My Own > For me and my friends**) if needed.
+Create a Discord application with a bot, add the bot to your server, and pair it with PASO. Use a private server if you can; [create one first](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (**Create My Own > For me and my friends**) if needed.
 
 <Steps>
   <Step title="Create a Discord application and bot">
-    In the [Discord Developer Portal](https://discord.com/developers/applications), click **New Application** and name it (for example "OpenClaw").
+    In the [Discord Developer Portal](https://discord.com/developers/applications), click **New Application** and name it (for example "PASO").
 
     Open **Bot** in the sidebar and set the **Username** to your agent's name.
 
@@ -88,12 +88,12 @@ Create a Discord application with a bot, add the bot to your server, and pair it
   <Step title="Allow DMs from server members">
     For pairing to work, Discord must let the bot DM you. Right-click your **server icon** → **Privacy Settings** → toggle on **Direct Messages**.
 
-    Keep this on if you use Discord DMs with OpenClaw. If you only use guild channels, you can disable it after pairing.
+    Keep this on if you use Discord DMs with PASO. If you only use guild channels, you can disable it after pairing.
 
   </Step>
 
   <Step title="Set your bot token securely (do not send it in chat)">
-    The bot token is a secret. Set it on the machine running OpenClaw before messaging your agent:
+    The bot token is a secret. Set it on the machine running PASO before messaging your agent:
 
 ```bash
 export DISCORD_BOT_TOKEN="YOUR_BOT_TOKEN"
@@ -112,17 +112,17 @@ openclaw config patch --file ./discord.patch.json5
 openclaw gateway
 ```
 
-    If OpenClaw already runs as a background service, restart it via the OpenClaw Mac app or by stopping and restarting the `openclaw gateway run` process.
+    If PASO already runs as a background service, restart it via the PASO Mac app or by stopping and restarting the `openclaw gateway run` process.
     For managed service installs, run `openclaw gateway install` from a shell where `DISCORD_BOT_TOKEN` is set, or store the variable in `~/.openclaw/.env` so the service can resolve the env SecretRef after restart.
     If your host is blocked or rate-limited by Discord's startup application lookup, set the application/client ID from the Developer Portal so startup can skip that REST call: `channels.discord.applicationId` for the default account, or `channels.discord.accounts.<accountId>.applicationId` per bot.
 
   </Step>
 
-  <Step title="Configure OpenClaw and pair">
+  <Step title="Configure PASO and pair">
 
     <Tabs>
       <Tab title="Ask your agent">
-        Chat with your OpenClaw agent on an existing channel (for example Telegram) and tell it. If Discord is your first channel, use the CLI / config tab instead.
+        Chat with your PASO agent on an existing channel (for example Telegram) and tell it. If Discord is your first channel, use the CLI / config tab instead.
 
         > "I already set my Discord bot token in config. Please finish Discord setup with User ID `<user_id>` and Server ID `<server_id>`."
       </Tab>
@@ -203,7 +203,7 @@ openclaw pairing approve discord <CODE>
   </Step>
 </Steps>
 
-If Discord cannot grant Message Content Intent, OpenClaw can still operate in DMs and in
+If Discord cannot grant Message Content Intent, PASO can still operate in DMs and in
 guild channels where users explicitly mention the bot. Set
 `channels.discord.intents.messageContent: false` so the Gateway does not request the
 unavailable privileged intent, and keep `requireMention: true` on every configured guild
@@ -211,7 +211,7 @@ channel. Discord omits user-authored content from other guild messages in this m
 
 <Note>
 Token resolution is account-aware. Config token values win over the env fallback, and `DISCORD_BOT_TOKEN` is only used for the default account.
-If two enabled Discord accounts resolve to the same bot token, OpenClaw starts only one gateway monitor for that token: a config-sourced token wins over the env fallback; otherwise the first enabled account wins and the duplicate account is reported disabled with reason `duplicate bot token`.
+If two enabled Discord accounts resolve to the same bot token, PASO starts only one gateway monitor for that token: a config-sourced token wins over the env fallback; otherwise the first enabled account wins and the duplicate account is reported disabled with reason `duplicate bot token`.
 For advanced outbound calls (message tool/channel actions), an explicit per-call `token` is used for that call. This applies to send and read/probe-style actions (read/search/fetch/thread/pins/permissions). Account policy/retry settings still come from the selected account in the active runtime snapshot.
 </Note>
 
@@ -306,7 +306,7 @@ Now create channels and start chatting. The agent sees the channel name, and eac
 
 - Gateway owns the Discord connection.
 - Reply routing is deterministic: Discord inbound replies back to Discord.
-- Discord guild/channel metadata is added to the model prompt as untrusted context, not as a user-visible reply prefix. If a model copies that envelope back, OpenClaw strips the copied metadata from outbound replies and from future replay context.
+- Discord guild/channel metadata is added to the model prompt as untrusted context, not as a user-visible reply prefix. If a model copies that envelope back, PASO strips the copied metadata from outbound replies and from future replay context.
 - By default (`session.dmScope=main`), direct chats share the agent main session (`agent:main:main`).
 - Guild channels are isolated session keys (`agent:<agentId>:discord:channel:<channelId>`).
 - Group DMs are ignored by default (`channels.discord.dm.groupEnabled=false`).
@@ -315,7 +315,7 @@ Now create channels and start chatting. The agent sees the channel name, and eac
 
 ## Forum channels
 
-Discord forum and media channels only accept thread posts. OpenClaw supports two ways to create them:
+Discord forum and media channels only accept thread posts. PASO supports two ways to create them:
 
 - Send a message to the forum parent (`channel:<forumId>`) to auto-create a thread. The thread title is the first non-empty line of the message (truncated to Discord's 100-character thread-name limit).
 - Use `openclaw message thread create` to create a thread directly. Do not pass `--message-id` for forum channels.
@@ -338,9 +338,9 @@ Forum parents do not accept Discord components. If you need components, send to 
 
 ## Interactive components
 
-OpenClaw supports Discord components v2 containers for agent messages. Use the message tool with a `components` payload. Interaction results route back to the agent as normal inbound messages and follow the existing Discord `replyToMode` settings.
+PASO supports Discord components v2 containers for agent messages. Use the message tool with a `components` payload. Interaction results route back to the agent as normal inbound messages and follow the existing Discord `replyToMode` settings.
 
-`components` is a Discord-specific extension to the shared message tool. OpenClaw exposes it whenever Discord is configured, including when another channel is current. Use `presentation` when the same rich message must work across channels; OpenClaw adapts portable presentation actions to each target.
+`components` is a Discord-specific extension to the shared message tool. PASO exposes it whenever Discord is configured, including when another channel is current. Use `presentation` when the same rich message must work across channels; PASO adapts portable presentation actions to each target.
 
 Supported blocks:
 
@@ -366,7 +366,7 @@ Modal forms:
 
 - Add `components.modal` with up to 5 fields
 - Field types: `text`, `checkbox`, `radio`, `select`, `role-select`, `user-select`
-- OpenClaw adds a trigger button automatically
+- PASO adds a trigger button automatically
 
 Example:
 
@@ -525,7 +525,7 @@ Example:
 
     Lookups fail closed. If Discord returns `Missing Access`, the member lookup fails, or the channel belongs to a different guild, the DM sender is treated as unauthorized.
 
-    Enable the Discord Developer Portal **Server Members Intent** when using channel-audience access groups. DMs do not include guild member state, so OpenClaw resolves the member through Discord REST at authorization time.
+    Enable the Discord Developer Portal **Server Members Intent** when using channel-audience access groups. DMs do not include guild member state, so PASO resolves the member through Discord REST at authorization time.
 
   </Tab>
 
@@ -660,7 +660,7 @@ Use `bindings[].match.roles` to route Discord guild members to different agents 
 - Per-channel override: `channels.discord.commands.native`.
 - `commands.native=false` skips Discord slash-command registration and cleanup during startup. Previously registered commands may remain visible in Discord until you remove them from the Discord app.
 - Native command auth uses the same Discord allowlists/policies as normal message handling.
-- Commands may still be visible in the Discord UI for unauthorized users; execution enforces OpenClaw auth and replies "not authorized".
+- Commands may still be visible in the Discord UI for unauthorized users; execution enforces PASO auth and replies "not authorized".
 - Default slash command settings: `ephemeral: true` (`channels.discord.slashCommand.ephemeral`).
 
 See [Slash commands](/tools/slash-commands) for the command catalog and behavior.
@@ -669,9 +669,9 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
 
 <AccordionGroup>
   <Accordion title="Introductions when joining a server">
-    When the bot joins an allowed Discord server, OpenClaw posts one room-specific introduction. It prefers the server's system channel when the bot can view and send messages there; otherwise, it uses the first text channel with both **View Channel** and **Send Messages** permissions. If no eligible channel exists, no introduction is sent.
+    When the bot joins an allowed Discord server, PASO posts one room-specific introduction. It prefers the server's system channel when the bot can view and send messages there; otherwise, it uses the first text channel with both **View Channel** and **Send Messages** permissions. If no eligible channel exists, no introduction is sent.
 
-    Introductions use the channel name and topic, plus recent messages when available. Reading earlier messages also requires **Read Message History**; when that permission is missing, OpenClaw still introduces itself using channel metadata instead of failing.
+    Introductions use the channel name and topic, plus recent messages when available. Reading earlier messages also requires **Read Message History**; when that permission is missing, PASO still introduces itself using channel metadata instead of failing.
 
     Introductions are enabled by default, apply only to newly joined servers, and never run in direct messages. Set `channels.discord.joinIntro: false` to disable them, or set `channels.discord.accounts.<accountId>.joinIntro` to override one account. See [group join introductions](/channels#group-join-introductions) for the history limits, target-channel selection, once-per-room behavior, and untrusted-content handling.
 
@@ -695,7 +695,7 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
   </Accordion>
 
   <Accordion title="Link previews">
-    Discord generates rich link embeds for URLs by default. OpenClaw suppresses those generated embeds on outbound Discord messages by default, so agent-sent URLs stay plain links unless you opt in:
+    Discord generates rich link embeds for URLs by default. PASO suppresses those generated embeds on outbound Discord messages by default, so agent-sent URLs stay plain links unless you opt in:
 
 ```json5
 {
@@ -712,7 +712,7 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
   </Accordion>
 
   <Accordion title="Live stream preview">
-    OpenClaw can stream draft replies by sending a temporary message and editing it as text arrives. Discord preview streaming defaults to `off`; set `channels.discord.streaming.mode` to `partial`, `block`, or `progress` to opt in. `streamMode` is a legacy alias; run `openclaw doctor --fix` to rewrite persisted config to the canonical nested `streaming` shape.
+    PASO can stream draft replies by sending a temporary message and editing it as text arrives. Discord preview streaming defaults to `off`; set `channels.discord.streaming.mode` to `partial`, `block`, or `progress` to opt in. `streamMode` is a legacy alias; run `openclaw doctor --fix` to rewrite persisted config to the canonical nested `streaming` shape.
 
 ```json5
 {
@@ -735,7 +735,7 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
     - `off` disables Discord preview edits.
     - `partial` edits a single preview message as tokens arrive.
     - `block` emits draft-sized chunks; tune size and breakpoints with `streaming.preview.chunk` (`minChars`, `maxChars`, `breakPreference`), clamped to `textChunkLimit`. An explicit non-`off` preview mode overrides inherited `agents.defaults.blockStreamingDefault: "on"`; explicit `streaming.block.enabled: true` overrides the preview. If a turn cannot use previews, inherited block delivery still applies.
-    - `progress` keeps one editable status draft until final delivery. It shows the agent's latest preamble or narration and authored plan steps. Without a summary yet, it shows `Working`. Ordinary tool calls do not become rolling log rows, and OpenClaw adds no progress emoji.
+    - `progress` keeps one editable status draft until final delivery. It shows the agent's latest preamble or narration and authored plan steps. Without a summary yet, it shows `Working`. Ordinary tool calls do not become rolling log rows, and PASO adds no progress emoji.
     - Media, error, and explicit-reply finals cancel pending preview edits.
     - `streaming.preview.toolProgress` controls tool rows in `partial` and `block` modes. In `progress` mode, tool activity drives the quiet summary; approvals and failures remain visible without a per-tool log.
     - `streaming.progress.commentary` (default `false`) opts into raw assistant commentary in the temporary progress draft. The default preamble/narration status line is independent of this option. Commentary is cleaned before display, stays transient, and does not change final answer delivery.
@@ -842,7 +842,7 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
             agent: "codex",
             backend: "acpx",
             mode: "persistent",
-            cwd: "/workspace/openclaw",
+            cwd: "/workspace/paso",
           },
         },
       },
@@ -922,14 +922,14 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
     }
     ```
 
-    `presenceEvents` requires an enabled heartbeat for the routed agent and the privileged **Presence Intent** on the application's Bot page in the Discord Developer Portal. OpenClaw seeds current online members from each complete `GUILD_CREATE` snapshot, routes observed offline-to-online transitions, and also treats a later first online signal for an unseen member as newly available. That member may have come online or joined after the snapshot, so the event does not assert an exact prior status. Only humans who can view `channelId` are eligible: channels and public threads require **View Channel** on the channel or parent, while private threads additionally require membership or **Manage Threads**. `users` can further narrow that audience. OpenClaw ignores bots and unchanged online states and persists an eight-hour per-user cooldown across Gateway restarts. When Discord establishes a new Gateway session and sends `READY`, OpenClaw suppresses presence-derived events for `reconnectSuppressSeconds` (default 300, `0` disables) while guild presence state is rebuilt, so re-observed members cannot wake the agent one by one. It additionally rate-limits successfully queued events per guild to `burstLimit` events (default 8) per `burstWindowSeconds` sliding window (default 60), logging each guild's suppression episode once. A resumed session is not treated as a new session. Discord limits snapshots for guilds above 75,000 members; there, OpenClaw requires an explicit offline update before greeting. The system event carries immutable user, guild, and channel IDs without embedding mutable display names. The agent decides whether and how to greet.
+    `presenceEvents` requires an enabled heartbeat for the routed agent and the privileged **Presence Intent** on the application's Bot page in the Discord Developer Portal. PASO seeds current online members from each complete `GUILD_CREATE` snapshot, routes observed offline-to-online transitions, and also treats a later first online signal for an unseen member as newly available. That member may have come online or joined after the snapshot, so the event does not assert an exact prior status. Only humans who can view `channelId` are eligible: channels and public threads require **View Channel** on the channel or parent, while private threads additionally require membership or **Manage Threads**. `users` can further narrow that audience. PASO ignores bots and unchanged online states and persists an eight-hour per-user cooldown across Gateway restarts. When Discord establishes a new Gateway session and sends `READY`, PASO suppresses presence-derived events for `reconnectSuppressSeconds` (default 300, `0` disables) while guild presence state is rebuilt, so re-observed members cannot wake the agent one by one. It additionally rate-limits successfully queued events per guild to `burstLimit` events (default 8) per `burstWindowSeconds` sliding window (default 60), logging each guild's suppression episode once. A resumed session is not treated as a new session. Discord limits snapshots for guilds above 75,000 members; there, PASO requires an explicit offline update before greeting. The system event carries immutable user, guild, and channel IDs without embedding mutable display names. The agent decides whether and how to greet.
 
   </Accordion>
 
   <Accordion title="Ack reactions">
     Status reactions keep the acknowledgement stable throughout work. They do not add per-tool emoji, inactivity warnings, or a success flash. Actual failures retain the error reaction lifecycle.
 
-    `ackReaction` sends an acknowledgement emoji while OpenClaw processes an inbound message.
+    `ackReaction` sends an acknowledgement emoji while PASO processes an inbound message.
 
     Resolution order:
 
@@ -1087,7 +1087,7 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
     discord: {
       activity: "Live coding",
       activityType: 1,
-      activityUrl: "https://twitch.tv/openclaw",
+      activityUrl: "https://twitch.tv/paso",
     },
   },
 }
@@ -1134,11 +1134,11 @@ See [Slash commands](/tools/slash-commands) for the command catalog and behavior
 
     Discord native exec approvals require `enabled: true` or `enabled: "auto"` and at least one resolved approver, either from `execApprovals.approvers` or from `commands.ownerAllowFrom`. Leaving `enabled` unset or setting it to `false` disables native exec approval delivery. Discord does not infer exec approvers from channel `allowFrom`, legacy `dm.allowFrom`, or direct-message `defaultTo`.
 
-    For sensitive owner-only group commands such as `/diagnostics` and `/export-trajectory`, OpenClaw sends approval prompts and final results privately. It tries Discord DM first when the invoking owner has a Discord owner route; otherwise it falls back to the first available owner route from `commands.ownerAllowFrom`, such as Telegram.
+    For sensitive owner-only group commands such as `/diagnostics` and `/export-trajectory`, PASO sends approval prompts and final results privately. It tries Discord DM first when the invoking owner has a Discord owner route; otherwise it falls back to the first available owner route from `commands.ownerAllowFrom`, such as Telegram.
 
-    When `target` is `channel` or `both`, the approval prompt is visible in the channel. Only resolved approvers can use the buttons; other users receive an ephemeral denial. Approval prompts include the command text, so only enable channel delivery in trusted channels. If the channel ID cannot be derived from the session key, OpenClaw falls back to DM delivery.
+    When `target` is `channel` or `both`, the approval prompt is visible in the channel. Only resolved approvers can use the buttons; other users receive an ephemeral denial. Approval prompts include the command text, so only enable channel delivery in trusted channels. If the channel ID cannot be derived from the session key, PASO falls back to DM delivery.
 
-    Discord renders the shared approval buttons used by other chat channels; the native Discord adapter mainly adds approver DM routing and channel fanout. When those buttons are present, they are the primary approval UX; OpenClaw should only include a manual `/approve` command when the tool result says chat approvals are unavailable or manual approval is the only path. If the Discord native approval runtime is not active, OpenClaw keeps the local deterministic `/approve <id> <decision>` prompt visible. If the runtime is active but a native card cannot be delivered to any target, OpenClaw sends a same-chat fallback notice with the exact `/approve` command from the pending approval.
+    Discord renders the shared approval buttons used by other chat channels; the native Discord adapter mainly adds approver DM routing and channel fanout. When those buttons are present, they are the primary approval UX; PASO should only include a manual `/approve` command when the tool result says chat approvals are unavailable or manual approval is the only path. If the Discord native approval runtime is not active, PASO keeps the local deterministic `/approve <id> <decision>` prompt visible. If the runtime is active but a native card cannot be delivered to any target, PASO sends a same-chat fallback notice with the exact `/approve` command from the pending approval.
 
     Gateway auth and approval resolution follow the shared Gateway client contract (`plugin:` IDs resolve through `plugin.approval.resolve`; other IDs through `exec.approval.resolve`). Approvals expire after 30 minutes by default.
 
@@ -1193,7 +1193,7 @@ Default gate behavior:
 
 ## Components v2 UI
 
-OpenClaw uses Discord components v2 for exec approvals and cross-context markers. Discord message actions can also accept `components` for custom UI (advanced; requires constructing a component payload via the discord tool), while legacy `embeds` remain available but are not recommended.
+PASO uses Discord components v2 for exec approvals and cross-context markers. Discord message actions can also accept `components` for custom UI (advanced; requires constructing a component payload via the discord tool), while legacy `embeds` remain available but are not recommended.
 
 - `channels.discord.agentComponents.ttlMs` controls how long sent Discord component callbacks remain registered (default `1800000`, maximum `86400000`). Per account: `channels.discord.accounts.<id>.agentComponents.ttlMs`.
 - `embeds` are ignored when components v2 are present.
@@ -1269,40 +1269,40 @@ Notes:
 
 - The OpenAI `agent-proxy` response and wake-name policies below require a GA realtime model, such as `gpt-realtime-2.1`. GPT-Live currently responds to audio autonomously and does not enforce those policies; do not rely on wake-name gating with GPT-Live in a shared voice channel.
 - Discord voice is opt-in for text-only configs; set `channels.discord.voice.enabled=true` (or keep an existing `channels.discord.voice` block) to enable `/vc` commands, the voice runtime, and the `GuildVoiceStates` gateway intent. `channels.discord.intents.voiceStates` can explicitly override the intent subscription; leave it unset to follow effective voice enablement.
-- `voice.mode` controls the conversation path. The default is `agent-proxy`: a realtime voice front end handles turn timing, interruption, and playback, delegates substantive work to the routed OpenClaw agent through `openclaw_agent_consult`, and treats the result like a typed Discord prompt from that speaker. `stt-tts` keeps the older batch STT plus TTS flow. `bidi` lets the realtime model converse directly while exposing `openclaw_agent_consult` for the OpenClaw brain.
-- `voice.agentSession` controls which OpenClaw conversation receives voice turns. Leave it unset for the voice channel's own session, or set `{ mode: "target", target: "channel:<text-channel-id>" }` to make the voice channel act as the microphone/speaker extension of an existing Discord text channel session such as `#maintainers`.
-- `voice.model` overrides the OpenClaw agent brain for Discord voice responses and realtime consults. Leave it unset to inherit the routed agent model. It is separate from `voice.realtime.model`.
+- `voice.mode` controls the conversation path. The default is `agent-proxy`: a realtime voice front end handles turn timing, interruption, and playback, delegates substantive work to the routed PASO agent through `openclaw_agent_consult`, and treats the result like a typed Discord prompt from that speaker. `stt-tts` keeps the older batch STT plus TTS flow. `bidi` lets the realtime model converse directly while exposing `openclaw_agent_consult` for the PASO brain.
+- `voice.agentSession` controls which PASO conversation receives voice turns. Leave it unset for the voice channel's own session, or set `{ mode: "target", target: "channel:<text-channel-id>" }` to make the voice channel act as the microphone/speaker extension of an existing Discord text channel session such as `#maintainers`.
+- `voice.model` overrides the PASO agent brain for Discord voice responses and realtime consults. Leave it unset to inherit the routed agent model. It is separate from `voice.realtime.model`.
 - `voice.followUsers` lets the bot join, move, and leave Discord voice with selected users. See [Follow users in voice](#follow-users-in-voice).
-- `agent-proxy` routes speech through `discord-voice`, which preserves normal owner/tool authorization for the speaker and target session but hides the agent `tts` tool because Discord voice owns playback. By default, `agent-proxy` gives the consult full owner-equivalent tool access for owner speakers (`voice.realtime.toolPolicy: "owner"`) and strongly prefers consulting the OpenClaw agent before substantive answers (`voice.realtime.consultPolicy: "always"`). In that default `always` mode, the realtime layer does not auto-speak filler before the consult answer; it captures and transcribes speech, then speaks the routed OpenClaw answer. If multiple forced consult answers finish while Discord is still playing the first answer, later exact-speech answers are queued until playback idles instead of replacing speech mid-sentence.
+- `agent-proxy` routes speech through `discord-voice`, which preserves normal owner/tool authorization for the speaker and target session but hides the agent `tts` tool because Discord voice owns playback. By default, `agent-proxy` gives the consult full owner-equivalent tool access for owner speakers (`voice.realtime.toolPolicy: "owner"`) and strongly prefers consulting the PASO agent before substantive answers (`voice.realtime.consultPolicy: "always"`). In that default `always` mode, the realtime layer does not auto-speak filler before the consult answer; it captures and transcribes speech, then speaks the routed PASO answer. If multiple forced consult answers finish while Discord is still playing the first answer, later exact-speech answers are queued until playback idles instead of replacing speech mid-sentence.
 - Realtime voice buffers generated audio when Discord playback temporarily falls behind and tolerates brief provider or network gaps. Normal backpressure does not cancel the response, and queued answers wait until Discord finishes playing the previous answer, even if its provider response or audio encoder has already finished.
-- If the realtime provider ends the session, OpenClaw leaves the voice channel and clears its connected status. Check the `realtime session failed terminally` log, then use `/vc join` to reconnect. Temporary provider reconnects do not end the Discord voice session.
+- If the realtime provider ends the session, PASO leaves the voice channel and clears its connected status. Check the `realtime session failed terminally` log, then use `/vc join` to reconnect. Temporary provider reconnects do not end the Discord voice session.
 - In `stt-tts` mode, STT uses `tools.media.audio`; `voice.model` does not affect transcription.
 - `stt-tts` replies remain active until Discord finishes playing them; long responses are not cut off by a fixed one-minute playback deadline.
 - In realtime modes, `voice.realtime.provider`, `voice.realtime.model`, and `voice.realtime.speakerVoice` configure the realtime audio session. For OpenAI Realtime 2.1 plus the Codex brain, use `voice.realtime.model: "gpt-realtime-2.1"` and `voice.model: "openai/gpt-5.6-sol"`.
-- Realtime voice modes include small `IDENTITY.md`, `USER.md`, and `SOUL.md` profile files in the realtime provider instructions by default so fast direct turns keep the same identity, user grounding, and persona as the routed OpenClaw agent. Set `voice.realtime.bootstrapContextFiles` to a subset to customize this, or `[]` to disable it. Only those profile files are supported; `AGENTS.md` stays in the normal agent context. The injected profile context does not replace `openclaw_agent_consult` for workspace work, current facts, memory lookup, or tool-backed actions.
-- In OpenAI `agent-proxy` realtime mode, wake-name gating adapts to the room by default: one human can talk naturally without a wake name, while two or more humans must start or end a turn with one. Other bots do not count as people. Set `voice.realtime.requireWakeName: true` to always require a wake name or `false` to never require one. Configured wake names must be one or two words. If `voice.realtime.wakeNames` is unset, OpenClaw uses the routed agent `name` plus `OpenClaw`, falling back to the agent id plus `OpenClaw`. An active wake-name gate disables realtime provider auto-response, routes accepted turns through the OpenClaw agent consult path, and gives a short spoken acknowledgement when a leading wake name is recognized from partial transcription before the final transcript arrives. The policy follows live joins and leaves without reconnecting voice.
+- Realtime voice modes include small `IDENTITY.md`, `USER.md`, and `SOUL.md` profile files in the realtime provider instructions by default so fast direct turns keep the same identity, user grounding, and persona as the routed PASO agent. Set `voice.realtime.bootstrapContextFiles` to a subset to customize this, or `[]` to disable it. Only those profile files are supported; `AGENTS.md` stays in the normal agent context. The injected profile context does not replace `openclaw_agent_consult` for workspace work, current facts, memory lookup, or tool-backed actions.
+- In OpenAI `agent-proxy` realtime mode, wake-name gating adapts to the room by default: one human can talk naturally without a wake name, while two or more humans must start or end a turn with one. Other bots do not count as people. Set `voice.realtime.requireWakeName: true` to always require a wake name or `false` to never require one. Configured wake names must be one or two words. If `voice.realtime.wakeNames` is unset, PASO uses the routed agent `name` plus `PASO`, falling back to the agent id plus `PASO`. An active wake-name gate disables realtime provider auto-response, routes accepted turns through the PASO agent consult path, and gives a short spoken acknowledgement when a leading wake name is recognized from partial transcription before the final transcript arrives. The policy follows live joins and leaves without reconnecting voice.
 - The OpenAI realtime provider accepts current Realtime 2 event names and legacy Codex-compatible aliases for output audio and transcript events, so compatible provider snapshots can drift without dropping assistant audio.
 - `voice.realtime.bargeIn` controls whether Discord speaker-start events interrupt active realtime playback. If unset, it follows the realtime provider's input-audio interruption setting.
 - `voice.realtime.minBargeInAudioEndMs` controls the minimum assistant playback duration before an OpenAI realtime barge-in truncates audio. Default: `250`. Set `0` for immediate interruption in low-echo rooms, or raise it for echo-heavy speaker setups.
 - `voice.tts` overrides `tts` for `stt-tts` voice playback only; realtime modes use `voice.realtime.speakerVoice` instead. For an OpenAI voice on Discord playback, set `voice.tts.provider: "openai"` and choose a Text-to-speech voice under `voice.tts.providers.openai.speakerVoice`. `cedar` is a good masculine-sounding choice on the current OpenAI TTS model.
 - Per-channel Discord `systemPrompt` overrides apply to voice transcript turns for that voice channel.
-- When OpenClaw joins a voice channel, the routed agent session receives a silent system event with the current participant roster. Later participant joins and leaves update that session without triggering an unsolicited spoken reply; Discord display names are treated as untrusted labels. Authorized voice turns also receive a fresh roster snapshot.
+- When PASO joins a voice channel, the routed agent session receives a silent system event with the current participant roster. Later participant joins and leaves update that session without triggering an unsolicited spoken reply; Discord display names are treated as untrusted labels. Authorized voice turns also receive a fresh roster snapshot.
 - Voice transcript turns and `/vc` commands use Discord entries in `commands.ownerAllowFrom` for owner status. When no Discord command owner is configured, the selected Discord account's `allowFrom` (or legacy `dm.allowFrom`) can still authorize voice access without granting owner status. Agent tool visibility follows the configured tool policy for the routed session.
-- If `voice.autoJoin` has multiple entries for the same guild, OpenClaw joins the last configured channel for that guild.
-- `voice.autoJoin[].whenOccupied` defaults to `false`. Set it to `true` for an auto-managed room that should contain the bot only while at least one human is present. OpenClaw joins on the first human arrival and leaves after the last human departs; the OpenClaw bot and other bots do not count. Startup, fresh gateway sessions, and resumed gateway sessions reconcile from Discord's voice-state roster.
+- If `voice.autoJoin` has multiple entries for the same guild, PASO joins the last configured channel for that guild.
+- `voice.autoJoin[].whenOccupied` defaults to `false`. Set it to `true` for an auto-managed room that should contain the bot only while at least one human is present. PASO joins on the first human arrival and leaves after the last human departs; the PASO bot and other bots do not count. Startup, fresh gateway sessions, and resumed gateway sessions reconcile from Discord's voice-state roster.
 - Occupancy management owns only sessions that it joined. A manual `/vc join`, transcript capture, follow-user session, active session in another channel, or other ad-hoc join is not moved or disconnected when the configured room empties.
-- `voice.allowedChannels` is an optional residency allowlist. Leave it unset to allow `/vc join` into any authorized Discord voice channel. When set, `/vc join`, startup auto-join, and bot voice-state moves are restricted to the listed `{ guildId, channelId }` entries. Set it to an empty array to deny all Discord voice joins. If Discord moves the bot outside the allowlist, OpenClaw leaves that channel and rejoins the configured auto-join target when one is available.
+- `voice.allowedChannels` is an optional residency allowlist. Leave it unset to allow `/vc join` into any authorized Discord voice channel. When set, `/vc join`, startup auto-join, and bot voice-state moves are restricted to the listed `{ guildId, channelId }` entries. Set it to an empty array to deny all Discord voice joins. If Discord moves the bot outside the allowlist, PASO leaves that channel and rejoins the configured auto-join target when one is available.
 - `voice.daveEncryption` and `voice.decryptionFailureTolerance` pass through to `@discordjs/voice` join options; the upstream defaults are `daveEncryption=true` and `decryptionFailureTolerance=24`.
-- OpenClaw uses the bundled `libopus-wasm` codec for Discord voice receive and realtime raw PCM playback. It ships a pinned libopus WebAssembly build and does not require native opus addons.
+- PASO uses the bundled `libopus-wasm` codec for Discord voice receive and realtime raw PCM playback. It ships a pinned libopus WebAssembly build and does not require native opus addons.
 - `voice.connectTimeoutMs` controls the initial `@discordjs/voice` Ready wait for `/vc join` and auto-join attempts. Default: `30000`.
-- `voice.reconnectGraceMs` controls how long OpenClaw waits for a disconnected voice session to begin reconnecting before destroying it. Default: `15000`.
-- In `stt-tts` mode, voice playback does not stop just because another user starts speaking. To avoid feedback loops, OpenClaw ignores new voice capture while TTS is playing; speak after playback finishes for the next turn. Realtime modes forward speaker starts as barge-in signals to the realtime provider.
+- `voice.reconnectGraceMs` controls how long PASO waits for a disconnected voice session to begin reconnecting before destroying it. Default: `15000`.
+- In `stt-tts` mode, voice playback does not stop just because another user starts speaking. To avoid feedback loops, PASO ignores new voice capture while TTS is playing; speak after playback finishes for the next turn. Realtime modes forward speaker starts as barge-in signals to the realtime provider.
 - In realtime modes, echo from speakers into an open mic can look like barge-in and interrupt playback. For echo-heavy Discord rooms, set `voice.realtime.providers.openai.interruptResponseOnInputAudio: false` to keep OpenAI from auto-interrupting on input audio. Add `voice.realtime.bargeIn: true` if you still want Discord speaker-start events to interrupt active playback. The OpenAI realtime bridge ignores playback truncations shorter than `voice.realtime.minBargeInAudioEndMs` as likely echo/noise and logs them as skipped instead of clearing Discord playback.
-- `voice.captureSilenceGraceMs` controls how long OpenClaw waits after Discord reports a speaker has stopped before finalizing that audio segment for STT. Default: `2000`; raise it if Discord splits normal pauses into choppy partial transcripts.
+- `voice.captureSilenceGraceMs` controls how long PASO waits after Discord reports a speaker has stopped before finalizing that audio segment for STT. Default: `2000`; raise it if Discord splits normal pauses into choppy partial transcripts.
 - When ElevenLabs is the selected TTS provider, Discord voice playback uses streaming TTS and starts from the provider response stream. Providers without streaming support fall back to the synthesized temp-file path.
-- OpenClaw watches receive decrypt failures and auto-recovers by leaving/rejoining the voice channel after repeated failures in a short window.
+- PASO watches receive decrypt failures and auto-recovers by leaving/rejoining the voice channel after repeated failures in a short window.
 - If receive logs repeatedly show `DecryptionFailed(UnencryptedWhenPassthroughDisabled)` after updating, collect a dependency report and logs. The bundled `@discordjs/voice` line includes the upstream padding fix from discord.js PR #11449, which closed discord.js issue #11419.
-- `The operation was aborted` receive events are expected when OpenClaw finalizes a captured speaker segment; they are verbose diagnostics, not warnings.
+- `The operation was aborted` receive events are expected when PASO finalizes a captured speaker segment; they are verbose diagnostics, not warnings.
 - Verbose Discord voice logs include a bounded one-line STT transcript preview for each accepted speaker segment, so debugging shows both the user side and the agent reply side without dumping unbounded transcript text.
 - In `agent-proxy` mode, forced consult fallback skips likely incomplete transcript fragments such as text ending in `...` or a trailing connector like "and", plus obvious non-actionable closings like "be right back" or "bye". Logs show `forced agent consult skipped reason=...` when this prevents a stale queued answer.
 
@@ -1332,14 +1332,14 @@ Use `voice.followUsers` when you want the Discord voice bot to stay with one or 
 
 Behavior:
 
-- `followUsers` accepts raw Discord user IDs and `discord:<id>` values. OpenClaw normalizes both forms before matching voice-state events.
+- `followUsers` accepts raw Discord user IDs and `discord:<id>` values. PASO normalizes both forms before matching voice-state events.
 - `followUsersEnabled` defaults to `true` when `followUsers` is configured. Set it to `false` to keep the saved list but stop automatic voice following.
 - `followUsers` controls voice residency only. It does not grant speaker access or owner authority; configure `commands.ownerAllowFrom` and guild or channel users and roles separately.
-- When a followed user joins an allowed voice channel, OpenClaw joins that channel. When the user moves, OpenClaw moves with them. When the active followed user disconnects, OpenClaw leaves.
-- If multiple followed users are in the same guild and the active followed user leaves, OpenClaw moves to another tracked followed user's channel before leaving the guild. If several followed users move at once, the latest observed voice-state event wins.
+- When a followed user joins an allowed voice channel, PASO joins that channel. When the user moves, PASO moves with them. When the active followed user disconnects, PASO leaves.
+- If multiple followed users are in the same guild and the active followed user leaves, PASO moves to another tracked followed user's channel before leaving the guild. If several followed users move at once, the latest observed voice-state event wins.
 - `allowedChannels` still applies. A followed user in a disallowed channel is ignored, and a follow-owned session moves to another followed user or leaves.
-- OpenClaw reconciles missed voice-state events on startup and at a bounded interval. Reconciliation samples configured guilds and caps REST lookups per run, so very large `followUsers` lists may take more than one interval to converge.
-- If Discord or an admin moves the bot while it is following a user, OpenClaw rebuilds the voice session and preserves follow ownership when the destination is allowed. If the bot is moved outside `allowedChannels`, OpenClaw leaves and rejoins the configured target when one exists.
+- PASO reconciles missed voice-state events on startup and at a bounded interval. Reconciliation samples configured guilds and caps REST lookups per run, so very large `followUsers` lists may take more than one interval to converge.
+- If Discord or an admin moves the bot while it is following a user, PASO rebuilds the voice session and preserves follow ownership when the destination is allowed. If the bot is moved outside `allowedChannels`, PASO leaves and rejoins the configured target when one exists.
 - DAVE receive recovery may leave and rejoin the same channel after repeated decrypt failures. Follow-owned sessions keep their follow ownership through that recovery path, so a later followed-user disconnect still leaves the channel.
 
 Choose between the join modes:
@@ -1384,7 +1384,7 @@ Default agent-proxy voice-channel session example:
 }
 ```
 
-With no `voice.agentSession` block, each voice channel gets its own routed OpenClaw session. For example, `/vc join channel:234567890123456789` talks to the session for that Discord voice channel. The realtime model is only the voice front end; substantive requests are handed to the configured OpenClaw agent. If the realtime model produces a final transcript without calling the consult tool, OpenClaw forces the consult as a fallback so the default still behaves like talking to the agent.
+With no `voice.agentSession` block, each voice channel gets its own routed PASO session. For example, `/vc join channel:234567890123456789` talks to the session for that Discord voice channel. The realtime model is only the voice front end; substantive requests are handed to the configured PASO agent. If the realtime model produces a final transcript without calling the consult tool, PASO forces the consult as a fallback so the default still behaves like talking to the agent.
 
 Legacy STT plus TTS example:
 
@@ -1459,9 +1459,9 @@ Voice as an extension of an existing Discord channel session:
 }
 ```
 
-In `agent-proxy` mode the bot joins the configured voice channel, but OpenClaw agent turns use the target channel's normal routed session and agent. The realtime voice session speaks the returned result back into the voice channel. The supervisor agent can still use normal message tools according to its tool policy, including sending a separate Discord message if that is the right action.
+In `agent-proxy` mode the bot joins the configured voice channel, but PASO agent turns use the target channel's normal routed session and agent. The realtime voice session speaks the returned result back into the voice channel. The supervisor agent can still use normal message tools according to its tool policy, including sending a separate Discord message if that is the right action.
 
-While a delegated OpenClaw run is active, new Discord voice transcripts are treated as live run control before starting another agent turn. Phrases such as "status", "cancel that", "use the smaller fix", or "when you're done also check tests" are classified as status, cancel, steering, or follow-up input for the active session. Status, cancel, accepted steering, and follow-up outcomes are spoken back into the voice channel so the caller knows whether OpenClaw handled the request.
+While a delegated PASO run is active, new Discord voice transcripts are treated as live run control before starting another agent turn. Phrases such as "status", "cancel that", "use the smaller fix", or "when you're done also check tests" are classified as status, cancel, steering, or follow-up input for the active session. Status, cancel, accepted steering, and follow-up outcomes are spoken back into the voice channel so the caller knows whether PASO handled the request.
 
 Useful target forms:
 
@@ -1498,7 +1498,7 @@ Echo-heavy OpenAI Realtime example:
 }
 ```
 
-Use this when the model hears its own Discord playback through an open mic, but you still want to interrupt it by speaking. OpenClaw keeps OpenAI from auto-interrupting on raw input audio, while `bargeIn: true` lets Discord speaker-start events and already-active speaker audio cancel active realtime responses before the next captured turn reaches OpenAI. Very early barge-in signals with `audioEndMs` below `minBargeInAudioEndMs` are treated as likely echo/noise and ignored so the model does not cut off at the first playback frame.
+Use this when the model hears its own Discord playback through an open mic, but you still want to interrupt it by speaking. PASO keeps OpenAI from auto-interrupting on raw input audio, while `bargeIn: true` lets Discord speaker-start events and already-active speaker audio cancel active realtime responses before the next captured turn reaches OpenAI. Very early barge-in signals with `audioEndMs` below `minBargeInAudioEndMs` are treated as likely echo/noise and ignored so the model does not cut off at the first playback frame.
 
 Expected voice logs:
 
@@ -1523,15 +1523,15 @@ To debug cut-off audio, read the realtime voice logs as a timeline:
 1. `realtime audio playback started` means Discord has begun playing assistant audio. The bridge starts counting assistant output chunks, Discord PCM bytes, provider realtime bytes, and synthesized audio duration from this point.
 2. `realtime speaker turn opened` marks a Discord speaker becoming active. If playback is already active and `bargeIn` is enabled, this can be followed by `barge-in detected source=speaker-start`.
 3. `realtime input audio started` marks the first actual audio frame received for that speaker turn. `outputActive=true` or a nonzero `outputAudioMs` here means the mic is sending input while assistant playback is still active.
-4. `barge-in detected source=active-speaker-audio` means OpenClaw saw live speaker audio while assistant playback was active. This is useful for distinguishing a real interruption from a Discord speaker-start event with no useful audio.
-5. `barge-in requested reason=...` means OpenClaw asked the realtime provider to cancel or truncate the active response. It includes `outputAudioMs`, `outputActive`, and `playbackChunks` so you can see how much assistant audio had actually played before the interruption.
+4. `barge-in detected source=active-speaker-audio` means PASO saw live speaker audio while assistant playback was active. This is useful for distinguishing a real interruption from a Discord speaker-start event with no useful audio.
+5. `barge-in requested reason=...` means PASO asked the realtime provider to cancel or truncate the active response. It includes `outputAudioMs`, `outputActive`, and `playbackChunks` so you can see how much assistant audio had actually played before the interruption.
 6. `realtime audio playback stopped reason=...` is the local Discord playback reset point. `player-idle` means Discord finished consuming the audio; provider `response.done` and encoder completion alone do not mean playback is finished. Other reasons include `barge-in`, `provider-clear-audio`, `forced-agent-consult`, `stream-close`, `output-audio-overflow`, and `session-close`.
 7. `realtime speaker turn closed` summarizes the captured input turn. `chunks=0` or `hasAudio=false` means the speaker turn opened but no usable audio reached the realtime bridge. `interruptedPlayback=true` means that input turn overlapped assistant output and triggered barge-in logic.
 
 Useful fields:
 
 - `outputAudioMs`: assistant audio duration generated by the realtime provider before the log line.
-- `audioMs`: assistant audio duration that OpenClaw counted before playback stopped.
+- `audioMs`: assistant audio duration that PASO counted before playback stopped.
 - `elapsedMs`: wall-clock time between opening and closing the playback stream or speaker turn.
 - `discordBytes`: 48 kHz stereo PCM bytes sent to or received from Discord voice.
 - `realtimeBytes`: provider-format PCM bytes sent to or received from the realtime provider.
@@ -1541,21 +1541,21 @@ Useful fields:
 Common patterns:
 
 - Immediate cut-off with `source=active-speaker-audio`, small `outputAudioMs`, and the same user nearby usually points to speaker echo entering the mic. Raise `voice.realtime.minBargeInAudioEndMs`, lower speaker volume, use headphones, or set `voice.realtime.providers.openai.interruptResponseOnInputAudio: false`.
-- `source=speaker-start` followed by `speaker turn closed ... hasAudio=false` means Discord reported a speaker start but no audio reached OpenClaw. That can be a transient Discord voice event, noise gate behavior, or a client briefly keying the mic.
+- `source=speaker-start` followed by `speaker turn closed ... hasAudio=false` means Discord reported a speaker start but no audio reached PASO. That can be a transient Discord voice event, noise gate behavior, or a client briefly keying the mic.
 - `audio playback stopped reason=output-audio-overflow` means sustained delivery problems exceeded the bounded pending-audio queue. Check the associated `Discord realtime audio playback overflow` error and preceding provider or Discord connection diagnostics; ordinary playback backpressure should not produce this error.
 - `audio playback stopped reason=stream-close` without a nearby barge-in or `provider-clear-audio` means the local Discord playback stream ended unexpectedly. Check the preceding provider and Discord player logs.
-- `capture ignored during playback (barge-in disabled)` means OpenClaw intentionally dropped input while assistant audio was active. Enable `voice.realtime.bargeIn` if you want speech to interrupt playback.
-- `barge-in ignored ... outputActive=false` means Discord or provider VAD reported speech, but OpenClaw had no active playback to interrupt. This should not cut off audio.
+- `capture ignored during playback (barge-in disabled)` means PASO intentionally dropped input while assistant audio was active. Enable `voice.realtime.bargeIn` if you want speech to interrupt playback.
+- `barge-in ignored ... outputActive=false` means Discord or provider VAD reported speech, but PASO had no active playback to interrupt. This should not cut off audio.
 
 Credentials are resolved per component: LLM route auth for `voice.model`, STT auth for `tools.media.audio`, TTS auth for `tts`/`voice.tts`, and realtime provider auth for `voice.realtime.providers` or the provider's normal auth config.
 
 ### Voice messages
 
-Discord voice messages show a waveform preview and require OGG/Opus audio. OpenClaw generates the waveform automatically, but needs `ffmpeg` and `ffprobe` on the gateway host to inspect and convert.
+Discord voice messages show a waveform preview and require OGG/Opus audio. PASO generates the waveform automatically, but needs `ffmpeg` and `ffprobe` on the gateway host to inspect and convert.
 
 - Provide a **local file path** (URLs are rejected).
 - Omit text content (Discord rejects text + voice message in the same payload).
-- Any audio format is accepted; OpenClaw converts to OGG/Opus as needed.
+- Any audio format is accepted; PASO converts to OGG/Opus as needed.
 
 ```bash
 message(action="send", channel="discord", target="channel:123", path="/path/to/audio.mp3", asVoice=true)
@@ -1610,14 +1610,14 @@ openclaw logs --follow
   </Accordion>
 
   <Accordion title="Gateway metadata lookup timeout warnings">
-    OpenClaw fetches Discord `/gateway/bot` metadata before connecting. Transient failures fall back to Discord's default gateway URL and are rate-limited in logs.
+    PASO fetches Discord `/gateway/bot` metadata before connecting. Transient failures fall back to Discord's default gateway URL and are rate-limited in logs.
 
     The metadata timeout defaults to 30 seconds. `OPENCLAW_DISCORD_GATEWAY_INFO_TIMEOUT_MS` can override it for unusual host environments.
 
   </Accordion>
 
   <Accordion title="Gateway READY timeout restarts">
-    OpenClaw waits for Discord's gateway `READY` event during startup and after runtime reconnects. Multi-account setups with startup staggering can need a longer startup READY window than the default.
+    PASO waits for Discord's gateway `READY` event during startup and after runtime reconnects. Multi-account setups with startup staggering can need a longer startup READY window than the default.
 
     Startup waits 15 seconds and runtime reconnects wait 30 seconds. `OPENCLAW_DISCORD_READY_TIMEOUT_MS` and `OPENCLAW_DISCORD_RUNTIME_READY_TIMEOUT_MS` remain available for unusual host environments.
 
@@ -1644,7 +1644,7 @@ openclaw logs --follow
     If you set `channels.discord.allowBots=true`, use strict mention and allowlist rules to avoid loop behavior.
     Prefer `channels.discord.allowBots="mentions"` to only accept bot messages that mention the bot.
 
-    OpenClaw also ships shared [bot loop protection](/channels/bot-loop-protection). Whenever `allowBots` lets bot-authored messages reach dispatch, Discord maps the inbound event to `(account, channel, bot pair)` facts and the generic pair guard suppresses the pair after it crosses the configured event budget. The guard prevents runaway two-bot loops that previously had to be stopped by Discord rate limits; it does not affect single-bot deployments or one-shot bot replies that stay under the budget.
+    PASO also ships shared [bot loop protection](/channels/bot-loop-protection). Whenever `allowBots` lets bot-authored messages reach dispatch, Discord maps the inbound event to `(account, channel, bot pair)` facts and the generic pair guard suppresses the pair after it crosses the configured event budget. The guard prevents runaway two-bot loops that previously had to be stopped by Discord rate limits; it does not affect single-bot deployments or one-shot bot replies that stay under the budget.
 
     Default settings (active when `allowBots` is set):
 
@@ -1706,7 +1706,7 @@ openclaw logs --follow
 
   <Accordion title="Voice STT drops with DecryptionFailed(...)">
 
-    - keep OpenClaw current (`openclaw update`) so the Discord voice receive recovery logic is present
+    - keep PASO current (`openclaw update`) so the Discord voice receive recovery logic is present
     - confirm `channels.discord.voice.daveEncryption=true` (default)
     - start from `channels.discord.voice.decryptionFailureTolerance=24` (upstream default) and tune only if needed
     - watch logs for:

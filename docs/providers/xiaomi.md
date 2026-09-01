@@ -1,7 +1,7 @@
 ---
-summary: "Use Xiaomi MiMo pay-as-you-go and Token Plan models with OpenClaw"
+summary: "Use Xiaomi MiMo pay-as-you-go and Token Plan models with PASO"
 read_when:
-  - You want Xiaomi MiMo models in OpenClaw
+  - You want Xiaomi MiMo models in PASO
   - You need Xiaomi MiMo auth or Token Plan setup
 title: "Xiaomi MiMo"
 ---
@@ -101,7 +101,7 @@ provider is not offered without one of those.
 ## Reasoning models
 
 `mimo-v2.5` and `mimo-v2.5-pro` support
-OpenClaw's [`/think` directive](/tools/thinking) with levels `off`,
+PASO's [`/think` directive](/tools/thinking) with levels `off`,
 `minimal`, `low`, `medium`, `high`, `xhigh`, and `max` (default `high`).
 
 ## Text-to-speech
@@ -139,11 +139,11 @@ message.
 
 Built-in voices: `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`,
 `Milo`, `Dean`. The preset-voice model `mimo-v2.5-tts` uses `audio.voice`, so
-OpenClaw sends `speakerVoice` for that model.
+PASO sends `speakerVoice` for that model.
 
 The voicedesign model `mimo-v2.5-tts-voicedesign` generates the voice from a
 natural-language style prompt instead of a preset voice id. Set `style` to
-the desired voice description; OpenClaw sends it as the `user` message, sends
+the desired voice description; PASO sends it as the `user` message, sends
 the spoken text as the `assistant` message, and omits `audio.voice` for this
 model.
 
@@ -163,7 +163,7 @@ model.
 ```
 
 For channels that request a voice-note synthesis target (Discord, Feishu,
-Matrix, Telegram, and WhatsApp), OpenClaw transcodes Xiaomi output to 48kHz
+Matrix, Telegram, and WhatsApp), PASO transcodes Xiaomi output to 48kHz
 mono Opus with `ffmpeg` before delivery.
 
 ## Config example
@@ -284,7 +284,7 @@ USD pricing, so its catalog rows use zero USD cost and the config example omits
     `/think` directive syntax and level mapping.
   </Card>
   <Card title="Configuration reference" href="/gateway/configuration-reference" icon="gear">
-    Full OpenClaw configuration reference.
+    Full PASO configuration reference.
   </Card>
   <Card title="Xiaomi MiMo console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Xiaomi MiMo dashboard and API key management.

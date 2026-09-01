@@ -993,8 +993,8 @@ describe("openrouter provider hooks", () => {
     const options = baseStreamFn.mock.calls[0]?.[2] as { headers?: HeadersInit } | undefined;
     const headers = new Headers(options?.headers);
     expect(headers.get("authorization")).toBe("Bearer or-test-key");
-    expect(headers.get("http-referer")).toBe("https://openclaw.ai");
-    expect(headers.get("x-openrouter-title")).toBe("OpenClaw");
+    expect(headers.get("http-referer")).toBe("https://github.com/celaya-solutions/PASO-AGENT");
+    expect(headers.get("x-openrouter-title")).toBe("PASO");
   });
 
   it("merges resolved OpenRouter model params into transport params", async () => {

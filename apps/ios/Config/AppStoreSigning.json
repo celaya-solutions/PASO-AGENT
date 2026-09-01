@@ -1,4 +1,6 @@
 {
+  "releaseEnabled": false,
+  "releaseOwner": "upstream-openclaw-compatibility",
   "teamId": "FWJYW4S8P8",
   "signingRepo": "git@github.com:openclaw/apps-signing.git",
   "signingBranch": "main",
@@ -7,7 +9,7 @@
   "targets": [
     {
       "target": "OpenClaw",
-      "displayName": "OpenClaw",
+      "displayName": "PASO",
       "bundleId": "ai.openclawfoundation.app",
       "platform": "IOS",
       "profileKey": "OPENCLAW_APP_PROFILE",
@@ -17,7 +19,7 @@
     },
     {
       "target": "OpenClawShareExtension",
-      "displayName": "OpenClaw Share",
+      "displayName": "PASO Share",
       "bundleId": "ai.openclawfoundation.app.share",
       "platform": "IOS",
       "profileKey": "OPENCLAW_SHARE_PROFILE",
@@ -27,7 +29,7 @@
     },
     {
       "target": "OpenClawActivityWidget",
-      "displayName": "OpenClaw Activity Widget",
+      "displayName": "PASO Activity",
       "bundleId": "ai.openclawfoundation.app.activitywidget",
       "platform": "IOS",
       "profileKey": "OPENCLAW_ACTIVITY_WIDGET_PROFILE",
@@ -36,7 +38,7 @@
     },
     {
       "target": "OpenClawWatchApp",
-      "displayName": "OpenClaw Watch App",
+      "displayName": "PASO",
       "bundleId": "ai.openclawfoundation.app.watchkitapp",
       "platform": "IOS",
       "profileKey": "OPENCLAW_WATCH_APP_PROFILE",

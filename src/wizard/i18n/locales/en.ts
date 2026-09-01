@@ -82,7 +82,7 @@ export const en = {
       existingPasswordConfirm: "Use existing gateway password ({password})?",
       existingTokenConfirm: "Use existing gateway token ({token})?",
       passwordPrompt: "Gateway password",
-      plaintextPasswordHint: "Stores the password directly in OpenClaw config",
+      plaintextPasswordHint: "Stores the password directly in PASO config",
       plaintextPasswordLabel: "Enter password now",
       plaintextTokenHint: "Default",
       plaintextTokenLabel: "Generate/store plaintext token",
@@ -96,17 +96,18 @@ export const en = {
       tokenPrompt: "Gateway token",
       tokenPromptGenerate: "Gateway token (blank to generate)",
       tokenStoreProvisioned:
-        "Generated a gateway token and stored it in the OpenClaw secret store as {name}. Config keeps only a reference; inspect it with `openclaw secrets store list`.",
+        "Generated a gateway token and stored it in the PASO secret store as {name}. Config keeps only a reference; inspect it with `openclaw secrets store list`.",
       trustedProxyAllowLoopback: "Allow loopback trusted-proxy authentication?",
       trustedProxyLoopbackTitle: "Loopback proxy security warning",
       trustedProxyLoopbackWarning:
         "Any local process can impersonate a loopback reverse proxy by sending identity headers to the Gateway.\nOnly enable this when the reverse proxy is the sole local listener for incoming user traffic, direct Gateway access is locked down, and you trust local processes.\nThe proxy must authenticate users and strip or overwrite client-supplied identity headers.",
       trustedProxyLoopbackRefused:
-        "Loopback proxy requests will be rejected at runtime (trusted_proxy_loopback_source).\nUse a non-loopback proxy address, or rerun gateway configuration and explicitly allow loopback after reviewing the security warning.\nDocs: https://docs.openclaw.ai/gateway/trusted-proxy-auth",
+        "Loopback proxy requests will be rejected at runtime (trusted_proxy_loopback_source).\nUse a non-loopback proxy address, or rerun gateway configuration and explicitly allow loopback after reviewing the security warning.\nDocs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       websocketUrl: "Gateway WebSocket URL",
     },
     gatewayTailscale: {
-      docsNote: "Docs:\nhttps://docs.openclaw.ai/gateway/tailscale\nhttps://docs.openclaw.ai/web",
+      docsNote:
+        "Docs:\nhttps://github.com/celaya-solutions/PASO-AGENT/tree/main/docs\nhttps://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       funnel: "Funnel",
       funnelHint: "Public HTTPS via Tailscale Funnel (internet)",
       missingBinNote:
@@ -148,7 +149,7 @@ export const en = {
     memoryImport: {
       applyFailed:
         "{label} memory import failed: {reason}\nRetry from the dashboard's Memory import page (Settings → Import Memory).",
-      confirm: "Import these memories into your OpenClaw workspace?",
+      confirm: "Import these memories into your PASO workspace?",
       conflictSuffix: ", {count} already imported",
       errorTitle: "Memory import failed",
       failureLine: "{label} failed: {reason}. Retry from the Memory import page.",
@@ -268,9 +269,9 @@ export const en = {
         "If your gateway is loopback-only, choose SSH tunnel and keep ws://127.0.0.1:18789.",
       noGatewaysFound: "No gateways found",
       passwordPrompt: "Gateway password",
-      plaintextPasswordHint: "Stores the password directly in OpenClaw config",
+      plaintextPasswordHint: "Stores the password directly in PASO config",
       plaintextPasswordLabel: "Enter password now",
-      plaintextTokenHint: "Stores the token directly in OpenClaw config",
+      plaintextTokenHint: "Stores the token directly in PASO config",
       plaintextTokenLabel: "Enter token now",
       searchProgress: "Searching for gateways...",
       selectGateway: "Select gateway",
@@ -302,7 +303,7 @@ export const en = {
       codingAgentQuip:
         "I can see {labels} on this machine — good taste. Once your AI works I can bring their memories along too.",
       controlUiPreparing: "Preparing the Control UI…",
-      custodianIntro: "Hi — I'm OpenClaw. I keep this system running. Let's get you set up.",
+      custodianIntro: "Hi — I'm PASO. I keep this system running. Let's get you set up.",
       failedOptionsIntro: "These didn't work just now:",
       findMeLater:
         "You can always find me later — run `openclaw` in a terminal, or open Settings in the dashboard.",
@@ -318,8 +319,8 @@ export const en = {
       setupDone: "Everything's in place.",
       silentFailures:
         '{count} detected option(s) didn\'t respond — details under "See other options".',
-      complete: "OpenClaw is ready.",
-      completeWithoutAi: "OpenClaw setup is saved. Connect AI before opening chat.",
+      complete: "PASO is ready.",
+      completeWithoutAi: "PASO setup is saved. Connect AI before opening chat.",
       detected: "AI detection complete.",
       detectedCandidate: "{label} — {detail}{recommended}",
       detectedGroupLabel: "Detected on this machine",
@@ -341,7 +342,7 @@ export const en = {
       recommendedInstall: "{label} — {hint}\n  {website}",
       recommendedInstallsTitle: "Recommended installs",
       intro: "Connect your AI",
-      invalidConfigDetails: "OpenClaw config {path} is invalid:\n{issues}",
+      invalidConfigDetails: "PASO config {path} is invalid:\n{issues}",
       invalidConfigRepair:
         "Nothing was changed. Repair with {fixCommand}, inspect with {inspectCommand}, then retry onboarding.",
       invalidConfigUnknown: "- The config could not be parsed.",
@@ -387,7 +388,7 @@ export const en = {
       flowKeepModelHint: "Skip model/auth setup and keep the current default model.",
       flowQuickstart: "QuickStart (recommended)",
       flowQuickstartHint: "Recommended local setup. Change details later with {command}.",
-      intro: "OpenClaw setup",
+      intro: "PASO setup",
       invalidConfigTitle: "Invalid config",
       keepCurrent: "Keep current values",
       localGateway: "Local gateway (this machine)",
@@ -442,7 +443,7 @@ export const en = {
       askForHelp:
         "Ask someone experienced to help before enabling tools or exposing it to the internet.",
       attribution:
-        "OpenClaw is an open-source assistant that learns and grows with you, by the OpenClaw Foundation (a non-profit).",
+        "PASO is an open-source AI agent from Celaya Solutions Research in El Paso, Texas.",
       baselineDmSessions:
         "Shared inboxes: isolate DM sessions (session.dmScope: per-channel-peer) and keep tool access minimal.",
       baselinePairing: "Use pairing or allowlists; require mentions in group chats.",
@@ -455,10 +456,10 @@ export const en = {
       confirm:
         "I understand this is personal-by-default and shared/multi-user use requires lock-down. Continue?",
       hardeningRequired:
-        "If you're not comfortable managing access controls and security hardening, don't run OpenClaw without help.",
+        "If you're not comfortable managing access controls and security hardening, don't run PASO without help.",
       learnMore: "Learn more at",
-      notMultitenant: "OpenClaw is not designed to safely separate multiple users by default.",
-      personalAgent: "By default, OpenClaw is a personal agent for one operator.",
+      notMultitenant: "PASO is not designed to safely separate multiple users by default.",
+      personalAgent: "By default, PASO is a personal agent for one operator.",
       promptRisk: "A bad prompt can trick it into doing unsafe things.",
       recommendedBaseline: "Recommended safer setup",
       runRegularly: "Run regularly",
@@ -471,8 +472,8 @@ export const en = {
       accept: "Yes, share feature stats",
       decline: "No thanks",
       description:
-        "Share which features you use (channels, providers, plugin count) as part of the daily update check. Never messages, never identifiers. See exactly what is sent: `openclaw telemetry show`. Change anytime: `openclaw telemetry on|off`.",
-      title: "Help make OpenClaw better?",
+        "Share which features you use (channels, providers, plugin count) only with the telemetry endpoint you configure. PASO configures no endpoint by default. Never messages, never identifiers. See exactly what would be sent: `openclaw telemetry show`. Change anytime: `openclaw telemetry on|off`.",
+      title: "Help make PASO better?",
     },
     skills: {
       configure: "Configure skills now? (recommended)",
@@ -481,7 +482,7 @@ export const en = {
       containerBrewManual:
         "Use a custom image with Homebrew preinstalled or install those dependencies manually.",
       containerInstallsTitle: "Container skill installs",
-      docsLine: "Docs: https://docs.openclaw.ai/skills",
+      docsLine: "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       enterEnv: "Enter {env}",
       homebrewCommand: "Show Homebrew install command?",
       homebrewInstallTitle: "Homebrew install",
@@ -752,7 +753,7 @@ export const en = {
       connected: "Connected as @{handle} — workspace {workspace} resolved.",
       envPrompt: "CLICKCLACK_BOT_TOKEN detected. Use env var?",
       helpCreateToken:
-        "In ClickClack: Workspace settings → Integrations → OpenClaw → create bot → copy token",
+        "In ClickClack: Workspace settings → Integrations → PASO → create bot → copy token",
       invalidToken:
         "ClickClack rejected the bot token (401). Copy a current token and rerun setup.",
       validationWarningTitle: "ClickClack connection check",
@@ -777,7 +778,7 @@ export const en = {
       helpEnableRoom: "4) Enable the bot in your Nextcloud Talk room settings",
       helpEnvTip: "Tip: you can also set NEXTCLOUD_TALK_BOT_SECRET in your env.",
       helpInstallCommand:
-        '2) Run: ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction',
+        '2) Run: ./occ talk:bot:install "PASO" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction',
       helpSsh: "1) SSH into your Nextcloud server",
       instanceUrlPrompt: "Enter Nextcloud instance URL (e.g., https://cloud.example.com)",
       setupTitle: "Nextcloud Talk bot setup",
@@ -835,7 +836,7 @@ export const en = {
       linkNowPrompt: "Link WhatsApp now (QR)?",
       linkingTitle: "WhatsApp linking",
       numberTitle: "WhatsApp number",
-      ownerNumberNote: "We need the sender/owner number so OpenClaw can allowlist you.",
+      ownerNumberNote: "We need the sender/owner number so PASO can allowlist you.",
       personalNumberPrompt: "Your personal WhatsApp number (the phone you will message from)",
       personalPhoneLabel: "This is my personal phone number",
       personalPhoneModeEnabled: "Personal phone mode enabled.",
@@ -843,7 +844,7 @@ export const en = {
       phoneSetupPrompt: "WhatsApp phone setup",
       relinkPrompt: "WhatsApp already linked. Re-link now?",
       scanQr: "Scan the QR with WhatsApp on your phone.",
-      separatePhoneLabel: "Separate phone just for OpenClaw",
+      separatePhoneLabel: "Separate phone just for PASO",
       setAllowFromNumbers: "Set allowFrom to specific numbers",
       unsetAllowFromDefault: "Unset allowFrom (default)",
       unsetAllowFromPairing: "Unset allowFrom (use pairing approvals only)",
@@ -936,7 +937,7 @@ export const en = {
       helpIncomingWebhook: "1) Create an incoming webhook in Synology Chat and copy its URL",
       helpOutgoingWebhook: "2) Create an outgoing webhook and copy its secret token",
       helpPointWebhook: "3) Point the outgoing webhook to https://<gateway-host>{path}",
-      incomingWebhookHelpReplies: "This is the URL OpenClaw uses to send replies back to Chat.",
+      incomingWebhookHelpReplies: "This is the URL PASO uses to send replies back to Chat.",
       incomingWebhookHelpUseUrl: "Use the incoming webhook URL from Synology Chat integrations.",
       incomingWebhookKeep: "Incoming webhook URL already configured. Keep it?",
       incomingWebhookTitle: "Synology Chat incoming webhook",
@@ -952,7 +953,7 @@ export const en = {
       publicWebhookUrlKeep: "Public attachment webhook URL already configured. Keep it?",
       publicWebhookUrlPrompt: "Public attachment webhook URL (optional)",
       publicWebhookUrlScope:
-        "Expose only this webhook route; OpenClaw uses it for short-lived attachment downloads.",
+        "Expose only this webhook route; PASO uses it for short-lived attachment downloads.",
       publicWebhookUrlTitle: "Synology Chat public attachment route",
       setupTitle: "Synology Chat webhook setup",
       tokenEnvPrompt: "SYNOLOGY_CHAT_TOKEN detected. Use env var?",
@@ -969,7 +970,7 @@ export const en = {
       examples: "Examples:",
       installPrompt: "signal-cli not found. Install now?",
       multipleEntries: "Multiple entries: comma-separated.",
-      nextLinkDevice: 'Link device with: signal-cli link -n "OpenClaw"',
+      nextLinkDevice: 'Link device with: signal-cli link -n "PASO"',
       nextScanQr: "Scan QR in Signal -> Linked Devices",
       nextStepsTitle: "Signal next steps",
       reinstallPrompt: "signal-cli detected. Reinstall/update now?",
@@ -1084,7 +1085,7 @@ export const en = {
         qqbot: "Connect to QQ via official QQ Bot API",
         signal: 'signal-cli linked device; more setup (David Reagans: "Hop on Discord.").',
         slack: "supported (Socket Mode).",
-        synologyChat: "Connect your Synology NAS Chat to OpenClaw with full agent capabilities.",
+        synologyChat: "Connect your Synology NAS Chat to PASO with full agent capabilities.",
         telegram: "simplest way to get started — register a bot with @BotFather and get going.",
         tlon: "decentralized messaging on Urbit; install the plugin to enable.",
         twitch: "Twitch chat integration",
@@ -1118,9 +1119,9 @@ export const en = {
       codexNativeSearchOnly: "Used only for Codex-capable models.",
       codexNativeSearchTitle: "Codex native search",
       controlUiTitle: "Control UI",
-      controlUiDocs: "Docs: https://docs.openclaw.ai/web/control-ui",
-      dashboardCopyPaste: "Copy/paste this URL in a browser on this machine to control OpenClaw.",
-      dashboardOpened: "Opened in your browser. Keep that tab to control OpenClaw.",
+      controlUiDocs: "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+      dashboardCopyPaste: "Copy/paste this URL in a browser on this machine to control PASO.",
+      dashboardOpened: "Opened in your browser. Keep that tab to control PASO.",
       dashboardOpenAnytime: "Open the dashboard anytime: {command}",
       dashboardReady: "Dashboard ready",
       dashboardWhenReady: "When you're ready: {command}",
@@ -1173,9 +1174,8 @@ export const en = {
       nodeIos: "iOS app (camera/canvas)",
       nodeMac: "macOS app (system + notifications)",
       optionalApps: "Optional apps",
-      outroDashboardLink: "Onboarding complete. Use the dashboard link above to control OpenClaw.",
-      outroDashboardOpened:
-        "Onboarding complete. Dashboard opened; keep that tab to control OpenClaw.",
+      outroDashboardLink: "Onboarding complete. Use the dashboard link above to control PASO.",
+      outroDashboardOpened: "Onboarding complete. Dashboard opened; keep that tab to control PASO.",
       outroHealthCheckFailed:
         "Onboarding complete, but the gateway health check failed. Fix the issue above, then verify with {command}.",
       outroSeeded:
@@ -1186,9 +1186,9 @@ export const en = {
       restart: "Restart",
       containerRuntimeTitle: "Container runtime",
       containerSystemdUnavailable:
-        "Systemd user services are not available inside this container. OpenClaw is skipping only the background service install; run the Gateway in the foreground or use your container supervisor.",
+        "Systemd user services are not available inside this container. PASO is skipping only the background service install; run the Gateway in the foreground or use your container supervisor.",
       securityReminder:
-        "Running agents on your computer is risky — harden your setup: https://docs.openclaw.ai/security",
+        "Running agents on your computer is risky — harden your setup: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       secretRefAuthFailed: "Could not resolve {field} SecretRef for setup auth.",
       skipHealthNextTime: "Or skip this probe next time: {command}",
       skipControlUi: "Skipping Control UI/TUI prompts.",
@@ -1203,7 +1203,7 @@ export const en = {
       sessionGatewayStarted: "Session Gateway started.",
       sessionGatewayStartFailed: "Session Gateway failed to start.",
       terminalHatch: "Hatch in Terminal (recommended)",
-      webDocs: "Docs: https://docs.openclaw.ai/tools/web",
+      webDocs: "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       webSearchAutoDetected: "Web search is available via {provider} (auto-detected).",
       webSearchDisabled: "Web search ({provider}) is configured but disabled.",
       webSearchEnabled:
@@ -1226,10 +1226,10 @@ export const en = {
       webSearchUnavailableAction:
         "web_search will not work until the provider is re-enabled or a different provider is selected.",
       webUiUrl: "Web UI: {url}",
-      whatNow: 'What now: https://openclaw.ai/showcase ("What People Are Building").',
+      whatNow: "What now: https://github.com/celaya-solutions/PASO-AGENT",
       whatNowTitle: "What now",
       workspaceBackupTitle: "Workspace backup",
-      workspaceDocs: "Docs: https://docs.openclaw.ai/concepts/agent-workspace",
+      workspaceDocs: "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       workspaceReady: "Your workspace is ready.",
     },
     gatewayNotes: {

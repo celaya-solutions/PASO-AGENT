@@ -2098,8 +2098,8 @@ esac
                 "id": "main",
                 "name": "Main",
                 "identity": {
-                    "name": "Molty",
-                    "emoji": "🦞",
+                    "name": "PASO",
+                    "emoji": "◈",
                     "avatarUrl": "data:image/png;base64,AA=="
                 }
             }]

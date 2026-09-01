@@ -246,7 +246,7 @@ function resolveOpenAIResponsesPayloadCapabilities(
   const usesExplicitProxyLikeEndpoint = usesConfiguredBaseUrl && !usesKnownNativeOpenAIEndpoint;
   // Recognizing a hostname (routing it to a named endpointClass) is not the
   // same as having confirmed that host's Responses API honors `instructions`
-  // -- OpenClaw bundles many named classes (Cerebras, Groq, Mistral,
+  // -- PASO bundles many named classes (Cerebras, Groq, Mistral,
   // OpenCode, GitHub Copilot, ...) purely for SSRF/base-URL matching and
   // other unrelated capability detection, with no contract proof either way
   // for `instructions` specifically. Only two routes are actually verified:

@@ -42,7 +42,7 @@ built entries:
   (entries pair positionally). `runtimeSetupEntry` requires `setupEntry`.
 - If a `runtimeExtensions`/`runtimeSetupEntry` artifact is declared but
   missing, installation fails and discovery reports a packaging error for that
-  entry; OpenClaw does not silently fall back to source.
+  entry; PASO does not silently fall back to source.
 - Without an explicit runtime entry, package discovery through
   `plugins.load.paths` or global roots looks for matching JavaScript peers under
   `dist/` first, then beside the TypeScript source entry. For `src/` entries,
@@ -71,7 +71,7 @@ built entries:
 
 For plugins that only add agent tools. Keeps the source small, infers config
 and tool-parameter types from TypeBox schemas, wraps plain return values in
-the OpenClaw tool-result format, and exposes static metadata that
+the PASO tool-result format, and exposes static metadata that
 `openclaw plugins build` writes into the plugin manifest (`contracts.tools`,
 `configSchema`).
 
@@ -120,7 +120,7 @@ export default defineToolPlugin({
 - Tool names are static, so `openclaw plugins build` derives
   `contracts.tools` from the declared tools without hand-duplicated names.
 - Runtime loading stays strict: installed plugins still need
-  `openclaw.plugin.json` and `package.json` `openclaw.extensions`. OpenClaw
+  `openclaw.plugin.json` and `package.json` `openclaw.extensions`. PASO
   never executes plugin code to infer missing manifest data.
 
 ## `definePluginEntry`
@@ -242,7 +242,7 @@ export default definePluginEntry({
   validation messages into `parseReadParams(...)` and `parseListParams(...)`.
 
   `resolveCreateSession({ agentId })` must return a config-derived model/runtime
-  target before OpenClaw advertises creation or calls `startTerminalSession`.
+  target before PASO advertises creation or calls `startTerminalSession`.
   Use
   [`api.runtime.agent.resolveSessionCatalogCreateTarget(...)`](/plugins/sdk-runtime#api-runtime-agent)
   to apply the host's runtime and model-allowlist policy instead of duplicating
@@ -263,12 +263,12 @@ export default definePluginEntry({
   `"context-engine"`) in the `openclaw.plugin.json` manifest `kind` field
   instead. Runtime-entry `kind` remains only as a compatibility fallback for
   older plugins.
-- `configSchema` can be a function for lazy evaluation. OpenClaw resolves and
+- `configSchema` can be a function for lazy evaluation. PASO resolves and
   memoizes the schema on first access, so expensive schema builders only run
   once.
 - A `nodeHostCommands` descriptor can define `isAvailable({ config, env })`.
   Returning `false` omits that command and its capability from the headless
-  node's Gateway declaration. OpenClaw evaluates it against the node-local
+  node's Gateway declaration. PASO evaluates it against the node-local
   startup config; command handlers should still validate availability when
   invoked.
 
@@ -342,7 +342,7 @@ Callbacks run per registration mode (full table under
   command metadata, and normal CLI registration stays compatible with full
   plugin loads.
 - `registerFull` runs only for `"full"` and `"tool-discovery"`. For
-  `"tool-discovery"` it runs _instead of_ channel registration: OpenClaw
+  `"tool-discovery"` it runs _instead of_ channel registration: PASO
   skips `registerChannel`/`setRuntime` entirely and calls the full-runtime
   callback followed by the capability callback. Keep tool registration in
   `registerFull` and capability providers in `registerCapabilities`.
@@ -350,11 +350,11 @@ Callbacks run per registration mode (full table under
   `"tool-discovery"`. Register inert advertised providers here so read-only
   capability discovery can find them without starting sockets, clients,
   workers, or services.
-- Discovery registration is non-activating, not import-free: OpenClaw may
+- Discovery registration is non-activating, not import-free: PASO may
   evaluate the trusted plugin entry and channel plugin module to build the
   snapshot. Keep top-level imports side-effect-free and put sockets,
   clients, workers, and services behind `"full"`-only paths.
-- Like `definePluginEntry`, `configSchema` can be a lazy factory; OpenClaw
+- Like `definePluginEntry`, `configSchema` can be a lazy factory; PASO
   memoizes the resolved schema on first access.
 
 CLI registration:
@@ -362,7 +362,7 @@ CLI registration:
 - Use `api.registerCli(..., { descriptors: [...] })` for plugin-owned root
   CLI commands you want lazy-loaded without disappearing from the root CLI
   parse tree. Descriptor names must match letters, numbers, hyphen, and
-  underscore, starting with a letter or number; OpenClaw rejects other
+  underscore, starting with a letter or number; PASO rejects other
   shapes and strips terminal control sequences from descriptions before
   rendering help. Cover every top-level command root the registrar exposes,
   and declare the same name, description, and subcommand marker in the
@@ -381,7 +381,7 @@ CLI registration:
   they land under `openclaw nodes` (equivalent to
   `registerCli(registrar, { parentPath: ["nodes"], ... })`).
 - For other nested plugin commands, add `parentPath` and register commands
-  on the `program` object passed to the registrar; OpenClaw resolves it to
+  on the `program` object passed to the registrar; PASO resolves it to
   the parent command before calling the plugin.
 - For channel plugins, register CLI descriptors from `registerCliMetadata`
   and keep `registerFull` focused on runtime-only work.
@@ -403,7 +403,7 @@ import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-OpenClaw loads this instead of the full entry when a channel is disabled or
+PASO loads this instead of the full entry when a channel is disabled or
 unconfigured. See
 [Setup and Config](/plugins/sdk-setup#setup-entry) for when this matters.
 
@@ -513,7 +513,7 @@ api.registerService({
 });
 ```
 
-OpenClaw namespaces this as `plugin.<plugin-id>.changed`. Event names are one
+PASO namespaces this as `plugin.<plugin-id>.changed`. Event names are one
 lowercase segment, payloads must be bounded JSON, and the scope must be
 `operator.read`, `operator.write`, or `operator.admin`. The emitter exists only
 for the service lifetime and is revoked after stop or failed start. Prefer
@@ -521,7 +521,7 @@ version or invalidation payloads over full records so authorized clients reread
 canonical state through the plugin's scoped Gateway methods.
 
 Discovery mode builds a non-activating registry snapshot. It may still
-evaluate the plugin entry and the channel plugin object so OpenClaw can
+evaluate the plugin entry and the channel plugin object so PASO can
 register channel capabilities and static CLI descriptors. Treat module
 evaluation in discovery as trusted but lightweight: no network clients,
 subprocesses, listeners, database connections, background workers,
@@ -535,7 +535,7 @@ provider/client SDK bootstraps still belong in `"full"`.
 
 ## Plugin shapes
 
-OpenClaw classifies loaded plugins by their registration behavior:
+PASO classifies loaded plugins by their registration behavior:
 
 | Shape                 | Description                                        |
 | --------------------- | -------------------------------------------------- |

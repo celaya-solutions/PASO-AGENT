@@ -1,13 +1,13 @@
 ---
-summary: "Export OpenClaw diagnostics to OpenTelemetry collectors or stdout JSONL via the diagnostics-otel plugin"
+summary: "Export PASO diagnostics to OpenTelemetry collectors or stdout JSONL via the diagnostics-otel plugin"
 title: "OpenTelemetry export"
 read_when:
-  - You want to send OpenClaw model usage, message flow, or session metrics to an OpenTelemetry collector
+  - You want to send PASO model usage, message flow, or session metrics to an OpenTelemetry collector
   - You are wiring traces, metrics, or logs into Grafana, Datadog, Honeycomb, New Relic, Tempo, or another OTLP backend
   - You need the exact metric names, span names, or attribute shapes to build dashboards or alerts
 ---
 
-OpenClaw exports diagnostics through the official `diagnostics-otel` plugin
+PASO exports diagnostics through the official `diagnostics-otel` plugin
 using **OTLP/HTTP (protobuf)**. Logs can also be written as stdout JSONL for
 container and sandbox log pipelines. Any collector or backend that accepts
 OTLP/HTTP works without code changes. For local file logs, see
@@ -94,14 +94,14 @@ stdout, or `both` for both.
 
 <Note>
 The shared `endpoint` and `OTEL_EXPORTER_OTLP_ENDPOINT` are bases for all
-enabled signals. OpenClaw appends `/v1/traces`, `/v1/metrics`, or `/v1/logs`
+enabled signals. PASO appends `/v1/traces`, `/v1/metrics`, or `/v1/logs`
 to root and custom collector paths. For compatibility with hosted frontends,
 a shared endpoint already ending in one of those signal paths keeps that path
 for its matching signal and replaces the terminal segment for the others.
 
 Signal-specific `tracesEndpoint`, `metricsEndpoint`, and `logsEndpoint`
 settings, plus their matching `OTEL_EXPORTER_OTLP_*_ENDPOINT` fallbacks, are
-passed to the exporter as exact URLs. OpenClaw does not append or rewrite their
+passed to the exporter as exact URLs. PASO does not append or rewrite their
 paths.
 </Note>
 
@@ -180,7 +180,7 @@ label sets are unchanged.
 ```
 
 `metricNamePrefix` replaces the default `openclaw.` prefix only on
-OpenClaw-owned metrics. For example, `"acme."` exports `openclaw.tokens` as
+PASO-owned metrics. For example, `"acme."` exports `openclaw.tokens` as
 `acme.tokens`; set it to `""` to export `tokens` with no prefix. Non-empty
 values must start with an ASCII letter, use only letters, digits, underscores,
 dots, hyphens, and slashes, and contain at most 128 characters. Set it to
@@ -202,13 +202,13 @@ dashboards, alerts, and recording rules that query the old names.
 | `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` / `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL` / `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL`                                                                                                                      | Signal-specific protocol fallbacks used when `diagnostics.otel.protocol` is unset. A nonblank signal-specific value wins over the shared protocol value. Unsupported values disable only that plugin-owned OTLP signal.                                                                                                                                                          |
 | `OTEL_PROPAGATORS`                                                                                                                                                                                                                     | Propagators registered for each plugin-owned generation, including when `OTEL_SDK_DISABLED=true`. Defaults to `tracecontext,baggage`; `none` disables automatic propagation. Values are case-insensitive. Unavailable values and deprecated `jaeger` usage emit a plugin warning.                                                                                                |
 | `OTEL_SDK_DISABLED`                                                                                                                                                                                                                    | A case-insensitive `true` disables all plugin-owned trace, metric, log, and stdout routes before endpoint, protocol, or TLS setup. Any other value leaves the SDK enabled; unrecognized values emit a plugin warning and fall back to `false`. Async context and `OTEL_PROPAGATORS` remain active.                                                                               |
-| `OTEL_NODE_RESOURCE_DETECTORS`                                                                                                                                                                                                         | Selects resource detectors for plugin-owned trace and metric providers. Supported tokens are `env`, `host`, `os`, `process`, and `serviceinstance`; `all` runs them in host, OS, service-instance, process, environment order, while `none` disables detection. The default is environment, process, then host. Explicit OpenClaw service config wins detector attributes.       |
-| `OTEL_TRACES_SAMPLER` / `OTEL_TRACES_SAMPLER_ARG`                                                                                                                                                                                      | Standard OpenTelemetry sampler selection used when `diagnostics.otel.sampleRate` is unset. An explicit `sampleRate` remains the higher-precedence OpenClaw sampler.                                                                                                                                                                                                              |
+| `OTEL_NODE_RESOURCE_DETECTORS`                                                                                                                                                                                                         | Selects resource detectors for plugin-owned trace and metric providers. Supported tokens are `env`, `host`, `os`, `process`, and `serviceinstance`; `all` runs them in host, OS, service-instance, process, environment order, while `none` disables detection. The default is environment, process, then host. Explicit PASO service config wins detector attributes.           |
+| `OTEL_TRACES_SAMPLER` / `OTEL_TRACES_SAMPLER_ARG`                                                                                                                                                                                      | Standard OpenTelemetry sampler selection used when `diagnostics.otel.sampleRate` is unset. An explicit `sampleRate` remains the higher-precedence PASO sampler.                                                                                                                                                                                                                  |
 | `OTEL_SPAN_ATTRIBUTE_COUNT_LIMIT` / `OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT` / `OTEL_SPAN_EVENT_COUNT_LIMIT` / `OTEL_SPAN_LINK_COUNT_LIMIT` / `OTEL_SPAN_ATTRIBUTE_PER_EVENT_COUNT_LIMIT` / `OTEL_SPAN_ATTRIBUTE_PER_LINK_COUNT_LIMIT` | Standard OpenTelemetry span limits applied by each plugin-owned tracer provider.                                                                                                                                                                                                                                                                                                 |
 | `OTEL_BSP_MAX_QUEUE_SIZE` / `OTEL_BSP_MAX_EXPORT_BATCH_SIZE` / `OTEL_BSP_SCHEDULE_DELAY` / `OTEL_BSP_EXPORT_TIMEOUT`                                                                                                                   | Batch span processor settings for plugin-owned trace export. Values must be positive; invalid values use OpenTelemetry defaults. Export batch size is capped at queue size.                                                                                                                                                                                                      |
 | `OTEL_METRIC_EXPORT_INTERVAL` / `OTEL_METRIC_EXPORT_TIMEOUT`                                                                                                                                                                           | Periodic metric export interval and timeout for plugin-owned metrics. Values must be positive; invalid values use OpenTelemetry defaults, and timeout is capped at the active interval. `diagnostics.otel.flushIntervalMs` overrides the interval.                                                                                                                               |
 | `OTEL_NODE_EXPERIMENTAL_SDK_METRICS`                                                                                                                                                                                                   | Enables OpenTelemetry SDK self-observation metrics for the private meter, tracer, and batch span processor when set to `true`.                                                                                                                                                                                                                                                   |
-| `OTEL_LOG_LEVEL`                                                                                                                                                                                                                       | Owned mode does not replace the process-global OpenTelemetry diagnostic logger because the public SDK APIs expose no generation-private equivalent. A preload or host may configure this variable before OpenClaw starts; the plugin preserves that external diagnostic owner.                                                                                                   |
+| `OTEL_LOG_LEVEL`                                                                                                                                                                                                                       | Owned mode does not replace the process-global OpenTelemetry diagnostic logger because the public SDK APIs expose no generation-private equivalent. A preload or host may configure this variable before PASO starts; the plugin preserves that external diagnostic owner.                                                                                                       |
 | `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                                                                                                                                        | Set to `gen_ai_latest_experimental` to emit the latest GenAI inference span shape: `{gen_ai.operation.name} {gen_ai.request.model}` span names, `CLIENT` span kind, and `gen_ai.provider.name` instead of the legacy `gen_ai.system`. GenAI metrics always use bounded, low-cardinality attributes regardless.                                                                   |
 | `OPENCLAW_OTEL_PRELOADED`                                                                                                                                                                                                              | Set to `1` when another preload or host process already registered global OpenTelemetry providers. The plugin consumes external trace, metric, context, propagation, and logger ownership without registering, replacing, disabling, unregistering, or shutting it down. With `OTEL_SDK_DISABLED=true`, external ownership remains active while plugin-owned logs stay disabled. |
 
@@ -238,7 +238,7 @@ ID and sampling flags. Agent, harness, model-call, provider, tool-execution, and
 exec spans created inside the request remain on that trace, including spans
 recorded after their parent run has already finished. This allows a local
 experiment runner to create one Langfuse/OpenTelemetry trace per dataset item and
-correlate the corresponding OpenClaw execution.
+correlate the corresponding PASO execution.
 
 Trace context is request-scoped, not connection-scoped. On a long-lived
 WebSocket, generate or inject the appropriate `traceparent` independently for
@@ -271,7 +271,7 @@ When `diagnostics-otel` tracing is active, outbound model requests may include
 a W3C `traceparent` header from the actual exporter-owned model-call span.
 Diagnostic trace IDs and span IDs only correlate events to that span; they are
 not used as outbound OTel identities. If the exporter cannot resolve a real
-span context, OpenClaw omits the header instead of naming an unexported parent.
+span context, PASO omits the header instead of naming an unexported parent.
 Existing caller-supplied `traceparent` headers are removed or replaced, so
 plugins or custom provider options cannot spoof cross-service trace ancestry.
 
@@ -287,7 +287,7 @@ marker, while GenAI message attributes omit those parts.
 runtime's tool executions (`openclaw.content.tool_input` and
 `gen_ai.tool.call.arguments` on completed/error spans;
 `openclaw.content.tool_output` and `gen_ai.tool.call.result` on completed
-spans). The `openclaw.content.*` names remain the stable OpenClaw attribute
+spans). The `openclaw.content.*` names remain the stable PASO attribute
 names; the `gen_ai.tool.call.*` copies mirror them for semconv-native viewers.
 External harness tool calls (Codex, Claude CLI) emit
 `tool.execution.*` spans without content payloads. Captured content travels on a
@@ -342,7 +342,7 @@ output, usage, and hierarchy. Request spans use the API-derived GenAI operation
 (`chat`, `generate_content`, or `text_completion`), while turn spans use
 `gen_ai.operation.name = invoke_agent`. Both contribute to
 `gen_ai.client.operation.duration`, where the operation name keeps direct
-request latency separate from full-turn latency. OpenClaw's OTEL model-call
+request latency separate from full-turn latency. PASO's OTEL model-call
 metrics also include `openclaw.model_call.observation_unit`; the Prometheus
 model-call metrics expose the equivalent `observation_unit` label.
 
@@ -352,7 +352,7 @@ Claude Code CLI turns emit one synthetic, turn-level `openclaw.model.call`
 span. These are not Anthropic HTTP request spans. They use `openclaw.api =
 claude-code`, `openclaw.model_call.observation_unit = turn`, and identify
 the operation as `gen_ai.operation.name = invoke_agent`. They identify
-OpenClaw's CLI boundary through
+PASO's CLI boundary through
 `openclaw.transport`:
 
 - `stdio` - one-shot local Claude Code process.
@@ -369,27 +369,27 @@ are capped at 128 KiB each; assistant output is capped at 128 KiB across at
 most 200 envelopes, with 16 KiB and one item reserved for a final visible
 fallback response. A marker records truncation when the limit is reached.
 
-OpenClaw gives Claude CLI turns the same ownership hierarchy used by other
+PASO gives Claude CLI turns the same ownership hierarchy used by other
 agent runtimes: `openclaw.harness.run` (`openclaw.harness.id = claude-cli`)
 contains `openclaw.run`, which contains the Claude `openclaw.model.call`
-span. The harness and run spans are synthetic OpenClaw turn boundaries, not
+span. The harness and run spans are synthetic PASO turn boundaries, not
 Claude Code internal phases. One-shot and managed stdio turns use the same
 hierarchy; a real fresh-session retry creates another model-call child inside
-the same OpenClaw run.
+the same PASO run.
 
-The span starts when OpenClaw admits the prepared CLI turn and ends only after
+The span starts when PASO admits the prepared CLI turn and ends only after
 that turn succeeds or fails. For managed sessions, an interim success result
 does not end the span while Claude reports result-holding background agents or
 workflows; the final post-drain result does. Abort, timeout, process failure,
 output/parse failure, and other turn failures end the same span with an error.
 
 Claude Code reports per-assistant-message usage and may also report cumulative
-usage on its terminal result. OpenClaw reply accounting continues to use the
+usage on its terminal result. PASO reply accounting continues to use the
 last assistant message so existing cost semantics do not change; the
 turn-level model-call span uses terminal cumulative usage when available,
 including cache-read and cache-creation tokens.
 
-For these CLI spans, byte and timing fields describe the observable OpenClaw
+For these CLI spans, byte and timing fields describe the observable PASO
 CLI boundary:
 
 - `openclaw.model_call.request_bytes` is the UTF-8 size of the prompt value
@@ -400,11 +400,11 @@ CLI boundary:
 - `openclaw.model_call.time_to_first_byte_ms` is time to the first observable
   Claude CLI stdout or stderr output. It is not network TTFB.
 
-With `captureContent` enabled, the span exports the effective prompt OpenClaw
+With `captureContent` enabled, the span exports the effective prompt PASO
 sends to Claude Code and visible assistant text/tool-call identity
 through `gen_ai.input.messages` and `gen_ai.output.messages`. Tool arguments,
 internal thinking, opaque thinking signatures, tool results, and system prompts
-are omitted from the Claude assistant envelope. OpenClaw does not
+are omitted from the Claude assistant envelope. PASO does not
 claim access to Claude Code's private system prompt, hidden resumed or
 compacted request payload, native internal tool schemas, raw Anthropic HTTP
 request, internal retries, upstream request id, or true network TTFB. Because
@@ -471,9 +471,9 @@ bounds; content remains off by default.
 
 ### Session liveness telemetry
 
-A `processing` session does not age toward the built-in liveness threshold while OpenClaw observes reply, tool, status, block, or ACP runtime progress. Typing keepalives do not count as progress, so a silent model or harness can still be detected.
+A `processing` session does not age toward the built-in liveness threshold while PASO observes reply, tool, status, block, or ACP runtime progress. Typing keepalives do not count as progress, so a silent model or harness can still be detected.
 
-OpenClaw classifies sessions by the work it can still observe:
+PASO classifies sessions by the work it can still observe:
 
 - `session.long_running`: active embedded work, model calls, or tool calls
   are still making progress. Owned silent model calls also report as long-running before the built-in abort threshold, so slow or non-streaming model providers do not look like stalled gateway sessions while abort-observable.
@@ -552,7 +552,7 @@ OpenTelemetry metrics or change Prometheus metric labels.
   - `openclaw.model_call.prompt.input_messages_count`, `openclaw.model_call.prompt.input_messages_chars`, `openclaw.model_call.prompt.system_prompt_chars`, `openclaw.model_call.prompt.tool_definitions_count`, `openclaw.model_call.prompt.tool_definitions_chars`, `openclaw.model_call.prompt.total_chars` (safe component sizes only, no prompt text)
   - `openclaw.model_call.usage.*` and `gen_ai.usage.*` when the result carries usage for that request or aggregate turn
   - Span event `openclaw.provider.request` with attribute `openclaw.upstreamRequestIdHash` (bounded, hash-based) when the upstream provider result exposes a request id; raw ids are never exported
-  - With `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`, request spans use the latest GenAI inference span name `{gen_ai.operation.name} {gen_ai.request.model}`. Turn spans use `invoke_agent` because OpenClaw does not claim a native agent name from the opaque CLI boundary. Both use `CLIENT` span kind instead of `openclaw.model.call`.
+  - With `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`, request spans use the latest GenAI inference span name `{gen_ai.operation.name} {gen_ai.request.model}`. Turn spans use `invoke_agent` because PASO does not claim a native agent name from the opaque CLI boundary. Both use `CLIENT` span kind instead of `openclaw.model.call`.
 - `openclaw.harness.run`
   - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
   - On completion: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`

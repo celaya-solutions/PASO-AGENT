@@ -246,8 +246,8 @@ export const TOOL_DISPLAY_CONFIG: ToolDisplayConfig = {
       detailKeys: ["action", "name", "proposal_id"],
     },
     openclaw: {
-      emoji: "🦀",
-      title: "OpenClaw",
+      emoji: "◈",
+      title: "PASO",
       detailKeys: ["action", "path", "model"],
     },
     gateway: {

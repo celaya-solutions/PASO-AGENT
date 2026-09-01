@@ -1,7 +1,7 @@
 /**
- * Built-in OpenClaw harness registration.
+ * Built-in PASO harness registration.
  *
- * Harness selection uses this factory to expose the embedded OpenClaw runtime
+ * Harness selection uses this factory to expose the embedded PASO runtime
  * through the same AgentHarness contract as external harness plugins.
  */
 import { OPENCLAW_EMBEDDED_CONTEXT_ENGINE_HOST } from "../../context-engine/host-compat.js";
@@ -79,11 +79,11 @@ function buildRestrictedFinalizationAttempt(
   };
 }
 
-/** Creates the built-in harness backed by the embedded OpenClaw agent runner. */
+/** Creates the built-in harness backed by the embedded PASO agent runner. */
 export function createOpenClawAgentHarness(): AgentHarnessV2 {
   const harness: AgentHarnessV2 = {
     id: "openclaw",
-    label: "OpenClaw embedded agent",
+    label: "PASO embedded agent",
     contextEngineHostCapabilities: OPENCLAW_EMBEDDED_CONTEXT_ENGINE_HOST.capabilities,
     supports: () => ({ supported: true, priority: 0 }),
     runAttempt: (params) => runEmbeddedAttempt(params as EmbeddedRunAttemptParams),

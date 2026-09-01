@@ -1,5 +1,5 @@
 ---
-summary: "Adds ComfyUI model provider support to OpenClaw."
+summary: "Adds ComfyUI model provider support to PASO."
 read_when:
   - You are installing, configuring, or auditing the comfy plugin
 title: "ComfyUI plugin"
@@ -7,7 +7,7 @@ title: "ComfyUI plugin"
 
 # ComfyUI plugin
 
-Adds ComfyUI model provider support to OpenClaw.
+Adds ComfyUI model provider support to PASO.
 
 ## Distribution
 

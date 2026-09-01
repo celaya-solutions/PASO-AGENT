@@ -308,7 +308,7 @@ dispatches:
   `include_android=true`
 - `Plugin Prerelease` for release-only plugin static checks, extension shards,
   the release-only `agentic-plugins` shard, and plugin product Docker lanes
-- `OpenClaw Release Checks` for install smoke, cross-OS release checks, package
+- `PASO Release Checks` for install smoke, cross-OS release checks, package
   acceptance, and QA parity; broad live/E2E and QA-live lanes join `all` only
   when release soak is enabled
 - optional post-publish Telegram E2E when a package spec is supplied
@@ -439,7 +439,7 @@ with the full-validation run id.
 
 ### Release Checks
 
-`OpenClaw Release Checks` (`openclaw-release-checks.yml`) is the release child
+`PASO Release Checks` (`openclaw-release-checks.yml`) is the release child
 workflow. It is broader than normal CI but narrower than the umbrella because it
 does not dispatch the separate full normal CI child. It runs Package Acceptance
 with artifact-native delta lanes and `telegram_mode=mock-openai`, so the release
@@ -466,7 +466,7 @@ those two concrete groups. Reserve `all` for an intentional whole-child
 validation, never automatic recovery. Non-empty live or cross-OS filters must
 match their owning group; mismatches fail before scheduling and never widen to
 an unfiltered run.
-`OpenClaw Release Checks` uses the trusted workflow ref to resolve the selected
+`PASO Release Checks` uses the trusted workflow ref to resolve the selected
 ref once as `release-package-under-test` and passes that artifact into cross-OS
 release checks, release-path Docker live/E2E checks, and Package Acceptance.
 When `Full Release Validation` dispatches release checks, it passes the requested
@@ -501,7 +501,7 @@ fails.
 
 ### Reusable Live/E2E Checks
 
-`OpenClaw Live And E2E Checks (Reusable)`
+`PASO Live And E2E Checks (Reusable)`
 (`openclaw-live-and-e2e-checks-reusable.yml`) is the preferred entry point for
 targeted live, Docker, model, and E2E proof. Inputs let you turn off unrelated
 lanes:

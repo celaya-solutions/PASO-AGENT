@@ -12,7 +12,7 @@ import type {
 import { toErrorObject } from "@openclaw/normalization-core/error-coercion";
 /**
  * Native Anthropic Messages streaming transport.
- * Converts OpenClaw contexts/tools into Anthropic payloads, streams SSE events
+ * Converts PASO contexts/tools into Anthropic payloads, streams SSE events
  * back into runtime output blocks, and applies provider request policy.
  */
 import { normalizeLowercaseStringOrEmpty } from "@openclaw/normalization-core/string-coerce";

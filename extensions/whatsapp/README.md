@@ -1,11 +1,11 @@
-# OpenClaw WhatsApp
+# PASO WhatsApp
 
-Official OpenClaw channel plugin for WhatsApp Web chats.
+Official PASO channel plugin for WhatsApp Web chats.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/whatsapp
 ```
 
-Link a WhatsApp account through the plugin's setup flow, then configure which chats OpenClaw agents should monitor and reply to.
+Link a WhatsApp account through the plugin's setup flow, then configure which chats PASO agents should monitor and reply to.

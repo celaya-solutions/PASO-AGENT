@@ -765,7 +765,7 @@ private func setupAdmissionBusyResponse(id: String, confirmed: Bool = true) -> D
     return Data(
         """
         {"type":"res","id":"\(id)","ok":false,"error":{
-          "code":"UNAVAILABLE","message":"OpenClaw setup is already in progress; try again when it finishes.",
+          "code":"UNAVAILABLE","message":"PASO setup is already in progress; try again when it finishes.",
           "retryable":true\(details)}}
         """.utf8)
 }
@@ -1719,7 +1719,7 @@ struct OnboardingAISetupTests {
         #expect(!model.connected)
         #expect(model.pendingActivationVerification)
         #expect(model.phase == .detecting)
-        #expect(OnboardingController.shared.busyReason == "OpenClaw is testing your AI connection.")
+        #expect(OnboardingController.shared.busyReason == "PASO is testing your AI connection.")
 
         await model.activate(kind: "codex-cli")
         #expect(model.pendingActivationVerification)
@@ -1887,7 +1887,7 @@ struct OnboardingAISetupTests {
         let model = harness.model(defaults: defaults)
 
         model.resumeConfiguredInference(modelRef: "openai/gpt-5.5")
-        #expect(OnboardingController.shared.busyReason == "OpenClaw is testing your AI connection.")
+        #expect(OnboardingController.shared.busyReason == "PASO is testing your AI connection.")
         let outcome = await model.verifyPendingConfiguredInference()
 
         #expect(!model.connected)
@@ -1902,7 +1902,7 @@ struct OnboardingAISetupTests {
 
         #expect(model.phase == .detecting)
         #expect(model.detectError == nil)
-        #expect(OnboardingController.shared.busyReason == "OpenClaw is testing your AI connection.")
+        #expect(OnboardingController.shared.busyReason == "PASO is testing your AI connection.")
 
         await settleQueuedAISetupTasks()
 
@@ -1947,7 +1947,7 @@ struct OnboardingAISetupTests {
 
         #expect(model.phase == .detecting)
         #expect(model.detectError == nil)
-        #expect(OnboardingController.shared.busyReason == "OpenClaw is testing your AI connection.")
+        #expect(OnboardingController.shared.busyReason == "PASO is testing your AI connection.")
 
         let requests = await waitForAISetupRequests(recorder, count: 2)
         await settleQueuedAISetupTasks()
@@ -3254,7 +3254,7 @@ struct OnboardingAISetupTests {
         } else {
             nil
         }
-        #expect(failure?.copyText.contains("OpenClaw setup is already in progress") == true)
+        #expect(failure?.copyText.contains("PASO setup is already in progress") == true)
         #expect(!model.exhaustedAutoCandidates)
         await harness.gateway.shutdown()
     }
@@ -3299,7 +3299,7 @@ struct OnboardingAISetupTests {
         #expect(model.activeAuthOption == option)
         #expect(model.authStep == nil)
         #expect(model.authError?.copyText ==
-            "\(kind.startMethod): [UNAVAILABLE] OpenClaw setup is already in progress; try again when it finishes.")
+            "\(kind.startMethod): [UNAVAILABLE] PASO setup is already in progress; try again when it finishes.")
         #expect(!model.connected)
         #expect(!isPending(defaults))
         #expect(handoffs == 0)
@@ -3634,7 +3634,7 @@ struct OnboardingAISetupTests {
 
         model.submitManualKey()
         #expect(model.manualTesting)
-        #expect(OnboardingController.shared.busyReason == "OpenClaw is testing your AI connection.")
+        #expect(OnboardingController.shared.busyReason == "PASO is testing your AI connection.")
         model.resetForGatewayChange()
         #expect(OnboardingController.shared.busyReason == nil)
         config.setToken("route-b-token")

@@ -247,8 +247,8 @@ function resolveOpenRouterVideoCatalogRequest(params: {
       defaultBaseUrl: OPENROUTER_BASE_URL,
       defaultHeaders: {
         Authorization: `Bearer ${params.apiKey}`,
-        "HTTP-Referer": "https://openclaw.ai",
-        "X-OpenRouter-Title": "OpenClaw",
+        "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+        "X-OpenRouter-Title": "PASO",
       },
       request,
     }),

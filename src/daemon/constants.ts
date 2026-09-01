@@ -4,6 +4,7 @@ import { normalizeLowercaseStringOrEmpty } from "@openclaw/normalization-core/st
 // Default service labels (canonical + legacy compatibility)
 export const GATEWAY_LAUNCH_AGENT_LABEL = "ai.openclaw.gateway";
 const GATEWAY_SYSTEMD_SERVICE_NAME = "openclaw-gateway";
+// Keep the installed task identity stable so existing Windows services remain discoverable.
 const GATEWAY_WINDOWS_TASK_NAME = "OpenClaw Gateway";
 export const GATEWAY_SERVICE_MARKER = "openclaw";
 export const GATEWAY_SERVICE_KIND = "gateway";
@@ -116,9 +117,9 @@ export function resolveGatewayNativeServiceIdentityConflict(
 function formatGatewayServiceDescription(profile?: string): string {
   const normalized = normalizeGatewayProfile(profile);
   if (!normalized) {
-    return "OpenClaw Gateway";
+    return "PASO Gateway";
   }
-  return `OpenClaw Gateway (profile: ${normalized})`;
+  return `PASO Gateway (profile: ${normalized})`;
 }
 
 export function resolveGatewayServiceDescription(params: {

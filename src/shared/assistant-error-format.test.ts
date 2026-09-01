@@ -4,6 +4,7 @@ import {
   extractLeadingHttpStatus,
   extractProviderWrappedHttpStatus,
   formatRawAssistantErrorForUi,
+  isMalformedStreamingFragmentError,
   parseApiErrorInfo,
 } from "./assistant-error-format.js";
 
@@ -117,5 +118,17 @@ describe("HTTP status consumers", () => {
       expect(parseApiErrorInfo(`${code} ${payload}`)).toBeNull();
       expect(formatRawAssistantErrorForUi(`${code} ${payload}`)).toBe(`${code} ${payload}`);
     }
+  });
+});
+
+describe("malformed streaming compatibility", () => {
+  it.each([
+    "PASO transport error: malformed_streaming_fragment",
+    "OpenClaw transport error: malformed_streaming_fragment",
+  ])("recognizes %s", (raw) => {
+    expect(isMalformedStreamingFragmentError(raw)).toBe(true);
+    expect(formatRawAssistantErrorForUi(raw)).toBe(
+      "LLM streaming response contained a malformed fragment. Please try again.",
+    );
   });
 });

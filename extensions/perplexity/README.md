@@ -1,12 +1,12 @@
-# OpenClaw Perplexity Plugin
+# PASO Perplexity Plugin
 
-Official OpenClaw plugin for Perplexity.
+Official PASO plugin for Perplexity.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/perplexity-plugin
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/tools/perplexity-search> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/perplexity-search.md> for setup and configuration.

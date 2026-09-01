@@ -284,7 +284,7 @@ export function normalizeAnthropicProviderConfigForProvider<
   return normalizeAnthropicProviderConfig(params.providerConfig);
 }
 
-/** Apply Anthropic and Claude CLI defaults to an OpenClaw config object. */
+/** Apply Anthropic and Claude CLI defaults to a PASO config object. */
 export function applyAnthropicConfigDefaults(params: {
   config: OpenClawConfig;
   env: NodeJS.ProcessEnv;

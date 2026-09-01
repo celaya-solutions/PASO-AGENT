@@ -84,7 +84,7 @@ struct RootSidebar: View {
             HStack(spacing: 8) {
                 OpenClawProMark(size: 26, shadowRadius: 2)
                     .accessibilityHidden(true)
-                Text(String(localized: "OpenClaw"))
+                Text(String(localized: "PASO"))
                     .font(OpenClawType.headline)
                     .foregroundStyle(OpenClawSidebarPalette.textStrong)
                     .lineLimit(1)

@@ -6,6 +6,13 @@ import { pathToFileURL } from "node:url";
 import { classifyReleaseTrain, parseReleaseVersion } from "./lib/release-version.mjs";
 
 const SUPPORTED_DIST_TAGS = new Set(["alpha", "beta", "latest", "extended-stable"]);
+const PASO_NPM_RELEASE_WORKFLOW_NAME = "PASO NPM Release";
+const LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME = "OpenClaw NPM Release";
+const ACCEPTED_NPM_RELEASE_WORKFLOW_NAMES = new Set([
+  PASO_NPM_RELEASE_WORKFLOW_NAME,
+  // Accept historical preflight evidence produced before the workflow rename.
+  LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME,
+]);
 
 export function parseExtendedStableGuardBypass(value = "") {
   if (value === "" || value === "false") {
@@ -178,12 +185,11 @@ export function validateExtendedStableRunIdentity({
 }) {
   const expectedWorkflowName =
     kind === "preflight"
-      ? "OpenClaw NPM Release"
+      ? PASO_NPM_RELEASE_WORKFLOW_NAME
       : kind === "plugin"
         ? "Plugin NPM Release"
         : "Full Release Validation";
   const checks = [
-    ["workflowName", expectedWorkflowName],
     ["event", "workflow_dispatch"],
     ...(kind === "validation" || kind === "plugin" ? [["status", "completed"]] : []),
     ["conclusion", "success"],
@@ -191,6 +197,13 @@ export function validateExtendedStableRunIdentity({
       ? [["displayTitle", `Plugin NPM Release [extended-stable] ${expectedSha}`]]
       : []),
   ];
+  const acceptedWorkflowNames =
+    kind === "preflight" ? ACCEPTED_NPM_RELEASE_WORKFLOW_NAMES : new Set([expectedWorkflowName]);
+  if (!acceptedWorkflowNames.has(run.workflowName)) {
+    throw new Error(
+      `Referenced ${kind} run must have workflowName=${expectedWorkflowName}, got ${run.workflowName ?? "<missing>"}.`,
+    );
+  }
   for (const [key, expected] of checks) {
     if (run[key] !== expected) {
       throw new Error(

@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       ref:
-        description: OpenClaw branch, tag, or SHA containing the maturity score source
+        description: PASO branch, tag, or SHA containing the maturity score source
         required: true
         default: main
         type: string
@@ -35,7 +35,7 @@ on:
         default: ""
         type: string
       ref:
-        description: OpenClaw branch, tag, or SHA containing the maturity score source
+        description: PASO branch, tag, or SHA containing the maturity score source
         required: true
         type: string
       expected_sha:
@@ -108,13 +108,13 @@ jobs:
             const job = JSON.parse(process.env.JOB_CONTEXT ?? "{}");
             const callerWorkflowRef = process.env.CALLER_WORKFLOW_REF ?? "";
             const calledWorkflowRef =
-              "openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main";
+              "celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main";
             const trustedMainCaller =
               callerWorkflowRef !== calledWorkflowRef &&
               /^openclaw\/openclaw\/.github\/workflows\/[A-Za-z0-9_.-]+\.yml@refs\/heads\/main$/u.test(
                 callerWorkflowRef,
               ) &&
-              job.workflow_repository === "openclaw/openclaw" &&
+              job.workflow_repository === "celaya-solutions/PASO-AGENT" &&
               job.workflow_ref === calledWorkflowRef;
             if (context.actor === "github-actions[bot]") {
               if (!trustedMainCaller) {
@@ -187,8 +187,8 @@ jobs:
           set -euo pipefail
 
           expected_file_path=".github/workflows/maturity-scorecard.yml"
-          expected_repository="openclaw/openclaw"
-          expected_workflow_ref="openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main"
+          expected_repository="celaya-solutions/PASO-AGENT"
+          expected_workflow_ref="celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main"
           canonical_direct=false
           if [[ "$CALLER_EVENT_NAME" == "workflow_dispatch" &&
             "$CALLER_WORKFLOW_REF" == "$expected_workflow_ref" &&
@@ -203,7 +203,7 @@ jobs:
           fi
 
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout selected ref
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -343,10 +343,10 @@ jobs:
         if: >-
           ${{ inputs.publish_pull_request &&
             github.event_name == 'workflow_dispatch' &&
-            github.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+            github.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
             needs.validate_selected_ref.outputs.workflow_file_path == '.github/workflows/maturity-scorecard.yml' &&
-            needs.validate_selected_ref.outputs.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
-            needs.validate_selected_ref.outputs.workflow_repository == 'openclaw/openclaw' }}
+            needs.validate_selected_ref.outputs.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+            needs.validate_selected_ref.outputs.workflow_repository == 'celaya-solutions/PASO-AGENT' }}
         uses: ./.github/actions/create-generated-pr-tokens
         with:
           contents-client-id: Iv23liOECG0slfuhz093
@@ -685,10 +685,10 @@ jobs:
         needs.publisher_preflight.result == 'success' &&
         needs.publish.result == 'success' &&
         github.event_name == 'workflow_dispatch' &&
-        github.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+        github.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
         needs.validate_selected_ref.outputs.workflow_file_path == '.github/workflows/maturity-scorecard.yml' &&
-        needs.validate_selected_ref.outputs.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
-        needs.validate_selected_ref.outputs.workflow_repository == 'openclaw/openclaw' }}
+        needs.validate_selected_ref.outputs.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+        needs.validate_selected_ref.outputs.workflow_repository == 'celaya-solutions/PASO-AGENT' }}
     runs-on: ubuntu-24.04
     permissions:
       actions: read
@@ -784,10 +784,10 @@ jobs:
         if: >-
           ${{ inputs.publish_pull_request &&
             github.event_name == 'workflow_dispatch' &&
-            github.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+            github.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
             needs.validate_selected_ref.outputs.workflow_file_path == '.github/workflows/maturity-scorecard.yml' &&
-            needs.validate_selected_ref.outputs.workflow_ref == 'openclaw/openclaw/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
-            needs.validate_selected_ref.outputs.workflow_repository == 'openclaw/openclaw' }}
+            needs.validate_selected_ref.outputs.workflow_ref == 'celaya-solutions/PASO-AGENT/.github/workflows/maturity-scorecard.yml@refs/heads/main' &&
+            needs.validate_selected_ref.outputs.workflow_repository == 'celaya-solutions/PASO-AGENT' }}
         uses: ./.github/actions/publish-generated-pr
         with:
           contents-client-id: Iv23liOECG0slfuhz093

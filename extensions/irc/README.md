@@ -1,6 +1,6 @@
-# IRC OpenClaw channel
+# IRC PASO channel
 
-Official OpenClaw channel plugin for IRC.
+Official PASO channel plugin for IRC.
 
 ## Install
 
@@ -10,4 +10,4 @@ openclaw plugins install @openclaw/irc
 
 ## Docs
 
-See `docs/channels/irc.md` in the OpenClaw repository, or the published docs at `https://docs.openclaw.ai/channels/irc`.
+See `docs/channels/irc.md` in the PASO repository, or the published docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/irc.md`.

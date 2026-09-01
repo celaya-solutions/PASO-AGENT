@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs OpenClaw and Codex from npm artifacts with explicit capability consent,
+# Installs PASO and Codex from npm artifacts with explicit capability consent,
 # then verifies OpenAI onboarding, managed dependencies, and doctor in Docker.
 set -euo pipefail
 

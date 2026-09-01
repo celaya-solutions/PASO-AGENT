@@ -29,7 +29,7 @@ import {
 } from "./full-release-validation-policy.mjs";
 import { execGhRead, plainGhAuthenticatedEnv, resolvePlainGhBin } from "./lib/plain-gh.mjs";
 
-const DEFAULT_REPO = process.env.OPENCLAW_RELEASE_REPO || "openclaw/openclaw";
+const DEFAULT_REPO = process.env.OPENCLAW_RELEASE_REPO || "celaya-solutions/PASO-AGENT";
 const RELEASE_EVIDENCE_SCHEMA = "openclaw.release-validation-evidence/v3";
 const PHASED_RELEASE_EVIDENCE_SCHEMA = "openclaw.release-validation-evidence/v4";
 const SHA_PINNED_BRANCH_PATTERN = /^release-ci\/[a-f0-9]{12}-[1-9][0-9]*$/u;
@@ -50,6 +50,8 @@ const ARTIFACT_DOWNLOAD_OVERHEAD_MS = 60_000;
 const ARTIFACT_DOWNLOAD_MAX_TIMEOUT_MS = 30 * 60_000;
 const ARTIFACT_DOWNLOAD_ATTEMPTS = 2;
 const SUCCESSFUL_PARENT_JOB_CONCLUSIONS = new Set(["neutral", "skipped", "success"]);
+const LEGACY_RELEASE_CHECKS_WORKFLOW_NAME = "OpenClaw Release Checks";
+const LEGACY_PERFORMANCE_WORKFLOW_NAME = "OpenClaw Performance";
 
 const LEGACY_CHILD_DISPATCHES = [
   {
@@ -62,7 +64,7 @@ const LEGACY_CHILD_DISPATCHES = [
   },
   {
     manifestKey: "releaseChecks",
-    name: "OpenClaw Release Checks",
+    name: "PASO Release Checks",
     parentJobName: "Run release/live/Docker/QA validation",
     suffix: "-release-checks",
     trustedRef: "parent",
@@ -86,13 +88,29 @@ const LEGACY_CHILD_DISPATCHES = [
   },
   {
     manifestKey: "productPerformance",
-    name: "OpenClaw Performance",
+    name: "PASO Performance",
     parentJobName: "Run product performance evidence",
     suffix: "",
     trustedRef: "parent",
     workflow: "openclaw-performance.yml",
   },
 ];
+
+const PHASED_PERFORMANCE_CHILD = {
+  manifestKey: "productPerformance",
+  name: "PASO Performance",
+  parentJobName: "Run product performance evidence",
+  suffix: "",
+  trustedRef: "parent",
+  workflow: "openclaw-performance.yml",
+};
+
+const LEGACY_CHILD_WORKFLOW_NAME_ALIASES = Object.freeze({
+  releaseChecks: Object.freeze([LEGACY_RELEASE_CHECKS_WORKFLOW_NAME]),
+  releaseChecksIndependent: Object.freeze([LEGACY_RELEASE_CHECKS_WORKFLOW_NAME]),
+  releaseChecksCandidate: Object.freeze([LEGACY_RELEASE_CHECKS_WORKFLOW_NAME]),
+  productPerformance: Object.freeze([LEGACY_PERFORMANCE_WORKFLOW_NAME]),
+});
 
 const PHASED_CHILD_DISPATCHES = [
   LEGACY_CHILD_DISPATCHES.find((child) => child.manifestKey === "normalCi"),
@@ -114,7 +132,7 @@ const PHASED_CHILD_DISPATCHES = [
   },
   {
     manifestKey: "releaseChecksIndependent",
-    name: "OpenClaw Release Checks",
+    name: "PASO Release Checks",
     parentJobName: "Run release checks independent validation",
     suffix: "-release-checks-independent",
     trustedRef: "parent",
@@ -122,14 +140,14 @@ const PHASED_CHILD_DISPATCHES = [
   },
   {
     manifestKey: "releaseChecksCandidate",
-    name: "OpenClaw Release Checks",
+    name: "PASO Release Checks",
     parentJobName: "Run release checks candidate validation",
     suffix: "-release-checks-candidate",
     trustedRef: "parent",
     workflow: "openclaw-release-checks.yml",
   },
   LEGACY_CHILD_DISPATCHES.find((child) => child.manifestKey === "npmTelegram"),
-  LEGACY_CHILD_DISPATCHES.find((child) => child.manifestKey === "productPerformance"),
+  PHASED_PERFORMANCE_CHILD,
 ];
 // One phased child set plus current and reused parents.
 const MAX_EXPECTED_RUN_ATTEMPTS = PHASED_CHILD_DISPATCHES.length + 2;
@@ -1157,20 +1175,26 @@ export function manifestChildEntries(manifest, children, selectedKeys) {
 }
 
 function childDispatchAttempt(displayTitle, child, parentRunId, parentRunAttempt) {
-  const prefix = `${child.name} full-release-validation-${parentRunId}-`;
-  if (!displayTitle.startsWith(prefix) || !displayTitle.endsWith(child.suffix)) {
-    return undefined;
+  const workflowNames = [
+    child.name,
+    ...(LEGACY_CHILD_WORKFLOW_NAME_ALIASES[child.manifestKey] ?? []),
+  ];
+  for (const workflowName of workflowNames) {
+    const prefix = `${workflowName} full-release-validation-${parentRunId}-`;
+    if (!displayTitle.startsWith(prefix) || !displayTitle.endsWith(child.suffix)) {
+      continue;
+    }
+    const attemptEnd = child.suffix ? -child.suffix.length : undefined;
+    const attemptText = displayTitle.slice(prefix.length, attemptEnd);
+    if (!/^[1-9][0-9]*$/u.test(attemptText)) {
+      continue;
+    }
+    const attempt = Number(attemptText);
+    if (Number.isSafeInteger(attempt) && attempt <= parentRunAttempt) {
+      return attempt;
+    }
   }
-  const attemptEnd = child.suffix ? -child.suffix.length : undefined;
-  const attemptText = displayTitle.slice(prefix.length, attemptEnd);
-  if (!/^[1-9][0-9]*$/u.test(attemptText)) {
-    return undefined;
-  }
-  const attempt = Number(attemptText);
-  if (!Number.isSafeInteger(attempt) || attempt > parentRunAttempt) {
-    return undefined;
-  }
-  return attempt;
+  return undefined;
 }
 
 function parentJobExecutionFingerprint(job) {
@@ -1219,7 +1243,11 @@ export function resolveManifestChildOriginAttempt(run, child, parentManifest, pa
   if (correlatedAttempt !== undefined) {
     return correlatedAttempt;
   }
-  if (run.display_title !== child.name) {
+  const workflowNames = [
+    child.name,
+    ...(LEGACY_CHILD_WORKFLOW_NAME_ALIASES[child.manifestKey] ?? []),
+  ];
+  if (!workflowNames.includes(run.display_title)) {
     return undefined;
   }
 

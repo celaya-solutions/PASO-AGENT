@@ -123,7 +123,7 @@ describe("ApprovalsPage", () => {
     const docsLink = page.querySelector<HTMLAnchorElement>(".page-subtitle a");
     expect(docsLink?.textContent?.trim()).toBe("Learn more");
     expect(page.querySelector(".settings-page__intro")).toBeNull();
-    expect(docsLink?.href).toBe("https://docs.openclaw.ai/tools/exec-approvals");
+    expect(docsLink?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
     expect(page.querySelectorAll(".approval-history-table tbody tr")).toHaveLength(1);
     expect(page.querySelector(".approval-history-table")?.textContent).toContain("agent:main:test");
     expect(page.querySelector(".approval-history-table")?.textContent).toContain("echo first");

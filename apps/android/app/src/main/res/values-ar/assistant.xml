@@ -1,7 +1,7 @@
 <resources>
     <string-array name="ask_openclaw_query_patterns">
-        <item>"اسأل OpenClaw %1$s"</item>
-        <item>"أخبر OpenClaw أن %1$s"</item>
-        <item>"افتح OpenClaw واسأل %1$s"</item>
+        <item>"اسأل PASO %1$s"</item>
+        <item>"أخبر PASO أن %1$s"</item>
+        <item>"افتح PASO واسأل %1$s"</item>
     </string-array>
 </resources>

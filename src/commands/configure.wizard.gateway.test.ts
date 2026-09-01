@@ -668,7 +668,7 @@ describe("runConfigureWizard", () => {
       [
         "Remote Gateway:",
         "wss://gateway.example.test",
-        "Docs: https://docs.openclaw.ai/gateway/remote",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Gateway",
     );

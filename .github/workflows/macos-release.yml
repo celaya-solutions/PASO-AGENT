@@ -42,14 +42,14 @@ jobs:
             exit 1
           fi
 
-      - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
-
       - name: Checkout selected tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
+
+      - name: Prepare Git owner
+        uses: ./.github/actions/git-owner
 
       - name: Setup Node environment
         uses: ./.github/actions/setup-node-env
@@ -96,9 +96,7 @@ jobs:
             echo "This workflow validates the public release handoff and still builds JS artifacts needed for release checks."
             echo "It does not sign, notarize, or upload macOS assets."
             echo
-            echo "Next step:"
-            echo "- Run \`openclaw/releases/.github/workflows/openclaw-macos-validate.yml\` with tag \`${RELEASE_TAG}\` and wait for the macOS validation lane to pass."
-            echo "- Run \`openclaw/releases/.github/workflows/openclaw-macos-publish.yml\` with tag \`${RELEASE_TAG}\` and \`preflight_only=true\` for the full macOS preflight."
-            echo "- For the real publish path, run the same macOS publish workflow from \`main\` with the successful preflight \`preflight_run_id\` so it promotes the prepared artifacts instead of rebuilding them."
-            echo "- For stable releases, the publish workflow also publishes the signed \`appcast.xml\` to public \`main\`, or opens an appcast PR if direct push is blocked."
+            echo "PASO macOS publishing remains disabled until Celaya Solutions Research configures its own Apple signing identity, notarization credentials, Sparkle key, and private release workflow."
+            echo "Do not use the inherited upstream OpenClaw signing workflow or key for a PASO release."
+            echo "The checked-in appcast stays explicitly disabled until a fork-owned signed build exists."
           } >> "$GITHUB_STEP_SUMMARY"

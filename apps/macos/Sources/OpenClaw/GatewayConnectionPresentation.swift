@@ -19,7 +19,7 @@ struct GatewayConnectionPresentation: Equatable {
         switch state {
         case .connected:
             self.statusLine = String(localized: "Connected")
-            self.generalTitle = String(localized: "OpenClaw active")
+            self.generalTitle = String(localized: "PASO active")
             self.generalSubtitle = String(localized: "Connected to your remote Gateway.")
             self.symbolName = "checkmark"
             self.tone = .healthy
@@ -27,7 +27,7 @@ struct GatewayConnectionPresentation: Equatable {
             self.needsAttention = false
         case .connecting:
             self.statusLine = String(localized: "Connecting…")
-            self.generalTitle = String(localized: "OpenClaw connecting")
+            self.generalTitle = String(localized: "PASO connecting")
             self.generalSubtitle = String(localized: "Connecting to your remote Gateway…")
             self.symbolName = "arrow.trianglehead.2.clockwise.rotate.90"
             self.tone = .transient
@@ -35,7 +35,7 @@ struct GatewayConnectionPresentation: Equatable {
             self.needsAttention = false
         case .disconnected:
             self.statusLine = String(localized: "Disconnected")
-            self.generalTitle = String(localized: "OpenClaw needs attention")
+            self.generalTitle = String(localized: "PASO needs attention")
             self
                 .generalSubtitle =
                 String(localized: "Disconnected from your remote Gateway. Open Connection settings to fix it.")
@@ -46,7 +46,7 @@ struct GatewayConnectionPresentation: Equatable {
         case let .degraded(message):
             let reason = message.trimmingCharacters(in: .whitespacesAndNewlines)
             self.statusLine = reason.isEmpty ? String(localized: "Gateway connection failed.") : reason
-            self.generalTitle = String(localized: "OpenClaw needs attention")
+            self.generalTitle = String(localized: "PASO needs attention")
             self.generalSubtitle = self.statusLine + " " + String(localized: "Open Connection settings to fix it.")
             self.symbolName = "exclamationmark.triangle.fill"
             self.tone = .attention
@@ -71,7 +71,7 @@ struct GeneralStatusPresentation: Equatable {
     {
         if mode == .local, let localFailure {
             return Self(
-                title: String(localized: "OpenClaw needs attention"),
+                title: String(localized: "PASO needs attention"),
                 subtitle: localFailure,
                 symbolName: "exclamationmark.triangle.fill",
                 tone: .attention,
@@ -79,7 +79,7 @@ struct GeneralStatusPresentation: Equatable {
         }
         if isPaused {
             return Self(
-                title: String(localized: "OpenClaw paused"),
+                title: String(localized: "PASO paused"),
                 subtitle: String(localized: "Gateway work is paused; incoming messages will wait."),
                 symbolName: "pause.fill",
                 tone: .transient,
@@ -89,14 +89,14 @@ struct GeneralStatusPresentation: Equatable {
         switch mode {
         case .local:
             return Self(
-                title: String(localized: "OpenClaw active"),
+                title: String(localized: "PASO active"),
                 subtitle: String(localized: "Processing messages through the local Gateway on this Mac."),
                 symbolName: "checkmark",
                 tone: .healthy,
                 showsConnectionAction: false)
         case .unconfigured:
             return Self(
-                title: String(localized: "OpenClaw active"),
+                title: String(localized: "PASO active"),
                 subtitle: String(localized: "Ready to run after you choose a Gateway connection."),
                 symbolName: "checkmark",
                 tone: .healthy,

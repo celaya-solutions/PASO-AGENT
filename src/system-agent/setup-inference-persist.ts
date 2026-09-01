@@ -622,7 +622,7 @@ export async function runSetupInferenceTest(params: {
     if (requireExecutionOwner && !successfulAuth) {
       return failed(
         "unknown",
-        "Inference succeeded, but its runtime did not report an owner that OpenClaw can safely reuse.",
+        "Inference succeeded, but its runtime did not report an owner that PASO can safely reuse.",
       );
     }
     return {

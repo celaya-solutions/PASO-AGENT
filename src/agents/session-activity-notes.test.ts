@@ -63,6 +63,18 @@ describe("session activity assistant buffering", () => {
     },
   );
 
+  it.each(["[PASO heartbeat poll]", "[OpenClaw heartbeat poll]"])(
+    "does not record the internal transcript marker %s as assistant activity",
+    (marker) => {
+      const state = createSessionActivityNoteState();
+      noteSessionActivityEvent(state, assistantEvent(1_000, marker, marker));
+
+      flushSessionActivityAssistantNote(state);
+
+      expect(state.notes).toEqual([]);
+    },
+  );
+
   it("keeps delta-only producers on the bounded incremental path", () => {
     const state = createSessionActivityNoteState();
     noteSessionActivityEvent(state, assistantEvent(1_000, "", "a".repeat(5_000)));

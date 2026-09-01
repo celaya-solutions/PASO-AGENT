@@ -1699,7 +1699,7 @@ describe("codex conversation binding", () => {
         model: "gpt-5.4-mini",
       }),
     ).rejects.toThrow(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(requests).toEqual([]);
   });
@@ -1738,7 +1738,7 @@ describe("codex conversation binding", () => {
         model: "gpt-5.4-mini",
       }),
     ).rejects.toThrow(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(request).not.toHaveBeenCalled();
   });
@@ -1770,7 +1770,7 @@ describe("codex conversation binding", () => {
         model: "gpt-5.4-mini",
       }),
     ).rejects.toThrow(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(requests).toEqual([]);
   });
@@ -2054,7 +2054,7 @@ describe("codex conversation binding", () => {
         workspaceDir: tempDir,
         threadId: "thread-owned",
       }),
-    ).rejects.toThrow("owned by another OpenClaw session");
+    ).rejects.toThrow("owned by another PASO session");
     expect(request).not.toHaveBeenCalled();
     await expect(testCodexAppServerBindingStore.read(otherIdentity)).resolves.toMatchObject({
       threadId: "thread-owned",
@@ -2180,7 +2180,7 @@ describe("codex conversation binding", () => {
     });
   });
 
-  it("blocks bound Codex app-server turns when the current OpenClaw session is sandboxed", async () => {
+  it("blocks bound Codex app-server turns when the current PASO session is sandboxed", async () => {
     const sessionFile = path.join(tempDir, "session.jsonl");
     await writeTestConversationBinding(sessionFile, { threadId: "thread-1", cwd: tempDir });
 
@@ -2220,7 +2220,7 @@ describe("codex conversation binding", () => {
       handled: true,
       reply: {
         text: expect.stringContaining(
-          "Codex-native Codex app-server conversation binding is unavailable because OpenClaw sandboxing is active for this session.",
+          "Codex-native Codex app-server conversation binding is unavailable because PASO sandboxing is active for this session.",
         ),
       },
     });
@@ -2267,7 +2267,7 @@ describe("codex conversation binding", () => {
       handled: true,
       reply: {
         text: expect.stringContaining(
-          "Codex-native Codex app-server conversation binding is unavailable because OpenClaw exec host=node is active for this session.",
+          "Codex-native Codex app-server conversation binding is unavailable because PASO exec host=node is active for this session.",
         ),
       },
     });
@@ -2317,7 +2317,7 @@ describe("codex conversation binding", () => {
     );
 
     expect(result?.handled).toBe(true);
-    expect(result?.reply?.text).toContain("OpenClaw exec host=node is active");
+    expect(result?.reply?.text).toContain("PASO exec host=node is active");
     expect(sharedClientMocks.getSharedCodexAppServerClient).not.toHaveBeenCalled();
   });
 
@@ -2367,7 +2367,7 @@ describe("codex conversation binding", () => {
     );
 
     expect(result?.handled).toBe(true);
-    expect(result?.reply?.text).toContain("OpenClaw exec host=node is active");
+    expect(result?.reply?.text).toContain("PASO exec host=node is active");
     expect(sharedClientMocks.getSharedCodexAppServerClient).not.toHaveBeenCalled();
   });
 
@@ -2432,7 +2432,7 @@ describe("codex conversation binding", () => {
     );
 
     expect(result?.handled).toBe(true);
-    expect(result?.reply?.text).toContain("OpenClaw exec host=node is active");
+    expect(result?.reply?.text).toContain("PASO exec host=node is active");
     expect(sharedClientMocks.getSharedCodexAppServerClient).not.toHaveBeenCalled();
   });
 
@@ -2500,12 +2500,12 @@ describe("codex conversation binding", () => {
 
     expect(result?.handled).toBe(true);
     expect(result?.reply?.text).toContain(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(request).not.toHaveBeenCalled();
   });
 
-  it("blocks bound Codex CLI node turns when the current OpenClaw session is sandboxed", async () => {
+  it("blocks bound Codex CLI node turns when the current PASO session is sandboxed", async () => {
     const resumeCodexCliSessionOnNode = vi.fn();
 
     const result = await handleCodexConversationInboundClaim(
@@ -2546,7 +2546,7 @@ describe("codex conversation binding", () => {
       handled: true,
       reply: {
         text: expect.stringContaining(
-          "Codex-native Codex CLI node conversation binding is unavailable because OpenClaw sandboxing is active for this session.",
+          "Codex-native Codex CLI node conversation binding is unavailable because PASO sandboxing is active for this session.",
         ),
       },
     });
@@ -2961,7 +2961,7 @@ describe("codex conversation binding", () => {
       sandbox: "workspace-write",
       approvalPolicy: "on-request",
       approvalsReviewer: "auto_review",
-      developerInstructions: expect.stringContaining("bound to an OpenClaw conversation"),
+      developerInstructions: expect.stringContaining("bound to a PASO conversation"),
       config: { apps: { _default: { enabled: false } }, "features.apps": false },
     });
     expect(requests[2]?.params).toMatchObject({
@@ -3279,7 +3279,7 @@ describe("codex conversation binding", () => {
 
     expect(result?.handled).toBe(true);
     expect(result?.reply?.text).toContain(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(requests).toEqual([]);
   });
@@ -3450,7 +3450,7 @@ describe("codex conversation binding", () => {
 
     expect(result?.handled).toBe(true);
     expect(result?.reply?.text).toContain(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(result?.reply?.text).not.toContain(
       "legacy full exec security with ask requires Codex app-server danger-full-access",
@@ -4596,7 +4596,7 @@ describe("codex conversation binding", () => {
 
     expect(result?.handled).toBe(true);
     expect(result?.reply?.text).toContain(
-      "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+      "PASO native Codex conversation binding cannot route interactive approvals yet",
     );
     expect(turnStartParams).toEqual([]);
     expect(sharedClientMocks.getSharedCodexAppServerClient).not.toHaveBeenCalled();
@@ -4680,7 +4680,7 @@ describe("codex conversation binding", () => {
       handled: true,
       reply: {
         text: expect.stringContaining(
-          "OpenClaw native Codex conversation binding cannot route interactive approvals yet",
+          "PASO native Codex conversation binding cannot route interactive approvals yet",
         ),
       },
     });

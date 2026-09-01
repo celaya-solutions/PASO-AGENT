@@ -7869,14 +7869,20 @@ button.chat-pr__diff {
   object-fit: cover;
 }
 
-/* The 120x120 Clawd canvas stays centered in the existing hero slot. */
-.agent-chat__welcome-clawd {
-  width: 128px;
+/* PASO's path mark stays centered in the existing hero slot. */
+.agent-chat__welcome-mark {
+  width: 112px;
   height: 112px;
   margin-bottom: 2px;
   display: grid;
   place-items: center;
-  overflow: visible;
+}
+
+.agent-chat__welcome-mark-svg {
+  width: 96px;
+  height: 96px;
+  border-radius: 21px;
+  box-shadow: 0 16px 36px color-mix(in srgb, #0e1015 28%, transparent);
 }
 
 /* Phones (and short landscape): scale the welcome hero down so the composer
@@ -7896,9 +7902,9 @@ button.chat-pr__diff {
     height: 64px;
   }
 
-  .agent-chat__welcome-clawd {
-    width: 88px;
-    height: 77px;
+  .agent-chat__welcome-mark {
+    width: 72px;
+    height: 72px;
   }
 
   .agent-chat__welcome-identity {
@@ -7909,9 +7915,10 @@ button.chat-pr__diff {
     gap: 6px;
   }
 
-  .agent-chat__welcome-clawd openclaw-mascot {
-    width: 77px;
-    height: 77px;
+  .agent-chat__welcome-mark-svg {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
   }
 
   .agent-chat__welcome .agent-chat__avatar--text {

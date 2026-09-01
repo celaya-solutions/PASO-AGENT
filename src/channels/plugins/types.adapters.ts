@@ -277,7 +277,7 @@ export type ChannelGatewayContext<ResolvedAccount = unknown> = {
    * - External plugins should check for undefined before using
    *
    * @since Plugin SDK 2026.2.19
-   * @see {@link https://docs.openclaw.ai/plugins/building-plugins | Plugin SDK documentation}
+   * @see {@link https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs | Plugin SDK documentation}
    */
   channelRuntime?: ChannelRuntimeSurface;
 };

@@ -1,4 +1,4 @@
-// Keep the runtime class on the public package specifier so OpenClaw and
+// Keep the runtime class on the public package specifier so PASO and
 // external consumers share one constructor identity.
 import { EventStream as LlmEventStream } from "@openclaw/ai/event-stream";
 import { replaceCompactionReplayOwnerContent } from "@openclaw/ai/transports";
@@ -71,7 +71,7 @@ type AssistantMessageUpdateEvent = Extract<
 >;
 
 const TOOL_LOOP_RECOVERY_TERMINATED_MESSAGE =
-  "OpenClaw stopped this run because tool-loop recovery encountered another critical loop. No blocked tool action was executed.";
+  "PASO stopped this run because tool-loop recovery encountered another critical loop. No blocked tool action was executed.";
 const STEERING_TOOL_SKIP_MESSAGE = "Skipped due to queued user message.";
 const TOOL_ADMISSION_FAILURE_MESSAGE = "Tool execution was blocked before launch.";
 const TOOL_ADMISSION_FAILURE_DETAILS = {

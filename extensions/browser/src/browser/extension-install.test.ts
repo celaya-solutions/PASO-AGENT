@@ -380,6 +380,89 @@ describe("native host registration", () => {
     }
   });
 
+  it("migrates a legacy OpenClaw native host launcher to PASO", async () => {
+    const value = await fixture();
+    const installed = await installStableChromeExtension(value.bundledDir, value.deps);
+    const extensionId = await predictedId(installed, value.deps.platform);
+    const chrome = chromeProductRoots(value.deps).find((root) => root.product === "chrome");
+    if (!chrome) {
+      throw new Error("missing Chrome fixture root");
+    }
+    await writeChromePreferences({
+      userDataDir: chrome.userDataDir,
+      profile: "Default",
+      entries: { [extensionId]: { location: 4, path: installed } },
+    });
+    const first = await installChromeExtensionBootstrap({
+      bundledDir: value.bundledDir,
+      pluginRoot: value.pluginRoot,
+      waitMs: 1_000,
+      deps: value.deps,
+    });
+    const manifestPath =
+      first.registrations.find((entry) => entry.product === "chrome")?.manifestPath ?? "";
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as { path: string };
+    const currentLauncher = await fs.readFile(manifest.path, "utf8");
+    await fs.writeFile(
+      manifest.path,
+      currentLauncher.replace(
+        "# PASO native messaging bootstrap v1",
+        "# OpenClaw native messaging bootstrap v1",
+      ),
+      { mode: 0o700 },
+    );
+
+    const migrated = await installChromeExtensionBootstrap({
+      bundledDir: value.bundledDir,
+      pluginRoot: value.pluginRoot,
+      waitMs: 1_000,
+      deps: value.deps,
+    });
+
+    expect(migrated.issues.join("\n")).not.toContain("pre-registration refused");
+    await expect(fs.readFile(manifest.path, "utf8")).resolves.toContain(
+      "# PASO native messaging bootstrap v1",
+    );
+  });
+
+  it("uninstalls a legacy OpenClaw native host launcher", async () => {
+    const value = await fixture();
+    const installed = await installStableChromeExtension(value.bundledDir, value.deps);
+    const extensionId = await predictedId(installed, value.deps.platform);
+    const chrome = chromeProductRoots(value.deps).find((root) => root.product === "chrome");
+    if (!chrome) {
+      throw new Error("missing Chrome fixture root");
+    }
+    await writeChromePreferences({
+      userDataDir: chrome.userDataDir,
+      profile: "Default",
+      entries: { [extensionId]: { location: 4, path: installed } },
+    });
+    const status = await installChromeExtensionBootstrap({
+      bundledDir: value.bundledDir,
+      pluginRoot: value.pluginRoot,
+      waitMs: 1_000,
+      deps: value.deps,
+    });
+    const manifestPath =
+      status.registrations.find((entry) => entry.product === "chrome")?.manifestPath ?? "";
+    const manifest = JSON.parse(await fs.readFile(manifestPath, "utf8")) as { path: string };
+    const currentLauncher = await fs.readFile(manifest.path, "utf8");
+    await fs.writeFile(
+      manifest.path,
+      currentLauncher.replace(
+        "# PASO native messaging bootstrap v1",
+        "# OpenClaw native messaging bootstrap v1",
+      ),
+      { mode: 0o700 },
+    );
+
+    const removal = await uninstallChromeExtensionNativeHosts({ deps: value.deps });
+
+    expect(removal.refused).toEqual([]);
+    expect(removal.removed).toContain(manifest.path);
+  });
+
   it("uninstalls owned registrations and reports Windows as manual_required", async () => {
     const value = await fixture();
     const installed = await installStableChromeExtension(value.bundledDir, value.deps);
@@ -452,7 +535,7 @@ describe("native host registration", () => {
     });
 
     expect(repair).toEqual({
-      changes: ["Repaired Google Chrome OpenClaw native messaging registration."],
+      changes: ["Repaired Google Chrome PASO native messaging registration."],
       warnings: [],
     });
     const repaired = JSON.parse(await fs.readFile(manifestPath, "utf8")) as {
@@ -568,7 +651,7 @@ describe("native host registration", () => {
     });
 
     expect(repair).toEqual({
-      changes: ["Repaired Google Chrome OpenClaw native messaging registration."],
+      changes: ["Repaired Google Chrome PASO native messaging registration."],
       warnings: [],
     });
     await expect(fs.readFile(manifest.path, "utf8")).resolves.toContain(movedNativeHost);
@@ -721,7 +804,7 @@ describe("native host registration", () => {
       }
       if (recovery === "repair") {
         await expect(repairOwnedChromeExtensionNativeHosts({ ...params, deps })).resolves.toEqual({
-          changes: ["Repaired Chromium OpenClaw native messaging registration."],
+          changes: ["Repaired Chromium PASO native messaging registration."],
           warnings: [],
         });
       } else {
@@ -767,7 +850,7 @@ describe("native host registration", () => {
     const broken = await browserExtensionStatus({ ...params, deps });
     expect(broken.manualSetupRequired).toBe(true);
     await expect(repairOwnedChromeExtensionNativeHosts({ ...params, deps })).resolves.toEqual({
-      changes: ["Repaired Chromium OpenClaw native messaging registration."],
+      changes: ["Repaired Chromium PASO native messaging registration."],
       warnings: [],
     });
     const repaired = await browserExtensionStatus({ ...params, deps });

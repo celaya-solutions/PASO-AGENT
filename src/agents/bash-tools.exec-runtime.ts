@@ -195,7 +195,7 @@ function emitExecProcessCompleted(params: {
   target: "host" | "sandbox";
 }): void {
   const exitSignal = normalizeExecExitSignal(params.outcome.exitSignal);
-  // Payload stays untrusted, but the ambient trace context is the OpenClaw run
+  // Payload stays untrusted, but the ambient trace context is the PASO run
   // scope, so exporters may use it to nest the exec span under its run.
   emitDiagnosticEventWithTrustedTraceContext({
     type: "exec.process.completed",
@@ -531,7 +531,7 @@ function formatExecFailureReason(params: {
           : "Command timed out.";
       const retryGuidance = appendExecTimeoutRetryGuidance(timeoutText, params.failureKind);
       return params.processContinuationAvailable
-        ? `${retryGuidance}\n\nIf it should keep running, start it with exec background=true or yieldMs so OpenClaw can register a pollable process session. Do not rely on shell backgrounding with a trailing &.`
+        ? `${retryGuidance}\n\nIf it should keep running, start it with exec background=true or yieldMs so PASO can register a pollable process session. Do not rely on shell backgrounding with a trailing &.`
         : retryGuidance;
     }
     case "no-output-timeout":

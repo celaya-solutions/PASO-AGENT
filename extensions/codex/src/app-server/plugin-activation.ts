@@ -73,8 +73,7 @@ export async function ensureCodexPluginActivation(
 ): Promise<CodexPluginActivationResult> {
   if (params.identity.marketplaceName === CODEX_PLUGINS_WORKSPACE_MARKETPLACE_NAME) {
     return activationFailure(params.identity, "disabled", {
-      message:
-        "workspace-directory plugins must be installed and enabled outside OpenClaw before use.",
+      message: "workspace-directory plugins must be installed and enabled outside PASO before use.",
     });
   }
   if (!isOpenAiCuratedMarketplaceName(params.identity.marketplaceName)) {

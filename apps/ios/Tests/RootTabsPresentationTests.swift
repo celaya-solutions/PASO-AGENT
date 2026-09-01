@@ -384,7 +384,7 @@ struct RootTabsPresentationTests {
             .initialDestination(arguments: ["OpenClaw", "--openclaw-initial-destination", "gateway"]) == .gateway)
         #expect(
             RootTabs.initialDestination(arguments: [
-                "OpenClaw",
+                "PASO",
                 "--openclaw-initial-tab",
                 "unknown",
                 "--openclaw-initial-destination",
@@ -533,8 +533,8 @@ struct RootTabsPresentationTests {
     }
 
     @Test func `chat header follows the agent badge presentation`() {
-        #expect(ChatProTab.defaultHeaderTitle(showsAgentBadge: true, agentDisplayName: "OpenClaw") == "OpenClaw")
-        #expect(ChatProTab.defaultHeaderTitle(showsAgentBadge: false, agentDisplayName: "OpenClaw") == "Chat")
+        #expect(ChatProTab.defaultHeaderTitle(showsAgentBadge: true, agentDisplayName: "PASO") == "PASO")
+        #expect(ChatProTab.defaultHeaderTitle(showsAgentBadge: false, agentDisplayName: "PASO") == "Chat")
     }
 
     @Test func `chat transport identity distinguishes unresolved and resolved agents`() {
@@ -654,19 +654,19 @@ struct RootTabsPresentationTests {
     @Test func `initial sidebar visibility parses launch argument`() {
         #expect(
             RootTabs.requestedInitialSidebarVisibility(arguments: [
-                "OpenClaw",
+                "PASO",
                 "--openclaw-sidebar-visibility",
                 "hidden",
             ]) == false)
         #expect(
             RootTabs.requestedInitialSidebarVisibility(arguments: [
-                "OpenClaw",
+                "PASO",
                 "--openclaw-sidebar-visibility",
                 "visible",
             ]) == true)
         #expect(
             RootTabs.requestedInitialSidebarVisibility(arguments: [
-                "OpenClaw",
+                "PASO",
                 "--openclaw-sidebar-visibility",
                 "unknown",
             ]) == nil)

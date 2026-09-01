@@ -79,10 +79,17 @@ type LocalCheckResult =
   | { status: "passed"; command: string; reason?: never }
   | { status: "skipped"; reason: string; command?: never };
 type PreflightTarballs = Partial<Record<"corePackageTarballs" | "dependencyTarballs", unknown>>;
-const DEFAULT_REPO = "openclaw/openclaw";
+const DEFAULT_REPO = "celaya-solutions/PASO-AGENT";
 const DEFAULT_PROVIDER = "openai";
 const DEFAULT_MODE = "both";
 const DEFAULT_NPM_DIST_TAG = "beta";
+const PASO_NPM_RELEASE_WORKFLOW_NAME = "PASO NPM Release";
+const LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME = "OpenClaw NPM Release";
+const ACCEPTED_NPM_RELEASE_WORKFLOW_NAMES = new Set([
+  PASO_NPM_RELEASE_WORKFLOW_NAME,
+  // Accept reusable preflight evidence created before the workflow rename.
+  LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME,
+]);
 const DEFAULT_PLUGIN_SCOPE = "all-publishable";
 const DEFAULT_TELEGRAM_PROVIDER_MODE = "mock-openai";
 const DEFAULT_GITHUB_API_TIMEOUT_MS = 30_000;
@@ -92,7 +99,7 @@ const TOOLING_ROOT = fileURLToPath(new URL("../", import.meta.url));
 const TIDECLAW_ALPHA_WORKFLOW_REF_PATTERN =
   /^tideclaw\/alpha\/[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{4}Z$/u;
 const WINDOWS_NODE_TAG_PATTERN = /^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$/u;
-const WINDOWS_NODE_REPO = "openclaw/openclaw-windows-node";
+const WINDOWS_NODE_REPO = "celaya-solutions/PASO-AGENT";
 const WINDOWS_NODE_REQUIRED_ASSETS = [
   "OpenClawCompanion-Setup-x64.exe",
   "OpenClawCompanion-Setup-arm64.exe",
@@ -139,7 +146,7 @@ function usage() {
 
 Dispatches or consumes release validation runs, validates the prepared npm tarball,
 builds plugin publish plans, writes a green evidence bundle, then prints the exact
-OpenClaw Release Publish command only after everything is green.
+PASO Release Publish command only after everything is green.
 
 Options:
   --tag <tag>                         Planned release tag. The tag must not exist yet.
@@ -147,7 +154,7 @@ Options:
   --workflow-ref <ref>                Trusted workflow ref. Default: main; matching Tideclaw branch required for alpha.
   --repo <owner/repo>                 GitHub repo. Default: ${DEFAULT_REPO}
   --full-release-run <id>             Reuse successful Full Release Validation run.
-  --npm-preflight-run <id>            Reuse successful OpenClaw NPM Release preflight run.
+  --npm-preflight-run <id>            Reuse successful PASO NPM Release preflight run.
   --plugin-sdk-api-acknowledgement <digest>
                                       8-character digest from the Plugin SDK API diff report.
   --windows-node-tag <tag>            Exact Windows Node release tag. Required for stable.
@@ -311,7 +318,7 @@ export function parseArgs(argv: string[]) {
   }
   if (options.pluginPublishScope === "selected") {
     throw new Error(
-      "--plugin-publish-scope selected is only for plugin-only repair publishes; release candidates publish OpenClaw with --plugin-publish-scope all-publishable",
+      "--plugin-publish-scope selected is only for plugin-only repair publishes; release candidates publish PASO with --plugin-publish-scope all-publishable",
     );
   }
   if (options.pluginPublishScope === "all-publishable" && options.plugins.trim()) {
@@ -875,7 +882,7 @@ export async function validateNpmPreflightRunSource(
     !Number.isSafeInteger(workflowRun.runAttempt) ||
     workflowRun.runAttempt < 1 ||
     workflowRun.repository !== repository ||
-    workflowRun.workflowName !== "OpenClaw NPM Release" ||
+    !ACCEPTED_NPM_RELEASE_WORKFLOW_NAMES.has(String(workflowRun.workflowName)) ||
     workflowPath !== ".github/workflows/openclaw-npm-release.yml" ||
     workflowRun.event !== "workflow_dispatch" ||
     workflowRun.status !== "completed" ||
@@ -1381,6 +1388,7 @@ async function waitForSuccessfulRun(
   runId: string,
   expected: {
     allowShaPinnedWorkflowRef?: boolean;
+    legacyWorkflowNames?: readonly string[];
     workflowName: string;
     workflowRef: string;
     validateSource?: (info: RunInfo) => ReturnType<typeof validateNpmPreflightRunSource>;
@@ -1408,7 +1416,11 @@ async function waitForSuccessfulRun(
       if (info.conclusion !== "success") {
         throw new Error(summarizeFailedRun(info));
       }
-      if (info.workflowName !== expected.workflowName) {
+      const acceptedWorkflowNames = new Set([
+        expected.workflowName,
+        ...(expected.legacyWorkflowNames ?? []),
+      ]);
+      if (!acceptedWorkflowNames.has(info.workflowName)) {
         throw new Error(
           `run ${runId} workflow mismatch: expected ${expected.workflowName}, got ${info.workflowName}`,
         );
@@ -1966,7 +1978,8 @@ async function main() {
     options.repo,
     options.npmPreflightRunId,
     {
-      workflowName: "OpenClaw NPM Release",
+      workflowName: PASO_NPM_RELEASE_WORKFLOW_NAME,
+      legacyWorkflowNames: [LEGACY_OPENCLAW_NPM_RELEASE_WORKFLOW_NAME],
       workflowRef: options.workflowRef,
       validateSource: (workflowRun) =>
         validateNpmPreflightRunSource({
@@ -1990,7 +2003,7 @@ async function main() {
   );
   const npmArtifactName = npmArtifact.name;
   if (!Number.isInteger(npmRun.runAttempt) || npmRun.runAttempt < 1) {
-    throw new Error(`OpenClaw npm preflight run ${options.npmPreflightRunId} has invalid attempt.`);
+    throw new Error(`PASO npm preflight run ${options.npmPreflightRunId} has invalid attempt.`);
   }
   downloadArtifact(
     options.repo,

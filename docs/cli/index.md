@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw CLI index: command list, global flags, and links to per-command pages"
+summary: "PASO CLI index: command list, global flags, and links to per-command pages"
 read_when:
   - Finding the right `openclaw` subcommand
   - Looking up global flags or output styling rules
@@ -12,7 +12,7 @@ the commands, global flags, and output styling rules that apply across the CLI.
 
 Setup commands by intent:
 
-- `openclaw setup` and `openclaw onboard` verify inference first, then start OpenClaw for Gateway, workspace, channels, skills, and health setup.
+- `openclaw setup` and `openclaw onboard` verify inference first, then start PASO for Gateway, workspace, channels, skills, and health setup.
 - `openclaw setup --baseline` creates the baseline config and workspace without walking the guided onboarding flow.
 - `openclaw configure` changes targeted parts of an existing setup: model auth, gateway, channels, plugins, or skills.
 - `openclaw channels add` configures channel accounts after the baseline exists; a channel selection alone uses guided setup, while account, credential, or channel-config flags use the direct path for scripts.
@@ -87,7 +87,7 @@ written to stderr, so scripts should parse stdout and still check the exit statu
 
 ## Color palette
 
-OpenClaw uses a lobster palette for CLI output:
+PASO uses the following palette for CLI output:
 
 | Token          | Hex       | Used for                             |
 | -------------- | --------- | ------------------------------------ |

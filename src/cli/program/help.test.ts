@@ -168,7 +168,7 @@ describe("configureProgramHelp", () => {
     expect(version).toBe(testProgramContext.programVersion);
     expect(options?.mode).toBe("default");
     expect(help).toContain("Examples:");
-    expect(help).toContain("https://docs.openclaw.ai/cli");
+    expect(help).toContain("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
   });
 
   it("keeps valid root, group, subcommand, short, and help-command output successful", async () => {
@@ -232,13 +232,13 @@ describe("configureProgramHelp", () => {
 
   it("prints version and exits immediately when version flags are present", () => {
     process.argv = ["node", "openclaw", "--version"];
-    expectVersionExit({ expectedVersion: "OpenClaw 9.9.9-test (abc1234)" });
+    expectVersionExit({ expectedVersion: "PASO 9.9.9-test (abc1234)" });
   });
 
   it("prints version and exits immediately without commit metadata", () => {
     process.argv = ["node", "openclaw", "--version"];
     resolveCommitHashMock.mockReturnValue(null);
-    expectVersionExit({ expectedVersion: "OpenClaw 9.9.9-test" });
+    expectVersionExit({ expectedVersion: "PASO 9.9.9-test" });
   });
 
   it("does not treat subcommand --version options as root version requests", () => {

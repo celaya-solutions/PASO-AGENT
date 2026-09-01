@@ -11,7 +11,7 @@ function parseVersion(version: unknown) {
 function compareOpenClawVersions(leftVersion: string, rightVersion: string) {
   const comparison = compareReleaseVersions(leftVersion, rightVersion);
   if (comparison === null) {
-    throw new Error(`cannot compare OpenClaw versions: ${leftVersion} ${rightVersion}`);
+    throw new Error(`cannot compare PASO versions: ${leftVersion} ${rightVersion}`);
   }
   return comparison;
 }
@@ -125,7 +125,7 @@ export function resolveDefaultReleaseUpgradeBaseline(
   const candidate = parseVersion(candidateVersion);
   if (!candidate) {
     const candidateText = normalizeStringifiedOptionalString(candidateVersion) ?? "";
-    throw new Error(`invalid candidate OpenClaw version: ${candidateText}`);
+    throw new Error(`invalid candidate PASO version: ${candidateText}`);
   }
 
   const versions = normalizePublishedVersions(publishedVersions);
@@ -141,7 +141,7 @@ export function resolveDefaultReleaseUpgradeBaseline(
     return `openclaw@${same}`;
   }
 
-  throw new Error(`no published stable OpenClaw baseline is <= candidate ${candidate.version}`);
+  throw new Error(`no published stable PASO baseline is <= candidate ${candidate.version}`);
 }
 
 export function parseArgs(argv: readonly string[]) {

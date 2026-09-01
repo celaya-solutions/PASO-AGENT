@@ -1,6 +1,6 @@
-# OpenClaw NovitaAI provider
+# PASO NovitaAI provider
 
-Official OpenClaw provider plugin for NovitaAI's OpenAI-compatible API.
+Official PASO provider plugin for NovitaAI's OpenAI-compatible API.
 
 ## Install
 
@@ -11,5 +11,5 @@ openclaw gateway restart
 
 ## Docs
 
-See `docs/providers/novita.md` in the OpenClaw repository, or the published
-docs at `https://docs.openclaw.ai/providers/novita`.
+See `docs/providers/novita.md` in the PASO repository, or the published
+docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/novita.md`.

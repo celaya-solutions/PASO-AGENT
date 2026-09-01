@@ -1,5 +1,5 @@
-# Tlon (OpenClaw plugin)
+# Tlon (PASO plugin)
 
-Tlon/Urbit channel plugin for OpenClaw. Supports DMs, group mentions, and thread replies.
+Tlon/Urbit channel plugin for PASO. Supports DMs, group mentions, and thread replies.
 
-Docs: https://docs.openclaw.ai/channels/tlon
+Docs: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/channels/tlon.md

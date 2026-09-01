@@ -29,12 +29,20 @@ describe("state database schema migration error classification", () => {
     expect(findOpenClawStateDatabaseSchemaMigrationRequiredError(original)).toBe(original);
   });
 
-  it("does not classify similar operator guidance as the migration error", () => {
+  it("recognizes the legacy producer message during mixed-version upgrades", () => {
     expect(
       findOpenClawStateDatabaseSchemaMigrationRequiredError(
         new Error(
-          "OpenClaw state database /tmp/openclaw.sqlite is stale; run openclaw doctor --fix.",
+          "OpenClaw state database schema migration required (audit-events-v2) at /tmp/openclaw.sqlite; run openclaw doctor --fix to migrate it.",
         ),
+      ),
+    ).toMatchObject({ kind: "audit-events-v2", pathname: "/tmp/openclaw.sqlite" });
+  });
+
+  it("does not classify similar operator guidance as the migration error", () => {
+    expect(
+      findOpenClawStateDatabaseSchemaMigrationRequiredError(
+        new Error("PASO state database /tmp/openclaw.sqlite is stale; run openclaw doctor --fix."),
       ),
     ).toBeUndefined();
   });
@@ -44,7 +52,7 @@ describe("state database schema migration error classification", () => {
     expect(
       findOpenClawStateDatabaseSchemaMigrationRequiredError(
         new Error(
-          "OpenClaw agent database /tmp/openclaw-agent.sqlite uses schema version 5; run openclaw doctor --fix to migrate persisted media before using it.",
+          "PASO agent database /tmp/openclaw-agent.sqlite uses schema version 5; run openclaw doctor --fix to migrate persisted media before using it.",
         ),
       ),
     ).toBeUndefined();

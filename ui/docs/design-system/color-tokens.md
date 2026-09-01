@@ -1,6 +1,6 @@
 # Color Tokens
 
-All tokens are defined in `ui/src/styles/base.css` under `:root` (dark mode default) and `:root[data-theme-mode="light"]` (light override). Values in this doc are the default claw family; the knot (`data-theme="openknot"`/`openknot-light`) and dash (`dash`/`dash-light`) families override surface, accent, and status tokens in their own `base.css` blocks, each with its own WCAG audit comment.
+All tokens are defined in `ui/src/styles/base.css` under `:root` (dark mode default) and `:root[data-theme-mode="light"]` (light override). Values in this doc are the default PASO path/step family; the knot (`data-theme="openknot"`/`openknot-light`) and dash (`dash`/`dash-light`) families override surface, accent, and status tokens in their own `base.css` blocks, each with its own WCAG audit comment.
 
 > Contrast ratios are measured against `--bg` (`#0e1015`) in dark mode using WCAG relative luminance formula. AA requires ≥4.5:1 for normal text, ≥3:1 for large text and UI components.
 
@@ -16,7 +16,7 @@ All tokens are defined in `ui/src/styles/base.css` under `:root` (dark mode defa
 | `--bg-hover`    | `#1f2330`  | `#efebe4`   | List item hover state         | Not for default state          |
 | `--bg-muted`    | `#1f2330`  | `#efebe4`   | Subtle fills, disabled states | Not for focus states           |
 
-Light mode uses a warm paper palette: ivory backgrounds, warm gray borders (`#e8e4dc`), and a terracotta accent (`#bd4531`, ≈4.9:1 on `--bg`). Dark mode keeps the signature coral red.
+Light mode uses a warm paper palette with ivory backgrounds and warm gray borders (`#e8e4dc`). Dark mode uses the canonical PASO orange (`#E8590C`).
 
 ## Surface / Card
 
@@ -37,16 +37,16 @@ Light mode uses a warm paper palette: ivory backgrounds, warm gray borders (`#e8
 | `--muted`        | `#8b8b94`  | ~5.6:1 ✅          | Placeholder, metadata                              |
 | `--muted-strong` | `#898990`  | ~5.5:1 ✅          | Secondary text, captions; prefer `--text` for body |
 
-## Accent (Primary — Red)
+## Accent (Primary — PASO Orange)
 
 | Token             | Value                 | Use                                            | Don't                                    |
 | ----------------- | --------------------- | ---------------------------------------------- | ---------------------------------------- |
-| `--accent`        | `#ff5c5c`             | Primary CTA, send button, active tab indicator | Don't use for large filled backgrounds   |
-| `--accent-hover`  | `#ff7070`             | Hover state of accent elements                 | —                                        |
-| `--accent-muted`  | `#ff5c5c`             | Same as accent (aliased)                       | —                                        |
-| `--accent-subtle` | `rgba(255,92,92,0.1)` | Badge backgrounds, tinted fills                | Not for text on dark bg (fails contrast) |
-| `--accent-glow`   | `rgba(255,92,92,0.2)` | Focus rings, glow effects                      | Not as background                        |
-| `--primary`       | `#d13c3c`             | Filled primary buttons (white text, ~4.8:1 AA) | Not interchangeable with `--accent`      |
+| `--accent`        | `#E8590C`             | Primary CTA, send button, active tab indicator | Don't use for large filled backgrounds   |
+| `--accent-hover`  | `#F26A23`             | Hover state of accent elements                 | —                                        |
+| `--accent-muted`  | `#E8590C`             | Same as accent (aliased)                       | —                                        |
+| `--accent-subtle` | `rgba(232,89,12,0.1)` | Badge backgrounds, tinted fills                | Not for text on dark bg (fails contrast) |
+| `--accent-glow`   | `rgba(232,89,12,0.2)` | Focus rings, glow effects                      | Not as background                        |
+| `--primary`       | `#E8590C`             | Filled primary buttons (automatic foreground)  | Keep synchronized with `--accent`        |
 
 For connections bound to an authenticated Gateway profile, the profile's `ui.accent` preference overrides the gateway-wide `ui.prefs.accent` setting, which overrides `ui.seamColor`, which overrides the active theme's default accent. Connections without an authenticated profile retain the existing gateway-wide precedence. Every override updates the accent, primary, and focus token families together; `--accent-foreground` and `--primary-foreground` automatically switch between dark and white ink according to the accent's relative luminance. Clearing a profile preference restores the gateway-wide accent, configured seam color, or theme defaults without changing anyone else's appearance.
 
@@ -70,7 +70,7 @@ For connections bound to an authenticated Gateway profile, the profile's `ui.acc
 
 Each `--x` has `-muted` (0.75 alpha) and `-subtle` (0.08 alpha) rgba siblings that must stay in sync with the base hex — the base doubles as label text on its own subtle tint, and re-tinting one without the other silently drops the pair below AA. Bases stay literal hex because `widget-theme.ts` publishes them to MCP app guest documents where `color-mix()` would not resolve. See the audit comments in `base.css` for the per-theme measurements.
 
-The dark `--destructive` value is the claw-family override (`:root[data-theme="dark"]`); the shared `:root` fallback is `#ef4444`.
+The dark `--destructive` value is the PASO path/step-family override (`:root[data-theme="dark"]`); the shared `:root` fallback is `#ef4444`.
 
 ## Border
 
@@ -84,7 +84,7 @@ The dark `--destructive` value is the claw-family override (`:root[data-theme="d
 
 | Token          | Value                                                                             | Use                            |
 | -------------- | --------------------------------------------------------------------------------- | ------------------------------ |
-| `--ring`       | `#ff5c5c`                                                                         | Focus ring colour              |
+| `--ring`       | `#E8590C`                                                                         | Focus ring colour              |
 | `--focus-ring` | `0 0 0 2px var(--bg), 0 0 0 3px color-mix(in srgb, var(--ring) 80%, transparent)` | Standard focus ring box-shadow |
 | `--focus-glow` | `0 0 0 2px var(--bg), 0 0 0 3px var(--ring), 0 0 16px var(--accent-glow)`         | Elevated interactive elements  |
 

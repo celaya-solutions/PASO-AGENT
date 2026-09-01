@@ -1,47 +1,48 @@
 ---
 summary: "PeekabooBridge integration for macOS UI automation"
 read_when:
-  - Hosting PeekabooBridge in OpenClaw.app
+  - Hosting PeekabooBridge in the PASO macOS app
   - Integrating Peekaboo via Swift Package Manager
   - Changing PeekabooBridge protocol/paths
   - Deciding between PeekabooBridge, Codex Computer Use, and cua-driver MCP
 title: "Peekaboo bridge"
 ---
 
-OpenClaw can host **PeekabooBridge** as a local, permission-aware UI automation broker (`PeekabooBridgeHostCoordinator`, backed by the `openclaw/Peekaboo` Swift package). This lets the `peekaboo` CLI drive UI automation while reusing the macOS app's TCC permissions.
+PASO can host **PeekabooBridge** as a local, permission-aware UI automation broker (`PeekabooBridgeHostCoordinator`, backed by the `openclaw/Peekaboo` Swift package). This lets the `peekaboo` CLI drive UI automation while reusing the macOS app's TCC permissions.
 
 ## What this is (and is not)
 
-- **Host**: OpenClaw.app can act as a PeekabooBridge host.
+- **Host**: PASO can act as a PeekabooBridge host. Its technical bundle filename remains `OpenClaw.app` for compatibility.
 - **Client**: the `peekaboo` CLI (there is no separate `openclaw ui ...` surface).
-- **UI**: visual overlays stay in Peekaboo.app; OpenClaw is a thin broker host.
+- **UI**: visual overlays stay in Peekaboo.app; PASO is a thin broker host.
 
 ## Relationship to other desktop-control paths
 
-OpenClaw has four desktop-control paths that intentionally stay separate:
+PASO has four desktop-control paths that intentionally stay separate:
 
-- **PeekabooBridge host**: OpenClaw.app hosts the local PeekabooBridge socket. The `peekaboo` CLI is the client and uses OpenClaw.app's macOS permissions for screenshots, clicks, menus, dialogs, Dock actions, and window management.
+- **PeekabooBridge host**: the PASO app hosts the local PeekabooBridge socket. The `peekaboo` CLI is the client and uses PASO's macOS permissions for screenshots, clicks, menus, dialogs, Dock actions, and window management.
 - **Agent-driven computer use (`computer.act`)**: the gateway agent's built-in `computer` tool captures screenshots via `screen.snapshot` and drives the pointer and keyboard through the dangerous `computer.act` node command. A macOS node fulfills `computer.act` in-process using the embedded Peekaboo automation services this bridge exposes plus narrow CoreGraphics primitives, without going through the PeekabooBridge socket or the `peekaboo` CLI. See [Computer use](/nodes/computer-use).
-- **Codex Computer Use**: the bundled `codex` plugin checks and can install Codex's `computer-use` MCP plugin (`extensions/codex/src/app-server/computer-use.ts`), then lets Codex own native desktop-control tool calls during Codex-mode turns. OpenClaw does not proxy those actions through PeekabooBridge.
-- **Direct `cua-driver` MCP**: OpenClaw can register TryCua's upstream `cua-driver mcp` server as a normal MCP server, giving agents the CUA driver's own schemas and pid/window/element-index workflow without routing through the Codex marketplace or the PeekabooBridge socket.
+- **Codex Computer Use**: the bundled `codex` plugin checks and can install Codex's `computer-use` MCP plugin (`extensions/codex/src/app-server/computer-use.ts`), then lets Codex own native desktop-control tool calls during Codex-mode turns. PASO does not proxy those actions through PeekabooBridge.
+- **Direct `cua-driver` MCP**: PASO can register TryCua's upstream `cua-driver mcp` server as a normal MCP server, giving agents the CUA driver's own schemas and pid/window/element-index workflow without routing through the Codex marketplace or the PeekabooBridge socket.
 
-Use Peekaboo for the broad macOS automation surface via OpenClaw.app's permission-aware bridge host. Use agent-driven computer use when the gateway agent should see and control the desktop through a uniform `computer.act` node command that any vision model can drive. Use Codex Computer Use when a Codex-mode agent should rely on Codex's native plugin. Use direct `cua-driver mcp` to expose the CUA driver to any OpenClaw-managed runtime as a normal MCP server.
+Use Peekaboo for the broad macOS automation surface via PASO's permission-aware bridge host. Use agent-driven computer use when the gateway agent should see and control the desktop through a uniform `computer.act` node command that any vision model can drive. Use Codex Computer Use when a Codex-mode agent should rely on Codex's native plugin. Use direct `cua-driver mcp` to expose the CUA driver to any PASO-managed runtime as a normal MCP server.
 
 ## Enable the bridge
 
 In the macOS app: **Settings -> Enable Peekaboo Bridge**. The toggle requires **Allow Computer Control** to be on, since both grant local UI automation; with Computer Control off the toggle is disabled and the host does not run. To drive Peekaboo without Computer Control, run Peekaboo's own Mac app as the host instead.
 
-When enabled (and Computer Control is on), OpenClaw starts a local UNIX socket server at `~/Library/Application Support/OpenClaw/<socket-name>`. If disabled, the host stops and `peekaboo` falls back to other available hosts. The coordinator also maintains legacy socket symlinks (`clawdbot`, `clawdis`, `moltbot` under Application Support) pointing at the current socket for older `peekaboo` installs.
+When enabled (and Computer Control is on), PASO starts a local UNIX socket server at `~/Library/Application Support/OpenClaw/<socket-name>`. If disabled, the host stops and `peekaboo` falls back to other available hosts. The coordinator also maintains legacy socket symlinks (`clawdbot`, `clawdis`, `moltbot` under Application Support) pointing at the current socket for older `peekaboo` installs.
 
 For a one-off unattended run, `--attach-only --background-only` suppresses automatic windows and GUI-owned Keychain
-loading. The persistent elevation host is a managed-deployment path for OpenClaw Foundation release operators. Its
-`package` command requires the Foundation signing identity and notarization credentials; OpenClaw does not currently
-publish a general-download elevation archive. Install only a certified, source-addressed archive supplied by an
-authorized release operator:
+loading. The persistent elevation host is a legacy managed-deployment path
+inherited from upstream. Its `package` command requires the upstream signing
+identity and notarization credentials; Celaya Solutions Research does not
+currently publish a general-download PASO elevation archive. Install only a
+certified, source-addressed archive supplied by an authorized release operator:
 
 ```bash
 cd /path/to/elevation-artifact-set
-export PREFIX="OpenClaw-<full-openclaw-sha>-Peekaboo-<full-peekaboo-sha>-stable"
+export PREFIX="PASO-<full-openclaw-sha>-Peekaboo-<full-peekaboo-sha>-stable"
 export INSTALLER_SHA256="<authenticated-installer-sha256>"
 export RECEIPT_SHA256="<authenticated-receipt-sha256>"
 [[ "$(shasum -a 256 "$PREFIX-installer.sh" | awk '{print $1}')" == "$INSTALLER_SHA256" ]] || exit 1
@@ -62,15 +63,15 @@ shasum -a 256 -c "$PREFIX-installer.sh.sha256"
 ```
 
 Transfer the complete artifact set: archive, receipt, portable installer, and both checksum files. The target Mac does
-not need an OpenClaw source checkout. The authorized operator handoff must independently provide the installer and
+not need a PASO source checkout. The authorized operator handoff must independently provide the installer and
 receipt SHA-256 digests. Run `verify` with the authenticated receipt digest before planning a cutover; the receipt then
-selects the approved archive and `verify` revalidates the Foundation-signed app, notarization, staple, Gatekeeper result,
+selects the approved archive and `verify` revalidates the upstream-signed app, notarization, staple, Gatekeeper result,
 architectures, entitlements, and both source revisions. The portable installer is not covered by the app's code
 signature, so this explicit two-digest release-operator handoff remains part of the internal trust boundary.
 
 Elevation artifacts require universal shared app code and both `arm64` and `x86_64` worker payloads under
 `Contents/Resources/node-worker/`. The packager must provide both; `verify` checks both regardless of the target Mac's
-architecture. Each worker must contain a Mach-O Node runtime, the OpenClaw package entrypoint, and build metadata matching
+architecture. Each worker must contain a Mach-O Node runtime, the PASO package entrypoint, and build metadata matching
 the app's version, source commit, build timestamp, and worker build ID. All native code in each worker, including addons,
 static archives, and libraries without executable permission bits, must support its directory's architecture. Universal
 Mach-O code is allowed; foreign-platform native code is rejected.
@@ -115,9 +116,9 @@ install receipt. Generation-unique backups allow successive upgrades; `recover` 
 evidence directory, restores the prior receipt, and refuses to overwrite a source LaunchAgent path recreated by another
 owner.
 
-The elevation archive is Foundation-signed, notarized, stapled, named by the full OpenClaw and Peekaboo source
-commits, and contains exactly `OpenClaw.app`. Its receipt binds the archive and portable-installer names and digests,
-OpenClaw and Peekaboo source revisions, signer, per-architecture CDHashes, architectures, entitlement digests, and Apple notarization
+An elevation archive produced by that upstream workflow is signed, notarized, stapled, and named by the full PASO and Peekaboo source
+commits, and contains exactly the compatibility-named technical bundle `OpenClaw.app`. Its receipt binds the archive and portable-installer names and digests,
+PASO and Peekaboo source revisions, signer, per-architecture CDHashes, architectures, entitlement digests, and Apple notarization
 submission ID. No AppleScript or Apple Events entitlement is part of this workflow.
 
 ## Client discovery order
@@ -126,7 +127,7 @@ Peekaboo clients typically try hosts in this order:
 
 1. Peekaboo.app (full UX)
 2. Claude.app (if installed)
-3. OpenClaw.app (thin broker)
+3. PASO (`OpenClaw.app` compatibility bundle; thin broker)
 
 Use `peekaboo bridge status --verbose` to see which host is active and which socket path is in use. Override with:
 
@@ -136,7 +137,7 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## Security and permissions
 
-- The bridge validates **caller code signatures**. The production OpenClaw host accepts only the exact Peekaboo CLI
+- The bridge validates **caller code signatures**. The production PASO host accepts only the exact Peekaboo CLI
   bundle (`boo.peekaboo.peekaboo`) signed by Peekaboo's canonical current/legacy release signer set (`FWJYW4S8P8`
   and `Y5PE65HELJ`); sharing the app's UID or using another client signed by the app's development team is not
   sufficient.
@@ -151,7 +152,7 @@ Snapshots are stored in memory with a 10-minute validity window and a cap of 50 
 ## Troubleshooting
 
 - If `peekaboo` reports "bridge client is not authorized", ensure the client is properly signed or run the host with `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` in **debug** mode only.
-- If no hosts are found, open one of the host apps (Peekaboo.app or OpenClaw.app) and confirm permissions are granted.
+- If no hosts are found, open one of the host apps (Peekaboo.app or PASO, whose compatibility bundle is `OpenClaw.app`) and confirm permissions are granted.
 
 ## Related
 

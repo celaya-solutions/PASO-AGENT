@@ -215,7 +215,7 @@ describe("resolveHookManifestMetadata", () => {
         openclaw: {
           events: ["command"],
           install: [
-            { id: "bundled", kind: "bundled", label: "Bundled with OpenClaw" },
+            { id: "bundled", kind: "bundled", label: "Bundled with PASO" },
             { id: "npm", kind: "npm", package: "@openclaw/hook" },
           ],
         },
@@ -254,7 +254,7 @@ describe("resolveHookManifestMetadata", () => {
     const content = `---
 name: session-memory
 description: "Save session context to memory when a session is reset"
-homepage: https://docs.openclaw.ai/automation/hooks#session-memory
+homepage: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs
 metadata:
   {
     "openclaw":
@@ -262,7 +262,7 @@ metadata:
         "emoji": "💾",
         "events": ["command:new", "command:reset", "session:auto-reset"],
         "requires": { "config": ["workspace.dir"] },
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with PASO" }],
       },
   }
 ---

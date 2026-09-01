@@ -15,7 +15,7 @@ type WorkingPhraseElement = HTMLElement & {
 };
 
 const NOW = 2_000_000_000;
-// "· Clawing…" — a middot, one gerund, an ellipsis.
+// "· Working…" — a middot, one gerund, an ellipsis.
 const PHRASE_TEXT = /^·\s\S+…$/;
 
 function mountPhrase(seed = "stream-working:test"): WorkingPhraseElement {

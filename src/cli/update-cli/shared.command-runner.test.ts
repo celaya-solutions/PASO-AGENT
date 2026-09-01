@@ -178,7 +178,7 @@ describe("update CLI shared helpers", () => {
         timeoutMs: 1_000,
       }),
     ).rejects.toThrow(
-      "Update refused: package manager owner is unknown; no changes were made. Run this OpenClaw install through its active npm, pnpm, or Bun global shim, or reinstall it with that package manager, then retry.",
+      "Update refused: package manager owner is unknown; no changes were made. Run this PASO install through its active npm, pnpm, or Bun global shim, or reinstall it with that package manager, then retry.",
     );
     expect(runCommandWithTimeout).toHaveBeenCalledTimes(2);
   });
@@ -209,7 +209,7 @@ describe("update CLI shared helpers", () => {
           "git",
           "clone",
           "--filter=blob:none",
-          "https://github.com/openclaw/openclaw.git",
+          "https://github.com/celaya-solutions/PASO-AGENT.git",
           expect.stringMatching(/[/\\]\.openclaw-clone-[^/\\]+$/u),
         ],
         expect.objectContaining({ env: process.env, timeoutMs: 1_000 }),

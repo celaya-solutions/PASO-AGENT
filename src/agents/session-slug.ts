@@ -58,13 +58,11 @@ const SLUG_NOUNS = [
   "breeze",
   "canyon",
   "cedar",
-  "claw",
   "cloud",
   "comet",
   "coral",
   "cove",
   "crest",
-  "crustacean",
   "daisy",
   "dune",
   "ember",
@@ -77,10 +75,8 @@ const SLUG_NOUNS = [
   "haven",
   "kelp",
   "lagoon",
-  "lobster",
   "meadow",
   "mist",
-  "nudibranch",
   "nexus",
   "ocean",
   "orbit",
@@ -93,8 +89,6 @@ const SLUG_NOUNS = [
   "rook",
   "sable",
   "sage",
-  "seaslug",
-  "shell",
   "shoal",
   "shore",
   "slug",
@@ -107,17 +101,21 @@ const SLUG_NOUNS = [
   "zephyr",
 ];
 
-const CRUSTACEAN_NOUNS = [
-  "barnacle",
-  "claw",
-  "crab",
-  "crayfish",
-  "krill",
-  "langoustine",
-  "lobster",
-  "prawn",
-  "shrimp",
-  "shell",
+const PATH_NOUNS = [
+  "arroyo",
+  "bridge",
+  "canyon",
+  "crossing",
+  "desert",
+  "mesa",
+  "path",
+  "ridge",
+  "road",
+  "route",
+  "step",
+  "summit",
+  "trail",
+  "waypoint",
 ];
 
 function randomChoice(values: string[], fallback: string) {
@@ -177,17 +175,17 @@ export function createSessionSlug(isTaken?: (id: string) => boolean): string {
   return isIdTaken(fallback) ? `${fallback}-${Date.now().toString(36)}` : fallback;
 }
 
-/** Creates a human-readable crustacean-themed slug for unnamed worktrees. */
-export function createCrustaceanSlug(isTaken?: (id: string) => boolean): string {
+/** Creates a human-readable path-themed slug for unnamed worktrees. */
+export function createPathSlug(isTaken?: (id: string) => boolean): string {
   const isIdTaken = isTaken ?? (() => false);
-  const twoWord = createAvailableSlug(2, isIdTaken, CRUSTACEAN_NOUNS);
+  const twoWord = createAvailableSlug(2, isIdTaken, PATH_NOUNS);
   if (twoWord) {
     return twoWord;
   }
-  const threeWord = createAvailableSlug(3, isIdTaken, CRUSTACEAN_NOUNS);
+  const threeWord = createAvailableSlug(3, isIdTaken, PATH_NOUNS);
   if (threeWord) {
     return threeWord;
   }
-  const fallback = `${createSlugBase(3, CRUSTACEAN_NOUNS)}-${createFallbackSuffix(3)}`;
+  const fallback = `${createSlugBase(3, PATH_NOUNS)}-${createFallbackSuffix(3)}`;
   return isIdTaken(fallback) ? `${fallback}-${Date.now().toString(36)}` : fallback;
 }

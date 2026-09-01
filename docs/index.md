@@ -1,38 +1,29 @@
 ---
-summary: "OpenClaw is a multi-channel gateway for AI agents that runs on any OS."
+summary: "PASO is a multi-channel gateway for AI agents that runs on any OS."
 read_when:
-  - Introducing OpenClaw to newcomers
-title: "OpenClaw"
+  - Introducing PASO to newcomers
+title: "PASO"
 ---
 
-# OpenClaw 🦞
+# PASO
 
 <p align="center">
     <img
-        src="/assets/openclaw-hero-light.png"
-        alt="OpenClaw"
-        width="500"
-        class="dark:hidden"
-    />
-    <img
-        src="/assets/openclaw-hero-dark.png"
-        alt="OpenClaw"
-        width="500"
-        class="hidden dark:block"
+        src="/assets/paso-wordmark.svg"
+        alt="PASO, an AI agent by Celaya Solutions Research"
+        width="720"
     />
 </p>
 
-> _"EXFOLIATE! EXFOLIATE!"_ — A space lobster, probably
-
 <p align="center">
-  <strong>Any OS gateway for AI agents across Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more.</strong><br />
-  Send a message, get an agent response from your pocket. Run one Gateway across channel plugins, WebChat, and mobile nodes.<br />
-  Developed in the open by the <a href="https://openclaw.org">OpenClaw Foundation</a>, a non-profit.
+  <strong>PASO is an AI agent by Celaya Solutions Research.</strong><br />
+  Run one self-hosted gateway across messaging channels, WebChat, and mobile nodes.<br />
+  El Paso, Texas · <a href="mailto:hello@celayasolutions.com">hello@celayasolutions.com</a> · <a href="tel:+19152700237">+1 915-270-0237</a>
 </p>
 
 <Columns>
   <Card title="Get Started" href="/start/getting-started" icon="rocket">
-    Install OpenClaw and bring up the Gateway in minutes.
+    Install PASO and bring up the Gateway in minutes.
   </Card>
   <Card title="Run Onboarding" href="/start/wizard" icon="list-checks">
     Guided setup with `openclaw onboard` and pairing flows.
@@ -52,7 +43,7 @@ these hub links to reach the same top-level docs areas from the page body.
 
 <Columns>
   <Card title="Get started" href="/" icon="rocket">
-    Overview, showcase, first steps, and setup guides.
+    Overview, use cases, first steps, and setup guides.
   </Card>
   <Card title="Install" href="/install" icon="download">
     Install paths, updates, containers, hosting, and advanced setup.
@@ -86,9 +77,9 @@ these hub links to reach the same top-level docs areas from the page body.
   </Card>
 </Columns>
 
-## What is OpenClaw?
+## What is PASO?
 
-OpenClaw is a **self-hosted gateway** that connects your favorite chat apps — Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more via channel plugins — to AI coding agents. You run a single Gateway process on your own machine (or a server), and it becomes the bridge between your messaging apps and an always-available AI assistant.
+PASO is a **self-hosted gateway** that connects your favorite chat apps — Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo, and more via channel plugins — to AI coding agents. You run a single Gateway process on your own machine (or a server), and it becomes the bridge between your messaging apps and an always-available AI assistant.
 
 **Who is it for?** Developers, power users, and teams who want an AI assistant they can message from anywhere — without giving up control of their data or relying on a hosted service. The same gateway runs as a personal assistant on one laptop or as a shared [team deployment](/start/teams); configuration is the only difference.
 
@@ -97,9 +88,9 @@ OpenClaw is a **self-hosted gateway** that connects your favorite chat apps — 
 - **Self-hosted**: runs on your hardware, your rules
 - **Multi-channel**: one Gateway serves every configured channel plugin simultaneously
 - **Agent-native**: built for coding agents with tool use, sessions, memory, and multi-agent routing
-- **Open source**: MIT licensed, community-driven
+- **Open source**: MIT licensed and maintained by Celaya Solutions Research
 
-The full architecture case — a trusted gateway, untrusted execution, deterministic policy, and how one product spans personal and team use — is in [Why OpenClaw](/start/why-openclaw).
+The full architecture case — a trusted gateway, untrusted execution, deterministic policy, and how one product spans personal and team use — is in [Why PASO](/start/why-paso).
 
 **What do you need?** Node 26 (recommended), or another supported release: Node 22.22.3+, Node 24.15+, or Node 25.9+. You also need an API key from your chosen provider and 5 minutes. For best quality and security, use the strongest latest-generation model available.
 
@@ -108,7 +99,7 @@ The full architecture case — a trusted gateway, untrusted execution, determini
 ```mermaid
 flowchart LR
   A["Chat apps + plugins"] --> B["Gateway"]
-  B --> C["OpenClaw agent"]
+  B --> C["PASO agent"]
   B --> D["CLI"]
   B --> E["Web Control UI"]
   B --> F["macOS app"]
@@ -143,14 +134,13 @@ The Gateway is the single source of truth for sessions, routing, and channel con
 ## Quick start
 
 <Steps>
-  <Step title="Install OpenClaw">
-    On npm 12 or npm 11.16+:
-
+  <Step title="Install PASO">
     ```bash
-    npm install -g openclaw@latest --allow-scripts=openclaw
+    curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh \
+      | bash -s -- --install-method git --version main
     ```
 
-    On npm 11.15 and earlier, omit `--allow-scripts=openclaw`.
+    PASO keeps the lowercase `openclaw` command and config paths for framework compatibility.
 
   </Step>
   <Step title="Onboard and install the service">
@@ -179,15 +169,11 @@ Open the browser Control UI after the Gateway starts.
 - Local default: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
 - Remote access: [Web surfaces](/web) and [Tailscale](/gateway/tailscale)
 
-<p align="center">
-  <img src="/whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
-</p>
-
 ## Configuration (optional)
 
 Config lives at `~/.openclaw/openclaw.json`.
 
-- If you **do nothing**, OpenClaw uses the bundled OpenClaw agent runtime; DMs share the agent's main session, and each group chat gets its own session.
+- If you **do nothing**, PASO uses the bundled PASO agent runtime; DMs share the agent's main session, and each group chat gets its own session.
 - If you want to lock it down, start with `channels.whatsapp.allowFrom` and (for groups) mention rules.
 
 Example:

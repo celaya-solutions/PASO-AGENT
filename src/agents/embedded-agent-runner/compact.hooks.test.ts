@@ -1006,7 +1006,7 @@ describe("compactEmbeddedAgentSessionDirect hooks", () => {
     } as never);
     selectAgentHarnessForPreparedModelProvidersMock.mockReturnValue({
       id: "openclaw",
-      label: "OpenClaw test harness",
+      label: "PASO test harness",
       supports: () => ({ supported: true }),
       runAttempt: vi.fn(),
     } as never);
@@ -2137,7 +2137,7 @@ describe("compactEmbeddedAgentSessionDirect hooks", () => {
     );
   });
 
-  it("keeps model-locked OpenClaw compaction on its exact model without fallbacks", async () => {
+  it("keeps model-locked PASO compaction on its exact model without fallbacks", async () => {
     sessionCompactImpl.mockRejectedValueOnce(
       Object.assign(new Error("primary compaction rate limited"), { status: 429 }),
     );
@@ -2458,7 +2458,7 @@ describe("compactEmbeddedAgentSessionDirect hooks", () => {
     });
   });
 
-  it("preserves direct OpenAI API-key compaction when OpenClaw runtime is active", async () => {
+  it("preserves direct OpenAI API-key compaction when PASO runtime is active", async () => {
     resolveAgentHarnessPolicyMock.mockReturnValue({ runtime: "openclaw" });
 
     const result = await compactEmbeddedAgentSessionDirect({
@@ -4433,7 +4433,7 @@ describe("compactEmbeddedAgentSession hooks (ownsCompaction engine)", () => {
     }
   });
 
-  it("preserves concrete OpenClaw pins over explicit Codex policy for queued compaction", async () => {
+  it("preserves concrete PASO pins over explicit Codex policy for queued compaction", async () => {
     resolveAgentHarnessPolicyMock.mockReturnValue({
       runtime: "codex",
       runtimeSource: "model",

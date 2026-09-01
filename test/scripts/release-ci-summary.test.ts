@@ -95,7 +95,7 @@ describe("GitHub API commands", () => {
         artifact: fixture.artifact,
         artifactList: { artifacts: [fixture.artifact] },
         child: fixture.childRun,
-        jobLog: `TARGET_SHA: ${targetSha}\nDispatched: https://github.com/openclaw/openclaw/actions/runs/${childRunId} (attempt 1)`,
+        jobLog: `TARGET_SHA: ${targetSha}\nDispatched: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/${childRunId} (attempt 1)`,
         jobs: { jobs: [fixture.parentJob] },
         lineage: { merge_base_commit: { sha: workflowSha }, status: "ahead" },
         parent: fixture.parentRun,
@@ -115,13 +115,13 @@ let output;
 if (args[0] === "run" && args[1] === "view") output = fixtures.parentView;
 else if (args[0] === "auth" && args[1] === "token") output = "wrapper-only-token";
 else if (endpoint === "rate_limit") output = fixtures.rate;
-else if (endpoint === "repos/openclaw/openclaw/actions/runs/${runId}") output = fixtures.parent;
-else if (endpoint.startsWith("repos/openclaw/openclaw/actions/runs/${runId}/artifacts?")) output = fixtures.artifactList;
-else if (endpoint === "repos/openclaw/openclaw/actions/artifacts/${artifactId}") output = fixtures.artifact;
-else if (endpoint.startsWith("repos/openclaw/openclaw/actions/runs/${runId}/jobs?")) output = fixtures.jobs;
-else if (endpoint === "repos/openclaw/openclaw/actions/runs/${childRunId}") output = fixtures.child;
-else if (endpoint === "repos/openclaw/openclaw/actions/jobs/${fixture.parentJob.id}/logs") output = fixtures.jobLog;
-else if (endpoint === "repos/openclaw/openclaw/compare/${workflowSha}...${verifierSha}?per_page=1&page=2") output = fixtures.lineage;
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}") output = fixtures.parent;
+else if (endpoint.startsWith("repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}/artifacts?")) output = fixtures.artifactList;
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/actions/artifacts/${artifactId}") output = fixtures.artifact;
+else if (endpoint.startsWith("repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}/jobs?")) output = fixtures.jobs;
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/actions/runs/${childRunId}") output = fixtures.child;
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/actions/jobs/${fixture.parentJob.id}/logs") output = fixtures.jobLog;
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/compare/${workflowSha}...${verifierSha}?per_page=1&page=2") output = fixtures.lineage;
 else { console.error("unexpected cached gh request: " + args.join(" ")); process.exit(43); }
 process.stdout.write(typeof output === "string" ? output : JSON.stringify(output));
 `,
@@ -136,7 +136,7 @@ if (process.env.GH_TOKEN !== "wrapper-only-token") {
   console.error("plain gh did not receive wrapper authentication");
   process.exit(41);
 }
-if (args[0] !== "api" || args[1] !== "repos/openclaw/openclaw/actions/artifacts/${artifactId}/zip") {
+if (args[0] !== "api" || args[1] !== "repos/celaya-solutions/PASO-AGENT/actions/artifacts/${artifactId}/zip") {
   console.error("plain gh used for evidence read: " + args.join(" "));
   process.exit(42);
 }
@@ -166,7 +166,7 @@ process.stdout.write(readFileSync(process.env.ARCHIVE));
           "--input-type=module",
           "--eval",
           `import { createReleaseEvidenceClient } from ${JSON.stringify(pathToFileURL(resolve(SCRIPT)).href)};
-           process.stdout.write(JSON.stringify(createReleaseEvidenceClient("openclaw/openclaw").compareCommitLineage("${workflowSha}", "${verifierSha}")));`,
+           process.stdout.write(JSON.stringify(createReleaseEvidenceClient("celaya-solutions/PASO-AGENT").compareCommitLineage("${workflowSha}", "${verifierSha}")));`,
         ],
         { encoding: "utf8", env },
       );
@@ -180,27 +180,28 @@ process.stdout.write(readFileSync(process.env.ARCHIVE));
 
       expect(result.stderr).toBe("");
       expect(result.status).toBe(0);
-      expect(result.stdout).toContain(
-        `child: ${childRunId} OpenClaw Release Checks completed/success`,
-      );
+      expect(result.stdout).toContain(`child: ${childRunId} PASO Release Checks completed/success`);
       const shimCalls = readFileSync(shimLog, "utf8");
       const plainCalls = readFileSync(plainLog, "utf8");
       expect(shimCalls).toContain('"run","view"');
       expect(shimCalls).toContain('"auth","token"');
-      expect(shimCalls).toContain(`"repos/openclaw/openclaw/actions/runs/${runId}"`);
+      expect(shimCalls).toContain(`"repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}"`);
       expect(shimCalls).toContain(
-        `"repos/openclaw/openclaw/compare/${workflowSha}...${verifierSha}?per_page=1&page=2"`,
+        `"repos/celaya-solutions/PASO-AGENT/compare/${workflowSha}...${verifierSha}?per_page=1&page=2"`,
       );
       expect(shimCalls).toContain(
         JSON.stringify([
           "api",
-          `repos/openclaw/openclaw/actions/jobs/${fixture.parentJob.id}/logs`,
+          `repos/celaya-solutions/PASO-AGENT/actions/jobs/${fixture.parentJob.id}/logs`,
           "--allow-escape-sequences",
         ]),
       );
       expect(shimCalls).not.toContain(`/actions/artifacts/${artifactId}/zip`);
       expect(plainCalls.trim()).toBe(
-        JSON.stringify(["api", `repos/openclaw/openclaw/actions/artifacts/${artifactId}/zip`]),
+        JSON.stringify([
+          "api",
+          `repos/celaya-solutions/PASO-AGENT/actions/artifacts/${artifactId}/zip`,
+        ]),
       );
     } finally {
       rmSync(root, { force: true, recursive: true });
@@ -316,12 +317,14 @@ describe("runReleaseCiGh", () => {
     const execFileSyncImpl = vi.fn(() => "result");
 
     expect(
-      runReleaseCiGh(["api", "repos/openclaw/openclaw/actions/runs/1"], { execFileSyncImpl }),
+      runReleaseCiGh(["api", "repos/celaya-solutions/PASO-AGENT/actions/runs/1"], {
+        execFileSyncImpl,
+      }),
     ).toBe("result");
     expect(execFileSyncImpl).toHaveBeenCalledOnce();
     expect(execFileSyncImpl).toHaveBeenCalledWith(
       expect.any(String),
-      ["api", "repos/openclaw/openclaw/actions/runs/1"],
+      ["api", "repos/celaya-solutions/PASO-AGENT/actions/runs/1"],
       expect.objectContaining({
         encoding: "utf8",
         killSignal: "SIGKILL",
@@ -359,9 +362,9 @@ process.exit(1);
     const previousPath = process.env.PATH;
     process.env.PATH = `${root}:${previousPath ?? ""}`;
     try {
-      expect(createReleaseEvidenceClient("openclaw/openclaw").loadExecutionPlan("123")).toBe(
-        undefined,
-      );
+      expect(
+        createReleaseEvidenceClient("celaya-solutions/PASO-AGENT").loadExecutionPlan("123"),
+      ).toBe(undefined);
     } finally {
       if (previousPath === undefined) {
         delete process.env.PATH;
@@ -377,7 +380,7 @@ describe("Release Decision artifact polling", () => {
 
   it("treats GitHub CLI 2.93 missing named artifacts as unavailable", () => {
     expect(
-      tryReadReleaseDecisionArtifact(parent, "123", "openclaw/openclaw", () => {
+      tryReadReleaseDecisionArtifact(parent, "123", "celaya-solutions/PASO-AGENT", () => {
         throw Object.assign(
           new Error("no artifact matches any of the names or patterns provided"),
           {
@@ -394,7 +397,7 @@ describe("Release Decision artifact polling", () => {
       const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
       try {
         expect(
-          tryReadReleaseDecisionArtifact(parent, "123", "openclaw/openclaw", () => {
+          tryReadReleaseDecisionArtifact(parent, "123", "celaya-solutions/PASO-AGENT", () => {
             throw Object.assign(new Error(message), { stderr: message });
           }),
         ).toBeUndefined();
@@ -413,7 +416,7 @@ describe("Release Decision artifact polling", () => {
       "unknown flag: --name\nUsage: gh run download",
     ]) {
       expect(() =>
-        tryReadReleaseDecisionArtifact(parent, "123", "openclaw/openclaw", () => {
+        tryReadReleaseDecisionArtifact(parent, "123", "celaya-solutions/PASO-AGENT", () => {
           throw Object.assign(new Error(message), { stderr: message });
         }),
       ).toThrow("release decision artifact read failed");
@@ -647,10 +650,10 @@ function trustedMainPackageFixture({
     event: "workflow_dispatch",
     head_branch: workflowRef,
     head_sha: workflowSha,
-    html_url: `https://github.com/openclaw/openclaw/actions/runs/${runId}`,
+    html_url: `https://github.com/celaya-solutions/PASO-AGENT/actions/runs/${runId}`,
     id: Number(runId),
     path: parentPath,
-    repository: { full_name: "openclaw/openclaw" },
+    repository: { full_name: "celaya-solutions/PASO-AGENT" },
     run_attempt: 1,
     status: "completed",
   };
@@ -686,10 +689,10 @@ function trustedMainPackageFixture({
     event: "workflow_dispatch",
     head_branch: workflowRef,
     head_sha: workflowSha,
-    html_url: `https://github.com/openclaw/openclaw/actions/runs/${childRunId}`,
+    html_url: `https://github.com/celaya-solutions/PASO-AGENT/actions/runs/${childRunId}`,
     id: Number(childRunId),
     path: ".github/workflows/openclaw-release-checks.yml",
-    repository: { full_name: "openclaw/openclaw" },
+    repository: { full_name: "celaya-solutions/PASO-AGENT" },
     run_attempt: 1,
     status: "completed",
     triggering_actor: { login: "github-actions[bot]" },
@@ -825,8 +828,8 @@ if (args[0] === "run" && args[1] === "view") {
   }));
   process.exit(0);
 } else if (endpoint === "rate_limit") output = { resources: { core: { limit: 5000, remaining: 4999, reset: 2_000_000_000 } } };
-else if (endpoint === "repos/openclaw/openclaw/actions/runs/${runId}") output = ${JSON.stringify(parent)};
-else if (endpoint.startsWith("repos/openclaw/openclaw/actions/runs/${runId}/artifacts?")) output = { artifacts: [] };
+else if (endpoint === "repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}") output = ${JSON.stringify(parent)};
+else if (endpoint.startsWith("repos/celaya-solutions/PASO-AGENT/actions/runs/${runId}/artifacts?")) output = { artifacts: [] };
 else { console.error("unexpected gh call: " + args.join(" ")); process.exit(43); }
 process.stdout.write(JSON.stringify(output));
 `,
@@ -1127,7 +1130,7 @@ describe("release CI summary child correlation", () => {
     expect(
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: legacyV2.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1144,7 +1147,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: legacyV3.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1162,7 +1165,7 @@ describe("release CI summary child correlation", () => {
     const verifierSourceSha = "c".repeat(40);
     const evidence = validateReleaseRunEvidence(
       {
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: fixture.runId,
         verifierSourceContent: readFileSync(SCRIPT),
         verifierSourceSha,
@@ -1174,7 +1177,7 @@ describe("release CI summary child correlation", () => {
       directRoot: true,
       evidenceReuse: null,
       releaseProfile: "full",
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       rerunGroup: "package",
       runReleaseSoak: true,
       schema: "openclaw.release-validation-evidence/v3",
@@ -1283,7 +1286,7 @@ describe("release CI summary child correlation", () => {
         evidenceReuse: { requested: false },
         expected: {
           candidateRequest: buildFullReleaseCandidateRequest({
-            repository: "openclaw/openclaw",
+            repository: "celaya-solutions/PASO-AGENT",
             targetSha: fixture.targetSha,
             toolingSha: fixture.workflowSha,
             releaseProfile: "full",
@@ -1297,7 +1300,7 @@ describe("release CI summary child correlation", () => {
           }),
           parentRunAttempt: 1,
           parentRunId: fixture.runId,
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           targetSha: fixture.targetSha,
           workflowRef: fixture.parentRun.head_branch,
           workflowSha: fixture.workflowSha,
@@ -1345,7 +1348,7 @@ describe("release CI summary child correlation", () => {
         jobs: compositeJobs,
         observedRunAttempts: [1, 2],
         plannedRunAttempt: 1,
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: String(fixture.childRun.id),
         triggeringActor: "release-operator",
       };
@@ -1392,7 +1395,7 @@ describe("release CI summary child correlation", () => {
         validateReleaseRunEvidence(
           {
             expectedRunAttempts,
-            repository: "openclaw/openclaw",
+            repository: "celaya-solutions/PASO-AGENT",
             runId: fixture.runId,
             verifierSourceContent: readFileSync(SCRIPT),
             verifierSourceSha: "c".repeat(40),
@@ -1447,14 +1450,14 @@ describe("release CI summary child correlation", () => {
         jobs: staleJobs,
         observedRunAttempts: [1],
         plannedRunAttempt: 1,
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: String(fixture.childRun.id),
         triggeringActor: "github-actions[bot]",
       };
       manifest.childEvidence.releaseChecks = staleEvidence;
       expect(() => validate({ [fixture.runId]: 2, [String(fixture.childRun.id)]: 2 })).toThrowError(
         expect.objectContaining({
-          message: "successful parent manifest predates OpenClaw Release Checks attempt 2",
+          message: "successful parent manifest predates PASO Release Checks attempt 2",
           refreshable: true,
         }),
       );
@@ -1565,7 +1568,7 @@ describe("release CI summary child correlation", () => {
 
     const evidence = validateReleaseRunEvidence(
       {
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: fixture.runId,
         verifierSourceContent: readFileSync(SCRIPT),
         verifierSourceSha: "c".repeat(40),
@@ -1587,7 +1590,7 @@ describe("release CI summary child correlation", () => {
     expect(
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1608,7 +1611,7 @@ describe("release CI summary child correlation", () => {
     });
     const evidence = validateReleaseRunEvidence(
       {
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: fixture.runId,
         verifierSourceContent: readFileSync(SCRIPT),
         verifierSourceSha: "c".repeat(40),
@@ -1634,7 +1637,7 @@ describe("release CI summary child correlation", () => {
     });
     const evidence = validateReleaseRunEvidence(
       {
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runId: fixture.runId,
         trustedWorkflowRef: workflowRef,
         verifierSourceContent: readFileSync(SCRIPT),
@@ -1659,7 +1662,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1678,7 +1681,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1697,7 +1700,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           trustedWorkflowRef: "main",
           verifierSourceContent: readFileSync(SCRIPT),
@@ -1723,7 +1726,7 @@ describe("release CI summary child correlation", () => {
     expect(
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -1754,7 +1757,7 @@ describe("release CI summary child correlation", () => {
     expect(
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           trustedWorkflowFullRef: `refs/tags/${trustedWorkflowRef}`,
           trustedWorkflowRef,
@@ -1805,7 +1808,7 @@ describe("release CI summary child correlation", () => {
     expect(
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: olderFixture.runId,
           trustedWorkflowFullRef: `refs/tags/${trustedWorkflowRef}`,
           trustedWorkflowRef,
@@ -1835,7 +1838,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: validFixture.runId,
           trustedWorkflowFullRef: `refs/heads/${trustedWorkflowRef}`,
           trustedWorkflowRef,
@@ -1868,7 +1871,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: unrelatedFixture.runId,
           trustedWorkflowFullRef: `refs/tags/${trustedWorkflowRef}`,
           trustedWorkflowRef,
@@ -1889,7 +1892,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: sameNameFixture.runId,
           trustedWorkflowFullRef: `refs/tags/${trustedWorkflowRef}`,
           trustedWorkflowRef,
@@ -1915,7 +1918,7 @@ describe("release CI summary child correlation", () => {
     });
     fixture.manifest.targetRef = fixture.targetSha;
     const options = {
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       runId: fixture.runId,
       trustedWorkflowFullRef: `refs/tags/${trustedWorkflowRef}`,
       trustedWorkflowRef,
@@ -1952,7 +1955,7 @@ describe("release CI summary child correlation", () => {
       expect(
         validateReleaseRunEvidence(
           {
-            repository: "openclaw/openclaw",
+            repository: "celaya-solutions/PASO-AGENT",
             runId: fixture.runId,
             verifierSourceContent: readFileSync(SCRIPT),
             verifierSourceSha: "c".repeat(40),
@@ -2012,7 +2015,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: readFileSync(SCRIPT),
           verifierSourceSha: "c".repeat(40),
@@ -2027,7 +2030,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceContent: "different verifier bytes",
           verifierSourceSha: "c".repeat(40),
@@ -2038,7 +2041,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateReleaseRunEvidence(
         {
-          repository: "openclaw/openclaw",
+          repository: "celaya-solutions/PASO-AGENT",
           runId: fixture.runId,
           verifierSourceSha: "f".repeat(40),
         },
@@ -2147,11 +2150,10 @@ describe("release CI summary child correlation", () => {
         workflow: "ci.yml",
       },
       {
-        displayTitle:
-          "OpenClaw Release Checks full-release-validation-29090000000-3-release-checks",
+        displayTitle: "PASO Release Checks full-release-validation-29090000000-3-release-checks",
         headBranch: "release/2026.7.1",
         manifestKey: "releaseChecks",
-        name: "OpenClaw Release Checks",
+        name: "PASO Release Checks",
         parentJobName: "Run release/live/Docker/QA validation",
         suffix: "-release-checks",
         trustedRef: "parent",
@@ -2178,10 +2180,10 @@ describe("release CI summary child correlation", () => {
         workflow: "npm-telegram-beta-e2e.yml",
       },
       {
-        displayTitle: "OpenClaw Performance full-release-validation-29090000000-3",
+        displayTitle: "PASO Performance full-release-validation-29090000000-3",
         headBranch: "release/2026.7.1",
         manifestKey: "productPerformance",
-        name: "OpenClaw Performance",
+        name: "PASO Performance",
         parentJobName: "Run product performance evidence",
         suffix: "",
         trustedRef: "parent",
@@ -2199,6 +2201,7 @@ describe("release CI summary child correlation", () => {
             "releaseChecksCandidate",
             "pluginPrereleaseIndependent",
             "pluginPrereleaseCandidate",
+            "productPerformance",
           ].includes(manifestKey),
         )
         .map(({ displayTitle, manifestKey, parentJobName }) => ({
@@ -2221,21 +2224,26 @@ describe("release CI summary child correlation", () => {
       },
       {
         displayTitle:
-          "OpenClaw Release Checks full-release-validation-29090000000-3-release-checks-independent",
+          "PASO Release Checks full-release-validation-29090000000-3-release-checks-independent",
         manifestKey: "releaseChecksIndependent",
         parentJobName: "Run release checks independent validation",
       },
       {
         displayTitle:
-          "OpenClaw Release Checks full-release-validation-29090000000-3-release-checks-candidate",
+          "PASO Release Checks full-release-validation-29090000000-3-release-checks-candidate",
         manifestKey: "releaseChecksCandidate",
         parentJobName: "Run release checks candidate validation",
+      },
+      {
+        displayTitle: "PASO Performance full-release-validation-29090000000-3",
+        manifestKey: "productPerformance",
+        parentJobName: "Run product performance evidence",
       },
     ]);
   });
 
   it("ignores same-SHA and nearby-name runs without the exact parent dispatch binding", () => {
-    const expected = "OpenClaw Performance full-release-validation-29090000000-3";
+    const expected = "PASO Performance full-release-validation-29090000000-3";
     const exact = {
       display_title: expected,
       event: "workflow_dispatch",
@@ -2247,7 +2255,7 @@ describe("release CI summary child correlation", () => {
       selectExactChildRun(
         [
           {
-            display_title: "OpenClaw Performance",
+            display_title: "PASO Performance",
             event: "workflow_dispatch",
             head_branch: "main",
             head_sha: exact.head_sha,
@@ -2292,7 +2300,7 @@ describe("release CI summary child correlation", () => {
   });
 
   it("returns one exact child after a full bounded pagination scan", () => {
-    const expected = "OpenClaw Performance full-release-validation-29090000000-3";
+    const expected = "PASO Performance full-release-validation-29090000000-3";
     const exact = {
       display_title: expected,
       event: "workflow_dispatch",
@@ -2361,7 +2369,7 @@ describe("release CI summary child correlation", () => {
       jobs: composite.jobs,
       observedRunAttempts: [1],
       plannedRunAttempt: composite.plannedRunAttempt,
-      repository: "openclaw/openclaw",
+      repository: "celaya-solutions/PASO-AGENT",
       runId: "404",
       triggeringActor: "github-actions[bot]",
     };
@@ -2505,7 +2513,7 @@ describe("release CI summary child correlation", () => {
       rawManifest({ candidateBinding, version: 3, workflowSha }),
       {
         candidateBinding,
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runAttempt: 2,
         runId: "29090000000",
         workflowSha,
@@ -2515,7 +2523,7 @@ describe("release CI summary child correlation", () => {
     expect(() =>
       validateParentManifest(rawManifest({ candidateBinding: null, version: 3, workflowSha }), {
         candidateBinding,
-        repository: "openclaw/openclaw",
+        repository: "celaya-solutions/PASO-AGENT",
         runAttempt: 2,
         runId: "29090000000",
         workflowSha,
@@ -2849,7 +2857,7 @@ describe("release CI summary child correlation", () => {
     ];
     const parentLog = [
       `TARGET_SHA: ${parentManifest.targetSha}`,
-      "Dispatched ci.yml: https://github.com/openclaw/openclaw/actions/runs/101 (attempt 1)",
+      "Dispatched ci.yml: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/101 (attempt 1)",
     ].join("\n");
     const run = {
       actor: { login: "github-actions[bot]" },
@@ -2960,7 +2968,7 @@ describe("release CI summary child correlation", () => {
       const parentLog = [
         `TARGET_SHA: ${parentManifest.targetSha}`,
         ...(child.manifestKey === "productPerformance" ? ["-f publish_reports=false"] : []),
-        `Dispatched ${child.workflow}: https://github.com/openclaw/openclaw/actions/runs/${runId} (attempt ${run.run_attempt})`,
+        `Dispatched ${child.workflow}: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/${runId} (attempt ${run.run_attempt})`,
       ].join("\n");
       expect(resolveManifestChildOriginAttempt(run, child, parentManifest, parentJobs)).toBe(
         originAttempt,
@@ -3013,7 +3021,7 @@ describe("release CI summary child correlation", () => {
     ];
     const ciLog = [
       `TARGET_SHA: ${parentManifest.targetSha}`,
-      "Dispatched ci.yml: https://github.com/openclaw/openclaw/actions/runs/101 (attempt 1)",
+      "Dispatched ci.yml: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/101 (attempt 1)",
     ].join("\n");
     expect(() =>
       validateManifestChildRun(wrongParent, ci, "101", parentManifest, ciJobs, ciLog),
@@ -3034,6 +3042,55 @@ describe("release CI summary child correlation", () => {
     expect(
       resolveManifestChildOriginAttempt({ display_title: "CI nearby" }, ci, parentManifest, ciJobs),
     ).toBeUndefined();
+  });
+
+  it("accepts exact legacy aliases for phased child evidence and rejects nearby labels", () => {
+    const parentManifest = {
+      runAttempt: 2,
+      runId: "28717729503",
+      targetSha: "a".repeat(40),
+      workflowSha: "b".repeat(40),
+    };
+    const children = expectedChildDispatches(
+      parentManifest.runId,
+      parentManifest.runAttempt,
+      "main",
+      3,
+    ).filter(
+      (child) =>
+        child.manifestKey.startsWith("releaseChecks") || child.manifestKey === "productPerformance",
+    );
+    const fingerprint = {
+      completed_at: "2026-07-04T20:29:21Z",
+      conclusion: "success",
+      started_at: "2026-07-04T19:53:02Z",
+      status: "completed",
+      steps: [],
+    };
+
+    for (const child of children) {
+      const legacyName = child.manifestKey.startsWith("releaseChecks")
+        ? "OpenClaw Release Checks"
+        : "OpenClaw Performance";
+      const run = {
+        display_title: `${legacyName} full-release-validation-${parentManifest.runId}-1${child.suffix}`,
+      };
+      const parentJobs = [1, 2].map((runAttempt) => ({
+        ...fingerprint,
+        id: 900 + runAttempt,
+        name: child.parentJobName,
+        run_attempt: runAttempt,
+      }));
+      expect(resolveManifestChildOriginAttempt(run, child, parentManifest, parentJobs)).toBe(1);
+      expect(
+        resolveManifestChildOriginAttempt(
+          { ...run, display_title: run.display_title.replace("OpenClaw", "OpenClawX") },
+          child,
+          parentManifest,
+          parentJobs,
+        ),
+      ).toBeUndefined();
+    }
   });
 
   it("keeps requested changelog reuse target and evidence SHAs separate", () => {

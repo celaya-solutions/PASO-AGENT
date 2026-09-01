@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/tlon",
   "version": "2026.8.1",
-  "description": "OpenClaw Tlon/Urbit channel plugin for chat workflows.",
+  "description": "PASO Tlon/Urbit channel plugin for chat workflows.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

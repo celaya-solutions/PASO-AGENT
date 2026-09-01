@@ -137,7 +137,7 @@ export function verifyStableMainCloseout(params) {
 
   if (mainVersion && !isStableMainVersionAtLeast(mainVersion, version)) {
     errors.push(
-      `main package.json version is ${mainVersion}, expected shipped version ${version} or a later stable OpenClaw CalVer.`,
+      `main package.json version is ${mainVersion}, expected shipped version ${version} or a later stable PASO CalVer.`,
     );
   }
   if (tagPackageVersion && tagPackageVersion !== version) {
@@ -188,8 +188,16 @@ export function verifyStableMainCloseout(params) {
     );
   } else {
     const macZip = expectedMacAssets[0];
-    if (!params.mainAppcast.includes(`/releases/download/${params.tag}/${macZip}`)) {
-      errors.push(`main appcast.xml does not point at ${macZip} from ${params.tag}.`);
+    const expectedMacZipUrl = `https://github.com/celaya-solutions/PASO-AGENT/releases/download/${params.tag}/${macZip}`;
+    const expectedAppcastUrl =
+      "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml";
+    if (!params.mainAppcast.includes(expectedMacZipUrl)) {
+      errors.push(
+        `main appcast.xml does not point at ${macZip} from ${params.tag} in the PASO release repository.`,
+      );
+    }
+    if (!params.mainAppcast.includes(`<link>${expectedAppcastUrl}</link>`)) {
+      errors.push("main appcast.xml does not use the PASO repository as its feed self-link.");
     }
   }
 

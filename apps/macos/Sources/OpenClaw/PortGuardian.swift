@@ -758,7 +758,7 @@ actor PortGuardian {
     private nonisolated static func openRecordStore() throws -> PortGuardianRecordStore {
         guard !self.hasLegacyOpenClawAppProcess() else {
             throw PortGuardianStoreError(
-                "Quit older OpenClaw app copies before opening the SQLite PortGuardian ledger")
+                "Quit older PASO app copies before opening the SQLite PortGuardian ledger")
         }
         let legacyURL = PortGuardianRecordStore.liveLegacyRecordURL
         guard FileManager.default.fileExists(atPath: legacyURL.path) else {
@@ -781,7 +781,7 @@ actor PortGuardian {
               !FileManager.default.fileExists(atPath: PortGuardianRecordStore.liveLegacyRecordURL.path)
         else {
             throw PortGuardianStoreError(
-                "Older OpenClaw storage appeared after tunnel preflight; SSH launch cancelled")
+                "Older PASO storage appeared after tunnel preflight; SSH launch cancelled")
         }
     }
 

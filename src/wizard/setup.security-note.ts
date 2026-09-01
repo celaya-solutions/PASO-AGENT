@@ -38,6 +38,6 @@ export function getSecurityNoteMessage(): string {
     formatCliCommand("openclaw security audit --deep"),
     formatCliCommand("openclaw security audit --fix"),
     "",
-    `${t("wizard.security.learnMore")} https://docs.openclaw.ai/gateway/security`,
+    `${t("wizard.security.learnMore")} https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs`,
   ].join("\n");
 }

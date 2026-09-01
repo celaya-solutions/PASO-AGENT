@@ -3,11 +3,11 @@
   "id": "openclaw-official-external-plugins",
   "generatedAt": "2026-06-22T00:00:00.000Z",
   "sequence": 1,
-  "description": "Bundled fallback feed for official external OpenClaw plugins.",
+  "description": "Bundled fallback feed for official external PASO plugins.",
   "entries": [
     {
       "name": "@openclaw/acpx",
-      "description": "OpenClaw ACP runtime backend",
+      "description": "PASO ACP runtime backend",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -24,7 +24,7 @@
     },
     {
       "name": "@openclaw/brave-plugin",
-      "description": "OpenClaw Brave plugin",
+      "description": "PASO Brave plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -42,7 +42,7 @@
             "envVars": ["BRAVE_API_KEY"],
             "placeholder": "BSA...",
             "signupUrl": "https://api-dashboard.search.brave.com/app/keys",
-            "docsUrl": "https://docs.openclaw.ai/tools/brave-search",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/brave-search.md",
             "credentialPath": "plugins.entries.brave.config.webSearch.apiKey",
             "autoDetectOrder": 10
           }
@@ -57,7 +57,7 @@
     },
     {
       "name": "@openclaw/codex",
-      "description": "OpenClaw Codex app-server harness and native session catalog",
+      "description": "PASO Codex app-server harness and native session catalog",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -77,7 +77,7 @@
     },
     {
       "name": "@openclaw/copilot",
-      "description": "OpenClaw GitHub Copilot agent runtime plugin",
+      "description": "PASO GitHub Copilot agent runtime plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -95,7 +95,7 @@
     },
     {
       "name": "@openclaw/diagnostics-otel",
-      "description": "OpenClaw diagnostics OpenTelemetry exporter",
+      "description": "PASO diagnostics OpenTelemetry exporter",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -113,7 +113,7 @@
     },
     {
       "name": "@openclaw/diagnostics-prometheus",
-      "description": "OpenClaw diagnostics Prometheus exporter",
+      "description": "PASO diagnostics Prometheus exporter",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -131,7 +131,7 @@
     },
     {
       "name": "@openclaw/diffs",
-      "description": "OpenClaw diff viewer plugin",
+      "description": "PASO diff viewer plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -153,7 +153,7 @@
     },
     {
       "name": "@openclaw/diffs-language-pack",
-      "description": "OpenClaw diffs viewer syntax highlighting language pack",
+      "description": "PASO diffs viewer syntax highlighting language pack",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -171,7 +171,7 @@
     },
     {
       "name": "@openclaw/duckduckgo-plugin",
-      "description": "OpenClaw DuckDuckGo plugin.",
+      "description": "PASO DuckDuckGo plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -196,7 +196,7 @@
             "envVars": [],
             "placeholder": "(no key needed)",
             "signupUrl": "https://duckduckgo.com/",
-            "docsUrl": "https://docs.openclaw.ai/tools/duckduckgo-search",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/duckduckgo-search.md",
             "credentialPath": "",
             "autoDetectOrder": 100
           }
@@ -211,7 +211,7 @@
     },
     {
       "name": "@openclaw/exa-plugin",
-      "description": "OpenClaw Exa plugin.",
+      "description": "PASO Exa plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -238,7 +238,7 @@
             ],
             "placeholder": "exa-...",
             "signupUrl": "https://exa.ai/",
-            "docsUrl": "https://docs.openclaw.ai/tools/web",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/web.md",
             "credentialPath": "plugins.entries.exa.config.webSearch.apiKey",
             "autoDetectOrder": 65
           }
@@ -253,7 +253,7 @@
     },
     {
       "name": "@openclaw/firecrawl-plugin",
-      "description": "OpenClaw Firecrawl plugin.",
+      "description": "PASO Firecrawl plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -288,7 +288,7 @@
             ],
             "placeholder": "fc-...",
             "signupUrl": "https://www.firecrawl.dev/",
-            "docsUrl": "https://docs.openclaw.ai/tools/firecrawl",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/firecrawl.md",
             "credentialPath": "plugins.entries.firecrawl.config.webSearch.apiKey",
             "autoDetectOrder": 60
           },
@@ -303,7 +303,7 @@
             "envVars": [],
             "placeholder": "(no key needed)",
             "signupUrl": "https://www.firecrawl.dev/",
-            "docsUrl": "https://docs.openclaw.ai/tools/firecrawl",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/firecrawl.md",
             "credentialPath": ""
           }
         ],
@@ -317,7 +317,7 @@
     },
     {
       "name": "@openclaw/fish-audio-speech",
-      "description": "OpenClaw Fish Audio speech plugin.",
+      "description": "PASO Fish Audio speech plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -336,7 +336,7 @@
     },
     {
       "name": "@openclaw/google-meet",
-      "description": "OpenClaw Google Meet participant plugin",
+      "description": "PASO Google Meet participant plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -353,7 +353,7 @@
     },
     {
       "name": "@openclaw/gradium-speech",
-      "description": "OpenClaw Gradium speech plugin.",
+      "description": "PASO Gradium speech plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -376,7 +376,7 @@
     },
     {
       "name": "@openclaw/inworld-speech",
-      "description": "OpenClaw Inworld speech plugin.",
+      "description": "PASO Inworld speech plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -421,7 +421,7 @@
     },
     {
       "name": "@openclaw/memory-lancedb",
-      "description": "OpenClaw LanceDB-backed long-term memory plugin with auto-recall/capture",
+      "description": "PASO LanceDB-backed long-term memory plugin with auto-recall/capture",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -443,7 +443,7 @@
     },
     {
       "name": "@openclaw/llama-cpp-provider",
-      "description": "OpenClaw managed llama.cpp server provider plugin",
+      "description": "PASO managed llama.cpp server provider plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -463,7 +463,7 @@
     },
     {
       "name": "@openclaw/mxc-sandbox",
-      "description": "OpenClaw MXC sandbox execution plugin for MXC-capable hosts",
+      "description": "PASO MXC sandbox execution plugin for MXC-capable hosts",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -480,7 +480,7 @@
     },
     {
       "name": "@openclaw/openshell-sandbox",
-      "description": "OpenClaw OpenShell sandbox backend",
+      "description": "PASO OpenShell sandbox backend",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -497,7 +497,7 @@
     },
     {
       "name": "@openclaw/parallel-plugin",
-      "description": "OpenClaw Parallel web search plugin.",
+      "description": "PASO Parallel web search plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -525,7 +525,7 @@
             ],
             "placeholder": "par-...",
             "signupUrl": "https://platform.parallel.ai",
-            "docsUrl": "https://docs.openclaw.ai/tools/parallel-search",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/parallel-search.md",
             "credentialPath": "plugins.entries.parallel.config.webSearch.apiKey",
             "autoDetectOrder": 75
           },
@@ -540,7 +540,7 @@
             "envVars": [],
             "placeholder": "(no key needed)",
             "signupUrl": "https://parallel.ai",
-            "docsUrl": "https://docs.openclaw.ai/tools/parallel-search",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/parallel-search.md",
             "credentialPath": ""
           }
         ],
@@ -554,7 +554,7 @@
     },
     {
       "name": "@openclaw/perplexity-plugin",
-      "description": "OpenClaw Perplexity plugin.",
+      "description": "PASO Perplexity plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -582,7 +582,7 @@
             ],
             "placeholder": "pplx-...",
             "signupUrl": "https://www.perplexity.ai/settings/api",
-            "docsUrl": "https://docs.openclaw.ai/perplexity",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/perplexity-search.md",
             "credentialPath": "plugins.entries.perplexity.config.webSearch.apiKey",
             "autoDetectOrder": 50
           }
@@ -597,7 +597,7 @@
     },
     {
       "name": "@openclaw/searxng-plugin",
-      "description": "OpenClaw SearXNG plugin",
+      "description": "PASO SearXNG plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -625,7 +625,7 @@
             ],
             "placeholder": "http://localhost:8080",
             "signupUrl": "https://docs.searxng.org/",
-            "docsUrl": "https://docs.openclaw.ai/tools/searxng-search",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/searxng-search.md",
             "credentialPath": "plugins.entries.searxng.config.webSearch.baseUrl",
             "autoDetectOrder": 200
           }
@@ -641,7 +641,7 @@
     },
     {
       "name": "@openclaw/tavily-plugin",
-      "description": "OpenClaw Tavily plugin",
+      "description": "PASO Tavily plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -672,7 +672,7 @@
             ],
             "placeholder": "tvly-...",
             "signupUrl": "https://tavily.com/",
-            "docsUrl": "https://docs.openclaw.ai/tools/tavily",
+            "docsUrl": "https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/tavily.md",
             "credentialPath": "plugins.entries.tavily.config.webSearch.apiKey",
             "autoDetectOrder": 70
           }
@@ -688,7 +688,7 @@
     },
     {
       "name": "@openclaw/teams-meetings",
-      "description": "OpenClaw Microsoft Teams browser meeting participant plugin.",
+      "description": "PASO Microsoft Teams browser meeting participant plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -714,7 +714,7 @@
     },
     {
       "name": "@openclaw/tokenjuice",
-      "description": "OpenClaw tokenjuice exec output compaction plugin",
+      "description": "PASO tokenjuice exec output compaction plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -736,7 +736,7 @@
     },
     {
       "name": "@openclaw/voice-call",
-      "description": "OpenClaw voice-call plugin",
+      "description": "PASO voice-call plugin",
       "source": "official",
       "kind": "plugin",
       "openclaw": {
@@ -753,7 +753,7 @@
     },
     {
       "name": "@openclaw/zoom-meetings",
-      "description": "OpenClaw Zoom browser meeting participant plugin.",
+      "description": "PASO Zoom browser meeting participant plugin.",
       "source": "official",
       "kind": "plugin",
       "openclaw": {

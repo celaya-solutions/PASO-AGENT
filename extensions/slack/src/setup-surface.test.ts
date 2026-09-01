@@ -97,12 +97,12 @@ describe("slackSetupWizard.prepare", () => {
     const manifest = requireFirstStringArg(plain, "Slack manifest plain text");
     expect(JSON.parse(manifest)).toEqual({
       display_information: {
-        name: "OpenClaw",
-        description: "OpenClaw connector for OpenClaw",
+        name: "PASO",
+        description: "PASO connector for PASO",
       },
       features: {
         bot_user: {
-          display_name: "OpenClaw",
+          display_name: "PASO",
           always_online: true,
         },
         app_home: {
@@ -111,7 +111,7 @@ describe("slackSetupWizard.prepare", () => {
           messages_tab_read_only_enabled: false,
         },
         agent_view: {
-          agent_description: "OpenClaw connects Slack Agent View conversations to OpenClaw agents.",
+          agent_description: "PASO connects Slack Agent View conversations to PASO agents.",
           suggested_prompts: [
             {
               title: "What can you do?",
@@ -130,7 +130,7 @@ describe("slackSetupWizard.prepare", () => {
         slash_commands: [
           {
             command: "/openclaw",
-            description: "Send a message to OpenClaw",
+            description: "Send a message to PASO",
             should_escape: false,
           },
         ],

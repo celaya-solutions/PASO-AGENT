@@ -45,6 +45,9 @@ const RELEASE_DECISION_STATES = Object.freeze([
 ]);
 
 const RELEASE_DECISION_STATE_SET = new Set(RELEASE_DECISION_STATES);
+const LEGACY_RELEASE_CHECKS_DISPLAY_NAME = "OpenClaw Release Checks";
+const LEGACY_PERFORMANCE_DISPLAY_NAME = "OpenClaw Performance";
+const LEGACY_PERFORMANCE_DISPATCH_NAME = "Dispatch OpenClaw Performance";
 const LEGACY_CHILD_SPECS = Object.freeze([
   {
     dispatchName: "Dispatch plugin prerelease",
@@ -57,7 +60,7 @@ const LEGACY_CHILD_SPECS = Object.freeze([
   },
   {
     dispatchName: "Dispatch release checks",
-    displayName: "OpenClaw Release Checks",
+    displayName: "PASO Release Checks",
     key: "releaseChecks",
     parentJobName: "Run release/live/Docker/QA validation",
     rerunGroups: [
@@ -103,7 +106,7 @@ const CHILD_SPECS = Object.freeze([
   },
   {
     dispatchName: "Dispatch release checks independent phase",
-    displayName: "OpenClaw Release Checks",
+    displayName: "PASO Release Checks",
     key: "releaseChecksIndependent",
     parentJobName: "Run release checks independent validation",
     rerunGroups: ["all", "install-smoke", "live-e2e", "qa-parity", "qa-live"],
@@ -112,7 +115,7 @@ const CHILD_SPECS = Object.freeze([
   },
   {
     dispatchName: "Dispatch release checks candidate phase",
-    displayName: "OpenClaw Release Checks",
+    displayName: "PASO Release Checks",
     key: "releaseChecksCandidate",
     parentJobName: "Run release checks candidate validation",
     rerunGroups: ["all", "cross-os", "live-e2e", "package"],
@@ -129,8 +132,8 @@ const CHILD_SPECS = Object.freeze([
     workflow: "npm-telegram-beta-e2e.yml",
   },
   {
-    dispatchName: "Dispatch OpenClaw Performance",
-    displayName: "OpenClaw Performance",
+    dispatchName: "Dispatch PASO Performance",
+    displayName: "PASO Performance",
     key: "productPerformance",
     parentJobName: "Run product performance evidence",
     rerunGroups: ["all", "performance"],
@@ -138,6 +141,45 @@ const CHILD_SPECS = Object.freeze([
     workflow: "openclaw-performance.yml",
   },
 ]);
+const LEGACY_EXECUTION_CHILD_IDENTITIES = Object.freeze({
+  releaseChecks: Object.freeze({
+    dispatchName: "Dispatch release checks",
+    displayName: LEGACY_RELEASE_CHECKS_DISPLAY_NAME,
+  }),
+  releaseChecksIndependent: Object.freeze({
+    dispatchName: "Dispatch release checks independent phase",
+    displayName: LEGACY_RELEASE_CHECKS_DISPLAY_NAME,
+  }),
+  releaseChecksCandidate: Object.freeze({
+    dispatchName: "Dispatch release checks candidate phase",
+    displayName: LEGACY_RELEASE_CHECKS_DISPLAY_NAME,
+  }),
+  productPerformance: Object.freeze({
+    dispatchName: LEGACY_PERFORMANCE_DISPATCH_NAME,
+    displayName: LEGACY_PERFORMANCE_DISPLAY_NAME,
+  }),
+});
+
+function releaseExecutionChildSpecs(attemptEvidenceVersion) {
+  return Number(attemptEvidenceVersion) === 3
+    ? CHILD_SPECS
+    : [
+        CHILD_SPECS.find((spec) => spec.key === "normalCi"),
+        ...LEGACY_CHILD_SPECS,
+        CHILD_SPECS.find((spec) => spec.key === "npmTelegram"),
+        CHILD_SPECS.find((spec) => spec.key === "productPerformance"),
+      ];
+}
+
+function releaseEvidenceChildSpec(key, attemptEvidenceVersion) {
+  const spec = releaseExecutionChildSpecs(attemptEvidenceVersion).find(
+    (entry) => entry.key === key,
+  );
+  if (!spec) {
+    throw new Error(`release child key is invalid: ${key}`);
+  }
+  return spec;
+}
 const HISTORICAL_EXECUTION_PLAN_KEYS = Object.freeze(
   [
     "blockers",
@@ -619,14 +661,7 @@ export function buildReleaseExecutionPlan(input) {
       stringValue(input.releasePackageSpec).trim(),
     );
   const phasedChildren = Number(input.childPhaseVersion) === 3;
-  const childSpecs = phasedChildren
-    ? CHILD_SPECS
-    : [
-        CHILD_SPECS.find((spec) => spec.key === "normalCi"),
-        ...LEGACY_CHILD_SPECS,
-        CHILD_SPECS.find((spec) => spec.key === "npmTelegram"),
-        CHILD_SPECS.find((spec) => spec.key === "productPerformance"),
-      ];
+  const childSpecs = releaseExecutionChildSpecs(phasedChildren ? 3 : 2);
   const children = childSpecs.map((spec) => {
     const raw = childInputs[spec.key] ?? {};
     const required = releaseExecutionChildRequired(spec, input, npmTelegramForAll);
@@ -857,22 +892,14 @@ export function buildReleaseExecutionPlanArtifact({
   if (!validEvidenceReuseIdentity(normalizedReuse)) {
     throw new Error("release execution plan evidence reuse binding is invalid");
   }
+  const artifactSpecs = releaseExecutionChildSpecs(normalizedAttemptEvidenceVersion);
   const normalizedChildren = children.map((child) => {
-    const spec = releaseChildSpec(child.key);
+    const spec = releaseEvidenceChildSpec(child.key, normalizedAttemptEvidenceVersion);
     return normalizedPlanChild(
       { ...child, dispatchName: spec.dispatchName },
       { sourceParentAttempt: attemptAware },
     );
   });
-  const artifactSpecs =
-    normalizedAttemptEvidenceVersion === 3
-      ? CHILD_SPECS
-      : [
-          CHILD_SPECS.find((spec) => spec.key === "normalCi"),
-          ...LEGACY_CHILD_SPECS,
-          CHILD_SPECS.find((spec) => spec.key === "npmTelegram"),
-          CHILD_SPECS.find((spec) => spec.key === "productPerformance"),
-        ];
   for (const spec of artifactSpecs) {
     if (
       !normalizedChildren.some((child) => child.key === spec.key) &&
@@ -1417,26 +1444,29 @@ function validatePlan(value, options = {}) {
 }
 
 function validateExecutionPlanChildBindings(children, payload) {
-  const expectedKeys = (
-    payload.attemptEvidenceVersion === 3
-      ? CHILD_SPECS
-      : [
-          CHILD_SPECS.find((spec) => spec.key === "normalCi"),
-          ...LEGACY_CHILD_SPECS,
-          CHILD_SPECS.find((spec) => spec.key === "npmTelegram"),
-          CHILD_SPECS.find((spec) => spec.key === "productPerformance"),
-        ]
-  )
-    .map((spec) => spec.key)
-    .toSorted();
+  const expectedSpecs = releaseExecutionChildSpecs(payload.attemptEvidenceVersion);
+  const expectedKeys = expectedSpecs.map((spec) => spec.key).toSorted();
   if (
     JSON.stringify(children.map((child) => child.key).toSorted()) !== JSON.stringify(expectedKeys)
   ) {
     throw new Error("release execution plan child inventory is invalid");
   }
   for (const child of children) {
-    const spec = releaseChildSpec(child.key);
-    if (child.dispatchName !== spec.dispatchName || child.workflow !== spec.workflow) {
+    const spec = releaseEvidenceChildSpec(child.key, payload.attemptEvidenceVersion);
+    const legacyIdentity = LEGACY_EXECUTION_CHILD_IDENTITIES[child.key];
+    const identity = [
+      { dispatchName: spec.dispatchName, displayName: spec.displayName },
+      legacyIdentity,
+    ]
+      .filter(Boolean)
+      .find(
+        (candidate) =>
+          child.dispatchName === candidate.dispatchName &&
+          (child.source !== "fresh" ||
+            child.displayTitle ===
+              `${candidate.displayName} full-release-validation-${payload.parentRunId}-${payload.parentRunAttempt}${spec.suffix}`),
+      );
+    if (!identity || child.workflow !== spec.workflow) {
       throw new Error(`release execution plan child identity is invalid: ${child.key}`);
     }
     if (
@@ -1452,10 +1482,7 @@ function validateExecutionPlanChildBindings(children, payload) {
     }
     if (
       child.source === "fresh" &&
-      (child.displayTitle !==
-        `${spec.displayName} full-release-validation-${payload.parentRunId}-${payload.parentRunAttempt}${spec.suffix}` ||
-        child.workflowRef !== payload.workflowRef ||
-        child.workflowSha !== payload.workflowSha)
+      (child.workflowRef !== payload.workflowRef || child.workflowSha !== payload.workflowSha)
     ) {
       throw new Error(`release execution plan child identity is invalid: ${child.key}`);
     }

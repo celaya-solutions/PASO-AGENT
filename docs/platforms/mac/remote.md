@@ -1,16 +1,16 @@
 ---
-summary: "macOS app flow for controlling a remote OpenClaw gateway"
+summary: "macOS app flow for controlling a remote PASO gateway"
 read_when:
   - Setting up or debugging remote mac control
 title: "Remote control"
 ---
 
-This flow lets the macOS app act as a full remote control for an OpenClaw gateway running on another host (desktop/server). The app connects directly to trusted LAN/Tailnet gateway URLs, or manages an SSH tunnel when the remote gateway is loopback-only. Health checks, Voice Wake forwarding, and Web Chat reuse the same remote configuration from _Settings -> General_.
+This flow lets the macOS app act as a full remote control for a PASO gateway running on another host (desktop/server). The app connects directly to trusted LAN/Tailnet gateway URLs, or manages an SSH tunnel when the remote gateway is loopback-only. Health checks, Voice Wake forwarding, and Web Chat reuse the same remote configuration from _Settings -> General_.
 
 ## Modes
 
 - **Local (this Mac)**: everything runs on the laptop; no SSH involved.
-- **Remote over SSH (default)**: OpenClaw commands run on the remote host. The app opens an SSH connection with `-o BatchMode`, your chosen identity/key, and a local port-forward.
+- **Remote over SSH (default)**: PASO commands run on the remote host. The app opens an SSH connection with `-o BatchMode`, your chosen identity/key, and a local port-forward.
 - **Remote direct (ws/wss)**: no SSH tunnel; the app connects to the gateway URL directly (LAN, Tailscale, Tailscale Serve, or a public HTTPS reverse proxy).
 
 ## Remote transports
@@ -28,7 +28,7 @@ The Mac app's node combines native capabilities with system, browser, plugin, sk
 
 ## Prereqs on the remote host
 
-1. Install Node + pnpm, then build/install the OpenClaw CLI from its checkout (`pnpm install && pnpm build && pnpm add --global "openclaw@link:$PWD"`).
+1. Install Node + pnpm, then build/install the PASO CLI from its checkout (`pnpm install && pnpm build && pnpm add --global "openclaw@link:$PWD"`).
 2. Ensure `openclaw` is on PATH for non-interactive shells (symlink into `/usr/local/bin` or `/opt/homebrew/bin` if needed).
 3. For SSH transport: set up key-based SSH auth. Tailscale IPs are recommended for stable reachability off-LAN.
 
@@ -57,7 +57,7 @@ openclaw-mac configure-remote \
 To configure from the UI instead:
 
 1. Open _Settings -> General_.
-2. Under **OpenClaw runs**, pick **Remote** and set:
+2. Under **PASO runs**, pick **Remote** and set:
    - **Transport**: **SSH tunnel** or **Direct (ws/wss)**.
    - **SSH target**: `user@host` (optional `:port`). If the gateway is on the same LAN and advertises Bonjour, pick it from the discovered list to auto-fill this field.
    - **Gateway URL** (Direct only): `wss://gateway.example.ts.net` (or `ws://...` for local/LAN).

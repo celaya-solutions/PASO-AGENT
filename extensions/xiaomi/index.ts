@@ -1,4 +1,4 @@
-// Xiaomi plugin entrypoint registers its OpenClaw integration.
+// Xiaomi plugin entrypoint registers its PASO integration.
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import type {
   OpenClawConfig,

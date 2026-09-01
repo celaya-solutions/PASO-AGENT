@@ -1401,7 +1401,7 @@ describe("createMusicGenerateTool", () => {
     }
 
     const result = await tool.execute("call-google-generate", {
-      prompt: "OpenClaw anthem",
+      prompt: "PASO anthem",
       instrumental: true,
       durationSeconds: 30,
       format: "wav",

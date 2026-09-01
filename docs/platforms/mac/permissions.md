@@ -24,13 +24,13 @@ Ad-hoc signatures generate a new identity every build. macOS forgets previous gr
 
 If Quick Chat still shows **Needs additional permissions: Screen Recording**:
 
-1. Click **Grant** in OpenClaw.
-2. If macOS opens System Settings, enable the running OpenClaw app under **Privacy & Security -> Screen & System Audio Recording** (called **Screen Recording** on older macOS versions).
-3. Return to OpenClaw and retry the screenshot. You can also recheck access with **Settings -> Permissions -> Refresh**.
+1. Click **Grant** in PASO.
+2. If macOS opens System Settings, enable the running PASO app under **Privacy & Security -> Screen & System Audio Recording** (called **Screen Recording** on older macOS versions).
+3. Return to PASO and retry the screenshot. You can also recheck access with **Settings -> Permissions -> Refresh**.
 
-After an explicit **Grant** request, OpenClaw checks ScreenCaptureKit as well as the macOS permission preflight. This lets it recognize access when the preflight still reports an old denial. Passive status checks do not initiate this probe before you request access.
+After an explicit **Grant** request, PASO checks ScreenCaptureKit as well as the macOS permission preflight. This lets it recognize access when the preflight still reports an old denial. Passive status checks do not initiate this probe before you request access.
 
-If access still appears missing, quit and reopen OpenClaw from the same app path. Some macOS permission changes require an app restart before capture works. If both release and development builds are installed, grant access to the build you are actually running: approving `/Applications/OpenClaw.app` does not grant access to a development build with a different bundle identifier.
+If access still appears missing, quit and reopen PASO from the same app path. Some macOS permission changes require an app restart before capture works. If both release and development builds are installed, grant access to the build you are actually running: approving `/Applications/OpenClaw.app` does not grant access to a development build with a different bundle identifier.
 
 ## Accessibility grants for Node and CLI runtimes
 
@@ -46,9 +46,9 @@ If you accidentally granted Accessibility to `node`, remove that entry from Syst
 
 ## Separate Computer Control grants
 
-macOS keeps Accessibility, Event Posting, input listening, and Screen Recording in separate TCC buckets. One successful grant does not prove the others are usable. OpenClaw's Computer Control status checks Accessibility, Event Posting, and Screen Recording separately; this is why screenshots can succeed while clicks and typing fail.
+macOS keeps Accessibility, Event Posting, input listening, and Screen Recording in separate TCC buckets. One successful grant does not prove the others are usable. PASO's Computer Control status checks Accessibility, Event Posting, and Screen Recording separately; this is why screenshots can succeed while clicks and typing fail.
 
-An Accessibility row can also remain visibly enabled while its code requirement is pinned to an older build. When OpenClaw reports **Accessibility grant may be stale**, select OpenClaw under **System Settings -> Privacy & Security -> Accessibility**, remove it with **-**, then re-add `/Applications/OpenClaw.app`. Quit and reopen OpenClaw afterward because Accessibility trust can remain cached in the running process.
+An Accessibility row can also remain visibly enabled while its code requirement is pinned to an older build. When PASO reports **Accessibility grant may be stale**, select PASO under **System Settings -> Privacy & Security -> Accessibility**, remove it with **-**, then re-add `/Applications/OpenClaw.app`. Quit and reopen PASO afterward because Accessibility trust can remain cached in the running process.
 
 ## Recovery checklist when prompts disappear
 
@@ -58,7 +58,7 @@ An Accessibility row can also remain visibly enabled while its code requirement 
 4. If the prompt still does not appear, reset TCC entries with `tccutil` and try again.
 5. Some permissions only reappear after a full macOS restart.
 
-Example resets (using OpenClaw's bundle ID, `ai.openclaw.mac`):
+Example resets (using PASO's bundle ID, `ai.openclaw.mac`):
 
 ```bash
 sudo tccutil reset Accessibility ai.openclaw.mac
@@ -70,7 +70,7 @@ sudo tccutil reset AppleEvents
 
 macOS may also gate Desktop, Documents, and Downloads for terminal/background processes. If file reads or directory listings hang, grant access to the same process context that performs file operations (for example Terminal/iTerm, LaunchAgent-launched app, or SSH process).
 
-Workaround: move files into the OpenClaw workspace (`~/.openclaw/workspace`) if you want to avoid per-folder grants.
+Workaround: move files into the PASO workspace (`~/.openclaw/workspace`) if you want to avoid per-folder grants.
 
 If you are testing permissions, always sign with a real certificate. Ad-hoc builds are only acceptable for quick local runs where permissions do not matter.
 

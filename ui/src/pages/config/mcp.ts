@@ -4,7 +4,7 @@ import { renderSettingsRow, renderSettingsValue } from "../../components/setting
 import { t } from "../../i18n/index.ts";
 import { summarizeMcpServers } from "../../lib/config/mcp-servers.ts";
 
-const MCP_DOCS_URL = "https://docs.openclaw.ai/tools/mcp";
+const MCP_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 type McpViewProps = {
   configObject: Record<string, unknown>;

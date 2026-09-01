@@ -276,18 +276,18 @@ describe("web_fetch output contract", () => {
     const first = requireDetails(
       (await createContractTool({
         cacheTtlMinutes: 1,
-        userAgent: "OpenClaw-Test-UA-A",
+        userAgent: "PASO-Test-UA-A",
       })?.execute("user-agent-a", args))!,
     );
     const second = requireDetails(
       (await createContractTool({
         cacheTtlMinutes: 1,
-        userAgent: "OpenClaw-Test-UA-B",
+        userAgent: "PASO-Test-UA-B",
       })?.execute("user-agent-b", args))!,
     );
 
-    expect(first.text).toContain("OpenClaw-Test-UA-A");
-    expect(second.text).toContain("OpenClaw-Test-UA-B");
+    expect(first.text).toContain("PASO-Test-UA-A");
+    expect(second.text).toContain("PASO-Test-UA-B");
     expect(second.cached).toBeUndefined();
     expect(fetchWithWebToolsNetworkGuardMock).toHaveBeenCalledTimes(2);
   });

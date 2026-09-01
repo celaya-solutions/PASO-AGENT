@@ -153,8 +153,8 @@ describe("openrouter speech provider", () => {
       defaultHeaders: {
         Authorization: "Bearer sk-openrouter",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://openclaw.ai",
-        "X-OpenRouter-Title": "OpenClaw",
+        "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+        "X-OpenRouter-Title": "PASO",
       },
       provider: "openrouter",
       capability: "audio",
@@ -166,8 +166,8 @@ describe("openrouter speech provider", () => {
     expect(Object.fromEntries(headers.entries())).toEqual({
       authorization: "Bearer sk-openrouter",
       "content-type": "application/json",
-      "http-referer": "https://openclaw.ai",
-      "x-openrouter-title": "OpenClaw",
+      "http-referer": "https://github.com/celaya-solutions/PASO-AGENT",
+      "x-openrouter-title": "PASO",
     });
     expect(request).toEqual({
       url: "https://openrouter.ai/api/v1/audio/speech",

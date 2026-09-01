@@ -49,7 +49,7 @@ Google Live saves complete utterances during the call, including Gemini 3.1
 transcriptions that omit an explicit transcription-finished flag. Partial text
 stays provisional until the provider's completion boundary.
 
-Voice-originated consult runs require a new, exact spoken confirmation before high-impact actions such as sending messages, controlling nodes, browser/computer actions, service changes, destructive shell commands, or publication. The gate applies to runs started through `talk.client.toolCall`, the Gateway relay, and GPT-Live sideband delegations. The confirmation applies only to the canonical final execution arguments and is consumed once; if a policy or hook rewrites the approved action, OpenClaw blocks it until the rewritten action is confirmed. Unrelated concurrent runs remain unaffected. When a call closes, OpenClaw can send a compact **Voice call changes** digest for mutating tools to the session's last non-WebChat delivery target.
+Voice-originated consult runs require a new, exact spoken confirmation before high-impact actions such as sending messages, controlling nodes, browser/computer actions, service changes, destructive shell commands, or publication. The gate applies to runs started through `talk.client.toolCall`, the Gateway relay, and GPT-Live sideband delegations. The confirmation applies only to the canonical final execution arguments and is consumed once; if a policy or hook rewrites the approved action, PASO blocks it until the rewritten action is confirmed. Unrelated concurrent runs remain unaffected. When a call closes, PASO can send a compact **Voice call changes** digest for mutating tools to the session's last non-WebChat delivery target.
 
 Transcription-only Talk emits the same Talk event envelope as realtime and STT/TTS sessions, but uses `mode: "transcription"` and `brain: "none"`. All Talk sessions broadcast events on the `talk.event` channel; clients subscribe to it for partial/final transcript updates (`transcript.delta`/`transcript.done`) and other session telemetry.
 
@@ -257,7 +257,7 @@ WebSocket and require Platform API-key auth, whose `/v1/live` access is currentl
 [waitlist-gated](https://openai.com/form/gpt-live-1-in-the-api/).
 
 The quickest setup is the Control UI: **Settings → Talk**, pick **OpenAI** and
-a `gpt-live-*` model. The OAuth prerequisite is an OpenClaw auth profile
+a `gpt-live-*` model. The OAuth prerequisite is a PASO auth profile
 created with `openclaw models auth login --provider openai` — an existing
 Codex CLI sign-in is not read. GPT-Live also requires the bundled `openai`
 plugin registered in full mode; a restrictive `plugins.allow` list fails
@@ -289,13 +289,13 @@ and [Voice Call tools](/plugins/voice-call#realtime-voice-conversations).
 
 The Gateway-owned WebRTC route keeps OAuth and Platform credentials away from
 relay clients. Backend WebSocket paths keep the Platform key on the Gateway;
-OpenClaw converts telephony G.711 u-law audio to and from GPT-Live's 24 kHz PCM
+PASO converts telephony G.711 u-law audio to and from GPT-Live's 24 kHz PCM
 contract.
 
 For GA `gpt-realtime-2.1`, `gpt-realtime-2.1-mini`, and `gpt-realtime-2`
 browser sessions, Platform credentials remain preferred in this order: the
 configured realtime API key, an `openai` API-key profile, then
-`OPENAI_API_KEY`. With none configured, browser Talk falls back to an OpenClaw
+`OPENAI_API_KEY`. With none configured, browser Talk falls back to a PASO
 ChatGPT OAuth profile and exchanges SDP through the Gateway's single-use offer
 broker, so the OAuth token never reaches the browser. A configured Platform
 credential that cannot be resolved fails closed instead of silently falling
@@ -330,8 +330,8 @@ to waitlist-enabled Platform access.
 | `realtime.model`                         | provider default                           | Realtime voice model. Overrides `realtime.providers.<id>.model` when both are set — the same precedence `talk.client.create` applies at session time.                                                                                                 |
 | `realtime.transport`                     | -                                          | `webrtc`: client-owned OpenAI WebRTC on iOS and in the browser. `provider-websocket`: browser-owned, stays on Gateway relay on iOS. `gateway-relay`: keeps provider audio on the Gateway; Android uses realtime only with this transport.             |
 | `realtime.brain`                         | -                                          | `agent-consult` routes realtime tool calls through Gateway policy; `direct-tools` is legacy direct-tool compatibility; `none` is for transcription/external orchestration.                                                                            |
-| `realtime.consultRouting`                | -                                          | `provider-direct` preserves the provider's direct reply when it skips `openclaw_agent_consult`; `force-agent-consult` routes finalized user transcripts through OpenClaw instead.                                                                     |
-| `realtime.instructions`                  | -                                          | Appends provider-facing system instructions to OpenClaw's built-in realtime prompt.                                                                                                                                                                   |
+| `realtime.consultRouting`                | -                                          | `provider-direct` preserves the provider's direct reply when it skips `openclaw_agent_consult`; `force-agent-consult` routes finalized user transcripts through PASO instead.                                                                         |
+| `realtime.instructions`                  | -                                          | Appends provider-facing system instructions to PASO's built-in realtime prompt.                                                                                                                                                                       |
 
 `talk.catalog` exposes canonical provider ids and registry aliases, each provider's valid modes/transports/brain strategies/realtime audio formats/capability flags, and the runtime-selected readiness result. First-party Talk clients should read that catalog instead of maintaining provider aliases locally; treat an older Gateway that omits group readiness as unverified rather than definitively unconfigured. Streaming transcription providers are discovered through `talk.catalog.transcription`; the current Gateway relay uses the Voice Call streaming provider config until a dedicated Talk transcription config surface ships.
 

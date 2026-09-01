@@ -1,5 +1,5 @@
 #!/usr/bin/env -S node --import tsx
-// Release Check script supports OpenClaw repository automation.
+// Release Check script supports PASO repository automation.
 
 import { execFileSync, type ExecFileSyncOptions } from "node:child_process";
 import {
@@ -1166,8 +1166,14 @@ export function collectAppcastSparkleVersionErrors(xml: string): string[] {
   const calverItems: Array<{ title: string; sparkleBuild: number; floors: SparkleBuildFloors }> =
     [];
 
-  if (itemMatches.length === 0) {
+  const updatesDisabled = /<sparkle:updatesDisabled>\s*true\s*<\/sparkle:updatesDisabled>/u.test(
+    xml,
+  );
+  if (itemMatches.length === 0 && !updatesDisabled) {
     errors.push("appcast.xml contains no <item> entries.");
+  }
+  if (itemMatches.length > 0 && updatesDisabled) {
+    errors.push("appcast.xml cannot contain release items while updates are disabled.");
   }
 
   for (const [index, match] of itemMatches.entries()) {

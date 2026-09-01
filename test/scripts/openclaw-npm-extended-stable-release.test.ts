@@ -295,7 +295,7 @@ describe("extended-stable npm release request", () => {
 
 describe("extended-stable npm run identity", () => {
   const validPreflight = {
-    workflowName: "OpenClaw NPM Release",
+    workflowName: "PASO NPM Release",
     event: "workflow_dispatch",
     conclusion: "success",
     headBranch: branch,
@@ -327,6 +327,18 @@ describe("extended-stable npm run identity", () => {
     ).not.toThrow();
   });
 
+  it("accepts the exact legacy npm workflow name for historical preflight evidence", () => {
+    expect(() =>
+      validateExtendedStableRunIdentity({
+        run: { ...validPreflight, workflowName: "OpenClaw NPM Release" },
+        kind: "preflight",
+        npmDistTag: "extended-stable",
+        expectedBranch: branch,
+        expectedSha: sha,
+      }),
+    ).not.toThrow();
+  });
+
   it("accepts only a completed successful Plugin NPM Release run on the exact branch and SHA", () => {
     const pluginRun = {
       workflowName: "Plugin NPM Release",
@@ -347,7 +359,7 @@ describe("extended-stable npm run identity", () => {
       }),
     ).toBe(pluginRun);
     for (const changes of [
-      { workflowName: "OpenClaw NPM Release" },
+      { workflowName: "PASO NPM Release" },
       { displayTitle: `Plugin NPM Release [default] ${sha}` },
       { displayTitle: `Plugin NPM Release [extended-stable] ${"b".repeat(40)}` },
       { status: "in_progress" },

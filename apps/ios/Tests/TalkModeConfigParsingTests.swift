@@ -539,7 +539,7 @@ struct TalkModeManagerTests {
         #expect(manager.phase == .connecting)
         #expect(manager.watchPresentation == .phase)
 
-        for status in ["Asking OpenClaw", "Still asking OpenClaw", "Updating OpenClaw"] {
+        for status in ["Asking PASO", "Still asking PASO", "Updating PASO"] {
             manager._test_handleRealtimeRelayStatus(status)
             #expect(manager.phase == .thinking)
             #expect(manager.watchPresentation == .phase)

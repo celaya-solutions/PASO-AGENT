@@ -12,7 +12,7 @@ Cloud worker provider backed by the Crabbox CLI.
 ## Distribution
 
 - Package: `@openclaw/crabbox-provider`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

@@ -603,7 +603,7 @@ extension MacNodeRuntime {
                 return Self.errorResponse(
                     req,
                     code: .unavailable,
-                    message: "ACCESSIBILITY_REQUIRED: grant Accessibility permission to OpenClaw")
+                    message: "ACCESSIBILITY_REQUIRED: grant Accessibility permission to PASO")
             case .accessibilityGrantMayBeStale:
                 return Self.errorResponse(
                     req,
@@ -614,7 +614,7 @@ extension MacNodeRuntime {
                 return Self.errorResponse(
                     req,
                     code: .unavailable,
-                    message: "POST_EVENT_REQUIRED: macOS denied Event Posting access; re-grant OpenClaw "
+                    message: "POST_EVENT_REQUIRED: macOS denied Event Posting access; re-grant PASO "
                         + "under System Settings → Privacy & Security → Accessibility")
             case .noDisplays, .invalidScreenIndex, .missingDisplayFrameId, .displayFrameChanged,
                  .missingCoordinate, .coordinateOutOfBounds, .invalidReferenceWidth, .missingKeys,

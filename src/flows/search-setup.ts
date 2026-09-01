@@ -42,7 +42,7 @@ type SearchProviderSetupContribution = FlowContribution & {
 };
 
 const SEARCH_INSTALL_CATALOG_ENTRY = Symbol("search-install-catalog-entry");
-const WEB_SEARCH_DOCS_URL = "https://docs.openclaw.ai/tools/web";
+const WEB_SEARCH_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 const CODEX_HOSTED_SEARCH_PROVIDER_ID = "codex";
 
 type SearchProviderEntryWithInstall = PluginWebSearchProviderEntry & {
@@ -659,8 +659,8 @@ export async function runSearchSetupFlow(
     await prompter.note(
       [
         `${entry.label} works without an API key.`,
-        "OpenClaw will enable the plugin and use it as your web_search provider.",
-        `Docs: ${entry.docsUrl ?? "https://docs.openclaw.ai/tools/web"}`,
+        "PASO will enable the plugin and use it as your web_search provider.",
+        `Docs: ${entry.docsUrl ?? "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"}`,
       ].join("\n"),
       "Web search",
     );
@@ -705,10 +705,10 @@ export async function runSearchSetupFlow(
     const ref = buildSearchEnvRef(config, choice);
     await prompter.note(
       [
-        "Secret references enabled — OpenClaw will store a reference instead of the API key.",
+        "Secret references enabled — PASO will store a reference instead of the API key.",
         `Env var: ${ref.id}${envAvailable ? " (detected)" : ""}.`,
         ...(envAvailable ? [] : [`Set ${ref.id} in the Gateway environment.`]),
-        "Docs: https://docs.openclaw.ai/tools/web",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Web search",
     );
@@ -743,7 +743,7 @@ export async function runSearchSetupFlow(
     [
       `No ${credentialLabel} stored — web_search won't work until a key is available.`,
       `Get your key at: ${entry.signupUrl}`,
-      "Docs: https://docs.openclaw.ai/tools/web",
+      "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     ].join("\n"),
     "Web search",
   );

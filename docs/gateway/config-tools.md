@@ -47,7 +47,7 @@ Local onboarding defaults new local configs to `tools.profile: "coding"` when un
 | `group:openclaw`   | All built-in tools above except `read`/`write`/`edit`/`apply_patch`/`exec`/`process`/`canvas` (excludes plugin tools)                                                                                                                                    |
 | `group:plugins`    | Tools owned by loaded plugins, including configured MCP servers exposed through `bundle-mcp`                                                                                                                                                             |
 
-`suggest_task` lets a coding agent propose confirmed follow-up work without starting it. The suggestion's project directory must be a git checkout; invalid suggestions, including a non-git directory or blank prompt, are rejected when the tool records them. The Control UI shows the title and summary as an actionable chip; a Gateway-backed TUI shows an equivalent interactive prompt. Accepting a suggestion can start it in a fresh managed worktree (the default), start it locally in a new session in the suggested checkout, send it to a cloud worker profile when one is configured, or deliver it into the source session. OpenClaw sends the full prompt to the selected destination while the current turn continues. `dismiss_task` withdraws a still-pending suggestion by the ephemeral `task_id` returned from `suggest_task`.
+`suggest_task` lets a coding agent propose confirmed follow-up work without starting it. The suggestion's project directory must be a git checkout; invalid suggestions, including a non-git directory or blank prompt, are rejected when the tool records them. The Control UI shows the title and summary as an actionable chip; a Gateway-backed TUI shows an equivalent interactive prompt. Accepting a suggestion can start it in a fresh managed worktree (the default), start it locally in a new session in the suggested checkout, send it to a cloud worker profile when one is configured, or deliver it into the source session. PASO sends the full prompt to the selected destination while the current turn continues. `dismiss_task` withdraws a still-pending suggestion by the ephemeral `task_id` returned from `suggest_task`.
 
 The tools are offered only when the initiating operator surface can receive and action Gateway task-suggestion events. Channel sessions and local/embedded TUI sessions do not receive them; channel transports need a portable typed task action before they can safely expose this flow. Suggestions are process-local and disappear when the Gateway restarts. Both tools remain in the `coding` profile and `group:sessions`, so normal `tools.allow` and `tools.deny` policy configures them automatically when the surface supports them.
 
@@ -55,7 +55,7 @@ The tools are offered only when the initiating operator surface can receive and 
 
 Configured MCP servers are exposed as plugin-owned tools under the `bundle-mcp` plugin id. Normal tool profiles can allow them, but `tools.sandbox.tools` is an additional gate for sandboxed sessions. If sandbox mode is `"all"` or `"non-main"`, include one of these entries in the sandbox tool allowlist when MCP/plugin tools should be visible:
 
-- `bundle-mcp` for OpenClaw-managed MCP servers from `mcp.servers`
+- `bundle-mcp` for PASO-managed MCP servers from `mcp.servers`
 - the plugin id for a specific native plugin
 - `group:plugins` for all loaded plugin-owned tools
 - exact MCP server tool names or server globs such as `outlook__send_mail` or `outlook__*` when you only want one server
@@ -82,12 +82,12 @@ Per-run `toolsAllow` caps also accept globs such as `outlook*` or `out*graph*` f
 }
 ```
 
-Without that sandbox-layer entry, the MCP server can still load successfully while its tools are filtered before the provider request. Use `openclaw doctor` to catch this shape for OpenClaw-managed servers in `mcp.servers`. MCP servers loaded from bundled plugin manifests or Claude `.mcp.json` use the same sandbox gate, but this diagnostic does not enumerate those sources yet; use the same allowlist entries if their tools disappear in sandboxed turns.
+Without that sandbox-layer entry, the MCP server can still load successfully while its tools are filtered before the provider request. Use `openclaw doctor` to catch this shape for PASO-managed servers in `mcp.servers`. MCP servers loaded from bundled plugin manifests or Claude `.mcp.json` use the same sandbox gate, but this diagnostic does not enumerate those sources yet; use the same allowlist entries if their tools disappear in sandboxed turns.
 
 ### `tools.codeMode`
 
-`tools.codeMode` gates the generic OpenClaw code-mode surface. When engaged
-for a run with tools, normal OpenClaw tools move behind the in-sandbox `tools.*`
+`tools.codeMode` gates the generic PASO code-mode surface. When engaged
+for a run with tools, normal PASO tools move behind the in-sandbox `tools.*`
 catalog bridge, and MCP tools are available through the generated `MCP`
 namespace. The model normally sees `exec` and `wait`; tools such as `computer`
 whose structured results cannot cross the JSON-only bridge stay direct.
@@ -186,7 +186,7 @@ Restricts tools for the current turn's originating requester. This is defense-in
 }
 ```
 
-Keys use explicit prefixes: `channel:<channelId>:<senderId>`, `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>`, or `"*"`. Channel ids are canonical OpenClaw ids; aliases such as `teams` normalize to `msteams`. Legacy unprefixed keys are accepted as `id:` only. Matching order is channel+id, id, e164, username, name, then wildcard.
+Keys use explicit prefixes: `channel:<channelId>:<senderId>`, `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>`, or `"*"`. Channel ids are canonical PASO ids; aliases such as `teams` normalize to `msteams`. Legacy unprefixed keys are accepted as `id:` only. Matching order is channel+id, id, e164, username, name, then wildcard.
 
 Per-agent `agents.entries.*.tools.toolsBySender` overrides the global sender match when it matches, even with an empty `{}` policy.
 
@@ -216,7 +216,7 @@ Controls elevated exec access outside the sandbox:
 
 GitHub CLI identity is native by default. When `tools.github` is omitted, local agent tools, the Codex harness, and Agent Settings follow normal `gh` resolution: `GH_TOKEN` or `GITHUB_TOKEN` from the Gateway process takes precedence, followed by the runtime user's `gh` keyring/config. The Git author comes from the selected agent's workspace.
 
-Use **Agents → Tools → GitHub Identity → Connect GitHub** for the recommended setup. OpenClaw displays a one-time user code with a **Copy code** button beside it; clicking the code selects it in full for manual copying. Open the fixed `https://github.com/login/device` link, paste the code, and approve `repo`, `workflow`, `read:org`, and `gist`. The latter two are part of GitHub CLI's minimum classic-token contract. The Gateway owns the device code, token exchange, account verification, private managed `gh` profile, and rotating refresh token. None of those credentials enter browser responses, config, logs, command arguments, transcripts, or model environments.
+Use **Agents → Tools → GitHub Identity → Connect GitHub** for the recommended setup. PASO displays a one-time user code with a **Copy code** button beside it; clicking the code selects it in full for manual copying. Open the fixed `https://github.com/login/device` link, paste the code, and approve `repo`, `workflow`, `read:org`, and `gist`. The latter two are part of GitHub CLI's minimum classic-token contract. The Gateway owns the device code, token exchange, account verification, private managed `gh` profile, and rotating refresh token. None of those credentials enter browser responses, config, logs, command arguments, transcripts, or model environments.
 
 OAuth access tokens expire after about eight hours. The Gateway refreshes them before expiry, verifies the durable GitHub account ID, and atomically replaces the credential inside the same private profile so already-running local tools continue using that identity. An expired or rejected refresh token is shown as **Reconnect required**. Refresh never blocks Gateway startup.
 
@@ -248,11 +248,11 @@ OAuth access tokens expire after about eight hours. The Gateway refreshes them b
 
 Omitting `agents.entries.<id>.tools.github` inherits the system identity. An agent object is a complete managed override. Settings shows the effective identity and the selected configuration scope separately, so editing **System** never masquerades as an agent override. If a configured managed profile is missing or unusable, GitHub status reports `configured_unavailable`; it never falls back to the native profile.
 
-Managed identity applies to the `gh` CLI/API account and optional Git author/committer metadata in local OpenClaw exec and the local Codex harness. OpenClaw supplies a private `GH_CONFIG_DIR`, clears ambient `GH_TOKEN` and `GITHUB_TOKEN` precedence, and applies configured author fields through process-local environment and Git config overlays. It does not install a credential helper, rewrite SSH remotes, add HTTP authorization headers, or otherwise override an existing repository's Git network credentials. OAuth refresh keeps the same profile path and atomically replaces only its credential after verifying the durable account ID, so admitted local processes see the refreshed token on their next `gh` command. Choosing a different identity or inheritance target creates or selects another profile for new runs; existing processes keep their prior selected profile until they close. Retired profile files are cleaned on the next Gateway restart, so changing this setting is not immediate credential revocation.
+Managed identity applies to the `gh` CLI/API account and optional Git author/committer metadata in local PASO exec and the local Codex harness. PASO supplies a private `GH_CONFIG_DIR`, clears ambient `GH_TOKEN` and `GITHUB_TOKEN` precedence, and applies configured author fields through process-local environment and Git config overlays. It does not install a credential helper, rewrite SSH remotes, add HTTP authorization headers, or otherwise override an existing repository's Git network credentials. OAuth refresh keeps the same profile path and atomically replaces only its credential after verifying the durable account ID, so admitted local processes see the refreshed token on their next `gh` command. Choosing a different identity or inheritance target creates or selects another profile for new runs; existing processes keep their prior selected profile until they close. Retired profile files are cleaned on the next Gateway restart, so changing this setting is not immediate credential revocation.
 
-Managed profiles provide execution and coordination identity; they are not an OS-user security sandbox. A process with unrestricted host execution under the same OS account can access account-owned files, including managed `gh` profiles. Use an OpenClaw sandbox, a dedicated host, or a dedicated OS user when adversarial isolation is required.
+Managed profiles provide execution and coordination identity; they are not an OS-user security sandbox. A process with unrestricted host execution under the same OS account can access account-owned files, including managed `gh` profiles. Use a PASO sandbox, a dedicated host, or a dedicated OS user when adversarial isolation is required.
 
-The profile is not forwarded to node hosts, OpenClaw sandboxes, remote-exec placements, or cloud workers; those environments remain credential-free. The `github_publish` tool instead records a bounded publication request. For cloud and remote-exec turns, the Gateway waits until the exact workspace result is reconciled and accepted, then commits remaining changes as the verified effective GitHub user, pushes the authoritative session branch through a one-shot HTTPS credential helper, and creates or reuses a draft pull request. The tool and worker payload contain no repository authority or credential.
+The profile is not forwarded to node hosts, PASO sandboxes, remote-exec placements, or cloud workers; those environments remain credential-free. The `github_publish` tool instead records a bounded publication request. For cloud and remote-exec turns, the Gateway waits until the exact workspace result is reconciled and accepted, then commits remaining changes as the verified effective GitHub user, pushes the authoritative session branch through a one-shot HTTPS credential helper, and creates or reuses a draft pull request. The tool and worker payload contain no repository authority or credential.
 
 Local session-owned worktrees can use the same **Publish PR** action in the Control UI. The Gateway derives the managed worktree, repository, branch, base, and head from current session ownership. It never accepts those authority facts from the browser or model. Publication retries use a durable request ID, an exact commit marker, remote branch observation, and pull-request lookup by head branch so a Gateway restart or lost response does not create duplicate commits, pushes, or pull requests.
 
@@ -260,7 +260,7 @@ Verification proves which account answered the GitHub API request. Status report
 
 Removing an agent override or choosing native credentials deletes the associated local refresh record after the config change. Already-running local processes may retain the old profile and its current access token until they exit, restart, or the token expires, while new runs use the updated identity immediately. This local change does not revoke the authorization at GitHub; revoke it separately from the OAuth application's GitHub settings when required.
 
-Control UI repository previews and project discovery use the separate optional `gateway.controlUi.github.token` service credential. They never consume an agent tool identity. When this SecretRef is explicit, OpenClaw excludes its exact environment or store name from agent execution. A custom name does not clear unrelated `GH_TOKEN` or `GITHUB_TOKEN` values used by native identity; a ref named `GH_TOKEN` or `GITHUB_TOKEN` excludes that exact variable.
+Control UI repository previews and project discovery use the separate optional `gateway.controlUi.github.token` service credential. They never consume an agent tool identity. When this SecretRef is explicit, PASO excludes its exact environment or store name from agent execution. A custom name does not clear unrelated `GH_TOKEN` or `GITHUB_TOKEN` values used by native identity; a ref named `GH_TOKEN` or `GITHUB_TOKEN` excludes that exact variable.
 
 ### `tools.exec`
 
@@ -538,7 +538,7 @@ Older configs used `tools.experimental.planTool`. Run `openclaw doctor --fix` to
 
 Provider plugins publish their own model catalog rows. Add custom providers via `models.providers` in config or `~/.openclaw/agents/<agentId>/agent/models.json`.
 
-Configuring a custom/local provider `baseUrl` is also the narrow network trust decision for model HTTP requests: OpenClaw allows that exact `scheme://host:port` origin through the guarded fetch path, without adding a separate config option or trusting other private origins.
+Configuring a custom/local provider `baseUrl` is also the narrow network trust decision for model HTTP requests: PASO allows that exact `scheme://host:port` origin through the guarded fetch path, without adding a separate config option or trusting other private origins.
 
 ```json5
 {
@@ -625,7 +625,7 @@ Configuring a custom/local provider `baseUrl` is also the narrow network trust d
 
     #### Custom provider capability declarations
 
-    Provider catalogs own `compat` for bundled and catalog-known model routes. Do not copy those flags into config: OpenClaw uses the catalog row when the configured `api` and `baseUrl` still identify that route. `openclaw doctor --fix` removes matching legacy overrides and reports divergent values for review.
+    Provider catalogs own `compat` for bundled and catalog-known model routes. Do not copy those flags into config: PASO uses the catalog row when the configured `api` and `baseUrl` still identify that route. `openclaw doctor --fix` removes matching legacy overrides and reports divergent values for review.
 
     A `compat` block remains supported for a genuinely custom provider, custom model, or catalog model routed to a different endpoint. Set only capabilities verified against that endpoint:
 
@@ -644,7 +644,7 @@ Configuring a custom/local provider `baseUrl` is also the narrow network trust d
     | `strictMessageKeys` | Requires outgoing messages to contain only accepted keys. |
     | `visibleReasoningDetailTypes` | Names reasoning detail block types safe to show in transcripts. |
     | `supportedReasoningEfforts` | Lists the endpoint's accepted reasoning labels. |
-    | `reasoningEffortMap` | Maps OpenClaw thinking labels to endpoint-specific labels. |
+    | `reasoningEffortMap` | Maps PASO thinking labels to endpoint-specific labels. |
     | `maxTokensField` | Selects `max_tokens` or `max_completion_tokens`. |
     | `thinkingFormat` | Selects the endpoint's reasoning payload dialect. |
     | `requiresToolResultName` | Requires a tool name on tool-result messages. |
@@ -804,7 +804,7 @@ Interactive custom-provider onboarding infers image input for known vision-model
     }
     ```
 
-    Set `MINIMAX_API_KEY`. Shortcuts: `openclaw onboard --auth-choice minimax-global-api` or `openclaw onboard --auth-choice minimax-cn-api`. The model catalog defaults to M3 and also includes the M2.7 variants. On the Anthropic-compatible streaming path, OpenClaw disables MiniMax M2.x thinking by default unless you explicitly set `thinking` yourself; MiniMax-M3 (and M3.x) stays on the provider's omitted/adaptive thinking path by default. `/fast on` or `params.fastMode: true` rewrites `MiniMax-M2.7` to `MiniMax-M2.7-highspeed`.
+    Set `MINIMAX_API_KEY`. Shortcuts: `openclaw onboard --auth-choice minimax-global-api` or `openclaw onboard --auth-choice minimax-cn-api`. The model catalog defaults to M3 and also includes the M2.7 variants. On the Anthropic-compatible streaming path, PASO disables MiniMax M2.x thinking by default unless you explicitly set `thinking` yourself; MiniMax-M3 (and M3.x) stays on the provider's omitted/adaptive thinking path by default. `/fast on` or `params.fastMode: true` rewrites `MiniMax-M2.7` to `MiniMax-M2.7-highspeed`.
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -843,7 +843,7 @@ Interactive custom-provider onboarding infers image input for known vision-model
 
     For the China endpoint: `baseUrl: "https://api.moonshot.cn/v1"` or `openclaw onboard --auth-choice moonshot-api-key-cn`.
 
-    Native Moonshot endpoints advertise streaming usage compatibility on the shared `openai-completions` transport, and OpenClaw keys that off endpoint capabilities rather than the built-in provider id alone.
+    Native Moonshot endpoints advertise streaming usage compatibility on the shared `openai-completions` transport, and PASO keys that off endpoint capabilities rather than the built-in provider id alone.
 
   </Accordion>
   <Accordion title="OpenCode">

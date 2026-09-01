@@ -103,12 +103,12 @@ public enum InstanceIdentity {
     public static let displayName: String = {
         #if os(iOS)
         if ProcessInfo.processInfo.isiOSAppOnMac {
-            return "OpenClaw Mac App"
+            return "PASO Mac App"
         }
         let name = Self.readMainActor {
             UIDevice.current.name.trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        return name.isEmpty ? "openclaw" : name
+        return name.isEmpty ? "PASO" : name
         #elseif os(watchOS)
         let name = Self.readMainActor {
             WKInterfaceDevice.current().name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -120,7 +120,7 @@ public enum InstanceIdentity {
         {
             return name
         }
-        return "openclaw"
+        return "PASO"
         #endif
     }()
 

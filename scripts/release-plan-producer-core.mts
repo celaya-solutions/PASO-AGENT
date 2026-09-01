@@ -58,7 +58,7 @@ type ReleasePlanProducerRequest =
   | { operation: "produce" | "produce-lock"; params: ReleasePlanSource }
   | { operation: "verify-lock"; lockJson: string; params: ReleasePlanSource };
 
-const REPOSITORY = "openclaw/openclaw";
+const REPOSITORY = "celaya-solutions/PASO-AGENT";
 const VALIDATION_WORKFLOW_PATH = ".github/workflows/full-release-validation.yml";
 const PUBLICATION_WORKFLOW_PATH = ".github/workflows/openclaw-release-publish.yml";
 const NPM_PUBLICATION_WORKFLOW_PATH = ".github/workflows/openclaw-npm-release.yml";

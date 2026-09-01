@@ -1,7 +1,7 @@
 ---
 name: bootstrap-extra-files
 description: "Inject additional workspace bootstrap files via glob/path patterns"
-homepage: https://docs.openclaw.ai/automation/hooks#bootstrap-extra-files
+homepage: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/automation/hooks.md#bootstrap-extra-files
 metadata:
   {
     "openclaw":
@@ -9,7 +9,7 @@ metadata:
         "emoji": "📎",
         "events": ["agent:bootstrap"],
         "requires": { "config": ["workspace.dir"] },
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with PASO" }],
       },
   }
 ---

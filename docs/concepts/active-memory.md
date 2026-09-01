@@ -44,7 +44,7 @@ private conversations with one per-agent setting:
 The setting defaults on for personal installs: global `session.dmScope` must be
 unset or `"main"`, and no binding may override `session.dmScope`. Any configured
 DM isolation defaults it off. An explicit `true` or `false` always wins. When
-enabled, OpenClaw indexes that agent's session transcripts and runs an Active
+enabled, PASO indexes that agent's session transcripts and runs an Active
 Memory retrieval pass before eligible private replies. The pass can read
 relevant transcript excerpts from the same agent's other private conversations.
 It excludes the conversation already being answered.
@@ -62,7 +62,7 @@ workspace memory (`MEMORY.md` and `memory/*.md`) keeps its existing behavior.
 
 Active Memory must remain enabled. Retrieval adds a bounded blocking step to
 eligible replies; timeout, unavailable search, and empty results all continue
-the reply without recalled transcript context. OpenClaw's built-in memory
+the reply without recalled transcript context. PASO's built-in memory
 provider supports this protected transcript-recall path. Other memory providers keep their own recall behavior but do
 not automatically receive private transcript authorization. `openclaw doctor`
 reports an unsupported provider or missing `memory_search` tool.
@@ -226,7 +226,7 @@ For narrower rollout inside an allowed chat type, add
 
 Ids come from the persistent channel session key (for example Feishu
 `chat_id`/`open_id`, Telegram chat id, Slack channel id). Matching is
-case-insensitive. If `allowedChatIds` is non-empty and OpenClaw cannot
+case-insensitive. If `allowedChatIds` is non-empty and PASO cannot
 resolve a conversation id for the session, active memory skips the turn
 instead of guessing.
 
@@ -276,7 +276,7 @@ output you want:
 /trace on
 ```
 
-With those on, OpenClaw appends diagnostic lines after the normal reply (as a
+With those on, PASO appends diagnostic lines after the normal reply (as a
 follow-up, so channel clients do not flash a separate pre-reply bubble):
 
 - `/verbose on` adds a status line: `🧩 Active Memory: status=ok elapsed=842ms query=recent summary=34 chars`
@@ -600,7 +600,7 @@ promptOverride: "You are a memory search agent. Return NONE or one compact user 
 ## Transcript persistence
 
 Blocking sub-agent runs keep their runtime transcript in the agent's SQLite
-store. By default, OpenClaw removes the temporary sub-agent session rows after
+store. By default, PASO removes the temporary sub-agent session rows after
 the run finishes and does not create a JSONL file.
 
 To export those transcripts as JSONL artifacts for debugging:
@@ -622,7 +622,7 @@ To export those transcripts as JSONL artifacts for debugging:
 }
 ```
 
-Exported transcript artifacts go under the OpenClaw state directory, in a
+Exported transcript artifacts go under the PASO state directory, in a
 plugin-owned, per-agent directory separate from active runtime state:
 
 ```text
@@ -777,12 +777,12 @@ active-memory bugs. The default `memory-core` path uses `memory_search` and
 `memory_get`; the `memory-lancedb` slot uses `memory_recall`. If you use another
 memory plugin, confirm `config.toolsAllow` names the tools that plugin actually
 registers. Remember across conversations is narrower: the current memory
-provider must support OpenClaw's protected same-agent/private-session recall
+provider must support PASO's protected same-agent/private-session recall
 path.
 
 <AccordionGroup>
   <Accordion title="Embedding provider switched or stopped working">
-    If `memory.search.provider` is unset, OpenClaw uses OpenAI embeddings. Set
+    If `memory.search.provider` is unset, PASO uses OpenAI embeddings. Set
     `memory.search.provider` explicitly for Bedrock, DeepInfra, Gemini, GitHub
     Copilot, LM Studio, local, Mistral, Ollama, Voyage, or OpenAI-compatible
     embeddings. If the configured provider cannot run, `memory_search` may

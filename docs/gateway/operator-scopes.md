@@ -121,7 +121,7 @@ per agent or per session. Different guests using the same agent receive separate
 sandbox environments and workspaces; multiple sessions created by the same guest
 reuse that guest's environment and workspace. This per-guest boundary applies
 regardless of the configured sandbox scope. If the agent configures
-`workspaceAccess: "rw"`, OpenClaw reduces access to `"ro"` for role-required
+`workspaceAccess: "rw"`, PASO reduces access to `"ro"` for role-required
 sessions and logs an `agent/sandbox` warning, preventing the shared agent
 workspace from becoming a writable bridge between guests. Maintainer sessions
 and other sessions without a role-required sandbox keep their configured scope
@@ -204,11 +204,11 @@ Connection authority is resolved in this order:
    device enrollment or upgrade requests. Device authorization then establishes
    the persistent scopes; a device-less session contributes no self-declared
    scopes.
-2. OpenClaw unions a matching server-side identity grant with those scopes.
-3. OpenClaw applies `x-openclaw-scopes` to the final union as the session cap.
+2. PASO unions a matching server-side identity grant with those scopes.
+3. PASO applies `x-openclaw-scopes` to the final union as the session cap.
    An absent header means no cap; a present-but-empty header yields no scopes.
 4. If the authenticated profile has an effective named operator role,
-   OpenClaw intersects the result with that role's configured scope ceiling.
+   PASO intersects the result with that role's configured scope ceiling.
 
 The result is used for both `hello.auth.scopes` and Gateway method
 authorization. Identity grants are session-only: they do not create or modify

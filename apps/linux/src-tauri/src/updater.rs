@@ -14,11 +14,12 @@ pub(crate) const PROGRESS_EVENT: &str = "updater://progress";
 pub(crate) const READY_EVENT: &str = "updater://ready";
 pub(crate) const ERROR_EVENT: &str = "updater://error";
 
-const RELEASE_URL: &str = "https://github.com/openclaw/openclaw/releases/latest";
+const RELEASE_URL: &str = "https://github.com/celaya-solutions/PASO-AGENT/releases/latest";
+const AUTO_UPDATE_ENABLED: bool = option_env!("PASO_TAURI_UPDATER_ENABLED").is_some();
 #[cfg(any(target_os = "macos", target_os = "windows"))]
 // Test desktop builds need a channel that Linux-only releases never replace.
 const DESKTOP_TEST_UPDATE_ENDPOINT: &str =
-    "https://github.com/openclaw/openclaw/releases/download/desktop-test/latest-desktop-test.json";
+    "https://github.com/celaya-solutions/PASO-AGENT/releases/download/desktop-test/latest-desktop-test.json";
 const AUTO_CHECK_DELAY: Duration = Duration::from_secs(3);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -110,6 +111,9 @@ struct UpdateError {
 }
 
 pub fn schedule_auto_check(app: AppHandle) {
+    if !AUTO_UPDATE_ENABLED {
+        return;
+    }
     let state = app.state::<UpdaterState>();
     if state.auto_check_started.swap(true, Ordering::AcqRel) {
         return;
@@ -123,6 +127,10 @@ pub fn schedule_auto_check(app: AppHandle) {
 }
 
 pub fn spawn_check(app: AppHandle) {
+    if !AUTO_UPDATE_ENABLED {
+        let _ = open_release_page(app);
+        return;
+    }
     tauri::async_runtime::spawn(async move {
         run_check(app, true).await;
     });
@@ -130,6 +138,10 @@ pub fn spawn_check(app: AppHandle) {
 
 #[tauri::command]
 pub async fn check_for_updates(app: AppHandle) {
+    if !AUTO_UPDATE_ENABLED {
+        let _ = open_release_page(app);
+        return;
+    }
     run_check(app, true).await;
 }
 
@@ -217,7 +229,7 @@ async fn run_check(app: AppHandle, manual: bool) {
                 TerminalResultKind::NotAvailable,
                 NOT_AVAILABLE_EVENT,
                 (),
-                "OpenClaw is up to date — no update is available",
+                "PASO is up to date — no update is available",
             );
             return;
         }
@@ -410,7 +422,7 @@ fn deliver_result<S: Serialize + Clone>(
         ResultDestination::WebviewAndNotification => true,
     };
     if notify {
-        crate::notify::notify(app, "OpenClaw", notification_body);
+        crate::notify::notify(app, "PASO", notification_body);
     }
 }
 
@@ -452,7 +464,7 @@ fn emit_error(app: &AppHandle, error: impl std::fmt::Display) {
 }
 
 fn ready_notification_body(version: &str) -> String {
-    format!("Update ready — restart OpenClaw to install v{version}")
+    format!("Update ready — restart PASO to install v{version}")
 }
 
 fn manual_notification_body(version: &str) -> String {
@@ -471,7 +483,7 @@ mod tests {
         );
         assert_eq!(
             install_kind_from_appimage_env(
-                Some(OsString::from("/tmp/OpenClaw.AppImage")),
+                Some(OsString::from("/tmp/PASO.AppImage")),
                 Platform::Linux,
             ),
             InstallKind::SelfInstall
@@ -500,7 +512,7 @@ mod tests {
     fn notification_copy_includes_update_version() {
         assert_eq!(
             ready_notification_body("2026.7.16"),
-            "Update ready — restart OpenClaw to install v2026.7.16"
+            "Update ready — restart PASO to install v2026.7.16"
         );
         assert_eq!(
             manual_notification_body("2026.7.16"),

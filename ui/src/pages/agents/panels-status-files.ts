@@ -273,7 +273,7 @@ export function renderAgentChannels(params: {
                   ? html`
                       <a
                         class="settings-row__value"
-                        href="https://docs.openclaw.ai/channels"
+                        href="https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs"
                         target="_blank"
                         rel="noopener"
                         >${t("agents.channels.setupGuide")}</a

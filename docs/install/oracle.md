@@ -1,13 +1,13 @@
 ---
-summary: "Host OpenClaw on Oracle Cloud's Always Free ARM tier"
+summary: "Host PASO on Oracle Cloud's Always Free ARM tier"
 read_when:
-  - Setting up OpenClaw on Oracle Cloud
-  - Looking for free VPS hosting for OpenClaw
-  - Want 24/7 OpenClaw on a small server
+  - Setting up PASO on Oracle Cloud
+  - Looking for free VPS hosting for PASO
+  - Want 24/7 PASO on a small server
 title: "Oracle Cloud"
 ---
 
-Run a persistent OpenClaw Gateway on Oracle Cloud's **Always Free** ARM tier (up to 4 OCPU, 24 GB RAM, 200 GB storage) at no cost.
+Run a persistent PASO Gateway on Oracle Cloud's **Always Free** ARM tier (up to 4 OCPU, 24 GB RAM, 200 GB storage) at no cost.
 
 ## Prerequisites
 
@@ -71,13 +71,13 @@ Run a persistent OpenClaw Gateway on Oracle Cloud's **Always Free** ARM tier (up
 
   </Step>
 
-  <Step title="Install OpenClaw">
+  <Step title="Install PASO">
     ```bash
-    curl -fsSL https://openclaw.ai/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
     source ~/.bashrc
     ```
 
-    When prompted "How do you want to hatch your bot?", select **Do this later**.
+    When the optional setup prompt appears, select **Do this later**.
 
   </Step>
 
@@ -146,7 +146,7 @@ With the VCN locked down (only UDP 41641 open) and the Gateway bound to loopback
 Still recommended:
 
 - `chmod 700 ~/.openclaw` to restrict credential file permissions.
-- `openclaw security audit` for an OpenClaw-specific posture check.
+- `openclaw security audit` for a PASO-specific posture check.
 - Regular `sudo apt update && sudo apt upgrade` for OS patches.
 - Review devices in the [Tailscale admin console](https://login.tailscale.com/admin) periodically.
 
@@ -165,7 +165,7 @@ sudo systemctl disable --now ssh
 
 ## ARM notes
 
-The Always Free tier is ARM (`aarch64`). Most OpenClaw features work fine; a small number of native binaries need ARM builds:
+The Always Free tier is ARM (`aarch64`). Most PASO features work fine; a small number of native binaries need ARM builds:
 
 - Node.js, Telegram, WhatsApp (Baileys): pure JavaScript, no issues.
 - Most npm packages with native code: pre-built `linux-arm64` artifacts available.
@@ -175,7 +175,7 @@ Verify the architecture with `uname -m` (should print `aarch64`). For binaries w
 
 ## Persistence and backups
 
-OpenClaw state lives under:
+PASO state lives under:
 
 - `~/.openclaw/` -- `openclaw.json`, shared and per-agent SQLite auth stores, channel/provider state, and session data.
 - `~/.openclaw/workspace/` -- the agent workspace (SOUL.md, memory, artifacts).
@@ -215,7 +215,7 @@ Then open `http://localhost:18789`.
 
 - [Channels](/channels) -- connect Telegram, WhatsApp, Discord, and more
 - [Gateway configuration](/gateway/configuration) -- all config options
-- [Updating](/install/updating) -- keep OpenClaw up to date
+- [Updating](/install/updating) -- keep PASO up to date
 
 ## Related
 

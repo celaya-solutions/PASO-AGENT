@@ -27,7 +27,7 @@ describe("createSessionSqliteGithubIssue", () => {
     const result = createSessionSqliteGithubIssue({
       body: "sanitized body",
       title: "Session SQLite migration recovery report",
-      url: "https://github.com/openclaw/openclaw/issues/new?title=recovery",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/issues/new?title=recovery",
     });
 
     expect(spawnSyncMock).toHaveBeenCalledWith(
@@ -36,7 +36,7 @@ describe("createSessionSqliteGithubIssue", () => {
         "issue",
         "create",
         "--repo",
-        "openclaw/openclaw",
+        "celaya-solutions/PASO-AGENT",
         "--title",
         "Session SQLite migration recovery report",
         "--body-file",
@@ -51,7 +51,7 @@ describe("createSessionSqliteGithubIssue", () => {
       },
     );
     expect(result).toEqual({
-      fallbackUrl: "https://github.com/openclaw/openclaw/issues/new?title=recovery",
+      fallbackUrl: "https://github.com/celaya-solutions/PASO-AGENT/issues/new?title=recovery",
       message: "spawnSync gh ETIMEDOUT",
       ok: false,
     });

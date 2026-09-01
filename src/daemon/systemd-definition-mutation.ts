@@ -257,7 +257,7 @@ export async function withSystemdDefinitionMutation<T>(
         await fs.writeFile(temporary, contents, { flag: "wx", mode });
         const written = await fs.lstat(temporary);
         await refresh(true);
-        // Locks coordinate OpenClaw writers, not external editors: POSIX rename
+        // Locks coordinate PASO writers, not external editors: POSIX rename
         // has no expected-inode check. Quiesce administrative edits during installation.
         await fs.rename(temporary, file);
         // Re-read every artifact against this inode/payload. Canonical temp paths

@@ -1,19 +1,19 @@
 ---
-summary: "Supervise the OpenClaw Gateway as a child process from Electron or another host app"
+summary: "Supervise the PASO Gateway as a child process from Electron or another host app"
 read_when:
-  - Embedding OpenClaw in a desktop or server application
+  - Embedding PASO in a desktop or server application
   - Supervising the Gateway as a child process
   - Handling Gateway readiness, restart, shutdown, or invalid config without scraping logs
-title: "Embedding OpenClaw"
+title: "Embedding PASO"
 ---
 
 An embedding host should supervise the installed `openclaw` executable, use the
 Gateway WebSocket protocol as its control plane, and treat the child process as a
 replaceable runtime. This keeps process ownership, readiness, failure recovery,
-and upgrades explicit without depending on OpenClaw's private state layout.
+and upgrades explicit without depending on PASO's private state layout.
 
 For client authentication and reconnect state, read
-[Building a Gateway client](https://docs.openclaw.ai/gateway/clients).
+[Building a Gateway client](/gateway/clients).
 
 ## Start the child with an embedding preset
 
@@ -42,17 +42,17 @@ const gateway = spawn(hostNodeExecutable, [openclawEntry, "gateway", "--allow-un
 });
 ```
 
-Resolve OpenClaw through the installed package as shown; do not assume that a
+Resolve PASO through the installed package as shown; do not assume that a
 project-local `openclaw` binary is on the host process's `PATH`. The example
 inherits output so the child cannot block on full stdout or stderr pipes. If the
 host captures those streams instead, attach consumers immediately after spawning.
 
-| Setting                          | Embedding effect                                                                                                                                                                           |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OPENCLAW_DISABLE_BONJOUR=1`     | Disables Gateway-owned LAN multicast advertising when the host owns discovery.                                                                                                             |
-| `OPENCLAW_NO_RESPAWN=1`          | In an unmanaged embedding child, prevents OpenClaw from handing an update restart to a detached child. Routine restarts remain in process, so the host keeps ownership of the tracked PID. |
-| `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` | Disables login-shell snapshot capture for host exec commands.                                                                                                                              |
-| `OPENCLAW_SKIP_CHANNELS=1`       | Skips channel startup and reload. Set it only when the embedding app wants a control-plane or WebChat-only Gateway.                                                                        |
+| Setting                          | Embedding effect                                                                                                                                                                       |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OPENCLAW_DISABLE_BONJOUR=1`     | Disables Gateway-owned LAN multicast advertising when the host owns discovery.                                                                                                         |
+| `OPENCLAW_NO_RESPAWN=1`          | In an unmanaged embedding child, prevents PASO from handing an update restart to a detached child. Routine restarts remain in process, so the host keeps ownership of the tracked PID. |
+| `OPENCLAW_EXEC_SHELL_SNAPSHOT=0` | Disables login-shell snapshot capture for host exec commands.                                                                                                                          |
+| `OPENCLAW_SKIP_CHANNELS=1`       | Skips channel startup and reload. Set it only when the embedding app wants a control-plane or WebChat-only Gateway.                                                                    |
 
 `--allow-unconfigured` bypasses only the `gateway.mode=local` startup guard. It
 does not write configuration or repair an invalid file. Omit it when the embedding
@@ -121,7 +121,7 @@ bounded reconnect and child-supervision policy.
 
 ## Use RPC instead of state files
 
-Keep the Gateway as the only owner of OpenClaw state. Common embedding operations
+Keep the Gateway as the only owner of PASO state. Common embedding operations
 already have RPC methods:
 
 | Task                          | RPC methods                                          |
@@ -148,14 +148,14 @@ files under `dist/extensions` retain bare self-imports such as
 `openclaw/plugin-sdk/*`, while the npm package intentionally excludes
 per-extension `node_modules` trees.
 
-Install OpenClaw through npm, pnpm, or another normal Node package installation so
+Install PASO through npm, pnpm, or another normal Node package installation so
 Node can resolve the package exports and root dependency tree. Spawn the installed
 `openclaw` executable. Do not copy only `dist`, flatten the package into an app
 bundle, or vendor selected extension files.
 
 ## Related
 
-- [Building a Gateway client](https://docs.openclaw.ai/gateway/clients)
-- [Gateway protocol](https://docs.openclaw.ai/gateway/protocol)
-- [Gateway CLI](https://docs.openclaw.ai/cli/gateway)
-- [Gateway integrations for external apps](https://docs.openclaw.ai/gateway/external-apps)
+- [Building a Gateway client](/gateway/clients)
+- [Gateway protocol](/gateway/protocol)
+- [Gateway CLI](/cli/gateway)
+- [Gateway integrations for external apps](/gateway/external-apps)

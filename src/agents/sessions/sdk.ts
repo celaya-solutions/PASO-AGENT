@@ -74,7 +74,7 @@ export interface CreateAgentSessionOptions {
   /**
    * Optional allowlist of tool names.
    *
-   * When omitted, OpenClaw enables the default built-in tools (read, bash, edit, write)
+   * When omitted, PASO enables the default built-in tools (read, bash, edit, write)
    * and leaves extension/custom tools enabled unless `noTools` changes that default.
    * When provided, only the listed tool names are enabled.
    */
@@ -200,8 +200,8 @@ function getAttributionHeaders(
 
   if (model.provider === "openrouter" || baseUrl.includes("openrouter.ai")) {
     return {
-      "HTTP-Referer": "https://openclaw.ai",
-      "X-OpenRouter-Title": "OpenClaw",
+      "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+      "X-OpenRouter-Title": "PASO",
       "X-OpenRouter-Categories": "cli-agent",
     };
   }

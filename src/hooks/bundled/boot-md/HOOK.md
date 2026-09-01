@@ -1,7 +1,7 @@
 ---
 name: boot-md
 description: "Run BOOT.md on gateway startup"
-homepage: https://docs.openclaw.ai/automation/hooks#boot-md
+homepage: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/automation/hooks.md#boot-md
 metadata:
   {
     "openclaw":
@@ -9,7 +9,7 @@ metadata:
         "emoji": "🚀",
         "events": ["gateway:startup"],
         "requires": { "config": ["workspace.dir"] },
-        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with OpenClaw" }],
+        "install": [{ "id": "bundled", "kind": "bundled", "label": "Bundled with PASO" }],
       },
   }
 ---

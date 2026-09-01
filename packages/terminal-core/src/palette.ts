@@ -1,12 +1,15 @@
-// Lobster palette tokens for CLI/UI theming. Use this palette for all CLI color output.
+// PASO palette tokens for CLI/UI theming. Use this palette for all CLI color output.
 // Keep in sync with docs/cli/index.md (CLI palette section).
-export const LOBSTER_PALETTE = {
-  accent: "#FF5A2D",
-  accentBright: "#FF7A3D",
-  accentDim: "#D14A22",
-  info: "#FF8A5B",
+export const PASO_PALETTE = {
+  accent: "#E8590C",
+  accentBright: "#F47A3A",
+  accentDim: "#B9470A",
+  info: "#F08B55",
   success: "#2FBF71",
   warn: "#FFB020",
   error: "#E23D2D",
-  muted: "#8B7F77",
+  muted: "#8C827A",
 } as const;
+
+/** @deprecated Use PASO_PALETTE. Kept for import compatibility. */
+export const LOBSTER_PALETTE = PASO_PALETTE;

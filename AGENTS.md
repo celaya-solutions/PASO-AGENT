@@ -5,13 +5,13 @@ Skills own workflows; root owns hard policy and routing. Product direction and m
 
 ## Start
 
-- Repo: `https://github.com/openclaw/openclaw`
+- Repo: `https://github.com/celaya-solutions/PASO-AGENT`
 - Replies: repo-root refs only: `extensions/telegram/src/bot-access.ts:80`. No absolute paths, no `~/`.
 - Docs/user-visible work: `pnpm docs:list`, then read relevant docs only.
-- Existing-solutions preflight: before proposing or building anything custom, briefly check for OSS projects, maintained libraries, existing OpenClaw plugins, or free platforms that already solve it; prefer those when adequate. Custom only when existing options are unsuitable or the user explicitly asks. No paid-service recommendations without explicitly approved spend. A brief gate, not a research assignment.
+- Existing-solutions preflight: before proposing or building anything custom, briefly check for OSS projects, maintained libraries, existing PASO-compatible plugins, or free platforms that already solve it; prefer those when adequate. Custom only when existing options are unsuitable or the user explicitly asks. No paid-service recommendations without explicitly approved spend. A brief gate, not a research assignment.
 - Fix/triage/review: Repair Doctrine applies. Verdicts need source, tests, current/shipped behavior, and (when dependencies are involved) dependency contract proof; diff-only review is insufficient.
 - Dependency work: direct inspection mandatory when feasible — read upstream source/docs/types first. External API work: live test required; search for additional proof; cite current proof. No API/default/error/timing claims from assumptions, wrappers, or memory.
-- Codex hard gate: the acting agent must personally inspect sibling `../codex` source (clone `https://github.com/openai/codex.git` there if missing) for the exact protocol/runtime behavior before any verdict, comment, approval, merge recommendation, code change, or `proof sufficient` claim. Subagent reports, PR text, OpenClaw wrappers, generated schemas, memory, and prior bot reviews do not satisfy it — no direct `../codex` check means no Codex verdict. Cite Codex files/lines checked.
+- Codex hard gate: the acting agent must personally inspect sibling `../codex` source (clone `https://github.com/openai/codex.git` there if missing) for the exact protocol/runtime behavior before any verdict, comment, approval, merge recommendation, code change, or `proof sufficient` claim. Subagent reports, PR text, PASO wrappers, generated schemas, memory, and prior bot reviews do not satisfy it — no direct `../codex` check means no Codex verdict. Cite Codex files/lines checked.
 - Provider model changes: update the owning plugin manifest; after landing, verify `openclaw/catalog/models/v1/catalog.json` refreshes and dispatch the catalog publish workflow when needed.
 - Live-verify is the default, not a nicety: user-facing behavior gets live-tested through the real flow before landing. Skipping requires a concrete infeasibility stated in the PR, not convenience. Never print secrets.
 - Telegram-visible proof: use `$telegram-e2e-userbot`; all routine local, team, and CI runs lease Test Server credentials from Convex. Local maintainers use an authenticated `convex` CLI; CI workers receive the broker pair through GitHub Secrets.
@@ -54,7 +54,7 @@ Skills own workflows; root owns hard policy and routing. Product direction and m
 
 ## ClawSweeper Review Policy
 
-- OpenClaw-specific review rules live here; generic ClawSweeper prompts stay repo-agnostic.
+- PASO-specific review rules live here; generic ClawSweeper prompts stay repo-agnostic.
 - ClawSweeper-owned schema, labels, close reasons, protected-label gates, maintainer-item gates, and mutation rules live in `openclaw/clawsweeper`.
 - Review workers read this full root `AGENTS.md` (no search snippets, `head`, partial ranges, or truncated copies), then every scoped `AGENTS.md` owning touched paths.
 - Optional integrations, providers, channels, skill bundles, MCP surfaces, and service workflows route to plugins, ClawHub, or owner repos when current seams suffice. Keep core items for missing core/plugin APIs, bundled regressions, security/core hardening, or maintainer product decisions.
@@ -70,7 +70,7 @@ Skills own workflows; root owns hard policy and routing. Product direction and m
 - Doctrine-class findings are first-class: action path ending with no visible outcome and no recorded reason; default-path regression; prompt/tool text contradicting shipped behavior; multi-signal inference where a recorded fact belongs; new default-off capability with no named enablement path.
 - `maturity:stable`: issue-only attention signal for broken existing behavior primarily owned by an M4/M5 scorecard surface; name that surface and category. Not for feature requests, new config/policy choices, docs/support work, or lower-maturity owners merely passing through a stable surface. Visibility only — not fix proof, backport approval, or a release blocker.
 - Before landing any PR: read the latest ClawSweeper comment and its `Rank-up moves:` list; apply each move or state the skip in the PR — never merge past them silently. A <12h review covers the PR once every actionable finding is addressed (or skip stated) and exact-head CI is green, even if the head moved. Request `@clawsweeper re-review` only for an older review or post-review pushes that changed behavior beyond findings + mechanical refreshes (rebase, format, merge-ref). A queued or late re-review refreshes the rating; never block landing on the publisher.
-- Public ClawSweeper comments prefer `https://docs.openclaw.ai/...` when a public docs page exists; structured evidence still cites repo files, lines, SHAs.
+- Public ClawSweeper comments prefer links under `https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs`; structured evidence still cites repo files, lines, SHAs.
 - Findings follow the Start-section evidence bar (source, tests, current/shipped behavior, dependency contract proof when involved). Validation is judged against touched + sibling surfaces plus the Commands section; user-visible changes need clear evidence, and Telegram-visible behavior needs `$telegram-e2e-userbot` event proof when feasible.
 - Real-behavior-proof gate: a mock-gateway harness run (mock channel API + mock provider + ephemeral gateway, verdict JSON in the PR body) satisfies it for channel-visible changes covering the changed path; live-channel proof is stronger evidence.
 - Prefer findings for concrete behavior regressions, missing changed-surface proof, owner-boundary violations, security/API contract issues, or docs/config mismatches.
@@ -84,7 +84,7 @@ Skills own workflows; root owns hard policy and routing. Product direction and m
 
 ## Docs
 
-- Source docs: `docs/**`; publish repo: `openclaw/docs`; host: `https://docs.openclaw.ai`.
+- Source and published docs: `docs/**` in `celaya-solutions/PASO-AGENT`.
 - Flow: source -> `docs-sync-publish.yml` -> mirror build -> R2 -> Worker router.
 - Docs AI: `openclaw/ask-molty`; see its `AGENTS.md`.
 
@@ -112,7 +112,7 @@ Skills own workflows; root owns hard policy and routing. Product direction and m
 - Reuse canonical coercion guards (`@openclaw/normalization-core/record-coerce`; plugins: `openclaw/plugin-sdk/string-coerce-runtime`) — no local `isRecord` copies. CI guard `pnpm check:coercion-helpers` owns the carve-outs; intentionally different semantics or a file that cannot use workspace resolution gets a reasoned carve-out entry there.
 - Core runtime consumes only current canonical shapes/config/data. Legacy or retired shapes normalize only in doctor/migration code before runtime; no runtime shims, aliases, or fallback readers.
 - State/storage migrations are database-first. Runtime reads/writes the canonical store only. Old file stores, sidecars, aliases, and fallback readers belong in `openclaw doctor --fix` migration code only, never steady-state runtime.
-- Storage default: SQLite only. Do not add JSON/JSONL/TXT/sidecar files for OpenClaw-owned runtime state, caches, queues, registries, indexes, cursors, checkpoints, or plugin scratch data. File storage is only for named product artifacts: import/export, user attachment, log, backup, or external tool contract. Schema and migration reference: `docs/reference/database-schemas.md`.
+- Storage default: SQLite only. Do not add JSON/JSONL/TXT/sidecar files for PASO-owned runtime state, caches, queues, registries, indexes, cursors, checkpoints, or plugin scratch data. File storage is only for named product artifacts: import/export, user attachment, log, backup, or external tool contract. Schema and migration reference: `docs/reference/database-schemas.md`.
 - Any SQLite schema change requires explicit approval in chat before implementation.
 - Material SQLite or persistent-store changes need explicit user or maintainer discussion and acceptance before implementation. This includes schema-version bumps and same-version changes to tables, projections, indexing, retention, concurrency, recovery, or user-visible persistence semantics. Agents must not advance SQLite schema versions or implement a material store design autonomously. Follow `docs/reference/database-schemas.md#review-checkpoint-for-material-changes`.
 - Additive SQLite surface may stay at the same schema version only when downgraded readers stay safe — exact criteria (new tables; bare nullable `STRICT`-datatype existing-table columns, zero constraints): `docs/reference/database-schemas.md`. Declare it in the canonical schema plus a one-time idempotent lazy ensure on first feature use; fold it into the migration path at the next natural bump.
@@ -186,7 +186,7 @@ Review invariants; full doctrine: `docs/gateway/audit.md`.
 ## Validation
 
 - Use `$openclaw-testing` for test/CI choice and `$crabbox` for remote-environment, isolation, and clean-machine E2E proof.
-- The Crabbox skill is a snapshot of `https://github.com/openclaw/agent-skills/tree/main/skills/crabbox`; edit that source, then sync the snapshot. OpenClaw-specific setup lives in `docs/reference/test.md#crabbox-repository-setup`, outside the shared skill.
+- The Crabbox skill is a snapshot of the upstream framework's `agent-skills` repository; edit that source, then sync the snapshot. PASO-specific setup lives in `docs/reference/test.md#crabbox-repository-setup`, outside the shared skill.
 - Proof routing: source trust first, required environment second. Trusted development tests, changed gates, typecheck/lint, builds, and full suites run locally with scope proportional to the touched contract. Use Crabbox/Testbox only when the environment is part of the proof: clean-machine, install/package, Docker, E2E, live, desktop, cross-OS, CI parity, or explicit operator-requested remote work. Do not use it merely as generic compute offload. Lease/procedure mechanics: `$crabbox`.
 - Untrusted (contributor/fork) source: never run its scripts, tests, checks, wrappers, config, or package hooks locally, regardless of proof size, and never fall back to local. Use secretless fork CI or the sanitized direct AWS Crabbox procedure in `$crabbox`, never a credential-hydrated Testbox. Maintainer approval of credentialed execution after review makes it trusted; an explicit owner/maintainer instruction to land named, reviewed PRs is that approval — do not ask twice.
 - Visual proof: use a real isolated browser/desktop on the current host when capable; otherwise use Crabbox. Set up like a user, then screenshot-verify. No harness/bypass/shortcut unless explicitly asked.
@@ -214,7 +214,7 @@ Review invariants; full doctrine: `docs/gateway/audit.md`.
 - Fresh GitHub items: read `CONTRIBUTING.md`, the issue chooser/form, PR template, and `.github/CODEOWNERS`; blank issues are disabled; preserve templates and evidence requirements.
 - Issue first for bugs, user-facing features, architecture/product decisions, or work needing durable discussion. Bounded maintainer-requested refactor may go direct; agent decides whether an issue adds value. PRs use the template, link context, and keep durable problem/impact/evidence sections.
 - Route support to Discord and security through `SECURITY.md`. Use listed maintainer areas/`CODEOWNERS`; never guess mentions.
-- Use `$openclaw-pr-maintainer` immediately for maintainer-side OpenClaw issue/PR review, triage, duplicates, labels, comments, close, land, or evidence. Contributor PR creation/refresh follows the requested contributor workflow; linked refs alone do not require maintainer archive tooling.
+- Use `$openclaw-pr-maintainer` immediately for maintainer-side PASO issue/PR review, triage, duplicates, labels, comments, close, land, or evidence. Contributor PR creation/refresh follows the requested contributor workflow; linked refs alone do not require maintainer archive tooling.
 - Issue/PR start: `git status -sb`; if clean, `git pull --ff-only`; if dirty, yell before pull/rebase.
 - PR refs: `gh pr view/diff` or `gh api`, not web search. Prefer `gitcrawl` for maintainer discovery; missing/stale `gitcrawl` falls through to live `gh`, not contributor setup. Verify live with `gh` before mutation.
 - Bare issue/PR URL/number: inspect live and take the efficient maintainer path; switch branches/refs when useful.
@@ -290,7 +290,7 @@ Mechanics only; policy lives above.
 - Provider tool schemas: prefer flat string enum helpers over `Type.Union([Type.Literal(...)])`; some providers reject `anyOf`.
 - Split files around ~700 LOC when clarity/testability improves.
 - Never add a `max-lines` suppression. Existing suppressions are grandfathered TODOs; split the file and remove its suppression plus baseline entry.
-- Naming: **OpenClaw** product/docs; `openclaw` CLI/package/path/config.
+- Naming: **PASO** product/docs; preserve `openclaw` CLI/package/path/config and `OpenClaw*` native technical identities for compatibility.
 - Agents navigate by grep: exported symbols use 2-3 word unique names; no generic single-word exports (`get`, `run`, `create`, `handle`).
 - New modules/dirs concept-named; no new `utils/`, `helpers/`, `common/`. One spelling per concept repo-wide.
 - English: American spelling.
@@ -321,7 +321,7 @@ Mechanics only; policy lives above.
 
 - Use `$technical-documentation` for docs writing/review. Docs change with behavior/API.
 - Codex harness upgrade (`extensions/codex/package.json` `@openai/codex`): refresh `docs/plugins/codex-harness.md` model snapshot from the new harness `model/list`.
-- Docs final answers: include relevant full `https://docs.openclaw.ai/...` URL(s).
+- Docs final answers: include relevant links under `https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs`.
 - `CHANGELOG.md`: release-only — release generation derives it from merged PRs + direct `main` commits (`$openclaw-changelog-update` owns style, credit, forbidden handles). Never edit it for normal PRs, direct `main` fixes, or `ship it`; never ask contributors/agents for changelog edits.
 - User-facing `fix`/`feat`/`perf`: put release-note context in PR body, squash message, or direct commit: behavior, surface, issue/PR refs, credited human author/reporter.
 
@@ -352,6 +352,9 @@ Mechanics only; policy lives above.
 
 ### Fork notes
 
+- 2026-09-01: Rebranded user-facing product, docs, web, CLI, and native app surfaces as PASO by Celaya Solutions Research while preserving framework compatibility identifiers.
+- 2026-09-01: The owner explicitly approved publishing +1 915-270-0237 as PASO's public contact number for this rebrand.
+- 2026-09-01: Control UI locale memory remains automation-owned; changed PASO messages use safe English fallbacks until the post-merge locale refresh translates them.
 - 2026-08-31: Published this checkout as the PASO AGENT fork; this commit triggers its first Railway deployment without changing product code.
 - 2026-08-31: Made Docker cache mounts portable so Railway can validate and build the image.
 - 2026-08-31: Scoped Docker cache IDs to the PASO AGENT Railway service after its builder required service-prefixed IDs.

@@ -2,13 +2,13 @@
 summary: "CLI reference for `openclaw completion` (generate/install shell completion scripts)"
 read_when:
   - You want shell completions for zsh/bash/fish/PowerShell
-  - You need to cache completion scripts under OpenClaw state
+  - You need to cache completion scripts under PASO state
 title: "Completion"
 ---
 
 # `openclaw completion`
 
-Generate shell completion scripts, cache them under OpenClaw state, and optionally install them into your shell profile.
+Generate shell completion scripts, cache them under PASO state, and optionally install them into your shell profile.
 
 ## Usage
 
@@ -31,7 +31,7 @@ openclaw completion --shell bash --write-state
 
 `--install` points your profile at the cached script, so the cache must exist first: if it is missing, the command fails and tells you to run `openclaw completion --write-state`. Combine `--write-state --install` to do both in one step. Without `--shell`, the command preserves a recognized `$SHELL`; when `$SHELL` is missing or unrecognized, it defaults to PowerShell on Windows and zsh elsewhere.
 
-The install writes a small `# OpenClaw Completion` block into your shell profile and replaces any older slow `source <(openclaw completion ...)` lines with the cached source line:
+The install writes a small `# PASO Completion` block into your shell profile and replaces any older slow `source <(openclaw completion ...)` lines with the cached source line:
 
 | Shell      | Profile                                                                                                                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

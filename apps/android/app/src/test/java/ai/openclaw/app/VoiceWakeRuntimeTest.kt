@@ -33,9 +33,9 @@ class VoiceWakeRuntimeTest {
   fun disconnectedSaveDoesNotCreateLocalOverride() {
     val runtime = createTestRuntime()
 
-    runtime.setVoiceWakeWords(listOf("hey claw"))
+    runtime.setVoiceWakeWords(listOf("hey paso"))
 
-    assertEquals(listOf("openclaw", "claude", "computer"), runtime.voiceWakeWords.value)
+    assertEquals(listOf("paso"), runtime.voiceWakeWords.value)
     assertEquals("Connect to a Gateway to save wake words", runtime.voiceWakeWordsNoticeText.value)
     assertFalse(runtime.voiceWakeWordsSaving.value)
   }
@@ -47,7 +47,7 @@ class VoiceWakeRuntimeTest {
       seedConnectedRuntime(runtime)
       runtime.gatewayDataRequestOverrideForTests = { _, method, _ ->
         assertEquals("voicewake.set", method)
-        """{"triggers":[" gateway claw "]}"""
+        """{"triggers":[" gateway word "]}"""
       }
 
       runtime.setVoiceWakeWords(listOf("local draft"))
@@ -55,7 +55,7 @@ class VoiceWakeRuntimeTest {
         while (runtime.voiceWakeWordsSaving.value) delay(10)
       }
 
-      assertEquals(listOf("gateway claw"), runtime.voiceWakeWords.value)
+      assertEquals(listOf("gateway word"), runtime.voiceWakeWords.value)
       assertEquals("Wake words saved", runtime.voiceWakeWordsNoticeText.value)
     }
 
@@ -71,7 +71,7 @@ class VoiceWakeRuntimeTest {
         while (runtime.voiceWakeWordsSaving.value) delay(10)
       }
 
-      assertEquals(listOf("openclaw", "claude", "computer"), runtime.voiceWakeWords.value)
+      assertEquals(listOf("paso", "assistant", "computer"), runtime.voiceWakeWords.value)
       assertEquals("Could not save wake words", runtime.voiceWakeWordsNoticeText.value)
     }
 
@@ -93,7 +93,7 @@ class VoiceWakeRuntimeTest {
         while (runtime.voiceWakeWordsSaving.value) delay(10)
       }
 
-      assertEquals(listOf("openclaw", "claude", "computer"), runtime.voiceWakeWords.value)
+      assertEquals(listOf("paso", "assistant", "computer"), runtime.voiceWakeWords.value)
       assertEquals(null, runtime.voiceWakeWordsNoticeText.value)
     }
 
@@ -129,11 +129,11 @@ class VoiceWakeRuntimeTest {
 
     runtime.applyNodeVoiceWakeWords(
       endpointStableId = endpoint.stableId,
-      payloadJson = """{"triggers":[" node claw "]}""",
+      payloadJson = """{"triggers":[" node word "]}""",
       isCurrentConnection = { true },
     )
 
-    assertEquals(listOf("node claw"), runtime.voiceWakeWords.value)
+    assertEquals(listOf("node word"), runtime.voiceWakeWords.value)
   }
 
   @Test
@@ -143,11 +143,11 @@ class VoiceWakeRuntimeTest {
 
     runtime.applyNodeVoiceWakeWords(
       endpointStableId = endpoint.stableId,
-      payloadJson = """{"triggers":[" stale claw "]}""",
+      payloadJson = """{"triggers":[" stale word "]}""",
       isCurrentConnection = { false },
     )
 
-    assertEquals(listOf("openclaw", "claude", "computer"), runtime.voiceWakeWords.value)
+    assertEquals(listOf("paso", "assistant", "computer"), runtime.voiceWakeWords.value)
   }
 
   @Test
@@ -166,7 +166,7 @@ class VoiceWakeRuntimeTest {
     invokeNoArg(runtime, "invalidateVoiceWakeWordsForGateway")
     runtime.setVoiceWakeWords(listOf("stale overwrite"))
 
-    assertEquals(listOf("openclaw", "claude", "computer"), runtime.voiceWakeWords.value)
+    assertEquals(listOf("paso"), runtime.voiceWakeWords.value)
     assertEquals("Connect to a Gateway to save wake words", runtime.voiceWakeWordsNoticeText.value)
   }
 
@@ -241,7 +241,7 @@ class VoiceWakeRuntimeTest {
     writeField(runtime, "connectedEndpoint", endpoint)
     runtime.applyNodeVoiceWakeWords(
       endpointStableId = endpoint.stableId,
-      payloadJson = """{"triggers":["openclaw","claude","computer"]}""",
+      payloadJson = """{"triggers":["paso","assistant","computer"]}""",
       isCurrentConnection = { true },
     )
     return endpoint

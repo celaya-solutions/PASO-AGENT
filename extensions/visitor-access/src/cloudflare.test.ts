@@ -7,7 +7,8 @@ const config: VisitorAccessConfig = {
   accountId: "account-id",
   appId: "app-id",
   apiToken: "test-token-never-echo",
-  policyName: "Visitors (openclaw-managed)",
+  loginUrl: "https://paso.example.test",
+  policyName: "Visitors (paso-managed)",
   defaultTtlDays: 14,
   maxVisitors: 50,
 };

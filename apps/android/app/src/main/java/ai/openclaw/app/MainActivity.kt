@@ -380,7 +380,7 @@ private fun StartupSurface() {
       contentAlignment = Alignment.Center,
     ) {
       Text(
-        text = "OPENCLAW",
+        text = nativeString("PASO"),
         fontSize = 22.sp,
         fontWeight = FontWeight.Medium,
       )

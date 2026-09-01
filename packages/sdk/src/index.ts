@@ -1,4 +1,4 @@
-// Public OpenClaw SDK entrypoint. Re-export client namespaces, event helpers,
+// Public PASO SDK entrypoint. Re-export client namespaces, event helpers,
 // transport, and stable SDK types from focused modules.
 export {
   Agent,
@@ -8,6 +8,7 @@ export {
   EnvironmentsNamespace,
   ModelsNamespace,
   OpenClaw,
+  PASO,
   Run,
   RunsNamespace,
   Session,

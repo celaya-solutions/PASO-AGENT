@@ -1,4 +1,4 @@
-// Anthropic Prompt Probe script supports OpenClaw repository automation.
+// Anthropic Prompt Probe script supports PASO repository automation.
 import { spawn } from "node:child_process";
 // Live prompt probe for Anthropic setup-token and Claude CLI prompt-path debugging.
 // Usage:
@@ -31,7 +31,7 @@ const TRANSPORT = process.env.OPENCLAW_PROMPT_TRANSPORT?.trim() === "direct" ? "
 const GATEWAY_PROMPT_MODE = "extra";
 const PROMPT_TEXT = process.env.OPENCLAW_PROMPT_TEXT?.trim() ?? "";
 const PROMPT_LIST_JSON = process.env.OPENCLAW_PROMPT_LIST_JSON?.trim() ?? "";
-const USER_PROMPT = process.env.OPENCLAW_USER_PROMPT?.trim() || "is clawd here?";
+const USER_PROMPT = process.env.OPENCLAW_USER_PROMPT?.trim() || "is PASO here?";
 const ENABLE_CAPTURE = parseBooleanEnv({
   fallback: false,
   name: "OPENCLAW_PROMPT_CAPTURE",

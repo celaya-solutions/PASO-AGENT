@@ -38,7 +38,7 @@ function createPolicyFetch() {
     }
     const policy = {
       id: "visitor-policy",
-      name: "Visitors (openclaw-managed)",
+      name: "Visitors (paso-managed)",
       decision: "allow",
       include: emails.map((email) => ({ email: { email } })),
     };
@@ -92,7 +92,13 @@ describe("visitor-access plugin lifecycle", () => {
     const logger = { info: vi.fn(), warn: vi.fn(), error: vi.fn(), debug: vi.fn() };
     const api = createTestPluginApi({
       id: "visitor-access",
-      pluginConfig: { accountId: "test-account", appId: "test-app", apiToken: TOKEN },
+      pluginConfig: {
+        accountId: "test-account",
+        appId: "test-app",
+        apiToken: TOKEN,
+        loginUrl: "https://paso.example.test",
+        policyName: "Visitors (paso-managed)",
+      },
       logger,
       on,
       registerService: (service) => services.push(service),

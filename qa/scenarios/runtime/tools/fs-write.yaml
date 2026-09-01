@@ -7,7 +7,7 @@ scenario:
   coverage:
     secondary:
       - agent-runtime.tool-fs-write
-  objective: Verify file write behavior is tracked across OpenClaw and Codex while Codex owns write natively.
+  objective: Verify file write behavior is tracked across PASO and Codex while Codex owns write natively.
   successCriteria:
     - OpenClaw may expose OpenClaw write while Codex app-server mode may omit duplicate OpenClaw dynamic write.
     - Mock provider write plans are reported as fixture intent, not as actual runtime tool calls.

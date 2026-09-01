@@ -5,10 +5,10 @@ sidebarTitle: "CLI backend plugins"
 read_when:
   - You are building a local AI CLI backend plugin
   - You want to register a backend for model refs such as acme-cli/model
-  - You need to map a third-party CLI into OpenClaw's text fallback runner
+  - You need to map a third-party CLI into PASO's text fallback runner
 ---
 
-CLI backend plugins let OpenClaw call a local AI CLI as a text inference
+CLI backend plugins let PASO call a local AI CLI as a text inference
 backend. The backend appears as a provider prefix in model refs:
 
 ```text
@@ -32,7 +32,7 @@ A CLI backend plugin has three contracts:
 
 | Contract             | File                   | Purpose                                                   |
 | -------------------- | ---------------------- | --------------------------------------------------------- |
-| Package entry        | `package.json`         | Points OpenClaw at the plugin runtime module              |
+| Package entry        | `package.json`         | Points PASO at the plugin runtime module                  |
 | Manifest ownership   | `openclaw.plugin.json` | Declares the backend id before runtime loads              |
 | Runtime registration | `index.ts`             | Calls `api.registerCliBackend(...)` with command defaults |
 
@@ -80,7 +80,7 @@ runtime behavior. Runtime behavior starts when the plugin entry calls
     {
       "id": "acme-cli",
       "name": "Acme CLI",
-      "description": "Run Acme's local AI CLI through OpenClaw",
+      "description": "Run Acme's local AI CLI through PASO",
       "cliBackends": ["acme-cli"],
       "setup": {
         "cliBackends": ["acme-cli"],
@@ -96,7 +96,7 @@ runtime behavior. Runtime behavior starts when the plugin entry calls
     }
     ```
 
-    `cliBackends` is the runtime ownership list; it lets OpenClaw auto-load the
+    `cliBackends` is the runtime ownership list; it lets PASO auto-load the
     plugin when model selection or `agentRuntime.id` mentions `acme-cli`.
 
     `setup.cliBackends` is the descriptor-first setup surface. Add it when
@@ -159,7 +159,7 @@ runtime behavior. Runtime behavior starts when the plugin entry calls
     export default definePluginEntry({
       id: "acme-cli",
       name: "Acme CLI",
-      description: "Run Acme's local AI CLI through OpenClaw",
+      description: "Run Acme's local AI CLI through PASO",
       register(api) {
         api.registerCliBackend(buildAcmeCliBackend());
       },
@@ -167,7 +167,7 @@ runtime behavior. Runtime behavior starts when the plugin entry calls
     ```
 
     The backend id must match the manifest `cliBackends` entry. The registered
-    adapter is authoritative plugin code; OpenClaw config selects the backend
+    adapter is authoritative plugin code; PASO config selects the backend
     but does not rewrite its command contract.
 
   </Step>
@@ -175,7 +175,7 @@ runtime behavior. Runtime behavior starts when the plugin entry calls
 
 ## Config shape
 
-`CliBackendConfig` describes how OpenClaw should launch and parse the CLI. The
+`CliBackendConfig` describes how PASO should launch and parse the CLI. The
 worked example above intentionally exercises the same command, resume, JSONL,
 model-alias, session, and image fields as the bundled
 `google-gemini-cli` adapter:
@@ -192,10 +192,10 @@ model-alias, session, and image fields as the bundled
 | `maxPromptArgChars`                                       | Max prompt length for `arg` mode before falling back to stdin                     |
 | `env` / `clearEnv`                                        | Extra env vars to inject, or names to strip before launch                         |
 | `modelArg`                                                | Flag used before the model id                                                     |
-| `modelAliases`                                            | Map OpenClaw model ids to CLI-native ids                                          |
+| `modelAliases`                                            | Map PASO model ids to CLI-native ids                                              |
 | `sessionArgs`                                             | How to pass a session id using `{sessionId}`                                      |
 | `sessionMode`                                             | `always`, `existing`, or `none`                                                   |
-| `sessionIdFields`                                         | JSON fields OpenClaw reads from CLI output                                        |
+| `sessionIdFields`                                         | JSON fields PASO reads from CLI output                                            |
 | `systemPromptArg` / `systemPromptFileArg`                 | System prompt transport                                                           |
 | `systemPromptFileConfigArg` / `systemPromptFileConfigKey` | Config-override transport for a system prompt file (for example `-c`)             |
 | `systemPromptMode`                                        | `append` or `replace`                                                             |
@@ -214,7 +214,7 @@ backend intentionally needs its own watchdog policy.
 `freshSessionRecovery` is a backend-owned compatibility contract:
 
 - Leave it undefined or set it to `"replace-binding"` to preserve the legacy
-  clear-and-reseed behavior. OpenClaw clears the persisted binding and retries
+  clear-and-reseed behavior. PASO clears the persisted binding and retries
   with a fresh session when the failure is eligible for recovery.
 - Set it to `"invalidated-only"` to suppress fresh replacement unless the
   canonical invalidation predicate proves the old session is dead. Currently,
@@ -239,13 +239,13 @@ only for behavior that really belongs to the backend.
 | `prepareExecution(ctx)`            | Create temporary auth, config, or environment bridges before launch         |
 | `transformSystemPrompt(ctx)`       | Apply a final CLI-specific system prompt transform                          |
 | `textTransforms`                   | Bidirectional prompt/output replacements                                    |
-| `defaultAuthProfileId`             | Prefer a specific OpenClaw auth profile                                     |
+| `defaultAuthProfileId`             | Prefer a specific PASO auth profile                                         |
 | `authEpochMode`                    | Decide how auth changes invalidate stored CLI sessions                      |
 | `nativeToolMode`                   | Declare whether native tools are absent, always on, or host-selectable      |
 | `toolAvailabilityEnforcement`      | Declare whether exact tool caps are enforced in argv or execution staging   |
 | `sideQuestionToolMode`             | Declare disabled native tools for `/btw` side questions                     |
-| `bundleMcp` / `bundleMcpMode`      | Opt into OpenClaw's loopback MCP tool bridge                                |
-| `ownsNativeCompaction`             | Backend owns its own automatic compaction - OpenClaw defers                 |
+| `bundleMcp` / `bundleMcpMode`      | Opt into PASO's loopback MCP tool bridge                                    |
+| `ownsNativeCompaction`             | Backend owns its own automatic compaction - PASO defers                     |
 | `manualCompaction`                 | Atomic command, transport, and positive-acknowledgement contract            |
 | `subscriptionAuthDispatch`         | Opted-in embedded runs on subscription credentials execute via this backend |
 | `runtimeArtifact`                  | Bound a script launcher to its complete bundled package tree                |
@@ -268,10 +268,10 @@ and tool availability; it yields the backend's existing structured stream
 records. Optional `promptContext.prependContext` and `promptContext.appendContext`
 are private prompt-build additions, separate from the ordinary `prompt`. Transport
 them through the native SDK's private context mechanism; never record them as
-operator-authored input. OpenClaw's policy and observation hooks still receive the
+operator-authored input. PASO's policy and observation hooks still receive the
 complete logical prompt. Native tool actions must use the provided, run-bound
 `requestToolPermission` callback rather than creating independent approval
-authority. OpenClaw retains cancellation, watchdogs, session policy, and MCP
+authority. PASO retains cancellation, watchdogs, session policy, and MCP
 grant ownership. Explicit credential forwarding, paired-node execution, and
 manual compaction continue through the existing host-managed process path.
 
@@ -280,7 +280,7 @@ only when a live inference turn mints or revalidates verified setup authority;
 normal CLI runs do not require it. A backend without this declaration cannot
 mint verified CLI setup authority. A `bundled-package-tree` declaration names
 the exact `package.json` owner and requires the package entrypoint to be the
-command. OpenClaw hashes the bounded complete installed package tree, including
+command. PASO hashes the bounded complete installed package tree, including
 nested dependencies, and fails closed for redirecting symlinks,
 launchers outside the declared package, required external dependency
 declarations, oversized trees, and unknown scripts. Declare this only when that
@@ -296,15 +296,15 @@ ephemeral `/btw` calls. Use it when the CLI needs different one-shot flags,
 such as disabling native tools, session persistence, or resume behavior for
 BTW. If a backend normally has `nativeToolMode: "always-on"` but its
 side-question argv reliably disables those tools, also set
-`sideQuestionToolMode: "disabled"`; otherwise OpenClaw fails closed when BTW
+`sideQuestionToolMode: "disabled"`; otherwise PASO fails closed when BTW
 requires a no-tools CLI run.
 
 Set `nativeToolMode: "selectable"` only when the backend can disable every
 backend-native tool for an individual run. Restricted runs receive a canonical
 contract: `ctx.toolAvailability.native` is the exact backend-native list and
-`ctx.toolAvailability.openClaw` is the exact list of OpenClaw tool names. The
+`ctx.toolAvailability.openClaw` is the exact list of PASO tool names. The
 host independently limits the generated MCP configuration and grant to that
-OpenClaw list; plugins must not translate it in core or add transport prefixes.
+PASO list; plugins must not translate it in core or add transport prefixes.
 
 Declare how the backend enforces that contract:
 
@@ -315,10 +315,10 @@ Declare how the backend enforces that contract:
 - `toolAvailabilityEnforcement: "prepare-execution"` requires
   `prepareExecution`. The hook must stage an exact per-run policy and return
   `toolAvailabilityEnforced: true`; missing acknowledgement fails closed and
-  OpenClaw cleans up the staged resources before launch.
+  PASO cleans up the staged resources before launch.
 
 Runtime caps such as cron `toolsAllow` are normalized and group-expanded by
-OpenClaw before this contract is built. Native tools are disabled, and a
+PASO before this contract is built. Native tools are disabled, and a
 backend without a complete declared enforcement path fails before execution.
 
 ### `parseJsonlEvent`: provider-specific JSONL streams
@@ -334,24 +334,24 @@ may include final text, usage, an error, and a successor session id. Session ids
 reported by either event shape participate in resumed-session and fork
 persistence.
 
-Tool events describe work the backend already performed. OpenClaw renders and
+Tool events describe work the backend already performed. PASO renders and
 summarizes them, but does not treat them as host tool execution, trusted
 diagnostics, loopback correlation, or message-delivery evidence.
 
-### `ownsNativeCompaction`: opting out of OpenClaw compaction
+### `ownsNativeCompaction`: opting out of PASO compaction
 
 If your backend runs an agent that compacts its **own** transcript, set
-`ownsNativeCompaction: true` so OpenClaw's safeguard summarizer never runs
+`ownsNativeCompaction: true` so PASO's safeguard summarizer never runs
 against its sessions - automatic CLI compaction defers to the backend and the
 turn proceeds. `claude-cli` declares it because Claude Code compacts
 internally with no harness endpoint. It also declares
-`manualCompaction`, so an explicit OpenClaw `/compact` resumes the
+`manualCompaction`, so an explicit PASO `/compact` resumes the
 bound Claude Code session and invokes its native `/compact` command without
 recording a conversation turn. Native-harness sessions such as Codex keep
 routing to their harness compaction endpoint instead.
 
 **Only declare it when all of the following hold**, or a deferred
-over-budget session can stay over budget or go stale (OpenClaw no longer
+over-budget session can stay over budget or go stale (PASO no longer
 rescues it):
 
 - the backend reliably compacts or bounds its own transcript as it nears its
@@ -384,7 +384,7 @@ ordinary model turn.
 
 ## MCP tool bridge
 
-CLI backends do not receive OpenClaw tools by default. If the CLI can consume
+CLI backends do not receive PASO tools by default. If the CLI can consume
 an MCP configuration, opt in explicitly:
 
 ```typescript
@@ -410,7 +410,7 @@ Supported bridge modes:
 
 Only enable the bridge when the CLI can actually consume it. If the CLI has
 its own built-in tool layer that cannot be disabled, set `nativeToolMode:
-"always-on"` so OpenClaw can fail closed when a caller requires no native
+"always-on"` so PASO can fail closed when a caller requires no native
 tools. If it can disable every native tool per run, use `"selectable"` with the
 `resolveExecutionArgs` contract above.
 
@@ -433,7 +433,7 @@ provider model's `agentRuntime.id`. Adapter mechanics remain in the plugin:
 }
 ```
 
-Put credentials in OpenClaw auth profiles or plugin-owned config. Ensure the
+Put credentials in PASO auth profiles or plugin-owned config. Ensure the
 registered command is on the gateway service's `PATH`; deployments that need a
 different path or argv should change or wrap the plugin registration.
 

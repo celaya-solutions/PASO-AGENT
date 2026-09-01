@@ -15,7 +15,7 @@ const RELEASE_PLAN_MAX_BYTES = 32 * 1024;
 const SHA_PATTERN = /^[a-f0-9]{40}$/u;
 const DIGEST_PATTERN = /^sha256:[a-f0-9]{64}$/u;
 const ASCII_PATTERN = /^[\x20-\x7e]+$/u;
-const REPOSITORY = "openclaw/openclaw";
+const REPOSITORY = "celaya-solutions/PASO-AGENT";
 const WORKFLOW_PATH = ".github/workflows/full-release-validation.yml";
 const PACKAGE_TARGETS = new Set(["clawhub", "npm"]);
 const compareAscii = (left, right) => (left < right ? -1 : left > right ? 1 : 0);

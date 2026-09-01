@@ -90,7 +90,7 @@ afterEach(async () => {
 });
 
 describe("Pi session catalog continuation", () => {
-  it("projects only adopted Pi rows with their OpenClaw session key", async () => {
+  it("projects only adopted Pi rows with their PASO session key", async () => {
     await createPiStoreFixture(
       temporaryDirectories,
       "hi",

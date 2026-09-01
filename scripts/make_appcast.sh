@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 ZIP=${1:?"Usage: $0 OpenClaw-<ver>.zip"}
-FEED_URL=${2:-"https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml"}
+FEED_URL=${2:-"https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml"}
 PRIVATE_KEY_FILE=${SPARKLE_PRIVATE_KEY_FILE:-}
 
 find_generate_appcast() {
@@ -95,7 +95,7 @@ else
 fi
 cp -f "$NOTES_HTML" "$TMP_DIR/${ZIP_BASE}.html"
 
-DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/openclaw/openclaw/releases/download/v${VERSION}/"}
+DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/celaya-solutions/PASO-AGENT/releases/download/v${VERSION}/"}
 
 GENERATE_APPCAST="$(find_generate_appcast)"
 if [[ -z "$GENERATE_APPCAST" ]]; then
@@ -112,11 +112,11 @@ fi
   "$TMP_DIR"
 
 APPCAST_PATH="$TMP_DIR/appcast.xml" APPCAST_VERSION="$VERSION" node <<'NODE'
-const { readFileSync } = require("node:fs");
+const { readFileSync, writeFileSync } = require("node:fs");
 
 const appcastPath = process.env.APPCAST_PATH;
 const version = process.env.APPCAST_VERSION;
-const appcast = readFileSync(appcastPath, "utf8");
+let appcast = readFileSync(appcastPath, "utf8");
 const item = [...appcast.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gu)].find((match) =>
   match[1]?.includes(`<sparkle:shortVersionString>${version}</sparkle:shortVersionString>`),
 );
@@ -126,6 +126,11 @@ if (!item) {
 if (!/sparkle:edSignature="[^"]+"/u.test(item[1] ?? "")) {
   throw new Error(`Generated appcast release ${version} is missing sparkle:edSignature.`);
 }
+appcast = appcast.replace(
+  /\s*<sparkle:updatesDisabled>\s*true\s*<\/sparkle:updatesDisabled>\s*/u,
+  "\n",
+);
+writeFileSync(appcastPath, appcast);
 NODE
 
 cp -f "$TMP_DIR/appcast.xml" "$ROOT/appcast.xml"

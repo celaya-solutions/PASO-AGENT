@@ -52,7 +52,7 @@ class McpServersCard extends OpenClawLightDomElement {
 
   @property() pluginsHref = "";
 
-  @property() docsUrl = "https://docs.openclaw.ai/tools/mcp";
+  @property() docsUrl = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
   @state() private rows: McpServerSummary[] | null = null;
   @state() private busy = false;

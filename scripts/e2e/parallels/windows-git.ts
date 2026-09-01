@@ -1,4 +1,4 @@
-// Windows Git script supports OpenClaw repository automation.
+// Windows Git script supports PASO repository automation.
 import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import path from "node:path";

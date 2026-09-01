@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/codex",
   "version": "2026.8.1",
-  "description": "OpenClaw Codex app-server harness and native session supervision plugin.",
+  "description": "PASO Codex app-server harness and native session supervision plugin.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

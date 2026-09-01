@@ -35,7 +35,7 @@ internal object WearScreenshotFixture {
         listOf(
           WearAgentSummary(
             id = "main",
-            name = "Molty",
+            name = "PASO",
             emoji = "M",
             selected = true,
           ),

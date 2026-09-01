@@ -270,7 +270,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     }
   });
 
-  it("adds the OpenClaw session key to both managed tools MCP bridges", () => {
+  it("adds the PASO session key to both managed tools MCP bridges", () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => undefined),
       save: vi.fn(async () => {}),
@@ -320,7 +320,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     });
   });
 
-  it("keeps managed OpenClaw tools MCP delegates reachable for fresh sessions", async () => {
+  it("keeps managed PASO tools MCP delegates reachable for fresh sessions", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => undefined),
       save: vi.fn(async () => {}),
@@ -352,7 +352,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     );
   });
 
-  it("uses the no-MCP delegate for startup probes when the OpenClaw tools bridge is enabled", async () => {
+  it("uses the no-MCP delegate for startup probes when the PASO tools bridge is enabled", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => undefined),
       save: vi.fn(async () => {}),
@@ -647,7 +647,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     expect(leaseStore.store.markState).not.toHaveBeenCalledWith(expect.any(String), "lost");
   });
 
-  it("normalizes OpenClaw Codex model ids for ACP startup", async () => {
+  it("normalizes PASO Codex model ids for ACP startup", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => undefined),
       save: vi.fn(async () => {}),
@@ -682,7 +682,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
 
   it.each([
     {
-      name: "strips the OpenClaw Anthropic provider prefix for Claude ACP startup",
+      name: "strips the PASO Anthropic provider prefix for Claude ACP startup",
       model: "anthropic/claude-sonnet-4-6",
       expectedModel: "claude-sonnet-4-6",
     },
@@ -693,7 +693,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     },
     {
       // Issue #121034: Bedrock rejects provider-qualified refs.
-      name: "strips the OpenClaw Bedrock provider prefix for Claude ACP startup",
+      name: "strips the PASO Bedrock provider prefix for Claude ACP startup",
       model: "amazon-bedrock/global.anthropic.claude-sonnet-5",
       expectedModel: "global.anthropic.claude-sonnet-5",
     },
@@ -704,7 +704,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     },
     {
       // Bare inference-profile ids and ARNs are native Bedrock values the SDK
-      // accepts as-is; only the documented OpenClaw prefixes may be stripped.
+      // accepts as-is; only the documented PASO prefixes may be stripped.
       name: "preserves native Bedrock inference-profile ids",
       model: "global.anthropic.claude-sonnet-5",
       expectedModel: "global.anthropic.claude-sonnet-5",
@@ -1105,7 +1105,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     });
   });
 
-  it("disables delegate prompt timeout for OpenClaw-managed turns", async () => {
+  it("disables delegate prompt timeout for PASO-managed turns", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => ({
         acpxRecordId: "agent:codex:acp:test",
@@ -1621,7 +1621,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
 
   it.each([
     {
-      name: "normalizes OpenClaw-qualified Codex ACP model controls",
+      name: "normalizes PASO-qualified Codex ACP model controls",
       value: "openai/gpt-5.4",
     },
     { name: "passes bare Codex ACP model controls through", value: "gpt-5.4" },
@@ -2059,7 +2059,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     expect(baseStore["load"]).toHaveBeenCalledOnce();
   });
 
-  it("releases managed OpenClaw tools MCP delegates after close", async () => {
+  it("releases managed PASO tools MCP delegates after close", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => undefined),
       save: vi.fn(async () => {}),
@@ -2098,7 +2098,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
     expect(exposedRuntime.managedToolsSessionDelegates.has("agent:codex:main")).toBe(false);
   });
 
-  it("cleans up OpenClaw-owned ACPX process trees after close", async () => {
+  it("cleans up PASO-owned ACPX process trees after close", async () => {
     const baseStore: TestSessionStore = {
       load: vi.fn(async () => ({
         acpxRecordId: "agent:codex:acp:binding:test",
@@ -4219,7 +4219,7 @@ describe("AcpxRuntime fresh reset wrapper", () => {
 
     const { runtime, delegate, bridgeSafeDelegate } = makeRuntime(baseStore, {
       mcpServers: [{ name: "tools", command: "mcp-tools" }] as never,
-      probeAgent: "  OpenClaw  ",
+      probeAgent: "  PASO  ",
       agentRegistry: {
         resolve: (agentName: string) =>
           agentName === "openclaw" ? DOCUMENTED_OPENCLAW_BRIDGE_COMMAND : agentName,

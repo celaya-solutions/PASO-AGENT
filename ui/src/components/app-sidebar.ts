@@ -56,19 +56,10 @@ import {
   type SidebarRecentSession,
 } from "./app-sidebar-session-types.ts";
 import { icons } from "./icons.ts";
-import {
-  lobsterPetSeed,
-  resolveLobsterPetMode,
-  resolveLobsterRunOutcome,
-} from "./lobster-pet-contract.ts";
 import { renderPanelRefreshStatus } from "./panel-refresh-status.ts";
 import { SessionOrganizerController } from "./session-organizer-controller.ts";
 import { SidebarMenusController } from "./sidebar-menus-controller.ts";
 import { SidebarPeopleController } from "./sidebar-people-controller.ts";
-// The shared loader retries transient chunk failures online; a deploy-pruned
-// chunk still stays off until reload when that retry fails, by design.
-const lobsterPetImport = createIdleImport(() => import("./lobster-pet.runtime.ts"));
-
 class AppSidebar extends AppSidebarSessionNavigationElement implements SessionListHost {
   @state() override sidebarNarrationLines: ReadonlyMap<string, string> = new Map();
   @state() override sidebarObserverDigests: ReadonlyMap<string, SessionObserverDigest> = new Map();
@@ -143,7 +134,6 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
       (agentIdentity, notify) => agentIdentity.subscribe(notify),
     );
   private readonly nativeGatewaysChanged = () => this.sidebarMenus.closeSessionMenu();
-  private readonly refreshAppearanceSettings = () => this.context?.theme.refresh();
   private readonly hiddenSessionCatalogsChanged = () => {
     this.hiddenSessionCatalogIds = loadStoredHiddenSessionCatalogIds();
   };
@@ -294,9 +284,6 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
       SIDEBAR_HIDDEN_SESSION_CATALOGS_CHANGED_EVENT,
       this.hiddenSessionCatalogsChanged,
     );
-    // The decorative pet's large module stays out of startup and upgrades in place.
-    // Its first visit is at least 15 seconds after load, so idle loading cannot miss one.
-    lobsterPetImport.schedule();
     this.catalogRendererImport.schedule();
   }
 
@@ -549,18 +536,6 @@ class AppSidebar extends AppSidebarSessionNavigationElement implements SessionLi
                 })}
           </div>
           <div class="sidebar-shell__footer">
-            <openclaw-lobster-pet
-              .seed=${lobsterPetSeed(this.sessionKey)}
-              .mode=${resolveLobsterPetMode(
-                !this.offline,
-                this.sessionData.sessionsResult?.sessions,
-              )}
-              .runOutcome=${resolveLobsterRunOutcome(this.sessionData.sessionsResult?.sessions)}
-              .visitsEnabled=${this.lobsterPetVisits}
-              .soundsEnabled=${this.lobsterPetSounds}
-              .gatewayVersion=${this.gatewayVersion}
-              .onVisitsDisabled=${this.refreshAppearanceSettings}
-            ></openclaw-lobster-pet>
             ${this.devGitBranch
               ? html`<openclaw-tooltip .content=${this.devGitBranch}>
                   <div class="sidebar-footer-branch">

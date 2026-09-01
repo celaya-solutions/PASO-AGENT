@@ -1,4 +1,4 @@
-// Packed Plugin Sdk Type Smoke script supports OpenClaw repository automation.
+// Packed Plugin Sdk Type Smoke script supports PASO repository automation.
 import type { ChannelMessagingAdapter } from "openclaw/plugin-sdk/core";
 import { inspectSessionBindingByConversation } from "openclaw/plugin-sdk/session-binding-runtime";
 type PublicPluginSdkModules = [

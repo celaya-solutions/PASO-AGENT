@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-// OpenClaw gateway methods host the setup/repair conversation for clients.
+// PASO gateway methods host the setup/repair conversation for clients.
 import {
   buildSystemAgentInferenceUnavailableErrorDetails,
   buildSystemAgentSessionInvalidatedErrorDetails,
@@ -166,11 +166,11 @@ function queueDelegatedApproval(params: {
   }
   const manager = params.context.systemAgentApprovalManager;
   if (!manager) {
-    throw new Error("OpenClaw approval registry unavailable");
+    throw new Error("PASO approval registry unavailable");
   }
   const description = describeSystemAgentPersistentOperation(params.proposal.operation);
   const request: SystemAgentApprovalRequestPayload = {
-    title: "OpenClaw change",
+    title: "PASO change",
     description,
     command: description,
     proposalHash: params.proposal.hash,
@@ -216,7 +216,7 @@ function queueDelegatedApproval(params: {
           }),
         "system-agent:task",
       ),
-    afterDecisionErrorLabel: "OpenClaw approval apply failed",
+    afterDecisionErrorLabel: "PASO approval apply failed",
   });
   return record.id;
 }
@@ -503,7 +503,7 @@ export const systemAgentHandlers: GatewayRequestHandlers = {
           respond(
             false,
             undefined,
-            errorShape(ErrorCodes.INVALID_REQUEST, "OpenClaw caller identity unavailable."),
+            errorShape(ErrorCodes.INVALID_REQUEST, "PASO caller identity unavailable."),
           );
           return;
         }
@@ -514,7 +514,7 @@ export const systemAgentHandlers: GatewayRequestHandlers = {
           respond(
             false,
             undefined,
-            errorShape(ErrorCodes.INVALID_REQUEST, "OpenClaw session belongs to another caller.", {
+            errorShape(ErrorCodes.INVALID_REQUEST, "PASO session belongs to another caller.", {
               details: buildSystemAgentSessionInvalidatedErrorDetails(),
             }),
           );
@@ -541,8 +541,8 @@ export const systemAgentHandlers: GatewayRequestHandlers = {
             errorShape(
               ErrorCodes.INVALID_REQUEST,
               params.wizardCancel !== undefined
-                ? "No active OpenClaw chat session is awaiting that wizard cancel."
-                : "No active OpenClaw chat session is awaiting that wizard answer.",
+                ? "No active PASO chat session is awaiting that wizard cancel."
+                : "No active PASO chat session is awaiting that wizard answer.",
               { details: buildSystemAgentSessionInvalidatedErrorDetails() },
             ),
           );
@@ -566,7 +566,7 @@ export const systemAgentHandlers: GatewayRequestHandlers = {
               undefined,
               errorShape(
                 ErrorCodes.UNAVAILABLE,
-                `OpenClaw requires working inference: ${inference.error}`,
+                `PASO requires working inference: ${inference.error}`,
                 {
                   details: buildSystemAgentInferenceUnavailableErrorDetails(),
                 },
@@ -689,7 +689,7 @@ export const systemAgentHandlers: GatewayRequestHandlers = {
             respond(
               false,
               undefined,
-              errorShape(ErrorCodes.INVALID_REQUEST, "OpenClaw chat input is missing."),
+              errorShape(ErrorCodes.INVALID_REQUEST, "PASO chat input is missing."),
             );
             return;
           }

@@ -1,16 +1,16 @@
 ---
 title: "OpenProse removal and migration"
 sidebarTitle: "OpenProse migration"
-summary: "OpenClaw no longer bundles OpenProse or the /prose command. Move to the maintained upstream Agent Skill and clean stale plugin configuration."
+summary: "PASO no longer bundles OpenProse or the /prose command. Move to the maintained upstream Agent Skill and clean stale plugin configuration."
 read_when:
   - You used the bundled OpenProse plugin or /prose command
-  - You need to clean OpenProse configuration after upgrading OpenClaw
+  - You need to clean OpenProse configuration after upgrading PASO
   - You want to install the maintained upstream OpenProse Agent Skill
 ---
 
-OpenClaw no longer bundles the OpenProse plugin or its `/prose` command. OpenProse
+PASO no longer bundles the OpenProse plugin or its `/prose` command. OpenProse
 continues as a maintained upstream Agent Skill. Existing `.prose` source files
-remain yours; the removed plugin did not store state in OpenClaw's SQLite database.
+remain yours; the removed plugin did not store state in PASO's SQLite database.
 
 ## Migrate
 
@@ -21,7 +21,7 @@ remain yours; the removed plugin did not store state in OpenClaw's SQLite databa
    ```
 
    Doctor removes `open-prose` from plugin allowlists, denylists, and plugin
-   entries. No OpenClaw database migration is required.
+   entries. No PASO database migration is required.
 
 2. From your workspace root, install the upstream skill:
 
@@ -29,11 +29,11 @@ remain yours; the removed plugin did not store state in OpenClaw's SQLite databa
    npx skills add openprose/prose --skill open-prose --agent codex --copy -y
    ```
 
-   This copies the skill to `.agents/skills/open-prose`, which OpenClaw loads as
+   This copies the skill to `.agents/skills/open-prose`, which PASO loads as
    a project Agent Skill. It does not restore the removed bundled plugin or the
    `/prose` command.
 
-3. If you are upgrading older OpenProse source, start a new OpenClaw agent
+3. If you are upgrading older OpenProse source, start a new PASO agent
    session in the workspace and send:
 
    ```text

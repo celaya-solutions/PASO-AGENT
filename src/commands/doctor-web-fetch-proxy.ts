@@ -7,7 +7,7 @@ import { resolveGatewayService, type GatewayService } from "../daemon/service.js
 import { hasEnvHttpProxyConfigured } from "../infra/net/proxy-env.js";
 import { shouldManageGatewayService } from "./doctor-service-repair-policy.js";
 
-const DIRECT_PROBE_HOST = "docs.openclaw.ai";
+const DIRECT_PROBE_HOST = "github.com";
 const DIRECT_PROBE_PORT = 443;
 const DIRECT_PROBE_TIMEOUT_MS = 3_000;
 const HTTP_PROXY_ENV_KEYS = ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"] as const;
@@ -105,7 +105,7 @@ async function collectWebFetchProxyDiagnostic(params: {
     directProbe,
     "- If direct web_fetch requests time out and the proxy is operator-controlled, enable the explicit opt-in:",
     `  ${formatCliCommand("openclaw config set tools.web.fetch.useTrustedEnvProxy true")}`,
-    "- Keep the opt-in disabled for untrusted proxies; enabling it lets the proxy resolve DNS after OpenClaw's hostname checks.",
+    "- Keep the opt-in disabled for untrusted proxies; enabling it lets the proxy resolve DNS after PASO's hostname checks.",
   ].join("\n");
 }
 

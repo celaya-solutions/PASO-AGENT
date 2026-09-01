@@ -177,7 +177,7 @@ class LabsPage extends OpenClawLightDomElement {
       ${renderSettingsPageHeader({
         title: titleForRoute("labs"),
         subtitle: html`${t("labsPage.intro")}
-        ${renderLearnMoreLink("https://docs.openclaw.ai/concepts/experimental-features")}`,
+        ${renderLearnMoreLink("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs")}`,
       })}
       ${renderSettingsWorkspace(body)}
     `;

@@ -193,7 +193,7 @@ describe("runConfigureWizard", () => {
       [
         "No web search providers are currently available under this plugin policy.",
         "Enable plugins or remove deny rules, then rerun configure.",
-        "Docs: https://docs.openclaw.ai/tools/web",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Web search",
     );
@@ -247,7 +247,7 @@ describe("runConfigureWizard", () => {
         envVars: [],
         placeholder: "(no key needed)",
         signupUrl: "https://duckduckgo.com/",
-        docsUrl: "https://docs.openclaw.ai/tools/web",
+        docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         credentialPath: "",
       },
     ]);
@@ -297,7 +297,7 @@ describe("runConfigureWizard", () => {
         "Web search lets your agent look things up online using the `web_search` tool.",
         "Codex-capable models can use native Codex web search.",
         "Other models use a separate web search provider, which you can configure here.",
-        "Docs: https://docs.openclaw.ai/tools/web",
+        "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       ].join("\n"),
       "Web search",
     );
@@ -305,7 +305,7 @@ describe("runConfigureWizard", () => {
       [
         "Codex-capable models can use native Codex web search instead of a separate provider.",
         "Other models need a separate web search provider.",
-        "If you do not choose one, OpenClaw can select a provider from available credentials; otherwise other models may not have web search.",
+        "If you do not choose one, PASO can select a provider from available credentials; otherwise other models may not have web search.",
       ].join("\n"),
       "Codex native search",
     );

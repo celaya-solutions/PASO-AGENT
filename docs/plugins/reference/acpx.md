@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw ACP runtime backend with plugin-owned session and transport management."
+summary: "PASO ACP runtime backend with plugin-owned session and transport management."
 read_when:
   - You are installing, configuring, or auditing the acpx plugin
 title: "ACPx plugin"
@@ -7,7 +7,7 @@ title: "ACPx plugin"
 
 # ACPx plugin
 
-OpenClaw ACP runtime backend with plugin-owned session and transport management.
+PASO ACP runtime backend with plugin-owned session and transport management.
 
 ## Distribution
 
@@ -25,9 +25,9 @@ skills
 The bundled runtime auto-detects Pi's session store on the Gateway and paired
 nodes. Stored sessions appear in the **Pi** sessions-sidebar group, with
 transcript browsing from Pi's documented JSONL session format. Local rows also
-offer **Continue**, which creates an OpenClaw session whose first turn resumes
+offer **Continue**, which creates a PASO session whose first turn resumes
 the native Pi session through ACP. Pi retains the full model context from its
-session file, and OpenClaw imports the recent native history into the adopted
+session file, and PASO imports the recent native history into the adopted
 session transcript. Very long transcripts import only their most recent 200
 items using a 512 KiB serialized-item budget. Paired-node rows remain view-only.
 Custom session

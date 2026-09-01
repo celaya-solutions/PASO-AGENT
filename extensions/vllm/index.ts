@@ -20,7 +20,7 @@ export default defineSelfHostedOpenAICompatibleProvider({
     buildUnknownModelHint: () =>
       "vLLM requires authentication to be registered as a provider. " +
       'Set VLLM_API_KEY (any value works) or run "openclaw configure". ' +
-      "See: https://docs.openclaw.ai/providers/vllm",
+      "See: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     resolveThinkingProfile,
     wrapStreamFn: wrapVllmProviderStream,
   },

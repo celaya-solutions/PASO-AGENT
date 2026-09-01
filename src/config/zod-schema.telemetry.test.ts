@@ -32,7 +32,9 @@ describe("OpenClawSchema telemetry config", () => {
       expect(response.uiHints[fieldPath]?.help, fieldPath).toBe(help[fieldPath]);
     }
 
-    expect(response.uiHints.telemetry?.docsUrl).toBe("https://docs.openclaw.ai/gateway/telemetry");
+    expect(response.uiHints.telemetry?.docsUrl).toBe(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
     expect(response.uiHints["telemetry.enabled"]?.advanced).toBe(true);
   });
 });

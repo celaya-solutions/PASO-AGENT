@@ -1,15 +1,15 @@
 ---
 summary: "Configuration overview: common tasks, quick setup, and links to the full reference"
 read_when:
-  - Setting up OpenClaw for the first time
+  - Setting up PASO for the first time
   - Looking for common configuration patterns
   - Navigating to specific config sections
 title: "Configuration"
 ---
 
-OpenClaw reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.openclaw/openclaw.json`. If the file is missing, OpenClaw uses safe defaults.
+PASO reads an optional <Tooltip tip="JSON5 supports comments and trailing commas">**JSON5**</Tooltip> config from `~/.openclaw/openclaw.json`. If the file is missing, PASO uses safe defaults.
 
-The active config path must be a regular file. OpenClaw-owned writes replace it atomically (rename onto the path), so a symlinked `openclaw.json` gets its target replaced rather than written through - avoid symlinked config layouts. If you keep config outside the default state directory, point `OPENCLAW_CONFIG_PATH` directly at the real file.
+The active config path must be a regular file. PASO-owned writes replace it atomically (rename onto the path), so a symlinked `openclaw.json` gets its target replaced rather than written through - avoid symlinked config layouts. If you keep config outside the default state directory, point `OPENCLAW_CONFIG_PATH` directly at the real file.
 
 Common reasons to add a config:
 
@@ -78,7 +78,7 @@ field map and defaults.
 ## Strict validation
 
 <Warning>
-OpenClaw only accepts configurations that fully match the schema. Gateway startup first applies safe legacy-key migrations to eligible single-file configs. Unknown keys, malformed types, or invalid values that remain cause the Gateway to **refuse to start**. The only root-level exception is `$schema` (string), so editors can attach JSON Schema metadata.
+PASO only accepts configurations that fully match the schema. Gateway startup first applies safe legacy-key migrations to eligible single-file configs. Unknown keys, malformed types, or invalid values that remain cause the Gateway to **refuse to start**. The only root-level exception is `$schema` (string), so editors can attach JSON Schema metadata.
 </Warning>
 
 `openclaw config schema` prints the canonical JSON Schema used by Control UI
@@ -94,7 +94,7 @@ settings. A leaf inherits the nearest ancestor tier when it has no direct hint;
 paths with no declared ancestor default to advanced. This affects presentation
 only, not validation, defaults, reload behavior, or whether the key can be set.
 
-Startup migration uses the same deterministic, prompt-free transforms as `openclaw doctor --fix` and writes only when the entire migrated config validates, including plugins. The previous config stays in the `.bak` ring. Configs using `$include`, Nix-managed configs, and configs written by a newer OpenClaw version are not automatically migrated. See [Legacy config key migrations](/gateway/doctor#detailed-behavior-and-rationale) for the conditions and fallback.
+Startup migration uses the same deterministic, prompt-free transforms as `openclaw doctor --fix` and writes only when the entire migrated config validates, including plugins. The previous config stays in the `.bak` ring. Configs using `$include`, Nix-managed configs, and configs written by a newer PASO version are not automatically migrated. See [Legacy config key migrations](/gateway/doctor#detailed-behavior-and-rationale) for the conditions and fallback.
 
 When validation still fails:
 
@@ -329,7 +329,11 @@ candidate contains a redacted secret placeholder such as `***` or `[redacted]`.
   </Accordion>
 
   <Accordion title="Enable relay-backed push for official iOS builds">
-    Relay-backed push for public App Store builds uses the hosted OpenClaw relay: `https://ios-push-relay.openclaw.ai`.
+    Relay-backed push for the upstream-compatible public App Store build uses
+    `https://ios-push-relay.openclaw.ai`. That service is operated by the
+    upstream OpenClaw project, not by PASO or Celaya Solutions Research. PASO
+    preserves the endpoint only for compatibility with builds that already use
+    it.
 
     Custom relay deployments require a deliberately separate iOS build/deployment path whose relay URL matches the gateway relay URL. If you are using a custom relay build, set this in gateway config:
 
@@ -360,12 +364,12 @@ candidate contains a redacted secret placeholder such as `***` or `[redacted]`.
     - Lets the gateway send `push.test`, wake nudges, and reconnect wakes through the external relay.
     - Uses a registration-scoped send grant forwarded by the paired iOS app. The gateway does not need a deployment-wide relay token.
     - Binds each relay-backed registration to the gateway identity that the iOS app paired with, so another gateway cannot reuse the stored registration.
-    - Keeps local/manual iOS builds on direct APNs. Relay-backed sends apply only to official distributed builds that registered through the relay.
+    - Keeps local/manual iOS builds on direct APNs. Relay-backed sends apply only to compatible distributed builds that registered through the same relay.
     - Must match the relay base URL baked into the iOS build, so registration and send traffic reach the same relay deployment.
 
     End-to-end flow:
 
-    1. Install the official iOS app.
+    1. Install the iOS build that matches the relay deployment you intend to use.
     2. Optional: configure `gateway.push.apns.relay.baseUrl` on the gateway only when using a deliberately separate custom relay build.
     3. Pair the iOS app to the gateway and let both node and operator sessions connect.
     4. The iOS app fetches the gateway identity, registers with the relay using App Attest plus the app receipt, and then publishes the relay-backed `push.apns.register` payload to the paired gateway.
@@ -379,7 +383,7 @@ candidate contains a redacted secret placeholder such as `***` or `[redacted]`.
     Compatibility note:
 
     - `OPENCLAW_APNS_RELAY_BASE_URL` and `OPENCLAW_APNS_RELAY_TIMEOUT_MS` still work as temporary env overrides.
-    - Custom gateway relay URLs must match the relay base URL baked into the iOS build; the public App Store release lane rejects custom iOS relay URL overrides.
+    - Custom gateway relay URLs must match the relay base URL baked into the iOS build; the upstream compatibility App Store release lane rejects custom iOS relay URL overrides.
     - `OPENCLAW_APNS_RELAY_ALLOW_HTTP=true` remains a loopback-only development escape hatch; do not persist HTTP relay URLs in config.
 
     See [iOS App](/platforms/ios#relay-backed-push-for-official-builds) for the end-to-end flow and [Authentication and trust flow](/platforms/ios#authentication-and-trust-flow) for the relay security model.
@@ -504,11 +508,11 @@ candidate contains a redacted secret placeholder such as `***` or `[redacted]`.
     - **Sibling keys**: merged after includes (override included values)
     - **Relative paths**: resolved relative to the including file
     - **Path format**: include paths must not contain null bytes and must be strictly shorter than 4096 characters before and after resolution
-    - **OpenClaw-owned writes**: when a write changes only one top-level section
+    - **PASO-owned writes**: when a write changes only one top-level section
       backed by a single-file include such as `plugins: { $include: "./plugins.json5" }`,
-      OpenClaw updates that included file and leaves `openclaw.json` intact
+      PASO updates that included file and leaves `openclaw.json` intact
     - **Unsupported write-through**: root includes, include arrays, and includes
-      with sibling overrides fail closed for OpenClaw-owned writes instead of
+      with sibling overrides fail closed for PASO-owned writes instead of
       flattening the config
     - **Confinement**: `$include` paths must resolve under the directory holding
       `openclaw.json`. To share a tree across machines or users, set
@@ -527,7 +531,7 @@ The Gateway watches `~/.openclaw/openclaw.json` and applies changes automaticall
 
 Direct file edits are treated as untrusted until they validate. The watcher waits
 for editor temp-write/rename churn to settle, reads the final file, and rejects
-invalid external edits without rewriting `openclaw.json`. OpenClaw-owned config
+invalid external edits without rewriting `openclaw.json`. PASO-owned config
 writes use the same schema gate before writing (see [Strict validation](#strict-validation)
 for the clobber/rollback rules that apply to every write).
 
@@ -566,7 +570,7 @@ stopped accounts; use an explicit channel start to resume those accounts.
 Model runtime selection keeps your authored settings separate from catalog defaults.
 Hot reload and secrets reload preserve that distinction: catalog compatibility
 metadata does not become a custom request override that switches a native runtime
-back to OpenClaw.
+back to PASO.
 
 | Category            | Fields                                                                  | Gateway restart needed?      |
 | ------------------- | ----------------------------------------------------------------------- | ---------------------------- |
@@ -593,7 +597,7 @@ directory until restart. See [Plugin metadata snapshots](/plugins/architecture#p
 
 ### Reload planning
 
-When you edit a source file that is referenced through `$include`, OpenClaw plans
+When you edit a source file that is referenced through `$include`, PASO plans
 the reload from the source-authored layout, not the flattened in-memory view.
 That keeps hot-reload decisions (hot-apply vs restart) predictable even when a
 single top-level section lives in its own included file such as
@@ -669,7 +673,7 @@ not saved into sibling entries. Explicitly configured values remain authoritativ
 
 ## Environment variables
 
-OpenClaw reads env vars from the parent process plus:
+PASO reads env vars from the parent process plus:
 
 - `.env` from the current working directory (if present)
 - `~/.openclaw/.env` (global fallback)
@@ -688,7 +692,7 @@ Neither file overrides existing env vars. You can also set inline env vars in co
 ```
 
 <Accordion title="Shell env import (optional)">
-  If enabled and expected keys aren't set, OpenClaw runs your login shell and imports only the missing keys:
+  If enabled and expected keys aren't set, PASO runs your login shell and imports only the missing keys:
 
 ```json5
 {

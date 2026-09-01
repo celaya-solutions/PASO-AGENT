@@ -233,7 +233,7 @@ describe("openclaw-mcp-servers-card", () => {
     );
     const setupLink = card.querySelector<HTMLAnchorElement>(".settings-empty a");
     expect(setupLink?.textContent?.trim()).toBe("Set up your first MCP server");
-    expect(setupLink?.href).toBe("https://docs.openclaw.ai/tools/mcp");
+    expect(setupLink?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
     expect(setupLink?.target).toBe("_blank");
     expect(setupLink?.rel).toBe("noopener noreferrer");
   });

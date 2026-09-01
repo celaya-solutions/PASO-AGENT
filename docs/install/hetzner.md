@@ -1,14 +1,14 @@
 ---
-summary: "Run OpenClaw Gateway 24/7 on a Hetzner VPS with Docker"
+summary: "Run PASO Gateway 24/7 on a Hetzner VPS with Docker"
 doc-schema-version: 1
 read_when:
-  - You want OpenClaw running 24/7 on a Hetzner VPS
+  - You want PASO running 24/7 on a Hetzner VPS
   - You need Hetzner provisioning, firewall, or SSH tunnel guidance
   - You want a persistent Docker Gateway on a cloud VM
 title: "Hetzner"
 ---
 
-Run a persistent OpenClaw Gateway on a Debian or Ubuntu Hetzner VPS. This page
+Run a persistent PASO Gateway on a Debian or Ubuntu Hetzner VPS. This page
 covers Hetzner provisioning, host security, and access; the shared
 [Docker VM runtime](/install/docker-vm-runtime) page owns container setup,
 persistence, custom binaries, verification, and updates.
@@ -119,7 +119,7 @@ Open `http://127.0.0.1:18789/` and paste the Gateway token from the VPS `.env`.
 To reprint the dashboard URL or approve a browser device, run on the VPS:
 
 ```bash
-cd openclaw
+cd PASO-AGENT
 docker compose run --rm openclaw-cli dashboard --no-open
 docker compose run --rm openclaw-cli devices list
 docker compose run --rm openclaw-cli devices approve <requestId>
@@ -131,23 +131,25 @@ needs to admit SSH; it does not need to admit port 18789.
 
 ## Infrastructure as code
 
-For teams that prefer Terraform, community-maintained projects provide remote
-state, cloud-init provisioning, deployment and backup scripts, firewall
-hardening, and SSH tunnel setup:
+For teams that prefer Terraform, these community projects provide remote state,
+cloud-init provisioning, deployment and backup scripts, firewall hardening, and
+SSH tunnel setup for the upstream OpenClaw framework:
 
 - [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
 <Note>
-These repositories are community-maintained. Report issues and contribute in
-their respective repositories.
+These repositories are upstream compatibility resources. They are not PASO
+releases and are not maintained by Celaya Solutions Research. Review and adapt
+their install sources before using them with PASO; report project-specific
+issues in their respective repositories.
 </Note>
 
 ## Next steps
 
 - [Channels](/channels)
 - [Gateway configuration](/gateway/configuration)
-- [Updating](/install/docker-vm-runtime#update-openclaw)
+- [Updating](/install/docker-vm-runtime#update-paso)
 
 ## Related
 

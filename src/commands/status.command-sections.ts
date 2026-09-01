@@ -397,7 +397,7 @@ export function buildStatusModelSelectionLines(params: {
       `  Session selected: ${selected}`,
       reasonLine,
       clearLine,
-      "  Docs: https://docs.openclaw.ai/concepts/models#selection-source-and-fallback-behavior",
+      "  Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
   }
   if (mismatches.length > limit) {
@@ -415,8 +415,8 @@ export function buildStatusFooterLines(params: {
   gatewayReachable: boolean;
 }) {
   return [
-    "FAQ: https://docs.openclaw.ai/faq",
-    "Troubleshooting: https://docs.openclaw.ai/troubleshooting",
+    "FAQ: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    "Troubleshooting: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     ...(params.updateHint ? ["", params.warn(params.updateHint)] : []),
     "Next steps:",
     `  Need to share?      ${params.formatCliCommand("openclaw status --all")}`,

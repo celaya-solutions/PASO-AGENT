@@ -40,8 +40,10 @@ const CROSS_OS_SIGNAL_EXIT_CODES: Partial<Record<NodeJS.Signals, number>> = {
   SIGTERM: 143,
 };
 const CROSS_OS_ACTIVE_CHILD_TREE_KILLERS = new Set<(signal: NodeJS.Signals) => void>();
-const STARTUP_MIGRATION_RESTART_PREFIX =
-  "OpenClaw plugin migration inputs changed during startup convergence;";
+const STARTUP_MIGRATION_RESTART_PREFIXES = [
+  "PASO plugin migration inputs changed during startup convergence;",
+  "OpenClaw plugin migration inputs changed during startup convergence;",
+] as const;
 let forwardedSignalExitCode: number | undefined;
 let forwardedSignalForceKillTimer: NodeJS.Timeout | undefined;
 
@@ -147,7 +149,10 @@ export async function waitForGatewayWithStartupMigrationRestart(params: {
       await gateway.waitForClose();
       await gateway.closeLog();
       const startupLog = readLogTextSince(gateway.logPath, gateway.launchLogOffset);
-      if (attempt > 0 || !startupLog.includes(STARTUP_MIGRATION_RESTART_PREFIX)) {
+      if (
+        attempt > 0 ||
+        !STARTUP_MIGRATION_RESTART_PREFIXES.some((prefix) => startupLog.includes(prefix))
+      ) {
         throw error;
       }
       gateway = await params.restartGateway();

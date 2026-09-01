@@ -62,7 +62,7 @@ The 16MB audio/video and 100MB document figures above are the shared per-kind me
 
 ## Inbound Media To Commands
 
-- When inbound web messages include media, OpenClaw downloads it to a temp file and exposes templating variables:
+- When inbound web messages include media, PASO downloads it to a temp file and exposes templating variables:
   - `{{AttachmentUrl}}` — original URL or provider reference for the current attachment.
   - `{{AttachmentPath}}` — local temp path written before running the command.
   - `{{AttachmentContentType}}` — MIME content type.
@@ -73,7 +73,7 @@ The 16MB audio/video and 100MB document figures above are the shared per-kind me
 - Media understanding (configured via `tools.media.*` or shared `tools.media.models`) runs before templating and can insert `[Image]`, `[Audio]`, and `[Video]` blocks into `Body`.
   - Audio sets `{{Transcript}}` and uses the transcript for command parsing so slash commands still work.
   - Video and image descriptions preserve any caption text for command parsing.
-  - If the active primary model already supports vision natively, OpenClaw skips the `[Image]` summary block and passes the original image to the model instead.
+  - If the active primary model already supports vision natively, PASO skips the `[Image]` summary block and passes the original image to the model instead.
 - By default only the first matching image/audio/video attachment is processed; use `tools.media.<capability>.attachments` to select multiple attachments.
 
 ## Limits and errors

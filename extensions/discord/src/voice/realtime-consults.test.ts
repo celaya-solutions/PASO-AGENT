@@ -307,7 +307,7 @@ defineDiscordVoiceTests(
         "call-late",
         {
           status: "already_delivered",
-          message: "OpenClaw already delivered this answer to Discord voice. Do not repeat it.",
+          message: "PASO already delivered this answer to Discord voice. Do not repeat it.",
         },
         { suppressResponse: true },
       );
@@ -330,7 +330,7 @@ defineDiscordVoiceTests(
           "call-late-unsuppressed",
           {
             status: "already_delivered",
-            message: "OpenClaw already delivered this answer to Discord voice. Do not repeat it.",
+            message: "PASO already delivered this answer to Discord voice. Do not repeat it.",
           },
         ]);
       });
@@ -366,7 +366,7 @@ defineDiscordVoiceTests(
         "call-cancelled",
         {
           status: "cancelled",
-          message: "OpenClaw cancelled this consult before completion. Do not restart it.",
+          message: "PASO cancelled this consult before completion. Do not restart it.",
         },
         { suppressResponse: true },
       );
@@ -455,7 +455,7 @@ defineDiscordVoiceTests(
           "call-late",
           {
             status: "already_delivered",
-            message: "OpenClaw already delivered this answer to Discord voice. Do not repeat it.",
+            message: "PASO already delivered this answer to Discord voice. Do not repeat it.",
           },
           { suppressResponse: true },
         ),
@@ -546,7 +546,7 @@ defineDiscordVoiceTests(
         "call-new",
         {
           status: "already_delivered",
-          message: "OpenClaw already delivered this answer to Discord voice. Do not repeat it.",
+          message: "PASO already delivered this answer to Discord voice. Do not repeat it.",
         },
         { suppressResponse: true },
       );
@@ -628,7 +628,7 @@ defineDiscordVoiceTests(
         sessionKey: "agent:main:discord:channel:1001",
       });
       resolveRealtimeBootstrapContextInstructionsMock.mockResolvedValue(
-        "OpenClaw realtime voice profile context:\n\n### IDENTITY.md\nName: Wilfred",
+        "PASO realtime voice profile context:\n\n### IDENTITY.md\nName: Wilfred",
       );
       const { bridgeParams } = await createJoinedBidiFixture({
         voice: { realtime: { consultPolicy: "always" } },
@@ -641,7 +641,7 @@ defineDiscordVoiceTests(
         files: undefined,
         warn: expect.any(Function),
       });
-      expect(bridgeParams?.instructions).toContain("OpenClaw realtime voice profile context");
+      expect(bridgeParams?.instructions).toContain("PASO realtime voice profile context");
       expect(bridgeParams?.instructions).toContain("Name: Wilfred");
       expect(bridgeParams?.instructions).toContain("short natural backchannel");
       expect(bridgeParams?.instructions).toContain("Call openclaw_agent_consult");

@@ -1,8 +1,8 @@
 ---
-summary: "ClawHub CLI entry points for discovering, installing, removing, publishing, and verifying OpenClaw skills and plugins."
+summary: "ClawHub CLI entry points for discovering, installing, removing, publishing, and verifying PASO skills and plugins."
 read_when:
   - You want to use ClawHub from the command line
-  - You want to install ClawHub skills or plugins through OpenClaw
+  - You want to install ClawHub skills or plugins through PASO
   - You need to remove an installed ClawHub skill
   - You want to publish ClawHub packages
 title: "ClawHub CLI"
@@ -13,7 +13,7 @@ title: "ClawHub CLI"
 Two command-line surfaces talk to ClawHub:
 
 - `openclaw skills` / `openclaw plugins` - discover, install, and update
-  packages for a local OpenClaw agent or Gateway.
+  packages for a local PASO agent or Gateway.
 - The standalone `clawhub` CLI - remove installed skills and handle publisher
   workflows including login, publish, sync, and transfer.
 
@@ -40,7 +40,7 @@ explicit `clawhub:` prefix to force ClawHub resolution over npm, git, or a
 local path. Full flag reference: [`openclaw skills`](/cli/skills) and
 [`openclaw plugins`](/cli/plugins).
 
-`skills-sh:` is an explicitly external catalog reference. OpenClaw sends it to
+`skills-sh:` is an explicitly external catalog reference. PASO sends it to
 ClawHub and installs the exact commit-pinned GitHub source returned by the
 resolver; it never downloads skill content from skills.sh directly. Unclaimed
 entries are labeled **Not scanned by ClawHub**. Claimed and ClawHub-scanned
@@ -48,7 +48,7 @@ skills use the native `@owner/<slug>` form instead.
 
 ### Release trust
 
-OpenClaw checks a release's ClawHub trust state before downloading it, for
+PASO checks a release's ClawHub trust state before downloading it, for
 both skills and plugins. Versioned releases use exact-release trust metadata;
 resolver-backed GitHub skills go through ClawHub's install resolver, which
 enforces scan and force-install policy before returning a pinned commit.
@@ -56,7 +56,7 @@ enforces scan and force-install policy before returning a pinned commit.
 - **Malicious or blocked** releases are refused outright.
 - **Review** releases print the exact ClawHub audit overview and details link,
   then continue installation.
-- **Official ClawHub publishers/packages and bundled OpenClaw sources** skip
+- **Official ClawHub publishers/packages and bundled PASO sources** skip
   the security-verdict fetch entirely.
 
 ## Remove an installed skill
@@ -70,7 +70,7 @@ clawhub uninstall @owner/my-skill
 
 The command asks for confirmation, then removes the installed skill directory
 and its ClawHub lockfile entry. Select the original agent workspace or shared
-OpenClaw state directory when the installation is outside the current workdir:
+PASO state directory when the installation is outside the current workdir:
 
 ```bash
 clawhub --workdir /path/to/agent-workspace uninstall @owner/my-skill

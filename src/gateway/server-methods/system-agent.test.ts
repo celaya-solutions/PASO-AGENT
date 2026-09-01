@@ -1,4 +1,4 @@
-// OpenClaw gateway tests cover activation serialization and chat sessions.
+// PASO gateway tests cover activation serialization and chat sessions.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -214,7 +214,7 @@ function stubEngineOverview() {
     },
     gateway: { url: "ws://127.0.0.1:18789", source: "test", reachable: true },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
   } as never);
@@ -271,7 +271,7 @@ beforeEach(() => {
     auditSequence: 0,
   });
   greetingMocks.resolveSystemAgentGreeting.mockReset().mockResolvedValue({
-    text: "I'm OpenClaw. All systems nominal.",
+    text: "I'm PASO. All systems nominal.",
     source: "model",
   });
   onboardingWelcomeMocks.buildOnboardingWelcome.mockReset().mockResolvedValue({
@@ -331,7 +331,7 @@ describe("openclaw.setup", () => {
           payload: undefined,
           error: {
             code: "UNAVAILABLE",
-            message: "OpenClaw setup is already in progress; try again when it finishes.",
+            message: "PASO setup is already in progress; try again when it finishes.",
             details: { code: "SETUP_ADMISSION_BUSY" },
             retryable: true,
           },
@@ -369,7 +369,7 @@ describe("openclaw.setup", () => {
           payload: undefined,
           error: {
             code: "UNAVAILABLE",
-            message: "OpenClaw setup is already in progress; try again when it finishes.",
+            message: "PASO setup is already in progress; try again when it finishes.",
             details: { code: "SETUP_ADMISSION_BUSY" },
             retryable: true,
           },
@@ -398,7 +398,7 @@ describe("openclaw.chat", () => {
       ok: false,
       error: {
         code: "UNAVAILABLE",
-        message: "OpenClaw requires working inference: no configured model",
+        message: "PASO requires working inference: no configured model",
         details: {
           code: "system_agent_inference_unavailable",
         },

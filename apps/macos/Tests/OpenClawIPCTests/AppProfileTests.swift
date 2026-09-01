@@ -163,14 +163,14 @@ struct AppProfileTests {
             profile: AppProfile(environment: [:]),
             bundleLocationAllowsPersistentIntegration: false,
             isEnabled: false)
-        #expect(defaultUnavailable.subtitle == "Move OpenClaw to Applications before enabling launch at login.")
+        #expect(defaultUnavailable.subtitle == "Move PASO to Applications before enabling launch at login.")
         #expect(defaultUnavailable.isDisabled)
 
         let defaultAvailable = LaunchAtLoginPresentation.resolve(
             profile: AppProfile(environment: [:]),
             bundleLocationAllowsPersistentIntegration: true,
             isEnabled: false)
-        #expect(defaultAvailable.subtitle == "Automatically start OpenClaw after you sign in.")
+        #expect(defaultAvailable.subtitle == "Automatically start PASO after you sign in.")
         #expect(!defaultAvailable.isDisabled)
     }
 

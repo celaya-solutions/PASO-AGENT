@@ -118,11 +118,13 @@ export type AuthorizedBetaFocusedEvidence = {
 
 const SCRIPT_ROOT = dirname(fileURLToPath(import.meta.url));
 const POLICY_PATH = resolve(SCRIPT_ROOT, "authorized-beta-focused-policy.json");
-const REPOSITORY = "openclaw/openclaw";
+const REPOSITORY = "celaya-solutions/PASO-AGENT";
 const PRODUCER_WORKFLOW = ".github/workflows/authorized-beta-focused-validation.yml";
 const SHA_PATTERN = /^[a-f0-9]{40}$/u;
 const POSITIVE_INTEGER_PATTERN = /^[1-9][0-9]*$/u;
 const PROTECTED_TAG_PATTERN = /^refs\/tags\/release-publish\/([a-f0-9]{12})-[1-9][0-9]*$/u;
+const LEGACY_RELEASE_CHECKS_WORKFLOW_NAME = "OpenClaw Release Checks";
+const LEGACY_PERFORMANCE_WORKFLOW_NAME = "OpenClaw Performance";
 
 function fail(message: string): never {
   throw new Error(message);
@@ -556,7 +558,7 @@ function assertHistoricalAndFocusedEvidence(policy: AuthorizedBetaFocusedPolicy)
   requireRun({
     runId: historical.releaseChecksRunId,
     attempt: 1,
-    name: `OpenClaw Release Checks full-release-validation-${historical.runId}-${historical.runAttempt}-release-checks`,
+    name: `${LEGACY_RELEASE_CHECKS_WORKFLOW_NAME} full-release-validation-${historical.runId}-${historical.runAttempt}-release-checks`,
     path: ".github/workflows/openclaw-release-checks.yml",
     headBranch: historical.workflowRef,
     headSha: policy.historicalToolingSha,
@@ -571,7 +573,7 @@ function assertHistoricalAndFocusedEvidence(policy: AuthorizedBetaFocusedPolicy)
   requireRun({
     runId: historical.performanceRunId,
     attempt: 1,
-    name: `OpenClaw Performance full-release-validation-${historical.runId}-${historical.runAttempt}`,
+    name: `${LEGACY_PERFORMANCE_WORKFLOW_NAME} full-release-validation-${historical.runId}-${historical.runAttempt}`,
     path: ".github/workflows/openclaw-performance.yml",
     headBranch: historical.workflowRef,
     headSha: policy.historicalToolingSha,

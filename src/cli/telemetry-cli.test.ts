@@ -146,6 +146,36 @@ describe("telemetry cli", () => {
     ]);
   });
 
+  it("reports no request when no endpoint is configured", async () => {
+    mocks.resolveTelemetryStatus.mockReturnValue({
+      enabled: false,
+      reason: "endpoint-unconfigured",
+      endpoint: null,
+    });
+
+    await runTelemetryCli(["show", "--json"]);
+
+    expect(mocks.defaultRuntime.writeJson).toHaveBeenCalledExactlyOnceWith(
+      {
+        featureStatsEnabled: false,
+        reason: "endpoint-unconfigured",
+        endpoint: null,
+        lastPingAt: null,
+        request: null,
+      },
+      0,
+    );
+
+    await runTelemetryCli(["show"]);
+    expect(mocks.runtimeLogs).toEqual([
+      "Feature stats: disabled",
+      "Reason: no telemetry endpoint is configured",
+      "Endpoint: not configured",
+      "Last ping: never",
+      "Request: none (no telemetry endpoint is configured)",
+    ]);
+  });
+
   it.each([
     { command: "on", enabled: true },
     { command: "off", enabled: false },

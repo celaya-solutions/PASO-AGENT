@@ -1,6 +1,6 @@
-## OpenClaw Android App
+## PASO Android App
 
-OpenClaw Android is the officially released Google Play app. It connects to an OpenClaw Gateway as a companion node for chat, voice, approvals, screen, and device-aware automation.
+PASO Android is the source-built Android companion for a PASO Gateway. It connects as a companion node for chat, voice, approvals, screen, and device-aware automation. PASO public Google Play distribution is not configured yet; the checked-in store identity and signing lane belong to upstream OpenClaw and are retained only for compatibility reference.
 
 ### Current App Surface
 
@@ -113,18 +113,17 @@ explicitly capture one form factor from another emulator.
 
 `pnpm android:bundle:release` is an alias for the same Fastlane archive lane.
 
-Regular final and correction OpenClaw releases publish the signed third-party APK as `OpenClaw-Android.apk` with a checksum manifest and GitHub Actions provenance. `.github/workflows/android-release.yml` is the only automated GitHub Release upload path; `OpenClaw Release Publish` dispatches it while the canonical release is still a draft and blocks publication until the uploaded asset contract verifies.
+The inherited upstream OpenClaw release lane publishes the signed third-party APK as `OpenClaw-Android.apk` with a checksum manifest and GitHub Actions provenance. PASO keeps this lane disabled until Celaya Solutions Research configures its own signing repository and release identity.
 
-The protected `android-release` environment supplies `MATCH_PASSWORD`; the repository's read-only GitHub App token checks out encrypted material from `openclaw/apps-signing`. The workflow builds the exact release tag, refuses to replace different existing bytes, and re-downloads the APK for checksum, certificate, and provenance verification.
+The inherited manifest points at `openclaw/apps-signing`, which is an upstream OpenClaw repository and not a PASO signing source. The PASO workflow refuses to use it and requires explicit Celaya-owned repository settings before publishing.
 
 `pnpm android:release:archive` is for local archive validation only. It is not a
 fallback upload path after `pnpm android:release:upload` fails.
 
-Agent-driven Google Play uploads must use `pnpm android:release:upload` as the
-only release path. If that command fails, stop and fix the failing screenshot,
-metadata, signing, validation, archive, or upload step before trying again. Do
-not upload archived artifacts through direct Fastlane lanes, Gradle artifacts,
-Google Play API commands, or Play Console mutation commands.
+PASO Google Play uploads remain disabled. After a Celaya-owned Play listing and
+signing lane are configured, agent-driven uploads must use
+`pnpm android:release:upload` as the only release path. Do not use the inherited
+upstream listing or signing material for PASO.
 
 The release lane uploads the phone and Wear bundles in one atomic Google Play
 edit. It publishes the phone bundle to `GOOGLE_PLAY_TRACK` and maps the Wear
@@ -301,7 +300,7 @@ Why these matter:
 - The Play build removes these behind the `play` flavor.
 - Photo library access is also removed from the Play build. Use third-party builds for `photos.latest`.
 
-Current OpenClaw Android implication:
+Current PASO Android implication:
 
 - APK / sideload build can keep SMS, Call Log, and recent-photo features.
 - Google Play build excludes SMS send/search, Call Log search, and recent-photo access unless the product is intentionally positioned and approved under the relevant policy exception.
@@ -357,7 +356,7 @@ pnpm android:test:integration
 
 Optional overrides:
 
-- `OPENCLAW_ANDROID_GATEWAY_URL=ws://...` (default: from your local OpenClaw config)
+- `OPENCLAW_ANDROID_GATEWAY_URL=ws://...` (default: from your local Gateway config)
 - `OPENCLAW_ANDROID_GATEWAY_TOKEN=...`
 - `OPENCLAW_ANDROID_GATEWAY_PASSWORD=...`
 - `OPENCLAW_ANDROID_NODE_ID=...` or `OPENCLAW_ANDROID_NODE_NAME=...`

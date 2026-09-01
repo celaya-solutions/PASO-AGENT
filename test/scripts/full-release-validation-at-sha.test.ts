@@ -190,7 +190,7 @@ if (args[0] === "workflow" && args[1] === "run") {
     index += 1;
   }
   if (${JSON.stringify(options.dispatchReturnsRunUrl ?? true)}) {
-    console.log("https://github.com/openclaw/openclaw/actions/runs/123");
+    console.log("https://github.com/celaya-solutions/PASO-AGENT/actions/runs/123");
   }
 } else if (args[0] === "run" && args[1] === "list") {
   const index = Number(fs.readFileSync(runDiscoveryIndexPath, "utf8"));
@@ -364,7 +364,7 @@ describe("full-release-validation-at-sha", () => {
     expect(parseArgs(["--target-ref", "v2026.7.1-beta.5"]).targetRef).toBe("v2026.7.1-beta.5");
     expect(parseArgs(["--target-ref", "v2026.7.1"]).targetRef).toBe("v2026.7.1");
     expect(() => parseArgs(["--target-ref", "feature/not-release"])).toThrow(
-      "canonical OpenClaw release branch or tag",
+      "canonical PASO release branch or tag",
     );
     expect(() => parseArgs(["--target-ref", "release/2026.7.1"])).toThrow(
       "requires --workflow-sha with an explicit full Tooling SHA",
@@ -917,7 +917,7 @@ describe("full-release-validation-at-sha", () => {
         fullRef: "refs/heads/main",
         sha: fixture.workflowSha,
       });
-      expect(ghCalls).toContainEqual(["api", "repos/openclaw/openclaw/actions/runs/123"]);
+      expect(ghCalls).toContainEqual(["api", "repos/celaya-solutions/PASO-AGENT/actions/runs/123"]);
       expect(ghCalls.some((args) => args[0] === "graphql")).toBe(false);
       expect(ghCalls.some((args) => args[0] === "run" && args[1] === "watch")).toBe(false);
       expect(result.stdout).toContain(`Validation SHA: ${fixture.targetSha}`);
@@ -926,7 +926,7 @@ describe("full-release-validation-at-sha", () => {
         `Frozen validation tuple: candidate=${fixture.targetSha} tooling=${fixture.workflowSha} rerun_group=all`,
       );
       expect(result.stdout).toContain(
-        "Parent run: https://github.com/openclaw/openclaw/actions/runs/123",
+        "Parent run: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/123",
       );
       expect(result.stdout.indexOf("Parent run:")).toBeLessThan(
         result.stdout.indexOf("Parent run status:"),

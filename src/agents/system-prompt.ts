@@ -1,5 +1,5 @@
 /**
- * OpenClaw system prompt renderer.
+ * PASO system prompt renderer.
  *
  * Assembles runtime, workspace, tooling, memory, delegation, channel, and cache-boundary prompt sections.
  */
@@ -613,7 +613,7 @@ function buildMessagingSection(params: {
       : []),
     subagentOrchestrationGuidance,
     completionEventGuidance,
-    "- Provider messaging: never exec/curl; OpenClaw routes.",
+    "- Provider messaging: never exec/curl; PASO routes.",
     messageToolAvailable
       ? [
           "",
@@ -701,12 +701,14 @@ function buildDocsSection(params: {
   }
   const lines = [
     "## Documentation",
-    docsPath ? `Docs: ${docsPath}` : "Docs: https://docs.openclaw.ai",
-    docsPath ? "Mirror: https://docs.openclaw.ai" : undefined,
-    sourcePath ? `Source: ${sourcePath}` : "Source: https://github.com/openclaw/openclaw",
     docsPath
-      ? `OpenClaw behavior questions: docs first${params.readToolName ? ` via \`${params.readToolName}\`/local search` : " using available tools"}. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.`
-      : "OpenClaw behavior questions: docs mirror first when web exists. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
+      ? `Docs: ${docsPath}`
+      : "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    docsPath ? "Mirror: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" : undefined,
+    sourcePath ? `Source: ${sourcePath}` : "Source: https://github.com/celaya-solutions/PASO-AGENT",
+    docsPath
+      ? `PASO behavior questions: docs first${params.readToolName ? ` via \`${params.readToolName}\`/local search` : " using available tools"}. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.`
+      : "PASO behavior questions: docs mirror first when web exists. AGENTS/project/workspace/profile/memory = instructions/user memory, not product design truth.",
     params.hasGateway
       ? "Config field: `gateway(config.schema.lookup)` exact path. Broader: `docs/gateway/configuration.md`, `docs/gateway/configuration-reference.md`."
       : "Configuration docs: `docs/gateway/configuration.md`, `docs/gateway/configuration-reference.md`.",
@@ -817,7 +819,7 @@ export function buildAgentSystemPrompt(params: {
   proactiveSubagentOrchestration?: boolean;
   /** Whether ACP-specific routing guidance should be included. Defaults to true. */
   acpEnabled?: boolean;
-  /** Prompt surface controls runtime-specific fallback fragments. Defaults to OpenClaw main. */
+  /** Prompt surface controls runtime-specific fallback fragments. Defaults to PASO main. */
   promptSurface?: AgentPromptSurfaceKind;
   /** Registered runtime slash/native command names such as `codex`. */
   nativeCommandNames?: string[];
@@ -850,7 +852,7 @@ export function buildAgentSystemPrompt(params: {
   const runtimeInfo = params.runtimeInfo;
   const modelIdentityLine = buildModelIdentityPromptLine(runtimeInfo?.model);
   if (promptMode === "none") {
-    return ["You are a personal assistant running inside OpenClaw.", modelIdentityLine]
+    return ["You are a personal assistant running inside PASO.", modelIdentityLine]
       .filter(Boolean)
       .join("\n");
   }
@@ -896,7 +898,7 @@ export function buildAgentSystemPrompt(params: {
     openclaw: "Gateway restart/system setup/config; changes need human approval",
     gateway: "Read gateway config/schema",
     agents_list: acpSpawnRuntimeEnabled
-      ? "List allowed OpenClaw subagent ids; not ACP ids"
+      ? "List allowed PASO subagent ids; not ACP ids"
       : "List allowed subagent ids",
     sessions_list: "List visible sessions; filters/last",
     sessions_history: "Read visible session/subagent history",
@@ -1113,7 +1115,7 @@ export function buildAgentSystemPrompt(params: {
     ),
     "",
   ];
-  // CLI backends own native file tools outside OpenClaw's projected tool list.
+  // CLI backends own native file tools outside PASO's projected tool list.
   // Keep their skill catalog visible while embedded runs require a real read tool.
   const canAccessSkills = params.codeModeActive
     ? visibleTools.has("exec")
@@ -1206,7 +1208,7 @@ export function buildAgentSystemPrompt(params: {
   });
   const stablePrefix = cacheStablePromptPrefix(stablePrefixCacheKey, () => {
     const lines = [
-      "You are a personal assistant running inside OpenClaw.",
+      "You are a personal assistant running inside PASO.",
       "",
       ...(includeToolGuidance
         ? [
@@ -1317,7 +1319,7 @@ export function buildAgentSystemPrompt(params: {
         fallback: [],
       }),
       ...safetySection,
-      "## OpenClaw Control",
+      "## PASO Control",
       "Do not invent commands.",
       ...(hasOpenClaw
         ? [
@@ -1413,7 +1415,7 @@ export function buildAgentSystemPrompt(params: {
       params.sandboxInfo?.enabled ? "" : "",
       ...bootstrapSystemPromptSections,
       "## Workspace Files (injected)",
-      "User-editable; OpenClaw loads below as Project Context.",
+      "User-editable; PASO loads below as Project Context.",
       "",
       ...buildAssistantOutputDirectivesSection({
         isMinimal,

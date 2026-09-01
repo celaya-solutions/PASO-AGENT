@@ -109,7 +109,7 @@ describe("sessions page lifecycle", () => {
 
     const docsLink = page.querySelector<HTMLAnchorElement>(".page-subtitle a");
     expect(docsLink?.textContent?.trim()).toBe("Learn more");
-    expect(docsLink?.href).toBe("https://docs.openclaw.ai/concepts/session");
+    expect(docsLink?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
 
     const archived = [
       ...page.querySelectorAll<HTMLElement & { checked: boolean }>(

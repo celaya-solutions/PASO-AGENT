@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy OpenClaw to Kubernetes.
+# Deploy PASO to Kubernetes.
 #
 # Secrets are generated in a temp directory and applied server-side.
 # No secret material is ever written to the repo checkout.
@@ -9,7 +9,7 @@
 #   ./scripts/k8s/deploy.sh --create-secret   # Create or update the K8s Secret from env vars
 #   ./scripts/k8s/deploy.sh --show-token      # Print the gateway token after deploy
 #   ./scripts/k8s/deploy.sh --delete          # Tear down safely for the selected namespace
-#   ./scripts/k8s/deploy.sh --delete-resources # Delete OpenClaw resources only
+#   ./scripts/k8s/deploy.sh --delete-resources # Delete PASO resources only
 #   ./scripts/k8s/deploy.sh --delete-namespace # Delete the namespace and all resources
 #
 # Environment:
@@ -33,12 +33,12 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   cat <<'HELP'
 Usage: ./scripts/k8s/deploy.sh [OPTION]
 
-  (no args)        Deploy OpenClaw (creates secret from env if needed)
+  (no args)        Deploy PASO (creates secret from env if needed)
   --create-secret  Create or update the K8s Secret from env vars without deploying
   --show-token     Print the gateway token after deploy or secret creation
   --delete         Delete the default namespace, or resources only in a custom namespace
   --delete-resources
-                  Delete OpenClaw resources from the namespace
+                  Delete PASO resources from the namespace
   --delete-namespace
                   Delete the namespace and all resources in it
   -h, --help       Show this help
@@ -99,7 +99,7 @@ fi
 # --delete-resources
 # ---------------------------------------------------------------------------
 if [[ "$MODE" == "delete-resources" ]]; then
-  echo "Deleting OpenClaw resources from namespace '$NS'..."
+  echo "Deleting PASO resources from namespace '$NS'..."
   kubectl delete -k "$MANIFESTS" -n "$NS" --ignore-not-found
   kubectl delete secret openclaw-secrets -n "$NS" --ignore-not-found
   echo "Done."

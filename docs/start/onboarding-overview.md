@@ -1,5 +1,5 @@
 ---
-summary: "Overview of OpenClaw onboarding options and flows"
+summary: "Overview of PASO onboarding options and flows"
 read_when:
   - Choosing an onboarding path
   - Setting up a new environment
@@ -7,23 +7,23 @@ title: "Onboarding overview"
 sidebarTitle: "Onboarding Overview"
 ---
 
-OpenClaw supports onboarding from the terminal, the macOS app, and the Linux
+PASO supports onboarding from the terminal, the macOS app, and the Linux
 desktop companion. Every path establishes inference first: it detects existing
-AI access, requires a live completion, and only then starts OpenClaw to
+AI access, requires a live completion, and only then starts PASO to
 configure the remaining setup. Desktop apps verify an already configured
 model before opening the normal agent UI instead of repeating guided onboarding.
 The terminal flow also offers the full classic wizard for detailed setup.
 
 ## Which path should I use?
 
-|                | CLI onboarding                         | macOS app onboarding                                | Linux app onboarding                      |
-| -------------- | -------------------------------------- | --------------------------------------------------- | ----------------------------------------- |
-| **Platforms**  | macOS, Linux, Windows (native or WSL2) | macOS                                               | Linux                                     |
-| **Interface**  | Terminal or guided setup               | Native desktop setup                                | Native desktop setup                      |
-| **Gateway**    | Local or remote                        | Local, direct remote, or SSH                        | Local, direct remote, or SSH              |
-| **Best for**   | Servers, headless, full control        | Desktop Mac, visual setup                           | Linux desktop, visual setup               |
-| **Automation** | `--non-interactive` for scripts        | Manual only                                         | Manual only                               |
-| **Start**      | `openclaw onboard`                     | [Download the macOS app](/platforms/macos#download) | [Install the Linux app](/platforms/linux) |
+|                | CLI onboarding                         | macOS app onboarding                                 | Linux app onboarding                    |
+| -------------- | -------------------------------------- | ---------------------------------------------------- | --------------------------------------- |
+| **Platforms**  | macOS, Linux, Windows (native or WSL2) | macOS                                                | Linux                                   |
+| **Interface**  | Terminal or guided setup               | Native desktop setup                                 | Native desktop setup                    |
+| **Gateway**    | Local or remote                        | Local, direct remote, or SSH                         | Local, direct remote, or SSH            |
+| **Best for**   | Servers, headless, full control        | Desktop Mac, visual setup                            | Linux desktop, visual setup             |
+| **Automation** | `--non-interactive` for scripts        | Manual only                                          | Manual only                             |
+| **Start**      | `openclaw onboard`                     | [Build the macOS app](/platforms/macos#availability) | [Build the Linux app](/platforms/linux) |
 
 Most users should start with **CLI onboarding** — it works everywhere and gives
 you the most control.
@@ -37,7 +37,7 @@ The guided inference phase establishes only:
 2. **Verified inference** — a real completion on the default agent's effective
    model
 
-After that completion passes, OpenClaw can configure the workspace, Gateway,
+After that completion passes, PASO can configure the workspace, Gateway,
 Gateway service, channels, agents, plugins, and other optional features.
 
 The classic CLI wizard can additionally configure:
@@ -60,14 +60,14 @@ and falls through on failure. If detection is exhausted, it shows OpenAI,
 Anthropic, xAI (Grok), Google, and OpenRouter first. **More…** contains the
 remaining providers in provider groups, with regions, plans, and supported
 browser, device, API-key, or token methods in a second menu. It saves the model
-and credential only after a passing completion, then starts OpenClaw to
+and credential only after a passing completion, then starts PASO to
 configure the workspace, Gateway, channels, agents, plugins, and other optional
-features. **Skip for now** exits without starting OpenClaw. There is no
+features. **Skip for now** exits without starting PASO. There is no
 in-flow classic handoff; exit and run `openclaw onboard --classic` when you want
 the classic wizard instead.
 
-After inference passes, OpenClaw can hand channel setup to a masked terminal
-wizard. It does not open guided or classic provider setup; exit OpenClaw and
+After inference passes, PASO can hand channel setup to a masked terminal
+wizard. It does not open guided or classic provider setup; exit PASO and
 run `openclaw onboard` to change the model provider or its authentication.
 
 Use `openclaw onboard --classic` for detailed model/auth, channel, skill,
@@ -82,7 +82,7 @@ CLI command docs: [`openclaw onboard`](/cli/onboard)
 
 ## macOS app onboarding
 
-[Download the macOS app](/platforms/macos#download), then open it. If its
+[Build the macOS app](/platforms/macos#availability), then open it. If its
 configured local or remote Gateway is reachable and the default agent already
 has a configured model, the app verifies that model with a real reply before
 opening the normal dashboard.

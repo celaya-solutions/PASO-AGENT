@@ -1,9 +1,9 @@
 ---
-summary: "Schema-accurate configuration examples for common OpenClaw setups"
+summary: "Schema-accurate configuration examples for common PASO setups"
 read_when:
-  - Learning how to configure OpenClaw
+  - Learning how to configure PASO
   - Looking for configuration examples
-  - Setting up OpenClaw for the first time
+  - Setting up PASO for the first time
 title: "Configuration examples"
 ---
 
@@ -34,9 +34,9 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
     entries: {
       main: {
         identity: {
-          name: "Clawd",
-          theme: "helpful assistant",
-          emoji: "🦞",
+          name: "PASO",
+          theme: "practical research assistant",
+          emoji: "🧭",
         },
       },
     },
@@ -180,7 +180,7 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
       allowFrom: ["123456789012345678"],
       guilds: {
         "123456789012345678": {
-          slug: "friends-of-openclaw",
+          slug: "friends-of-paso",
           requireMention: false,
           channels: {
             general: { enabled: true },
@@ -201,7 +201,7 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
       allowFrom: ["U123"],
       slashCommand: {
         enabled: true,
-        name: "openclaw",
+        name: "paso",
         sessionPrefix: "slack:slash",
         ephemeral: true,
       },
@@ -283,7 +283,7 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
         },
         // inherits defaults.skills -> github, weather
         groupChat: {
-          mentionPatterns: ["@openclaw", "openclaw"],
+          mentionPatterns: ["@paso", "paso"],
         },
         thinkingDefault: "high", // per-agent thinking override
         reasoningDefault: "on", // per-agent reasoning visibility
@@ -401,7 +401,7 @@ Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
       },
     ],
     gmail: {
-      account: "openclaw@gmail.com",
+      account: "paso@example.com",
       label: "INBOX",
       topic: "projects/<project-id>/topics/gog-gmail-watch",
       subscription: "gog-gmail-watch-push",
@@ -505,7 +505,7 @@ example `~/.agents/skills/manager -> ~/Projects/manager/skills`.
 {
   agents: { defaults: { workspace: "~/.openclaw/workspace" } },
   channels: {
-    whatsapp: { allowFrom: ["+15555550123"], responsePrefix: "[openclaw]" },
+    whatsapp: { allowFrom: ["+15555550123"], responsePrefix: "[PASO]" },
     telegram: {
       enabled: true,
       botToken: "YOUR_TOKEN",
@@ -613,7 +613,7 @@ Only enable direct mutable name/email/nick matching with each channel's `dangero
 {
   agents: {
     defaults: {
-      workspace: "~/work-openclaw",
+      workspace: "~/work-paso",
       elevatedDefault: "off",
     },
     entries: {

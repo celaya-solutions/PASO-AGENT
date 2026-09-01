@@ -1,7 +1,7 @@
-title: Build Lobster Invaders
+title: Build PASO Task Board
 
 scenario:
-  id: lobster-invaders-build
+  id: paso-task-board-build
   surface: workspace
   coverage:
     primary:
@@ -9,10 +9,10 @@ scenario:
     secondary:
       - app-sdk.artifact-resources-builds
       - agent-runtime.tool-fs-read
-  objective: Verify the agent can read the repo, create a tiny playable artifact, and report what changed.
+  objective: Verify the agent can read the repo, create a small useful artifact, and report what changed.
   successCriteria:
     - Agent inspects source before coding.
-    - Agent builds a tiny playable Lobster Invaders artifact.
+    - Agent builds a small interactive PASO Task Board artifact.
     - Agent explains how to run or view the artifact.
   docsRefs:
     - docs/help/testing.md
@@ -22,9 +22,9 @@ scenario:
     - extensions/qa-lab/web/src/app.ts
   execution:
     kind: flow
-    summary: Verify the agent can read the repo, create a tiny playable artifact, and report what changed.
+    summary: Verify the agent can read the repo, create a small useful artifact, and report what changed.
     config:
-      prompt: Read the QA kickoff context first, then build a tiny Lobster Invaders HTML game at ./lobster-invaders.html in this workspace and tell me where it is.
+      prompt: Read the QA kickoff context first, then build a small interactive PASO Task Board at ./paso-task-board.html in this workspace and tell me where it is.
 
 flow:
   steps:
@@ -34,7 +34,7 @@ flow:
         - call: runAgentPrompt
           args:
             - ref: env
-            - sessionKey: agent:qa:lobster-invaders
+            - sessionKey: agent:qa:paso-task-board
               message:
                 expr: config.prompt
               timeoutMs:
@@ -47,19 +47,19 @@ flow:
                 expr: "candidate.conversation.id === 'qa-operator'"
         - set: artifactPath
           value:
-            expr: "path.join(env.gateway.workspaceDir, 'lobster-invaders.html')"
+            expr: "path.join(env.gateway.workspaceDir, 'paso-task-board.html')"
         - call: waitForCondition
           saveAs: artifact
           args:
             - lambda:
                 async: true
-                expr: "((await fs.readFile(artifactPath, 'utf8').catch(() => null))?.includes('Lobster Invaders') ? await fs.readFile(artifactPath, 'utf8').catch(() => null) : undefined)"
+                expr: "((await fs.readFile(artifactPath, 'utf8').catch(() => null))?.includes('PASO Task Board') ? await fs.readFile(artifactPath, 'utf8').catch(() => null) : undefined)"
             - expr: liveTurnTimeoutMs(env, 20000)
             - 250
         - assert:
-            expr: "artifact.includes('Lobster Invaders')"
-            message: missing Lobster Invaders artifact
+            expr: "artifact.includes('PASO Task Board')"
+            message: missing PASO Task Board artifact
         - assert:
             expr: "!env.mock || (await fetchJson(`${env.mock.baseUrl}/debug/requests`)).some((request) => (request.toolOutput ?? '').includes('QA mission'))"
             message: expected pre-write read evidence
-      detailsExpr: "'lobster-invaders.html'"
+      detailsExpr: "'paso-task-board.html'"

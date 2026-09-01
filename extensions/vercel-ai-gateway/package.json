@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/vercel-ai-gateway-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Vercel AI Gateway provider plugin",
+  "description": "PASO Vercel AI Gateway provider plugin",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -30,6 +30,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

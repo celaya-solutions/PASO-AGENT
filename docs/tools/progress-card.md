@@ -13,7 +13,7 @@ The card is durable session state. A reconnect or page reload reads the latest c
 
 ## Adoption
 
-OpenClaw adds a short progress-card reminder only for non-main sessions when a web, iOS, Android, or macOS card renderer is paired with the Gateway and the run is not using the agent's utility model. Channel-only deployments such as a WhatsApp-only Gateway do not receive the reminder.
+PASO adds a short progress-card reminder only for non-main sessions when a web, iOS, Android, or macOS card renderer is paired with the Gateway and the run is not using the agent's utility model. Channel-only deployments such as a WhatsApp-only Gateway do not receive the reminder.
 
 The reminder says:
 
@@ -43,7 +43,7 @@ For example:
 
 Every call is a replacement, not a patch. Omitting `markdown` removes the previous note; omitting `plan` removes the previous checklist.
 
-The tool returns a short receipt such as `Progress card updated (rev 4, 1/3 done)` or `Progress card updated (rev 4)` when there is no plan. Its structured result contains the revision and either completed/total step counts or `null` when no plan is present. OpenClaw also emits plan events for native apps and channel renderers during their migration, but the durable card remains the authoritative state.
+The tool returns a short receipt such as `Progress card updated (rev 4, 1/3 done)` or `Progress card updated (rev 4)` when there is no plan. Its structured result contains the revision and either completed/total step counts or `null` when no plan is present. PASO also emits plan events for native apps and channel renderers during their migration, but the durable card remains the authoritative state.
 
 ## Format the note
 

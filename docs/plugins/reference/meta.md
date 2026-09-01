@@ -1,5 +1,5 @@
 ---
-summary: "Adds Meta model provider support to OpenClaw."
+summary: "Adds Meta model provider support to PASO."
 read_when:
   - You are installing, configuring, or auditing the meta plugin
 title: "Meta plugin"
@@ -7,7 +7,7 @@ title: "Meta plugin"
 
 # Meta plugin
 
-Adds Meta model provider support to OpenClaw.
+Adds Meta model provider support to PASO.
 
 ## Distribution
 

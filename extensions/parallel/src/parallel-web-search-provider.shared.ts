@@ -13,7 +13,7 @@ export function createParallelWebSearchProviderBase() {
     envVars: ["PARALLEL_API_KEY"],
     placeholder: "par-...",
     signupUrl: "https://platform.parallel.ai",
-    docsUrl: "https://docs.openclaw.ai/tools/parallel-search",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     autoDetectOrder: 75,
     credentialPath: PARALLEL_CREDENTIAL_PATH,
     ...createWebSearchProviderContractFields({

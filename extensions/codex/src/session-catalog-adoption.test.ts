@@ -35,7 +35,7 @@ import {
 } from "./session-catalog.test-helpers.js";
 
 describe("Codex supervision catalog", () => {
-  it("enriches only the local source row with its adopted OpenClaw session", async () => {
+  it("enriches only the local source row with its adopted PASO session", async () => {
     const control = createControl({
       listPage: vi.fn(async () => ({
         sessions: [{ threadId: "source-thread", status: "active", archived: false }],
@@ -652,7 +652,7 @@ describe("Codex supervision actions", () => {
     const control = createEligibleControl();
 
     await expect(archiveTestSession({ control, runtime })).rejects.toThrow(
-      "cannot be archived while its OpenClaw branch is initializing",
+      "cannot be archived while its PASO branch is initializing",
     );
     expect(control.readThread).not.toHaveBeenCalled();
     expect(control.archiveThread).not.toHaveBeenCalled();
@@ -672,7 +672,7 @@ describe("Codex supervision actions", () => {
     });
 
     await expect(archiveTestSession({ control, bindingStore, runtime })).rejects.toThrow(
-      "cannot be archived until its OpenClaw branch starts",
+      "cannot be archived until its PASO branch starts",
     );
     expect(control.archiveThread).not.toHaveBeenCalled();
 
@@ -750,7 +750,7 @@ describe("Codex supervision actions", () => {
     }
     expect(archiveResult.error).toBeInstanceOf(Error);
     expect((archiveResult.error as Error).message).toContain(
-      "cannot be archived until its OpenClaw branch starts",
+      "cannot be archived until its PASO branch starts",
     );
     expect(control.archiveThread).not.toHaveBeenCalled();
   });

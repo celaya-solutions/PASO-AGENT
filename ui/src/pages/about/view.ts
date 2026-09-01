@@ -1,13 +1,7 @@
-import { expectDefined } from "@openclaw/normalization-core";
 import { html, nothing, type TemplateResult } from "lit";
 import type { ControlUiBuildInfo } from "../../build-info.ts";
 import { icons } from "../../components/icons.ts";
-import {
-  canonicalLobsterLook,
-  lobsterLookStyle,
-  renderLobsterSvg,
-} from "../../components/lobster-pet-look.ts";
-import { LOBSTER_PET_PALETTES } from "../../components/lobster-pet-palettes.ts";
+import { renderPasoMark } from "../../components/paso-mark.ts";
 import {
   renderSettingsPage,
   renderSettingsRow,
@@ -28,36 +22,33 @@ type AboutProps = {
   gatewayVersion: string | null;
   copyState: AboutCommitCopyState;
   onCopyCommit: () => void;
-  clawdWaving: boolean;
-  onPokeClawd: () => void;
 };
 
 const SHORT_COMMIT_LENGTH = 12;
 
-// Docs-first where a docs page exists; GitHub/Discord match the native
-// macOS/iOS About screens (AboutSettings.swift, SettingsProTabSections.swift).
-const ABOUT_LINKS: ReadonlyArray<{ href: string; icon: TemplateResult; label: () => string }> = [
-  { href: "https://openclaw.ai", icon: icons.globe, label: () => t("aboutPage.linkWebsite") },
-  { href: "https://docs.openclaw.ai", icon: icons.book, label: () => t("aboutPage.linkDocs") },
+const ABOUT_LINKS: ReadonlyArray<{
+  href: string;
+  icon: TemplateResult;
+  label: () => string;
+  external: boolean;
+}> = [
   {
-    href: "https://github.com/openclaw/openclaw",
+    href: "https://github.com/celaya-solutions/PASO-AGENT",
     icon: brandIcons.github,
     label: () => t("aboutPage.linkGitHub"),
+    external: true,
   },
   {
-    href: "https://discord.gg/clawd",
-    icon: brandIcons.discord,
-    label: () => t("aboutPage.linkDiscord"),
+    href: "mailto:hello@celayasolutions.com",
+    icon: icons.mail,
+    label: () => t("aboutPage.linkEmail"),
+    external: false,
   },
   {
-    href: "https://x.com/openclaw",
-    icon: brandIcons.x,
-    label: () => t("aboutPage.linkX"),
-  },
-  {
-    href: "https://docs.openclaw.ai/releases",
-    icon: icons.scrollText,
-    label: () => t("aboutPage.linkChangelog"),
+    href: "tel:+19152700237",
+    icon: icons.smartphone,
+    label: () => "+1 915-270-0237",
+    external: false,
   },
 ];
 
@@ -151,26 +142,13 @@ function renderCommit(props: AboutProps) {
   `;
 }
 
-// The same canonical crimson Clawd as the chat welcome hero, rendered big.
-// The poke button replays the claw wave; ambient motion lives in about.css.
 function renderHero(props: AboutProps) {
-  const palette =
-    LOBSTER_PET_PALETTES.find((entry) => entry.id === "crimson") ??
-    expectDefined(LOBSTER_PET_PALETTES[0], "about lobster palette");
-  const look = canonicalLobsterLook(palette);
   return html`
     <section class="about-hero">
-      <button
-        type="button"
-        class="about-hero__clawd ${props.clawdWaving ? "about-hero__clawd--wave" : ""}"
-        style=${lobsterLookStyle(look)}
-        aria-label=${t("aboutPage.waveHello")}
-        @click=${props.onPokeClawd}
-      >
-        ${renderLobsterSvg(look)}
-      </button>
+      ${renderPasoMark("about-hero__mark")}
       <h2 class="about-hero__name">${t("aboutPage.productName")}</h2>
       <p class="about-hero__tagline">${t("aboutPage.tagline")}</p>
+      <p class="about-hero__location">${t("aboutPage.location")}</p>
       ${props.buildInfo.version
         ? html`<code class="about-hero__version" dir="ltr">v${props.buildInfo.version}</code>`
         : nothing}
@@ -180,8 +158,8 @@ function renderHero(props: AboutProps) {
             <a
               class="about-hero__link"
               href=${link.href}
-              target=${EXTERNAL_LINK_TARGET}
-              rel=${buildExternalLinkRel()}
+              target=${link.external ? EXTERNAL_LINK_TARGET : nothing}
+              rel=${link.external ? buildExternalLinkRel() : nothing}
             >
               <span class="about-hero__link-icon" aria-hidden="true">${link.icon}</span>
               <span>${link.label()}</span>

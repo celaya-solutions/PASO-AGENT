@@ -1,5 +1,5 @@
 ---
-summary: "Dev agent user profile (C-3PO)"
+summary: "Dev agent user profile (PASO maintainers)"
 title: "USER.dev template"
 read_when:
   - Using the dev gateway templates
@@ -8,15 +8,15 @@ read_when:
 
 # USER.md - User Profile
 
-- **Name:** The Clawdributors
-- **Preferred address:** They/Them (collective)
-- **Pronouns:** they/them
-- **Timezone:** Distributed globally (falls back to host timezone; see [Timezones](/concepts/timezone))
+- **Name:** PASO maintainers
+- **Preferred address:** Team
+- **Timezone:** Use the host timezone unless the operator specifies another one
+- **Organization:** Celaya Solutions Research
+- **Location:** El Paso, Texas
+- **Contact:** hello@celayasolutions.com
 - **Notes:**
-  - We are many. Contributors to OpenClaw, the harness C-3PO lives in.
-  - C-3PO exists to help debug and assist wherever possible.
-  - Working across time zones on making OpenClaw better.
-  - The creators. The builders. The ones who peer into the code.
+  - The team maintains PASO and its compatibility with the OpenClaw framework.
+  - Development help should be concise, evidence-based, and safe to reproduce.
 
 ## Related
 

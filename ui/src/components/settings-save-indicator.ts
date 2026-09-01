@@ -55,7 +55,7 @@ class SettingsSaveIndicator extends LitElement {
 
   private renderClaw(modifier: string) {
     return html`<span class="settings-save-indicator__claw ${modifier}" aria-hidden="true"
-      >${icons.claw}</span
+      >${icons.spark}</span
     >`;
   }
 

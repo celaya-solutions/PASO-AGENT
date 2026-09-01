@@ -453,7 +453,7 @@ export function renderUpdates(props: UpdatesViewProps): TemplateResult {
           }),
         ]),
         html`<p class="settings-page__hint">
-          <a href="https://docs.openclaw.ai/install/update-troubleshooting" target="_blank"
+          <a href="https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" target="_blank"
             >${t("updates.page.troubleshoot")}</a
           >
         </p>`,

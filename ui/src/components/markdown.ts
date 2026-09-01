@@ -6,6 +6,7 @@ import { routeIdFromPath } from "../app-route-paths.ts";
 import { resolveControlUiPaths } from "../app/browser.ts";
 import { i18n, t } from "../i18n/index.ts";
 import { truncateText } from "../lib/format.ts";
+import { PASO_DOCS_REPO_ROOT, pasoDocsUrl } from "../lib/paso-docs-url.ts";
 import { renderAssistantTranscriptPlainTextFallback } from "./markdown-assistant-transcript.ts";
 import { renderMarkdownCodeBlock } from "./markdown-code-blocks.ts";
 import { isHostLocalMarkdownFileHref } from "./markdown-file-links.ts";
@@ -105,7 +106,6 @@ const MARKDOWN_PARSE_LIMIT = 40_000;
 // up to 50k characters enter this 500-entry LRU, keeping memory bounded.
 const MARKDOWN_CACHE_LIMIT = 500;
 const MARKDOWN_CACHE_MAX_CHARS = 50_000;
-const DOCS_ORIGIN = "https://docs.openclaw.ai";
 const DOCS_ROOT_SEGMENTS = new Set([
   "agent-runtime-architecture",
   "announcements",
@@ -413,10 +413,7 @@ function normalizeDocsRootHref(href: string): string {
     return href;
   }
   try {
-    const url = new URL(trimmed, DOCS_ORIGIN);
-    if (url.origin !== DOCS_ORIGIN) {
-      return href;
-    }
+    const url = new URL(trimmed, "https://paso.invalid");
     const normalizedPath = url.pathname.replace(/\/+$/, "") || "/";
     if (isControlUiRoutePath(normalizedPath)) {
       return href;
@@ -427,7 +424,10 @@ function normalizeDocsRootHref(href: string): string {
       return href;
     }
     if (isDocsRootPath(normalizedPath, segments)) {
-      return url.href;
+      if (DOCS_SHORTLINK_PATHS.has(normalizedPath)) {
+        return PASO_DOCS_REPO_ROOT;
+      }
+      return pasoDocsUrl(`${normalizedPath}${url.search}${url.hash}`);
     }
     return href;
   } catch {

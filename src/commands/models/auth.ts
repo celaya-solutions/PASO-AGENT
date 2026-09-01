@@ -723,9 +723,9 @@ export async function modelsAuthPasteTokenCommand(
   logConfigUpdated(runtime);
   runtime.log(`Auth profile: ${profileId} (${provider}/token)`);
   if (provider === "anthropic") {
-    runtime.log("Anthropic setup-token auth is supported in OpenClaw.");
-    runtime.log("OpenClaw prefers Claude CLI reuse when it is available on the host.");
-    runtime.log("Anthropic staff told us this OpenClaw path is allowed again.");
+    runtime.log("Anthropic setup-token auth is supported in PASO.");
+    runtime.log("PASO prefers Claude CLI reuse when it is available on the host.");
+    runtime.log("Anthropic staff told us this PASO path is allowed again.");
   }
 }
 
@@ -969,7 +969,7 @@ function maybeLogOpenAICodexNativeSearchTip(runtime: RuntimeEnv, providerId: str
     return;
   }
   runtime.log(
-    `Tip: Codex-capable models can use native Codex web search. Configure the \`web_search\` tool with \`${formatCliCommand("openclaw configure --section web")}\`. Docs: https://docs.openclaw.ai/tools/web`,
+    `Tip: Codex-capable models can use native Codex web search. Configure the \`web_search\` tool with \`${formatCliCommand("openclaw configure --section web")}\`. Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs`,
   );
 }
 
@@ -1007,7 +1007,7 @@ export async function runModelsAuthLoginFlowCore(
   }
   if (useProviderPicker) {
     await prompter.note(
-      `Provider "${requestedProviderId}" uses its own CLI login. Select a provider with an OpenClaw auth flow.`,
+      `Provider "${requestedProviderId}" uses its own CLI login. Select a provider with a PASO auth flow.`,
       "Provider auth",
     );
   } else if (requestedProviderId && !requestedProvider) {

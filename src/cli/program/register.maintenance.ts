@@ -42,7 +42,7 @@ function exitDoctorError(message: string, json: boolean): never {
   exitCliAfterOutput(defaultRuntime, 2);
 }
 
-/** Register maintenance commands that inspect or mutate local OpenClaw state. */
+/** Register maintenance commands that inspect or mutate local PASO state. */
 export function registerMaintenanceCommands(program: Command) {
   const doctor = program
     .command("doctor")
@@ -85,7 +85,7 @@ export function registerMaintenanceCommands(program: Command) {
     )
     .option(
       "--github-issue",
-      "With --session-sqlite recover: prepare and optionally create an openclaw/openclaw issue",
+      "With --session-sqlite recover: prepare and optionally create a PASO repository issue",
       false,
     )
     .option("--json", "Emit JSON; bare --json runs advisory read-only health checks", false)

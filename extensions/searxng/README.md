@@ -1,6 +1,6 @@
-# SearXNG OpenClaw plugin
+# SearXNG PASO plugin
 
-Official OpenClaw plugin for SearXNG.
+Official PASO plugin for SearXNG.
 
 ## Install
 
@@ -10,4 +10,4 @@ openclaw plugins install @openclaw/searxng-plugin
 
 ## Docs
 
-See `docs/tools/searxng-search.md` in the OpenClaw repository, or the published docs at `https://docs.openclaw.ai/tools/searxng-search`.
+See `docs/tools/searxng-search.md` in the PASO repository, or the published docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/searxng-search.md`.

@@ -11,9 +11,9 @@ doc-schema-version: 1
 # Hooks
 
 Internal hooks are small JavaScript or TypeScript handlers that run in the
-Gateway process when OpenClaw emits an event. Use them to save session context,
+Gateway process when PASO emits an event. Use them to save session context,
 log reset commands, or perform short side effects during message and session
-lifecycle events. OpenClaw includes [bundled hooks](/automation/hooks#bundled-hooks)
+lifecycle events. PASO includes [bundled hooks](/automation/hooks#bundled-hooks)
 for common tasks; you do not need to write a plugin to use them.
 
 ## Choose the right surface
@@ -165,7 +165,7 @@ route replies, such as a direct message to the bot. Expect **Reset hook ran.**
 in that conversation and `[reset-greeting] reset hook ran` in Gateway logs.
 `/reset` triggers the same example. Normal command authorization still applies.
 
-Use an ordinary OpenClaw conversation, not an ACP-bound thread; bound sessions
+Use an ordinary PASO conversation, not an ACP-bound thread; bound sessions
 delegate reset handling to their owning runtime. Do not use Control UI/webchat
 or a `sessions.reset` RPC as the chat-reply check:
 those paths do not deliver this hook's `event.messages` to the UI. The log marker
@@ -342,7 +342,7 @@ Directory discovery merges hooks by **name** using these rules:
 
 | Source            | Location and collision behavior                                                                                                                                         |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Bundled           | Shipped with OpenClaw.                                                                                                                                                  |
+| Bundled           | Shipped with PASO.                                                                                                                                                      |
 | Plugin            | Hook directories declared by active plugins; can replace bundled names.                                                                                                 |
 | Managed           | `<stateDir>/hooks/`, normally `~/.openclaw/hooks/`; can replace bundled and plugin names.                                                                               |
 | Extra directories | `hooks.internal.load.extraDirs`; same source policy as managed hooks. Later extra directories win over earlier ones; the managed directory wins over extra directories. |

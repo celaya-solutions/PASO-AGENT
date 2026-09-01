@@ -405,7 +405,7 @@ fn load_existing_identity(
     match decode_identity(&bytes) {
         Ok(identity) => Ok(identity),
         Err(DecodeIdentityError::VersionMismatch { found }) => Err(format!(
-            "Gateway device identity was written by a different version of OpenClaw \
+            "Gateway device identity was written by a different version of PASO \
              (identity version {found}; this build supports {IDENTITY_VERSION}); \
              this build will not replace it."
         )),
@@ -556,7 +556,7 @@ mod tests {
             .err()
             .expect("version mismatch should fail");
 
-        assert!(error.contains("written by a different version of OpenClaw"));
+        assert!(error.contains("written by a different version of PASO"));
         assert!(error.contains("this build will not replace it"));
         assert_eq!(
             fs::read(&path).expect("reread version-mismatched identity"),

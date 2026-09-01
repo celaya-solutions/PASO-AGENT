@@ -1,4 +1,4 @@
-// OpenClaw state database manages shared persisted state and migrations.
+// PASO state database manages shared persisted state and migrations.
 import { existsSync } from "node:fs";
 import path from "node:path";
 import type { DatabaseSync } from "node:sqlite";
@@ -642,7 +642,7 @@ function openOpenClawStateDatabaseWithBusyTimeout(
     if (cleanup.caught) {
       throw createSqliteLifecycleAggregateError(
         [error, ...cleanup.errors],
-        `Fresh OpenClaw state database open failed releasing access and closing its unpublished handle for ${pathname}.`,
+        `Fresh PASO state database open failed releasing access and closing its unpublished handle for ${pathname}.`,
         error,
       );
     }

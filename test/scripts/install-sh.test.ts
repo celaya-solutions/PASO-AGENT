@@ -56,6 +56,32 @@ function linkNodeExecutable(bin: string) {
 describe("install.sh", () => {
   const script = readFileSync(SCRIPT_PATH, "utf8");
 
+  it("defaults public installs to the PASO main checkout and keeps npm explicit", () => {
+    const result = runInstallShell(
+      `
+        set -euo pipefail
+        source "${SCRIPT_PATH}"
+        DRY_RUN=1
+        bootstrap_gum_temp() { :; }
+        print_installer_banner() { :; }
+        print_gum_status() { :; }
+        detect_os_or_die() { OS=linux; }
+        detect_openclaw_checkout() { return 1; }
+        show_install_plan() { printf 'plan=%s:%s\\n' "$INSTALL_METHOD" "$OPENCLAW_VERSION"; }
+        ui_success() { :; }
+        main
+        INSTALL_METHOD=npm
+        OPENCLAW_VERSION=""
+        main
+      `,
+      { OPENCLAW_INSTALL_METHOD: "", OPENCLAW_VERSION: "" },
+    );
+
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+    expect(result.stdout).toContain("plan=git:main");
+    expect(result.stdout).toContain("plan=npm:latest");
+  });
+
   it("runs installer snippets without inherited shell startup files", () => {
     const tmp = mkdtempSync(join(tmpdir(), "openclaw-install-shell-env-"));
     const bashEnvPath = join(tmp, "bash_env");
@@ -1703,7 +1729,7 @@ EOF
       git_install_lockfile_flag() { printf '%s\\n' '--frozen-lockfile'; }
       run_quiet_step() {
         printf 'step:%s|%s\\n' "$1" "\${*:2}"
-        if [[ "$1" == "Cloning OpenClaw" ]]; then
+        if [[ "$1" == "Cloning PASO" ]]; then
           target="\${*: -1}"
           mkdir -p "$target/.git"
           printf 'complete\\n' > "$target/checkout.marker"
@@ -1724,7 +1750,7 @@ EOF
 
     expect(result.status, JSON.stringify(result)).toBe(0);
     expect(result.stdout).toContain(
-      "step:Cloning OpenClaw|git clone --filter=blob:none https://github.com/openclaw/openclaw.git",
+      "step:Cloning PASO|git clone --filter=blob:none https://github.com/celaya-solutions/PASO-AGENT.git",
     );
     expect(result.stdout).toContain("/.openclaw-clone.");
   });
@@ -2227,7 +2253,7 @@ EOF
       expect(result.stderr).not.toContain("forbidden external command");
 
       const output = result.stdout;
-      const successMatches = output.match(/OpenClaw installed successfully/g) ?? [];
+      const successMatches = output.match(/PASO installed successfully/g) ?? [];
       const doctorIndex = output.indexOf("event:doctor");
       const verificationIndex = output.indexOf("event:verification");
       const successIndex = output.indexOf("event:success:");
@@ -2296,7 +2322,7 @@ EOF
     expect(result.stdout).not.toContain("old-owner-removed");
   });
 
-  it("rejects OpenClaw GitHub source targets for npm installs", () => {
+  it("rejects PASO and legacy OpenClaw GitHub source targets for npm installs", () => {
     const result = runInstallShell(`
       set -euo pipefail
       source "${SCRIPT_PATH}"
@@ -2310,8 +2336,27 @@ EOF
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("status=1");
-    expect(result.stdout).toContain("npm installs do not support OpenClaw GitHub source targets");
+    expect(result.stdout).toContain("npm installs do not support PASO GitHub source targets");
     expect(result.stdout).toContain("--install-method git --version main");
+  });
+
+  it("recognizes PASO and legacy OpenClaw source package specs", () => {
+    const result = runInstallShell(`
+      set -euo pipefail
+      source "${SCRIPT_PATH}"
+      for spec in \
+        github:celaya-solutions/PASO-AGENT#main \
+        openclaw@github:celaya-solutions/PASO-AGENT#main \
+        https://github.com/celaya-solutions/PASO-AGENT.git#main \
+        git@github.com:celaya-solutions/PASO-AGENT.git#main \
+        github:openclaw/openclaw#main; do
+        is_openclaw_source_package_install_spec "$spec"
+        printf 'source=%s\\n' "$spec"
+      done
+    `);
+
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+    expect(result.stdout.trim().split("\n")).toHaveLength(5);
   });
 
   it("links the executable package launcher when dist/entry.js is not executable", () => {
@@ -2524,7 +2569,7 @@ EOF
         "openclaw@latest",
       ]);
       expect(`${result.stdout}\n${result.stderr}`).toContain(
-        "npm install did not produce a usable OpenClaw package",
+        "npm install did not produce a usable PASO package",
       );
       expect(`${result.stdout}\n${result.stderr}`).not.toContain("openclaw@next");
     } finally {
@@ -4557,7 +4602,7 @@ describe("install.sh duplicate OpenClaw install detection", () => {
     `);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("Multiple OpenClaw global installs detected");
+    expect(result.stdout).toContain("Multiple PASO global installs detected");
     expect(result.stdout).toContain("2026.3.7");
     expect(result.stdout).toContain("2026.3.1");
     expect(result.stdout).toContain("/brew/openclaw");
@@ -4580,7 +4625,7 @@ describe("install.sh duplicate OpenClaw install detection", () => {
     `);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).not.toContain("Multiple OpenClaw global installs detected");
+    expect(result.stdout).not.toContain("Multiple PASO global installs detected");
   });
 
   it("needs_stdin_isolation returns true when stdin is piped", () => {

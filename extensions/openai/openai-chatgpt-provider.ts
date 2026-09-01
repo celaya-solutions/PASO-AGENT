@@ -160,7 +160,7 @@ function matchesOpenAICodexImageCapableModel(modelId: string, modelName?: string
  * Restore native `["text", "image"]` input capability on resolved Codex rows
  * for known image-capable modern model IDs (GPT-5.4 through GPT-5.6).
  * Persisted/configured model rows can omit the `input` field
- * entirely when they were written by older OpenClaw versions. When that row wins
+ * entirely when they were written by older PASO versions. When that row wins
  * the catalog merge, `modelSupportsInput(entry, "image")` returns false and the
  * gateway's `chat.send` handler offloads inbound images as `media://inbound/<id>`
  * claim-check URIs instead of inlining them.
@@ -591,7 +591,7 @@ async function runOpenAICodexDeviceCode(ctx: ProviderAuthContext) {
     spin.stop("OpenAI device code failed");
     ctx.runtime.error(formatErrorMessage(error));
     await ctx.prompter.note(
-      "Trouble with device code login? See https://docs.openclaw.ai/start/faq",
+      "Trouble with device code login? See https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       "OAuth help",
     );
     throw error;

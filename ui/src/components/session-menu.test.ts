@@ -607,7 +607,7 @@ describe("session menu", () => {
       Array.from(grids[0]?.querySelectorAll<HTMLButtonElement>("button") ?? []).map((choice) =>
         choice.textContent?.trim(),
       ),
-    ).toEqual(["🦞", "🚀", "🐛", "✅", "🔥", "📦", "🧪", "📝", "🔍", "⚡", "🎯", ""]);
+    ).toEqual(["◈", "🚀", "🐛", "✅", "🔥", "📦", "🧪", "📝", "🔍", "⚡", "🎯", ""]);
     expect(grids[0]?.querySelectorAll("button")).toHaveLength(12);
     expect(grids[0]?.querySelector("button:nth-child(12)")?.getAttribute("aria-label")).toBe(
       "Custom emoji…",

@@ -6,7 +6,7 @@ APP_DIR="$ROOT_DIR/apps/macos"
 
 usage() {
   printf 'Usage: %s\n' "$(basename "$0")"
-  printf 'Build, stop, and relaunch the local debug OpenClaw macOS app.\n'
+  printf 'Build, stop, and relaunch the local debug PASO macOS app.\n'
 }
 
 for arg in "$@"; do

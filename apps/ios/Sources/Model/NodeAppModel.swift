@@ -2580,7 +2580,7 @@ final class NodeAppModel {
         if notificationsAllowed {
             let addResult = await NotificationOperationRunner.run(timeoutSeconds: 2.0) { [notificationCenter] in
                 let content = UNMutableNotificationContent()
-                content.title = "OpenClaw"
+                content.title = "PASO"
                 content.body = text
                 content.sound = .default
                 content.userInfo = ["messageId": messageId]
@@ -3267,7 +3267,7 @@ extension NodeAppModel {
         let status = await watchMessagingService.status()
         guard status.supported, status.paired, status.appInstalled else {
             throw NSError(domain: "WatchDirectSetup", code: 3, userInfo: [
-                NSLocalizedDescriptionKey: "Pair an Apple Watch and install the OpenClaw watch app first.",
+                NSLocalizedDescriptionKey: "Pair an Apple Watch and install the PASO watch app first.",
             ])
         }
 
@@ -4216,7 +4216,7 @@ extension NodeAppModel {
                 Generate a new iPhone setup code on the Gateway, then scan it in Settings → Gateway. \
                 Automatic reconnect is paused until you retry setup.
                 """,
-                docsURL: URL(string: "https://docs.openclaw.ai/platforms/ios"),
+                docsURL: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
                 retryable: true,
                 pauseReconnect: true,
                 technicalDetails: technicalDetails)
@@ -4228,7 +4228,7 @@ extension NodeAppModel {
                 kind: .unknown,
                 owner: .iphone,
                 title: "Credential save failed",
-                message: "OpenClaw disconnected because it could not securely save the new gateway credential.",
+                message: "PASO disconnected because it could not securely save the new gateway credential.",
                 retryable: true,
                 pauseReconnect: true,
                 technicalDetails: technicalDetails)
@@ -5276,8 +5276,8 @@ extension NodeAppModel {
         self.recordShareEvent("Share self-test running…")
 
         let payload = SharedContentPayload(
-            title: "OpenClaw Share Self-Test",
-            url: URL(string: "https://openclaw.ai/share-self-test"),
+            title: "PASO Share Self-Test",
+            url: URL(string: "https://github.com/celaya-solutions/PASO-AGENT"),
             text: "Validate iOS share->deep-link->gateway forwarding.")
         guard let deepLink = ShareToAgentDeepLink.buildURL(
             from: payload,
@@ -9115,7 +9115,7 @@ extension NodeAppModel {
         else {
             self.execApprovalNotificationLogger.error(
                 "Exec approval action failed id=\(approvalID, privacy: .public): operator not connected")
-            return .failed(message: "OpenClaw couldn't connect to the gateway operator session.")
+            return .failed(message: "PASO couldn't connect to the gateway operator session.")
         }
 
         let rpcFamily = await self.execApprovalRPCFamily(route: context.route)
@@ -9434,9 +9434,9 @@ extension NodeAppModel {
             // Legacy get removes committed rows, so not-found cannot distinguish success from
             // expiry. Keep every surface frozen until an explicit terminal event/reconnect.
             return .uncertain(
-                message: "Decision status is unknown. Actions remain locked until OpenClaw reconnects.")
+                message: "Decision status is unknown. Actions remain locked until PASO reconnects.")
         case .failed:
-            return .uncertain(message: "Decision status is unknown. Actions remain locked until OpenClaw reconnects.")
+            return .uncertain(message: "Decision status is unknown. Actions remain locked until PASO reconnects.")
         }
     }
 

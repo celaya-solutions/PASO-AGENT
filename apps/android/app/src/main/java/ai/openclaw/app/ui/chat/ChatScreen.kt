@@ -1171,7 +1171,7 @@ private fun ChatHeader(
       }
       OpenClawMascot(modifier = Modifier.size(25.dp))
       Text(
-        text = nativeString("OpenClaw"),
+        text = nativeString("PASO"),
         style = ClawTheme.type.title.copy(fontSize = 17.sp, lineHeight = 21.sp),
         color = ClawTheme.colors.text,
         modifier = Modifier.weight(1f),
@@ -1724,7 +1724,7 @@ internal val starterPrompts =
       mark = "1",
       title = nativeText("Catch me up"),
       subtitle = nativeText("Summarize recent threads and next steps."),
-      message = nativeText("Catch me up on my recent OpenClaw threads and suggest next steps."),
+      message = nativeText("Catch me up on my recent PASO threads and suggest next steps."),
     ),
     StarterPrompt(
       mark = "2",
@@ -1735,7 +1735,7 @@ internal val starterPrompts =
     StarterPrompt(
       mark = "3",
       title = nativeText("Use this phone"),
-      subtitle = nativeText("Ask OpenClaw to use Android capabilities."),
+      subtitle = nativeText("Ask PASO to use Android capabilities."),
       message = nativeText("What can you help me do from this phone right now?"),
     ),
   )
@@ -1769,11 +1769,11 @@ internal fun ChatBubble(
     when {
       isUser -> peerSenderLabel ?: nativeString("You")
       normalizedRole == "system" -> nativeString("System")
-      else -> nativeString("OpenClaw")
+      else -> nativeString("PASO")
     }
   val caption =
     when {
-      live -> nativeString("OpenClaw · Live")
+      live -> nativeString("PASO · Live")
       normalizedRole == "system" -> nativeString("System")
       peerSenderLabel != null -> peerSenderLabel
       else -> null
@@ -2009,7 +2009,7 @@ private fun ToolBubble(toolCalls: List<ChatPendingToolCall>) {
       toolCalls.take(4).forEach { tool ->
         ClawListItem(
           title = tool.name,
-          subtitle = nativeString("OpenClaw is working"),
+          subtitle = nativeString("PASO is working"),
           trailing = { tool.liveDiff?.let { DiffStatChips(it) } },
         )
       }
@@ -2825,7 +2825,7 @@ private fun ChatInputPill(
               decorationBox = { innerTextField ->
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
                   if (value.isEmpty()) {
-                    Text(text = nativeString("Message OpenClaw"), style = ClawTheme.type.body, color = ClawTheme.colors.textSubtle)
+                    Text(text = nativeString("Message PASO"), style = ClawTheme.type.body, color = ClawTheme.colors.textSubtle)
                   }
                   innerTextField()
                 }

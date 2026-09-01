@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Summarizes OpenClaw performance source fixtures for reports.
+// Summarizes PASO performance source fixtures for reports.
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -103,7 +103,7 @@ export function parseArgs(argv: string[]) {
 function printHelp() {
   console.log(`Usage: node --import tsx scripts/openclaw-performance-source-summary.mts --source-dir <dir> [--baseline-source-dir <dir>] [--output <summary.md>]
 
-Summarizes OpenClaw-native performance probe artifacts for CI reports.`);
+Summarizes PASO-native performance probe artifacts for CI reports.`);
 }
 
 function readJsonIfExists(filePath: string): JsonValue {
@@ -861,7 +861,7 @@ export function buildMarkdown(sourceDir: string, baselineSourceDir: string | nul
   const memoryDeltaRows = buildMemoryDeltaRows(current, baseline);
 
   const lines = [
-    "# OpenClaw Source Performance",
+    "# PASO Source Performance",
     "",
     `Generated: ${new Date().toISOString()}`,
     "",

@@ -1,5 +1,5 @@
 ---
-summary: "Connect a machine to an OpenClaw Gateway with one pasted command"
+summary: "Connect a machine to a PASO Gateway with one pasted command"
 read_when:
   - Pairing a new headless node with a Gateway
   - Installing a node host from a join URL or setup code
@@ -8,7 +8,7 @@ title: "Connect"
 
 # `openclaw connect`
 
-Connect the current machine to an OpenClaw Gateway as a headless node. The
+Connect the current machine to a PASO Gateway as a headless node. The
 command redeems a short-lived bootstrap credential, saves the Gateway endpoint
 in the existing node-host state, and runs the same runtime as
 [`openclaw node run`](/cli/node).
@@ -78,7 +78,7 @@ the platform user service:
 npx openclaw connect https://gateway.example/j/<shortcode> --service
 ```
 
-OpenClaw completes the first authenticated connection before installing the
+PASO completes the first authenticated connection before installing the
 service. The short-lived bootstrap token is never stored in the service command
 or node-host configuration; later starts use the durable paired-device token.
 Use [`openclaw node status`](/cli/node#service-background) to inspect the
@@ -93,7 +93,7 @@ npx openclaw connect https://gateway.example/j/<shortcode> --service --session-h
 
 The one-shot bootstrap connection authenticates and saves the durable device
 identity without advertising worker hosting. Only after that connection
-succeeds does OpenClaw persist `nodeHost.workerRuns.enabled=true`, preserving
+succeeds does PASO persist `nodeHost.workerRuns.enabled=true`, preserving
 the rest of the config, and install the service. If the config write fails,
 service installation does not start. The installed service advertises worker
 hosting and exact capacity from this durable consent when it starts.

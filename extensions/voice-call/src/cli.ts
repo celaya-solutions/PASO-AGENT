@@ -138,7 +138,10 @@ export function registerVoiceCallCli(params: {
   const root = program
     .command("voicecall")
     .description("Voice call utilities")
-    .addHelpText("after", () => `\nDocs: https://docs.openclaw.ai/cli/voicecall\n`);
+    .addHelpText(
+      "after",
+      () => `\nDocs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs\n`,
+    );
 
   root
     .command("setup")
@@ -160,7 +163,7 @@ export function registerVoiceCallCli(params: {
     .option(
       "--message <text>",
       "Message to speak during the smoke call",
-      "OpenClaw voice call smoke test.",
+      "PASO voice call smoke test.",
     )
     .option("--mode <mode>", "Call mode: notify or conversation", "notify")
     .option("--yes", "Actually place the live outbound call")

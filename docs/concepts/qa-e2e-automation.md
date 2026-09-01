@@ -9,7 +9,7 @@ read_when:
 title: "QA overview"
 ---
 
-The private QA stack exercises OpenClaw in a realistic, channel-shaped way that
+The private QA stack exercises PASO in a realistic, channel-shaped way that
 a unit test cannot.
 
 Pieces:
@@ -34,7 +34,7 @@ script aliases; both forms work.
 | `qa run`                                            | Bundled QA self-check without `--qa-profile`; taxonomy-backed maturity profile runner with `--qa-profile smoke-ci`, `--qa-profile release`, or `--qa-profile all`.                                                                                                  |
 | `qa suite`                                          | Run repo-backed scenarios against the QA gateway lane. `--runner multipass` uses a disposable Linux VM instead of the host.                                                                                                                                         |
 | `qa coverage`                                       | Print the YAML scenario-coverage inventory (`--json` for machine output; `--match <query>` to find scenarios for a touched behavior; `--tools` for runtime tool fixture coverage).                                                                                  |
-| `qa parity-report`                                  | Compare two `qa-suite-summary.json` files for a model-axis parity gate, or use `--runtime-axis --token-efficiency` to write Codex-vs-OpenClaw runtime parity and token-efficiency reports.                                                                          |
+| `qa parity-report`                                  | Compare two `qa-suite-summary.json` files for a model-axis parity gate, or use `--runtime-axis --token-efficiency` to write Codex-vs-PASO runtime parity and token-efficiency reports.                                                                              |
 | `qa confidence-report`                              | Classify QA proof artifacts against a manifest into a zero-unknown confidence report.                                                                                                                                                                               |
 | `qa confidence-self-test`                           | Write seeded negative-control canaries proving the confidence gate detects drift.                                                                                                                                                                                   |
 | `qa jsonl-replay`                                   | Replay curated JSONL transcripts through the runtime parity replay harness.                                                                                                                                                                                         |
@@ -94,7 +94,7 @@ Crabline local provider servers. Use `release` for Stable/LTS proof against
 live channels. Use `all` only for explicit full-taxonomy evidence runs; it
 selects every active maturity category and can be dispatched through the `QA
 Profile Evidence` GitHub Actions workflow with `qa_profile=all`. When a
-command also needs an OpenClaw root profile, put the root profile before the
+command also needs a PASO root profile, put the root profile before the
 QA command:
 
 ```bash
@@ -336,7 +336,7 @@ runs install/build inside the VM. Use `--hydrate-mode prehydrated` only when
 the reused remote workspace already has `node_modules` and a built `dist/`;
 that mode skips the expensive install/build step and fails closed when the
 workspace is not ready. With `--gateway-setup`, Mantis leaves a persistent
-OpenClaw Slack gateway running inside the VM on port `38973`; without it, the
+PASO Slack gateway running inside the VM on port `38973`; without it, the
 command runs the normal bot-to-bot Slack QA lane and exits after artifact
 capture.
 
@@ -441,7 +441,7 @@ For a disposable Linux VM lane without bringing Docker into the QA path, run:
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 ```
 
-This boots a fresh Multipass guest, installs dependencies, builds OpenClaw
+This boots a fresh Multipass guest, installs dependencies, builds PASO
 inside the guest, runs `qa suite`, then copies the normal QA report and
 summary back into `.artifacts/qa-e2e/...` on the host. It reuses the same
 scenario-selection behavior as `qa suite` on the host.
@@ -506,7 +506,7 @@ pnpm openclaw qa buzz \
 
 Targets one real Buzz room with two dedicated Nostr identities. The driver
 publishes inbound room events; the SUT identity is configured in the child
-OpenClaw Gateway and its outbound events are observed from the relay. The
+PASO Gateway and its outbound events are observed from the relay. The
 default `mock-openai` provider proves the real Buzz transport without requiring
 a model-provider credential.
 
@@ -600,7 +600,7 @@ pnpm openclaw qa discord
 ```
 
 Targets one real private Discord guild channel with two bots: a driver bot
-controlled by the harness and a SUT bot started by the child OpenClaw gateway
+controlled by the harness and a SUT bot started by the child PASO gateway
 through the bundled Discord plugin. Verifies channel mention handling, that
 the SUT bot has registered the native `/help` command with Discord, and
 opt-in Mantis evidence scenarios.
@@ -704,7 +704,7 @@ pnpm openclaw qa slack
 ```
 
 Targets one real private Slack channel with two distinct bots: a driver bot
-controlled by the harness and a SUT bot started by the child OpenClaw gateway
+controlled by the harness and a SUT bot started by the child PASO gateway
 through the bundled Slack plugin.
 
 Required env when `--credential-source env`:
@@ -836,12 +836,12 @@ then _Install to Workspace_:
 ```json
 {
   "display_information": {
-    "name": "OpenClaw QA Driver",
-    "description": "Test driver bot for OpenClaw QA Slack live lane"
+    "name": "PASO QA Driver",
+    "description": "Test driver bot for PASO QA Slack live lane"
   },
   "features": {
     "bot_user": {
-      "display_name": "OpenClaw QA Driver",
+      "display_name": "PASO QA Driver",
       "always_online": true
     }
   },
@@ -871,12 +871,12 @@ reaction handling yet.
 ```json
 {
   "display_information": {
-    "name": "OpenClaw QA SUT",
-    "description": "OpenClaw QA SUT connector for OpenClaw"
+    "name": "PASO QA SUT",
+    "description": "PASO QA SUT connector for PASO"
   },
   "features": {
     "bot_user": {
-      "display_name": "OpenClaw QA SUT",
+      "display_name": "PASO QA SUT",
       "always_online": true
     },
     "app_home": {
@@ -951,8 +951,8 @@ In the QA workspace, create a channel (e.g. `#openclaw-qa`) and invite both
 bots from inside the channel:
 
 ```text
-/invite @OpenClaw QA Driver
-/invite @OpenClaw QA SUT
+/invite @PASO QA Driver
+/invite @PASO QA SUT
 ```
 
 Copy the `Cxxxxxxxxxx` id from _channel info → About → Channel ID_ - that
@@ -1016,7 +1016,7 @@ pnpm openclaw qa whatsapp
 ```
 
 Targets two dedicated WhatsApp Web accounts: a driver account controlled by
-the harness and a SUT account started by the child OpenClaw gateway through
+the harness and a SUT account started by the child PASO gateway through
 the bundled WhatsApp plugin.
 
 Required env when `--credential-source env`:
@@ -1248,13 +1248,13 @@ The baseline list should stay broad enough to cover:
 - model switching
 - subagent handoff
 - repo-reading and docs-reading
-- one small build task such as Lobster Invaders
+- one small build task such as a browser-based task board
 
 ## Provider mock lanes
 
 `qa suite` has two local provider mock lanes:
 
-- `mock-openai` is the scenario-aware OpenClaw mock. It remains the default
+- `mock-openai` is the scenario-aware PASO mock. It remains the default
   deterministic mock lane for repo-backed QA and parity gates.
 - `aimock` starts an AIMock-backed provider server for experimental
   protocol, fixture, record/replay, and chaos coverage. It is additive and
@@ -1270,7 +1270,7 @@ provider names.
 
 `qa-lab` owns a generic transport seam for YAML QA scenarios. `qa-channel` is
 the synthetic default. `crabline` starts separate local provider servers and
-runs OpenClaw's normal channel plugins against their provider-shaped REST and
+runs PASO's normal channel plugins against their provider-shaped REST and
 streaming boundaries; it does not use Crabline's fixture-level local mock
 providers. `live` is reserved for real provider credentials and external
 channels.

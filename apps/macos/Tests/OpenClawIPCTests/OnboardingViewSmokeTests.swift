@@ -281,7 +281,7 @@ struct OnboardingViewSmokeTests {
 
             #expect(!outcome.ready)
             #expect(OnboardingView.pageOrder(for: .local, requiresCLIInstall: !outcome.ready) == [0, 1, 2, 3])
-            #expect(outcome.status == "OpenClaw is paused. Resume it, then retry setup to start the Gateway.")
+            #expect(outcome.status == "PASO is paused. Resume it, then retry setup to start the Gateway.")
         }
     }
 
@@ -291,15 +291,15 @@ struct OnboardingViewSmokeTests {
                 .ready,
                 afterFreshInstall: afterFreshInstall)
             #expect(ready.ready)
-            #expect(ready.status == "OpenClaw Gateway is ready.")
+            #expect(ready.status == "PASO Gateway is ready.")
 
             let failure = OnboardingView.localGatewayActivationOutcome(
                 .failed(reason: "launchd disabled"),
                 afterFreshInstall: afterFreshInstall)
             #expect(!failure.ready)
             #expect(failure.status == (afterFreshInstall
-                    ? "OpenClaw was installed, but the Gateway did not start. Retry setup. (launchd disabled)"
-                    : "OpenClaw is installed, but the Gateway did not start. Retry setup. (launchd disabled)"))
+                    ? "PASO was installed, but the Gateway did not start. Retry setup. (launchd disabled)"
+                    : "PASO is installed, but the Gateway did not start. Retry setup. (launchd disabled)"))
         }
     }
 
@@ -416,19 +416,19 @@ struct OnboardingViewSmokeTests {
     @Test func `gateway start failure message retains the concrete reason`() {
         #expect(
             OnboardingView.gatewayStartFailureMessage(
-                prefix: "OpenClaw was installed, but the Gateway did not start. Retry setup.",
+                prefix: "PASO was installed, but the Gateway did not start. Retry setup.",
                 reason: "launchd disabled") ==
-                "OpenClaw was installed, but the Gateway did not start. Retry setup. (launchd disabled)")
+                "PASO was installed, but the Gateway did not start. Retry setup. (launchd disabled)")
         #expect(
             OnboardingView.gatewayStartFailureMessage(
-                prefix: "OpenClaw was installed, but the Gateway did not start. Retry setup.",
+                prefix: "PASO was installed, but the Gateway did not start. Retry setup.",
                 reason: nil) ==
-                "OpenClaw was installed, but the Gateway did not start. Retry setup.")
+                "PASO was installed, but the Gateway did not start. Retry setup.")
         #expect(
             OnboardingView.gatewayStartFailureMessage(
-                prefix: "OpenClaw was installed, but the Gateway did not start. Retry setup.",
+                prefix: "PASO was installed, but the Gateway did not start. Retry setup.",
                 reason: "") ==
-                "OpenClaw was installed, but the Gateway did not start. Retry setup.")
+                "PASO was installed, but the Gateway did not start. Retry setup.")
     }
 
     @Test func `connection mode change restarts full page monitoring`() {

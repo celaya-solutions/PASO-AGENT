@@ -91,7 +91,7 @@ export function renderChannels(props: ChannelsProps) {
         connected.length === 0
           ? html`
               <div class="channels-empty">
-                <!-- No configured transports is a true empty state, so Clawd rests here. -->
+                <!-- No configured transports is a true empty state. -->
                 <openclaw-mascot mood="sleepy" .size=${80}></openclaw-mascot>
                 ${renderSettingsEmpty(t("channels.hub.noneConnected"))}
               </div>

@@ -1,4 +1,4 @@
-// Whimsical long-wait status word ("Clawing…") for the chat working row.
+// Rotating long-wait status word ("Working…") for the chat working row.
 // Silent for the first stretch of a run, then rotates through crab-themed
 // gerunds so long quiet runs feel alive without claiming progress data the
 // UI does not have. Decorative only — the row keeps its sr-only "Working…".

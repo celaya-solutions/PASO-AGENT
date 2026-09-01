@@ -1,4 +1,4 @@
-// Configured OpenClaw assistant tests cover route-owned, tool-free planning.
+// Configured PASO assistant tests cover route-owned, tool-free planning.
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { RunCliAgentParams } from "../agents/cli-runner/types.js";
 import { fingerprintResolvedProviderAuth } from "../agents/execution-auth-binding.js";
@@ -87,7 +87,7 @@ function overview(defaultModel?: string): SystemAgentOverview {
     },
     gateway: { url: "ws://127.0.0.1:18789", source: "local loopback", reachable: false },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
   };
@@ -106,7 +106,7 @@ function snapshot(config: OpenClawConfig) {
   };
 }
 
-describe("OpenClaw configured-model planner", () => {
+describe("PASO configured-model planner", () => {
   it("rejects a low-level missing binding before config lookup or model execution", async () => {
     const readConfigFileSnapshot = vi.fn();
     const runCliAgent = vi.fn();

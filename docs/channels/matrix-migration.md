@@ -1,5 +1,5 @@
 ---
-summary: "How OpenClaw upgrades the previous Matrix plugin in place, including encrypted-state recovery limits and manual recovery steps."
+summary: "How PASO upgrades the previous Matrix plugin in place, including encrypted-state recovery limits and manual recovery steps."
 read_when:
   - Upgrading an existing Matrix installation
   - Migrating encrypted Matrix history and device state
@@ -21,7 +21,7 @@ The root `openclaw` package no longer bundles Matrix runtime code or Matrix SDK
 dependencies. If `openclaw channels status` shows Matrix is configured but the
 plugin is not installed, run `openclaw doctor --fix` or
 `openclaw plugins install @openclaw/matrix`; do not install Matrix SDK packages
-into the root OpenClaw package.
+into the root PASO package.
 
 ## What the migration does automatically
 
@@ -34,7 +34,7 @@ Doctor migration covers:
 - importing file-based sidecar state (`bot-storage.json` sync cache, `recovery-key.json`, `legacy-crypto-migration.json`, IndexedDB snapshots) into Matrix SQLite state; migrated files are archived with a `.migrated` suffix
 - reusing the most complete existing token-hash storage root for the same Matrix account, homeserver, user, and device when the access token changes later
 
-## Upgrading from OpenClaw releases older than 2026.4
+## Upgrading from PASO releases older than 2026.4
 
 Releases through the 2026.6 train also migrated the original flat single-store
 Matrix layout (`~/.openclaw/matrix/bot-storage.json` plus
@@ -50,7 +50,7 @@ The previous public Matrix plugin did **not** automatically create Matrix room-k
 
 ## Recommended upgrade flow
 
-1. Update OpenClaw and the Matrix plugin normally.
+1. Update PASO and the Matrix plugin normally.
 2. Run:
 
    ```bash
@@ -67,7 +67,7 @@ The previous public Matrix plugin did **not** automatically create Matrix room-k
 
 5. Put the recovery key for the Matrix account you are repairing in an account-specific environment variable. For a single default account, `MATRIX_RECOVERY_KEY` is fine. For multiple accounts, use one variable per account, for example `MATRIX_RECOVERY_KEY_ASSISTANT`, and add `--account assistant` to the command.
 
-6. If OpenClaw tells you a recovery key is needed, run the command for the matching account:
+6. If PASO tells you a recovery key is needed, run the command for the matching account:
 
    ```bash
    printf '%s\n' "$MATRIX_RECOVERY_KEY" | openclaw matrix verify backup restore --recovery-key-stdin
@@ -110,7 +110,7 @@ The previous public Matrix plugin did **not** automatically create Matrix room-k
 
 `Failed migrating legacy Matrix client storage: ...`
 
-- Meaning: the Matrix client-side fallback found file-based sidecar state, but the import into SQLite failed. OpenClaw rolls back completed moves and aborts that fallback instead of silently starting with a fresh store.
+- Meaning: the Matrix client-side fallback found file-based sidecar state, but the import into SQLite failed. PASO rolls back completed moves and aborts that fallback instead of silently starting with a fresh store.
 - What to do: inspect filesystem permissions or conflicts, keep the old state intact, and retry after fixing the error.
 
 `Matrix is installed from a custom path: ...`

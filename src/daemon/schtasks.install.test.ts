@@ -138,11 +138,9 @@ describe("installScheduledTask", () => {
       const gatewayScript = decodeWindowsLauncherScript({
         buffer: await fs.readFile(gateway.scriptPath),
       });
-      expect(gatewayScript).toContain("rem OpenClaw Gateway");
+      expect(gatewayScript).toContain("rem PASO Gateway");
       expect(gatewayScript).not.toContain("OPENCLAW_SERVICE_VERSION");
-      expect(xmlPayloadCaptures.at(-1)?.xml).toContain(
-        "<Description>OpenClaw Gateway</Description>",
-      );
+      expect(xmlPayloadCaptures.at(-1)?.xml).toContain("<Description>PASO Gateway</Description>");
 
       const node = await installScheduledTask({
         env: {

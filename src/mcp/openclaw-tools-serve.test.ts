@@ -1,4 +1,4 @@
-// OpenClaw MCP tools tests cover core tool server startup and registration.
+// PASO MCP tools tests cover core tool server startup and registration.
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { hashSystemAgentOperation } from "../system-agent/operator-approval.js";
 import {
@@ -21,7 +21,7 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("OpenClaw tools MCP server", () => {
+describe("PASO tools MCP server", () => {
   it("exposes cron", async () => {
     const handlers = createPluginToolsMcpHandlers(
       resolveOpenClawToolsForMcp({ agentSessionKey: "agent:worker:main" }),
@@ -184,7 +184,7 @@ describe("OpenClaw tools MCP server", () => {
 
     const text = JSON.stringify(result);
     expect(text).toContain("needs-approval:");
-    expect(text).toContain("OpenClaw operator UI");
+    expect(text).toContain("PASO operator UI");
     expect(text).toContain("cannot be applied from this chat");
     expect(text).not.toContain("ask the user to reply yes");
   });

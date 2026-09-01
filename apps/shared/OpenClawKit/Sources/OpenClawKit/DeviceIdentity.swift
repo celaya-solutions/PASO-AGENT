@@ -262,7 +262,7 @@ public enum DeviceIdentityStore {
         do {
             return try self.loadOrCreatePersistedOrThrow(profile: profile)
         } catch {
-            preconditionFailure("Could not persist the OpenClaw device identity: \(error.localizedDescription)")
+            preconditionFailure("Could not persist the PASO device identity: \(error.localizedDescription)")
         }
     }
 

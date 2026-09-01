@@ -77,7 +77,7 @@ Gateway config reload watches the active config file path (resolved from profile
 
 ## OpenAI-compatible endpoints
 
-OpenClaw's highest-leverage compatibility surface:
+PASO's highest-leverage compatibility surface:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
@@ -147,7 +147,7 @@ openclaw gateway probe
 What to expect:
 
 - `gateway status --deep` can report `Other gateway-like services detected (best effort)` and print cleanup hints when stale launchd/systemd/schtasks installs are still around.
-- `gateway probe` can warn about `multiple reachable gateway identities` when distinct gateways answer, or when OpenClaw cannot prove reachable targets are the same gateway. An SSH tunnel, proxy URL, or configured remote URL to the same gateway is one gateway with multiple transports, even when transport ports differ.
+- `gateway probe` can warn about `multiple reachable gateway identities` when distinct gateways answer, or when PASO cannot prove reachable targets are the same gateway. An SSH tunnel, proxy URL, or configured remote URL to the same gateway is one gateway with multiple transports, even when transport ports differ.
 - If that is intentional, isolate ports, config/state, and workspace roots per gateway.
 
 Checklist per instance:
@@ -207,7 +207,7 @@ LaunchAgent labels are `ai.openclaw.gateway` (default) or `ai.openclaw.<profile>
 
 ### Existing system LaunchDaemons
 
-OpenClaw installs and manages a per-user LaunchAgent. It does not install or manage system LaunchDaemons. If a custom LaunchDaemon already uses the same gateway label, OpenClaw refuses to write, start, restart, or repair a user LaunchAgent because two `KeepAlive` managers can repeatedly restart the same gateway.
+PASO installs and manages a per-user LaunchAgent. It does not install or manage system LaunchDaemons. If a custom LaunchDaemon already uses the same gateway label, PASO refuses to write, start, restart, or repair a user LaunchAgent because two `KeepAlive` managers can repeatedly restart the same gateway.
 
 The ownership check reads `launchctl print system/<label>` and also checks installed plists under `/Library/LaunchDaemons`. It fails closed when system ownership cannot be verified, and `--force` does not bypass it. `openclaw gateway status` reports a loaded same-label system job; add `--deep` to scan installed system service files.
 
@@ -240,7 +240,7 @@ Manual user-unit example when you need a custom install path:
 
 ```ini
 [Unit]
-Description=OpenClaw Gateway
+Description=PASO Gateway
 After=network-online.target
 Wants=network-online.target
 StartLimitBurst=5
@@ -272,9 +272,10 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Native Windows managed startup uses a Scheduled Task named `OpenClaw Gateway`
-(or `OpenClaw Gateway (<profile>)` for named profiles). If Scheduled Task
-creation is denied, OpenClaw falls back to a per-user Startup-folder launcher
+Native Windows managed startup uses the retained technical Scheduled Task name
+`OpenClaw Gateway` (or `OpenClaw Gateway (<profile>)` for named profiles). The
+task runs the PASO Gateway. If task creation is denied, PASO falls back to a
+per-user Startup-folder launcher
 that points at `gateway.cmd` inside the state directory.
 
   </Tab>
@@ -292,7 +293,7 @@ Use the same service body as the user unit, but install it under
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` and adjust
 `ExecStart=` if your `openclaw` binary lives elsewhere.
 
-Do not also let `openclaw doctor --fix` install a user-level gateway service for the same profile/port. Doctor refuses that automatic install when it finds a system-level OpenClaw gateway service; use `OPENCLAW_SERVICE_REPAIR_POLICY=external` when the system unit owns the lifecycle.
+Do not also let `openclaw doctor --fix` install a user-level gateway service for the same profile/port. Doctor refuses that automatic install when it finds a system-level PASO gateway service; use `OPENCLAW_SERVICE_REPAIR_POLICY=external` when the system unit owns the lifecycle.
 
   </Tab>
 </Tabs>

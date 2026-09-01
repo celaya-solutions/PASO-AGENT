@@ -49,7 +49,7 @@ export type AgentModelEntryConfig = {
   params?: Record<string, unknown>;
   /** Optional agent execution runtime for this specific provider/model entry. */
   agentRuntime?: AgentRuntimePolicyConfig;
-  /** OpenClaw Code Mode override; omitted inherits the enclosing activation policy. */
+  /** PASO Code Mode override; omitted inherits the enclosing activation policy. */
   codeMode?: boolean;
   /** Enable streaming for this model (default: true, false for Ollama to avoid SDK issue #1205). */
   streaming?: boolean;
@@ -215,17 +215,17 @@ export type AgentDefaultsConfig = {
   contextPruning?: AgentContextPruningConfig;
   /** Compaction tuning and pre-compaction memory flush behavior. */
   compaction?: AgentCompactionConfig;
-  /** Embedded OpenClaw runner hardening and compatibility controls. */
+  /** Embedded PASO runner hardening and compatibility controls. */
   embeddedAgent?: {
     /**
-     * How embedded OpenClaw should trust workspace-local `.openclaw/settings.json`.
+     * How embedded PASO should trust workspace-local `.openclaw/settings.json`.
      * - sanitize (default): apply project settings except shellPath/shellCommandPrefix
      * - ignore: ignore project settings entirely
      * - trusted: trust project settings as-is
      */
     projectSettingsPolicy?: "trusted" | "sanitize" | "ignore";
     /**
-     * Embedded OpenClaw execution contract:
+     * Embedded PASO execution contract:
      * - default: keep the standard runner behavior
      * - strict-agentic: enable structured plan tracking and non-visible turn recovery on supported GPT-5 runs
      */
@@ -390,9 +390,9 @@ export type AgentCompactionConfig = {
   enabled?: boolean;
   /** Compaction summarization mode. */
   mode?: AgentCompactionMode;
-  /** Thinking level for embedded OpenClaw compaction summaries. Default: low. */
+  /** Thinking level for embedded PASO compaction summaries. Default: low. */
   thinkingLevel?: AgentThinkingLevel | "inherit";
-  /** Embedded OpenClaw keepRecentTokens budget used for cut-point selection. */
+  /** Embedded PASO keepRecentTokens budget used for cut-point selection. */
   keepRecentTokens?: number;
   /** Preserve this many most-recent user/assistant turns verbatim in compaction summary context. */
   recentTurnsPreserve?: number;

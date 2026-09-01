@@ -1,6 +1,6 @@
 # @openclaw/google-meet
 
-Official Google Meet participant plugin for OpenClaw.
+Official Google Meet participant plugin for PASO.
 
 This plugin registers the `google_meet` tool so agents can join Google Meet calls through supported Chrome or Twilio transports.
 
@@ -16,11 +16,11 @@ Restart the Gateway after installing or updating the plugin.
 
 Enable the plugin and follow the Google Meet docs for browser profile, transport, and call-join setup:
 
-- https://docs.openclaw.ai/plugins/google-meet
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/plugins/google-meet.md
 
 ## Package
 
 - Plugin id: `google-meet`
 - Tool: `google_meet`
 - Package: `@openclaw/google-meet`
-- Minimum OpenClaw host: `2026.4.20`
+- Minimum PASO host: `2026.4.20`

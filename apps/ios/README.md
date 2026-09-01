@@ -1,11 +1,12 @@
-# OpenClaw iOS
+# PASO iOS
 
-OpenClaw iOS is the officially released iPhone app. It connects to an OpenClaw Gateway as a `role: node` for chat, voice, approvals, sharing, and device-aware automation.
+PASO iOS is the source-built iPhone companion for a PASO Gateway. It connects as a `role: node` for chat, voice, approvals, sharing, and device-aware automation.
 
 ## Distribution Status
 
-- Public distribution: App Store.
-- App Store Connect uploads use the App Store release Fastlane path.
+- PASO public App Store distribution is not configured yet.
+- The checked-in App Store identity and relay lane belong to upstream OpenClaw and are retained only for compatibility reference.
+- PASO release commands fail closed until Celaya Solutions Research configures and enables its own signing identity.
 - Local/manual deploy from source via Xcode remains the default development path for app development.
 
 ## Support Notes
@@ -43,7 +44,12 @@ Generate without opening Xcode:
 pnpm ios:gen
 ```
 
-## App Store Release Flow
+## Upstream App Store Compatibility Lane (PASO Disabled)
+
+The settings below describe the inherited upstream OpenClaw lane. They are not
+Celaya-owned PASO release credentials, and they must not be used to publish a
+PASO build. `AppStoreSigning.json` keeps `releaseEnabled: false` until a
+Celaya-owned Apple team, bundle identity, relay, and signing repository exist.
 
 Prereqs:
 
@@ -83,7 +89,7 @@ Release behavior:
 
 Relay behavior for App Store builds:
 
-- App Store release builds use the canonical hosted relay at `https://ios-push-relay.openclaw.ai`.
+- Upstream OpenClaw App Store builds use the canonical hosted relay at `https://ios-push-relay.openclaw.ai`; it is not a PASO service.
 - App Store release builds reject custom relay URL overrides. Future self-hosted relay support should use a separate explicit release path, not the public App Store build lane.
 
 Signing setup commands:
@@ -289,7 +295,8 @@ See `apps/ios/VERSIONING.md` for the detailed spec.
   - Production APNs credentials and raw official-build APNs tokens stay in the relay deployment,
     not on the gateway.
 
-This exists to keep the hosted relay limited to genuine OpenClaw official builds and to ensure a
+This inherited compatibility path limits the upstream relay to builds signed with its authorized
+OpenClaw credentials and ensures a
 gateway can only send pushes for iOS devices that paired with that gateway.
 
 ## What Works Now (Concrete)
@@ -303,7 +310,7 @@ gateway can only send pushes for iOS devices that paired with that gateway.
 
 ## Computer Use Relationship
 
-The iOS app is not a Codex Computer Use backend. Computer Use and `cua-driver mcp` are macOS desktop-control paths; iOS exposes device capabilities as OpenClaw node commands through the gateway. Agents can drive the iPhone camera, screen recorder, location, voice, and other node capabilities with `node.invoke`, subject to iOS foreground/background limits.
+The iOS app is not a Codex Computer Use backend. Computer Use and `cua-driver mcp` are macOS desktop-control paths; iOS exposes device capabilities as PASO node commands through the gateway. Agents can drive the iPhone camera, screen recorder, location, voice, and other node capabilities with `node.invoke`, subject to iOS foreground/background limits.
 
 ## Location Automation Use Case (Testing)
 

@@ -33,7 +33,7 @@ const HOST_KEY = [["ssh", "ed25519"].join("-"), "AAAA"].join(" ");
 const OPENCLAW_ROOT = path.resolve(path.sep, "workspace", "openclaw");
 const SIBLING_BINARY = path.resolve(OPENCLAW_ROOT, "../crabbox/bin/crabbox");
 const WORKER_WALLPAPER_PATH = fileURLToPath(
-  new URL("../assets/openclaw-worker-wallpaper.png", import.meta.url),
+  new URL("../assets/paso-worker-wallpaper.png", import.meta.url),
 );
 const INSPECT_FAILURE_PREFIX = "Crabbox inspect failed with exit code 2: ";
 // These lifecycle cases opt out of capture; defaults and checkpoints have boundary coverage
@@ -790,7 +790,7 @@ describe("Crabbox worker provider", () => {
 
   it.each([
     { name: "the direct-environment default", executionMode: undefined },
-    { name: "an OpenClaw worker turn", executionMode: "worker-turn" },
+    { name: "a PASO worker turn", executionMode: "worker-turn" },
     { name: "a Codex remote-exec turn", executionMode: "remote-exec" },
   ] as const)("returns the same enrolled node transport for $name", async ({ executionMode }) => {
     const calls: Array<{ argv: string[]; options: Parameters<CrabboxCommandRunner>[1] }> = [];
@@ -970,7 +970,7 @@ describe("Crabbox worker provider", () => {
     expect(desktopSetupText).toContain("xrandr --listmonitors");
     expect(desktopSetupText).toContain('printf "/backdrop/screen0/monitor%s/workspace%s');
     expect(desktopSetupText).toContain(
-      'wallpaper_path="$worker_home/.local/share/backgrounds/openclaw-worker.png"',
+      'wallpaper_path="$worker_home/.local/share/backgrounds/paso-worker.png"',
     );
     expect(desktopSetupText).toContain('for backdrop in "${backdrop_roots[@]}"; do');
     const sessionExportIndex = desktopSetupText.indexOf("export DBUS_SESSION_BUS_ADDRESS");

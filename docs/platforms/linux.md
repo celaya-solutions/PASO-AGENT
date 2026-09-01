@@ -10,17 +10,17 @@ title: "Linux app"
 
 The Gateway is fully supported on Linux. Node is the primary, default, and
 recommended runtime; Bun 1.4+ builds with WAL-reset-safe `node:sqlite` can run
-OpenClaw as an explicit opt-in. Use `pnpm` rather than Bun for dependency
+PASO as an explicit opt-in. Use `pnpm` rather than Bun for dependency
 installation.
 
 ## Desktop companion
 
-The OpenClaw Linux companion is a Tauri desktop app for local and remote
+The PASO Linux companion is a Tauri desktop app for local and remote
 Gateways. It:
 
 - walks new users through choosing a local Gateway, a discovered remote Gateway,
   a manually entered Gateway URL, or an SSH tunnel
-- installs the OpenClaw CLI and Node in a private managed runtime when local
+- installs the PASO CLI and Node in a private managed runtime when local
   setup needs them, rather than requiring a global CLI install; release builds
   install the stable channel automatically, while development builds ask for
   the channel first
@@ -74,7 +74,7 @@ guided onboarding.
 Model Setup can resume an activation across a Gateway restart or app reopen
 while its temporary recovery record is valid. Recovery stays bound to the same
 Gateway, agent, and authentication. When the known activation target still
-matches the selected model, OpenClaw verifies that exact model before continuing
+matches the selected model, PASO verifies that exact model before continuing
 guided onboarding rather than activating the provider again. For an unresolved
 result, use **Verify & use selected model** to explicitly verify and adopt a
 displayed model, or wait for the setup attempt's bounded window to end before
@@ -111,15 +111,15 @@ the shell does not grant microphone capture to the WebKitGTK WebView, so
 `getUserMedia` is expected to fail there. Until that lands, open the Gateway's
 Control UI in a regular browser for [Talk mode](/nodes/talk).
 
-Stable releases built from `main` or their matching `release/YYYY.M.PATCH` branch
-ship `.deb` and AppImage bundles as assets on the
-[GitHub release](https://github.com/openclaw/openclaw/releases) for the tag,
-named `OpenClaw-<version>-amd64.deb` and `OpenClaw-<version>-amd64.AppImage`,
-with a `SHA256SUMS.linux-app.txt` checksum file next to them. Download the
-`.deb` and install it with `sudo apt install ./OpenClaw-<version>-amd64.deb`,
-or mark the AppImage executable and run it directly. The AppImage runtime
-needs FUSE 2 (`sudo apt install libfuse2`, or `libfuse2t64` on Ubuntu 24.04+);
-without it, run the AppImage with `APPIMAGE_EXTRACT_AND_RUN=1`.
+No Celaya-built PASO `.deb` or AppImage is published yet. Build the Linux
+companion from [the PASO source tree](https://github.com/celaya-solutions/PASO-AGENT/tree/main/apps/linux)
+and follow its README. Do not treat upstream OpenClaw desktop artifacts as PASO
+releases.
+
+Future fork-owned binaries will appear on
+[PASO GitHub releases](https://github.com/celaya-solutions/PASO-AGENT/releases).
+Their `OpenClaw-` filename prefix may remain for upgrade compatibility, while
+the installed app and interface remain PASO.
 
 ### Media codecs
 
@@ -193,7 +193,7 @@ The CLI remains the simplest option for a headless server or VPS. Use a manual
 SSH tunnel when connecting without the Linux desktop companion:
 
 1. Install Node 26 (recommended), or another supported release: Node 22.22.3+, Node 24.15+, or Node 25.9+.
-2. On npm 12 or npm 11.16+, run `npm i -g openclaw@latest --allow-scripts=openclaw`. On npm 11.15 and earlier, omit `--allow-scripts=openclaw`.
+2. Install PASO from the Celaya Solutions Research source repository: `curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --no-onboard`.
 3. `openclaw onboard --install-daemon`
 4. From your laptop: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
 5. Open `http://127.0.0.1:18789/` and authenticate with the configured shared
@@ -276,7 +276,7 @@ Write a unit by hand only for a custom setup. Minimal user-unit example
 
 ```ini
 [Unit]
-Description=OpenClaw Gateway (profile: <profile>)
+Description=PASO Gateway (profile: <profile>)
 After=network-online.target
 Wants=network-online.target
 StartLimitBurst=5
@@ -309,10 +309,10 @@ systemctl --user enable --now openclaw-gateway[-<profile>].service
 
 On Linux, the kernel picks an OOM victim when a host, VM, or container cgroup
 runs out of memory. The Gateway is a poor victim because it owns long-lived
-sessions and channel connections, so OpenClaw biases transient child
+sessions and channel connections, so PASO biases transient child
 processes to be killed first when possible.
 
-For eligible Linux child spawns, OpenClaw wraps the command in a short
+For eligible Linux child spawns, PASO wraps the command in a short
 `/bin/sh` shim that attempts to raise the child's own `oom_score_adj` to
 `1000`, then `exec`s the real command. This is unprivileged: a process may
 always raise its own OOM score.
@@ -322,7 +322,7 @@ Covered child process surfaces:
 - Supervisor-managed command children
 - PTY shell children
 - MCP stdio server children
-- OpenClaw-launched browser/Chrome processes (via the plugin SDK process runtime)
+- PASO-launched browser/Chrome processes (via the plugin SDK process runtime)
 
 The wrapper is Linux-only and skipped when `/bin/sh` is unavailable, or when
 the child env sets `OPENCLAW_CHILD_OOM_SCORE_ADJ` to `0`, `false`, `no`, or

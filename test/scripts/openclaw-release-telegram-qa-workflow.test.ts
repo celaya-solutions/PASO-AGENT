@@ -33,7 +33,11 @@ type WorkflowJob = {
 };
 
 function workflow(path = WORKFLOW_PATH) {
-  return parse(readFileSync(path, "utf8")) as { jobs?: Record<string, WorkflowJob> };
+  return parse(readFileSync(path, "utf8")) as {
+    jobs?: Record<string, WorkflowJob>;
+    name?: string;
+    "run-name"?: string;
+  };
 }
 
 function job(name: string, path = WORKFLOW_PATH): WorkflowJob {
@@ -86,7 +90,7 @@ function runIdentityVerification(params: {
   workflowBranch?: string;
   workflowSha?: string;
 }) {
-  const repository = "openclaw/openclaw";
+  const repository = "celaya-solutions/PASO-AGENT";
   const workflowBranch = params.workflowBranch ?? "main";
   const workflowRefName = `refs/heads/${workflowBranch}`;
   const trustedWorkflowRef = `${repository}/.github/workflows/openclaw-release-telegram-qa.yml@${workflowRefName}`;
@@ -280,7 +284,7 @@ function runCandidateProvenance(
                     {
                       state: "OPEN",
                       headRefOid: candidateSha,
-                      headRepository: { nameWithOwner: "openclaw/openclaw" },
+                      headRepository: { nameWithOwner: "celaya-solutions/PASO-AGENT" },
                     },
                   ]
                 : []),
@@ -288,7 +292,7 @@ function runCandidateProvenance(
                 state: "MERGED",
                 baseRefName: pullRequest.baseRefName ?? "release/2026.7.1",
                 baseRepository: {
-                  nameWithOwner: pullRequest.baseRepository ?? "openclaw/openclaw",
+                  nameWithOwner: pullRequest.baseRepository ?? "celaya-solutions/PASO-AGENT",
                 },
                 mergeCommit: { oid: pullRequest.mergeCommitOid ?? candidateSha },
                 mergedBy: { login: pullRequest.mergedBy ?? "release-maintainer" },
@@ -343,7 +347,7 @@ exit 64
       CANDIDATE_ROOT: join(workdir, ".candidate"),
       GH_TRANSIENT_SERVER_OR_NETWORK_PATTERN: "HTTP 5[0-9][0-9]",
       GITHUB_WORKSPACE: process.cwd(),
-      GITHUB_REPOSITORY: "openclaw/openclaw",
+      GITHUB_REPOSITORY: "celaya-solutions/PASO-AGENT",
       PATH: `${fakeBin}:${process.env.PATH}`,
       TARGET_CONTEXT_REF: targetContextRef,
       TARGET_REF:
@@ -355,6 +359,12 @@ exit 64
 
 describe("release Telegram QA workflow", () => {
   it("keeps the workflow wiring explicit and secret-scoped", () => {
+    const telegram = workflow();
+    expect(telegram.name).toBe("PASO Release Telegram QA");
+    expect(telegram["run-name"]).toBe(
+      "${{ github.event_name == 'workflow_dispatch' && format('PASO Release Telegram QA {0}', inputs.dispatch_id) || 'PASO Release Telegram QA' }}",
+    );
+
     const release = workflow(RELEASE_CHECKS_PATH);
     const caller = release.jobs?.qa_live_telegram_release_checks;
     expect(caller).toMatchObject({
@@ -368,6 +378,11 @@ describe("release Telegram QA workflow", () => {
       "${{ steps.dispatch.outputs.conclusion || steps.dispatch.outcome }}",
     );
     expect(caller?.["continue-on-error"]).toBe(true);
+    expect(
+      caller?.steps?.find(
+        (candidate) => candidate.name === "Dispatch and await trusted Telegram QA",
+      )?.run,
+    ).toContain('run_name="PASO Release Telegram QA ${dispatch_id}"');
 
     const trusted = job("trusted_identity");
     expect(trusted).toMatchObject({

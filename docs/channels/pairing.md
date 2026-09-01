@@ -3,11 +3,11 @@ summary: "Pairing overview: approve who can DM you + which nodes can join"
 read_when:
   - Setting up DM access control
   - Pairing a new iOS/Android node
-  - Reviewing OpenClaw security posture
+  - Reviewing PASO security posture
 title: "Pairing"
 ---
 
-"Pairing" is OpenClaw's explicit access approval step.
+"Pairing" is PASO's explicit access approval step.
 It is used in two places:
 
 1. **DM pairing** (who is allowed to talk to the bot)
@@ -66,7 +66,7 @@ privileged commands and exec approval prompts. After an owner exists, later
 pairing approvals only grant DM access; they do not add more owners.
 
 <Note>
-WhatsApp's login QR links a WhatsApp account to OpenClaw. DM access requests
+WhatsApp's login QR links a WhatsApp account to PASO. DM access requests
 approve people who message that account. These are separate flows.
 </Note>
 
@@ -143,12 +143,12 @@ Use an already connected Control UI session with `operator.admin` access:
 3. Keep **Full access (recommended)**, or select **Limited access** to omit
    administrative Gateway controls.
 4. Click **Create setup code**.
-5. On your phone, open the OpenClaw app → **Settings** → **Gateway**.
+5. On your phone, open the PASO app → **Settings** → **Gateway**.
 6. Scan the QR code or paste the setup code, then connect.
 
-Official OpenClaw iOS and Android apps are approved automatically when their
+Compatible iOS and Android builds are approved automatically when their
 setup-code metadata matches. If **Pending approval** shows a request (for
-example, for a non-official client or mismatched metadata), review its role and
+example, for a custom client or mismatched metadata), review its role and
 scopes before approving it.
 
 The button is disabled when the current Control UI session does not have
@@ -161,9 +161,9 @@ If you use the `device-pair` plugin, you can do first-time device pairing entire
 
 1. In Telegram, message your bot: `/pair`
 2. The bot replies with two messages: an instruction message and a separate **setup code** message (easy to copy/paste in Telegram).
-3. On your phone, open the OpenClaw iOS app → Settings → Gateway.
+3. On your phone, open the PASO iOS app → Settings → Gateway.
 4. Scan the QR code (`/pair qr`) or paste the setup code and connect.
-5. The official mobile app connects automatically. If `/pair pending` shows a
+5. A compatible mobile build connects automatically. If `/pair pending` shows a
    request, review its role and scopes before approving it.
 
 The setup code is a base64-encoded JSON payload that contains:
@@ -203,7 +203,7 @@ emulator host. Non-loopback plaintext routes receive limited access. Tailnet
 CGNAT addresses, `.ts.net` names, and public hosts still fail closed before
 QR/setup-code issuance.
 
-OpenClaw advertises Tailscale setup URLs only when it owns the route through
+PASO advertises Tailscale setup URLs only when it owns the route through
 `gateway.tailscale.mode=serve|funnel`. Legacy external Serve routes that proxy a
 `gateway.bind=lan` listener are not advertised because the ordinary listener
 rejects Tailscale-shaped proxy ingress. Run `openclaw doctor` to preview the
@@ -232,7 +232,7 @@ role/scopes/public key), the previous pending request is superseded and a new
 `requestId` is created.
 
 <Note>
-An already paired device does not get broader access silently. If it reconnects asking for more scopes or a broader role, OpenClaw keeps the existing approval as-is and creates a fresh pending upgrade request. Use `openclaw devices list` to compare the currently approved access with the newly requested access before you approve.
+An already paired device does not get broader access silently. If it reconnects asking for more scopes or a broader role, PASO keeps the existing approval as-is and creates a fresh pending upgrade request. Use `openclaw devices list` to compare the currently approved access with the newly requested access before you approve.
 </Note>
 
 ### Optional trusted-CIDR node auto-approve

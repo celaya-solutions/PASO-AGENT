@@ -109,8 +109,8 @@ function formatRuntimeGatewayAuthTokenWarning(): string {
   }
   return [
     base,
-    "In Nix mode, set gateway.auth.token in your Nix-managed OpenClaw config and rebuild.",
-    "For the first-party Nix flow, see https://github.com/openclaw/nix-openclaw#quick-start and https://docs.openclaw.ai/install/nix.",
+    "In Nix mode, set gateway.auth.token in your Nix-managed PASO config and rebuild.",
+    "For the upstream OpenClaw compatibility Nix flow (not operated by PASO or Celaya Solutions Research), see https://github.com/openclaw/nix-openclaw#quick-start. For a PASO-owned install, see https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
   ].join(" ");
 }
 

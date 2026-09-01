@@ -151,7 +151,7 @@ async function authorizeClaudeAgentSdkTool(params: {
 }): Promise<ClaudeAgentSdkPermissionResult> {
   const turn = params.currentTurn();
   if (!turn || params.signal.aborted || turn.controller.signal.aborted) {
-    return { behavior: "deny", message: "The OpenClaw run is no longer active." };
+    return { behavior: "deny", message: "The PASO run is no longer active." };
   }
   try {
     const decision =
@@ -168,13 +168,13 @@ async function authorizeClaudeAgentSdkTool(params: {
             abortSignal: params.signal,
           });
     if (params.currentTurn() !== turn || params.signal.aborted || turn.controller.signal.aborted) {
-      return { behavior: "deny", message: "The OpenClaw run is no longer active." };
+      return { behavior: "deny", message: "The PASO run is no longer active." };
     }
     return decision.behavior === "allow"
       ? { behavior: "allow", updatedInput: decision.updatedInput }
       : decision;
   } catch {
-    return { behavior: "deny", message: "OpenClaw could not authorize this tool call." };
+    return { behavior: "deny", message: "PASO could not authorize this tool call." };
   }
 }
 
@@ -254,7 +254,7 @@ function resolveClaudeAgentSdkOptions(
                   hookSpecificOutput: {
                     hookEventName: "PreToolUse",
                     permissionDecision: "deny",
-                    permissionDecisionReason: "OpenClaw rejected malformed native tool input.",
+                    permissionDecisionReason: "PASO rejected malformed native tool input.",
                   },
                 };
               }
@@ -334,7 +334,7 @@ function resolveClaudeAgentSdkOptions(
       case "--allowedTools":
       case "--allowed-tools": {
         // SDK allowedTools grants automatic approval; native tools must always
-        // remain behind the closure-bound OpenClaw permission callback.
+        // remain behind the closure-bound PASO permission callback.
         allowedTools.push(
           ...values
             .flatMap(splitClaudeToolNames)

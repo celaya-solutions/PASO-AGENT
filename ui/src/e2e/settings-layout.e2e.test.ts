@@ -64,7 +64,6 @@ const actionSectionCases = [
 const settingsRowRoutes = [
   "profile",
   "appearance",
-  "lobsterdex",
   "notifications",
   "connection",
   "channels",
@@ -243,7 +242,7 @@ suite.define(() => {
         .poll(() => page.locator(".shell").getAttribute("class"))
         .toContain("shell--nav-drawer-open");
       const settingsSidebar = page.locator(".settings-sidebar");
-      await settingsSidebar.getByRole("link", { name: "Ask OpenClaw" }).click();
+      await settingsSidebar.getByRole("link", { name: "Ask PASO" }).click();
       await waitForControlUiRoute(page, { pathname: "/custodian", routeId: "custodian" });
       const custodianInsets = await page.evaluate(() => {
         const content = document.querySelector<HTMLElement>("main.content");
@@ -345,11 +344,14 @@ suite.define(() => {
           uiHints: {
             messages: {
               label: "Messages",
-              docsUrl: "https://docs.openclaw.ai/concepts/messages",
+              docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
             },
             "messages.queueLimit": { advanced: false },
             "messages.responsePrefix": { advanced: true },
-            tts: { label: "Voice", docsUrl: "https://docs.openclaw.ai/tts" },
+            tts: {
+              label: "Voice",
+              docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+            },
           },
           version: "communications-layout",
           generatedAt: new Date(0).toISOString(),

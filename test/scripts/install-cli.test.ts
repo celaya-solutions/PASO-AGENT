@@ -64,6 +64,14 @@ function writeInstalledOpenClawEntry(nodeDir: string) {
 describe("install-cli.sh", () => {
   const script = readFileSync(SCRIPT_PATH, "utf8");
 
+  it("defaults public installs to the PASO main checkout and keeps npm explicit", () => {
+    const main = script.slice(script.indexOf("\nmain() {"));
+    expect(script).toContain('INSTALL_METHOD="${OPENCLAW_INSTALL_METHOD:-git}"');
+    expect(script).toContain('OPENCLAW_VERSION="${OPENCLAW_VERSION:-}"');
+    expect(main).toContain('OPENCLAW_VERSION="main"');
+    expect(main).toContain('OPENCLAW_VERSION="latest"');
+  });
+
   it("fails a low-space fresh Git install before Node or checkout work", () => {
     const tmp = mkdtempSync(join(tmpdir(), "openclaw-install-cli-disk-low-"));
     const commandLog = join(tmp, "commands.log");
@@ -473,7 +481,7 @@ describe("install-cli.sh", () => {
     expect(result.stdout).toContain("status=28");
   });
 
-  it("does not clean an unrelated legacy checkout during the default npm install", () => {
+  it("does not clean an unrelated legacy checkout during the npm install path", () => {
     const main = script.slice(script.indexOf("\nmain() {"));
     expect(main).not.toContain("cleanup_legacy_submodules");
     expect(script).toContain('cleanup_legacy_submodules "$repo_dir"');
@@ -653,7 +661,7 @@ describe("install-cli.sh", () => {
       `);
 
       expect(result.status).toBe(1);
-      expect(result.stdout).toContain("OpenClaw 2026.7.1-2 is older than config writer 2026.7.2");
+      expect(result.stdout).toContain("PASO 2026.7.1-2 is older than config writer 2026.7.2");
       expect(result.stderr).not.toContain("unexpected mutation");
       expect(readFileSync(openclaw, "utf8")).toBe("existing-managed-cli\n");
     } finally {
@@ -730,7 +738,7 @@ describe("install-cli.sh", () => {
       [
         "#!/bin/bash",
         'printf "%s\\n" "$*" >> "$COMMAND_LOG"',
-        'if [[ "$1" == "--version" ]]; then printf "OpenClaw 2026.8.25\\n"; exit 0; fi',
+        'if [[ "$1" == "--version" ]]; then printf "PASO 2026.8.25\\n"; exit 0; fi',
         'if [[ "$*" == "gateway install --force" ]]; then',
         '  if [[ "$SERVICE_STREAM" == stdout ]]; then printf "%s\\n" "$SERVICE_ERROR"; else printf "%s\\n" "$SERVICE_ERROR" >&2; fi',
         '  printf "%s\\n" "$SECRET_CANARY" >&2; exit 1',
@@ -746,7 +754,7 @@ describe("install-cli.sh", () => {
         "install_node() { :; }; ensure_git() { :; }; install_openclaw() { :; }",
         "is_gateway_daemon_loaded() { return 0; }",
         "set -x",
-        `main ${args} --prefix ${JSON.stringify(prefix)}`,
+        `main ${args} --install-method npm --prefix ${JSON.stringify(prefix)}`,
       ].join("\n"),
       {
         COMMAND_LOG: commandLog,
@@ -772,7 +780,7 @@ describe("install-cli.sh", () => {
         expect(result.stdout).toContain('"event":"done"');
         expect(result.stdout).toContain('"reason":"definition-mutation-denied"');
       } else {
-        expect(result.stdout).toContain("OpenClaw installed (OpenClaw 2026.8.25).");
+        expect(result.stdout).toContain("PASO installed (PASO 2026.8.25).");
       }
     } else {
       expect(result.stdout).toContain('"reason":"install-failed"');
@@ -800,14 +808,14 @@ describe("install-cli.sh", () => {
           "ensure_git() { :; }",
           'npm_bin() { printf "/usr/bin/true\\n"; }',
           `refresh_gateway_service_if_loaded() { touch ${JSON.stringify(refreshLog)}; }`,
-          `main ${args} --prefix ${JSON.stringify(prefix)} --version 0.0.0`,
+          `main ${args} --install-method npm --prefix ${JSON.stringify(prefix)} --version 0.0.0`,
         ].join("\n"),
       );
 
       expect(result.status).toBe(1);
-      expect(result.stdout).toContain("Installed OpenClaw CLI did not return a version");
+      expect(result.stdout).toContain("Installed PASO CLI did not return a version");
       expect(result.stdout).not.toContain('"event":"done"');
-      expect(result.stdout).not.toContain("OpenClaw installed.");
+      expect(result.stdout).not.toContain("PASO installed.");
       expect(existsSync(refreshLog)).toBe(false);
     },
   );
@@ -824,7 +832,7 @@ describe("install-cli.sh", () => {
       const openclaw = join(bin, "openclaw");
       const refreshLog = join(tmp, "gateway-refresh.log");
       mkdirSync(bin, { recursive: true });
-      writeFileSync(openclaw, '#!/bin/bash\nprintf "OpenClaw 2026.8.1\\n"\nexit 1\n');
+      writeFileSync(openclaw, '#!/bin/bash\nprintf "PASO 2026.8.1\\n"\nexit 1\n');
       chmodSync(openclaw, 0o755);
 
       const result = runInstallCliShell(
@@ -836,14 +844,14 @@ describe("install-cli.sh", () => {
           "ensure_git() { :; }",
           "install_openclaw() { :; }",
           `refresh_gateway_service_if_loaded() { touch ${JSON.stringify(refreshLog)}; }`,
-          `main ${args} --prefix ${JSON.stringify(prefix)} --version 0.0.0`,
+          `main ${args} --install-method npm --prefix ${JSON.stringify(prefix)} --version 0.0.0`,
         ].join("\n"),
       );
 
       expect(result.status).toBe(1);
-      expect(result.stdout).toContain("Installed OpenClaw CLI did not return a version");
+      expect(result.stdout).toContain("Installed PASO CLI did not return a version");
       expect(result.stdout).not.toContain('"event":"done"');
-      expect(result.stdout).not.toContain("OpenClaw installed.");
+      expect(result.stdout).not.toContain("PASO installed.");
       expect(existsSync(refreshLog)).toBe(false);
     },
   );
@@ -2333,7 +2341,7 @@ HOOK
     }
   });
 
-  it("rejects OpenClaw GitHub source targets for npm installs", () => {
+  it("rejects PASO and legacy OpenClaw GitHub source targets for npm installs", () => {
     const result = runInstallCliShell(`
       set -euo pipefail
       source "${SCRIPT_PATH}"
@@ -2342,8 +2350,27 @@ HOOK
     `);
 
     expect(result.status).toBe(1);
-    expect(result.stdout).toContain("npm installs do not support OpenClaw GitHub source targets");
+    expect(result.stdout).toContain("npm installs do not support PASO GitHub source targets");
     expect(result.stdout).toContain("--install-method git --version main");
+  });
+
+  it("recognizes PASO and legacy OpenClaw source package specs", () => {
+    const result = runInstallCliShell(`
+      set -euo pipefail
+      source "${SCRIPT_PATH}"
+      for spec in \
+        github:celaya-solutions/PASO-AGENT#main \
+        openclaw@github:celaya-solutions/PASO-AGENT#main \
+        https://github.com/celaya-solutions/PASO-AGENT.git#main \
+        git@github.com:celaya-solutions/PASO-AGENT.git#main \
+        github:openclaw/openclaw#main; do
+        is_openclaw_source_package_install_spec "$spec"
+        printf 'source=%s\\n' "$spec"
+      done
+    `);
+
+    expect(result.status, result.stderr || result.stdout).toBe(0);
+    expect(result.stdout.trim().split("\n")).toHaveLength(5);
   });
 
   it.each([
@@ -2470,7 +2497,7 @@ HOOK
         "openclaw@latest",
         "openclaw@latest",
       ]);
-      expect(result.stdout).toContain("npm install did not produce a usable OpenClaw package");
+      expect(result.stdout).toContain("npm install did not produce a usable PASO package");
       expect(result.stdout).not.toContain('"status":"ok"');
       expect(result.stdout).not.toContain("openclaw@next");
       expect(existsSync(join(prefix, "bin", "openclaw"))).toBe(false);

@@ -1,8 +1,8 @@
 # @openclaw/diagnostics-prometheus
 
-Official Prometheus diagnostics exporter for OpenClaw.
+Official Prometheus diagnostics exporter for PASO.
 
-This plugin exposes OpenClaw Gateway runtime metrics in Prometheus text format for Prometheus, Grafana, VictoriaMetrics, and compatible scrapers.
+This plugin exposes PASO Gateway runtime metrics in Prometheus text format for Prometheus, Grafana, VictoriaMetrics, and compatible scrapers.
 
 ## Install
 
@@ -18,10 +18,10 @@ Enable the plugin and set the scrape endpoint options in `plugins.entries.diagno
 
 The full config surface, metric names, and scrape examples live in the docs:
 
-- https://docs.openclaw.ai/gateway/prometheus
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/prometheus.md
 
 ## Package
 
 - Plugin id: `diagnostics-prometheus`
 - Package: `@openclaw/diagnostics-prometheus`
-- Minimum OpenClaw host: `2026.4.25`
+- Minimum PASO host: `2026.4.25`

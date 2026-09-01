@@ -1,11 +1,11 @@
-# OpenClaw LINE
+# PASO LINE
 
-Official OpenClaw channel plugin for LINE Bot API chats.
+Official PASO channel plugin for LINE Bot API chats.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/line
 ```
 
-Configure LINE channel credentials in OpenClaw, then connect the bot to the chats where agents should receive and send messages.
+Configure LINE channel credentials in PASO, then connect the bot to the chats where agents should receive and send messages.

@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/openshell-sandbox",
   "version": "2026.8.1",
-  "description": "OpenClaw sandbox backend for the NVIDIA OpenShell CLI with mirrored local workspaces and SSH command execution.",
+  "description": "PASO sandbox backend for the NVIDIA OpenShell CLI with mirrored local workspaces and SSH command execution.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

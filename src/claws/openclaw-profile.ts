@@ -1,4 +1,4 @@
-// Safe loader for the conventional package-local OpenClaw profile.
+// Safe loader for the conventional package-local PASO profile.
 import { asOptionalRecord as record } from "@openclaw/normalization-core/record-coerce";
 import { isScalar, parseDocument, visit } from "yaml";
 import type { ToolProfileId } from "../agents/tool-policy-shared.js";
@@ -65,7 +65,7 @@ function parseProfileYaml(
       diagnostics: [
         diagnostic(
           "unsupported_openclaw_profile_yaml_feature",
-          `${path} uses ${unsupportedFeature}; OpenClaw profile YAML must map directly to JSON data.`,
+          `${path} uses ${unsupportedFeature}; PASO profile YAML must map directly to JSON data.`,
         ),
       ],
     };
@@ -166,7 +166,7 @@ async function readProfileFile(packageRoot: string, path: string): Promise<Buffe
 }
 
 /**
- * Resolves the OpenClaw profile for a package.
+ * Resolves the PASO profile for a package.
  *
  * `profiles/openclaw.yml` is the conventional location. The retired
  * `metadata.openclaw.config` pointer is still read for compatibility with
@@ -256,9 +256,9 @@ export async function readClawOpenClawProfile(params: {
               ? "openclaw_profile_too_large"
               : "openclaw_profile_read_failed",
           unsafe
-            ? "The OpenClaw profile must be a regular, non-symlinked, non-hardlinked file."
+            ? "The PASO profile must be a regular, non-symlinked, non-hardlinked file."
             : tooLarge
-              ? `The OpenClaw profile exceeds ${MAX_PROFILE_BYTES} bytes.`
+              ? `The PASO profile exceeds ${MAX_PROFILE_BYTES} bytes.`
               : `Could not read ${declaredPath}: ${(error as Error).message}`,
           diagnosticPath,
         ),

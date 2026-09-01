@@ -1,8 +1,8 @@
 # @openclaw/diagnostics-otel
 
-Official OpenTelemetry diagnostics exporter for OpenClaw.
+Official OpenTelemetry diagnostics exporter for PASO.
 
-This plugin exports OpenClaw Gateway traces, metrics, and logs to an OTLP collector for observability stacks such as Grafana, Datadog, Honeycomb, New Relic, Tempo, and compatible collectors. It can also write diagnostic log records as stdout JSONL for container log pipelines.
+This plugin exports PASO Gateway traces, metrics, and logs to an OTLP collector for observability stacks such as Grafana, Datadog, Honeycomb, New Relic, Tempo, and compatible collectors. It can also write diagnostic log records as stdout JSONL for container log pipelines.
 
 ## Install
 
@@ -18,10 +18,10 @@ Enable the plugin, set `diagnostics.otel.enabled` to `true`, and set the collect
 
 The full config surface, metric names, span names, and collector examples live in the docs:
 
-- https://docs.openclaw.ai/gateway/opentelemetry
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/opentelemetry.md
 
 ## Package
 
 - Plugin id: `diagnostics-otel`
 - Package: `@openclaw/diagnostics-otel`
-- Minimum OpenClaw host: `2026.4.25`
+- Minimum PASO host: `2026.4.25`

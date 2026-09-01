@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-// OpenClaw operation tests cover rescue operation planning and execution.
+// PASO operation tests cover rescue operation planning and execution.
 import { createRequireRecord } from "openclaw/plugin-sdk/test-fixtures";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAutoCleanupTempDirTracker } from "../../test/helpers/temp-dir.js";
@@ -222,7 +222,7 @@ vi.mock("./overview.js", () => ({
       error: "offline",
     },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
   })),
@@ -460,14 +460,14 @@ describe("system agent operations", () => {
     await expect(fs.access(path.join(tempDir, "audit", "system-agent.jsonl"))).rejects.toThrow();
   });
 
-  it("reserves the normalized OpenClaw agent identity before any write or audit", async () => {
+  it("reserves the normalized PASO agent identity before any write or audit", async () => {
     const tempDir = opTempDirs.make("openclaw-agent-id-reserved-");
     setTestEnvValue("OPENCLAW_STATE_DIR", tempDir);
     const { runtime, lines } = createSystemAgentTestRuntime();
     const createAgent = vi.fn();
     const operation = {
       kind: "create-agent" as const,
-      agentId: "OpenClaw",
+      agentId: "PASO",
       workspace: "/tmp/work",
     };
 

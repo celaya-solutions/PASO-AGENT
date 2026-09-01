@@ -1,5 +1,5 @@
 ---
-summary: "How OpenClaw resolves provider/model refs, config keys, and the `/model` chat command"
+summary: "How PASO resolves provider/model refs, config keys, and the `/model` chat command"
 read_when:
   - Changing model fallback behavior or selection UX
   - Debugging "model is not allowed" or a stale default provider fallback
@@ -28,7 +28,7 @@ agent runtime. With runtime policy unset or `auto`, OpenAI's provider-owned
 route policy may select Codex only for an exact official HTTPS Platform
 Responses or ChatGPT Responses route with no authored request override; the
 `openai/*` prefix alone never selects Codex. Completions adapters, custom
-endpoints, and authored request behavior stay on OpenClaw. Plaintext official
+endpoints, and authored request behavior stay on PASO. Plaintext official
 HTTP endpoints are rejected. See [OpenAI implicit agent runtime](/providers/openai#implicit-agent-runtime).
 
 Subscription Copilot refs (`github-copilot/*`) can be opted into the external
@@ -49,7 +49,7 @@ OpenAI API-key and ChatGPT/Codex subscription credentials remain distinct. See
     `agents.defaults.model.fallbacks`, tried in order.
   </Step>
   <Step title="Auth failover">
-    Auth-profile rotation happens inside a provider before OpenClaw moves to the next fallback model.
+    Auth-profile rotation happens inside a provider before PASO moves to the next fallback model.
   </Step>
 </Steps>
 
@@ -58,7 +58,7 @@ Related model-config surfaces:
 - `agents.defaults.models` stores aliases and per-model settings. After legacy-policy migration, adding an entry does not restrict model overrides.
 - `agents.defaults.modelSelectionScope` optionally chooses the scope of chat commands and Gateway session model updates without an explicit scope. Omit it to preserve existing behavior; see [Model selection scope](/gateway/config-agents#agentsdefaultsmodelselectionscope).
 - `agents.defaults.modelPolicy.allow` is the optional override allowlist. Use exact refs or trailing prefix wildcards such as `provider/*` and `provider/namespace/*`; omit it or set `[]` to allow any model. Per-agent `agents.entries.*.modelPolicy.allow` replaces the default policy for that agent.
-- `agents.defaults.utilityModel` is an optional lower-cost model for short internal tasks such as generated dashboard session titles, supported channel thread/topic titles, and progress narration. Per-agent `agents.entries.*.utilityModel` overrides it. When unset, OpenClaw uses the primary provider's declared small-model default when one exists (OpenAI → `gpt-5.6-luna`, Anthropic → `claude-haiku-4-5`), otherwise the agent's primary model; set it to an empty string to disable utility routing. Generated titles retry once with the primary model when a distinct utility model fails. For dashboard titles, automatic utility derivation and the regular fallback follow the effective session provider and auth profile; an explicit utility model keeps its configured provider/auth. An empty utility model skips only the alternate small-model route, not dashboard title generation. Utility tasks are separate model calls and may send bounded task content to the selected model provider.
+- `agents.defaults.utilityModel` is an optional lower-cost model for short internal tasks such as generated dashboard session titles, supported channel thread/topic titles, and progress narration. Per-agent `agents.entries.*.utilityModel` overrides it. When unset, PASO uses the primary provider's declared small-model default when one exists (OpenAI → `gpt-5.6-luna`, Anthropic → `claude-haiku-4-5`), otherwise the agent's primary model; set it to an empty string to disable utility routing. Generated titles retry once with the primary model when a distinct utility model fails. For dashboard titles, automatic utility derivation and the regular fallback follow the effective session provider and auth profile; an explicit utility model keeps its configured provider/auth. An empty utility model skips only the alternate small-model route, not dashboard title generation. Utility tasks are separate model calls and may send bounded task content to the selected model provider.
 - `agents.defaults.imageModel` is used only when the primary model cannot accept images.
 - `agents.defaults.pdfModel` is used by the `pdf` tool. If unset, the tool falls back to `imageModel`, then the resolved session/default model.
 - `agents.defaults.mediaModels.{image,music,video}` backs the shared media-generation tools. If unset, each tool infers an auth-backed provider default: current default provider first, then the remaining registered providers for that capability in provider-id order. Cross-provider fallback is the fixed default behavior.
@@ -75,7 +75,7 @@ The same `provider/model` behaves differently depending on where it came from:
 | Source                                                                  | Behavior                                                                                                                                                                                                                                                       |
 | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Configured default (`agents.defaults.model.primary`, per-agent primary) | Normal starting point; uses `agents.defaults.model.fallbacks`.                                                                                                                                                                                                 |
-| Auto fallback                                                           | Temporary recovery state, stored as `modelOverrideSource: "auto"`. OpenClaw periodically reprobes the original primary, clears the auto selection on recovery, and announces fallback/recovery transitions once per state change.                              |
+| Auto fallback                                                           | Temporary recovery state, stored as `modelOverrideSource: "auto"`. PASO periodically reprobes the original primary, clears the auto selection on recovery, and announces fallback/recovery transitions once per state change.                                  |
 | User session selection                                                  | Exact and strict. `/model`, the model picker, `session_status(model=...)`, and `sessions.patch` store `modelOverrideSource: "user"`. If that provider/model becomes unreachable, the run fails visibly instead of falling through to another configured model. |
 | Cron `--model` / payload `model`                                        | Per-job primary. Still uses configured fallbacks unless the job supplies its own payload `fallbacks` (`fallbacks: []` forces a strict run).                                                                                                                    |
 
@@ -107,7 +107,7 @@ setup select the exact `openai/gpt-5.6-sol` catalog ref. The bare direct-API
 `openai/gpt-5.6` alias remains supported and resolves to the Sol tier.
 Reauthentication preserves an existing explicit primary model, including
 `openai/gpt-5.5`. If GPT-5.6 is unavailable to the account, select
-`openai/gpt-5.5` explicitly; OpenClaw does not silently downgrade it.
+`openai/gpt-5.5` explicitly; PASO does not silently downgrade it.
 
 ## "Model is not allowed" (and why replies stop)
 
@@ -240,7 +240,7 @@ Without a scope flag, `agents.defaults.modelSelectionScope` can opt into `"sessi
 - If the agent is idle, a model change applies to the next run immediately. If a run is already active, the switch is queued for the next clean retry point (or a later one, if tool activity or reply output already started).
 - A user-selected `/model` ref is strict for that session: if it becomes unreachable, the reply fails visibly instead of silently falling back through `agents.defaults.model.fallbacks`. Configured defaults and cron job primaries still use fallback chains.
 - `/model status` is the detailed view: auth candidates per provider, and (when configured) the provider endpoint `baseUrl` plus `api` mode.
-- Model refs are parsed by splitting on the first `/`; type `provider/model`. If the model ID itself contains `/` (OpenRouter-style), include the provider prefix, e.g. `/model openrouter/moonshotai/kimi-k2`. If you omit the provider, OpenClaw tries: (1) alias match, (2) unique configured-provider match for that exact unprefixed model id, (3) the configured default provider (deprecated fallback) — and if that provider no longer exposes the configured default model, the first configured provider/model instead, to avoid surfacing a stale removed-provider default.
+- Model refs are parsed by splitting on the first `/`; type `provider/model`. If the model ID itself contains `/` (OpenRouter-style), include the provider prefix, e.g. `/model openrouter/moonshotai/kimi-k2`. If you omit the provider, PASO tries: (1) alias match, (2) unique configured-provider match for that exact unprefixed model id, (3) the configured default provider (deprecated fallback) — and if that provider no longer exposes the configured default model, the first configured provider/model instead, to avoid surfacing a stale removed-provider default.
 - Model refs are normalized to lowercase; provider IDs are otherwise exact, so use the ID advertised by the plugin.
 
 Full command behavior and config: [Slash commands](/tools/slash-commands).
@@ -272,10 +272,11 @@ openclaw models auth list|add|login|paste-api-key|paste-token|setup-token|order
 
 ## Models registry (`models.json`)
 
-### Hosted catalog updates
+### Optional remote catalog updates
 
-OpenClaw can refresh the model metadata shipped by installed provider plugins
-without waiting for a new OpenClaw release. The Gateway makes one background
+PASO can refresh the model metadata shipped by installed provider plugins
+without waiting for a new PASO release after you explicitly enable refresh and
+provide a trusted URL. The Gateway then makes one background
 JSON `GET` at startup and then checks at most every six hours. The request sends
 no prompts, credentials, model usage, or configuration payload beyond the
 normal HTTP user agent and conditional cache headers.
@@ -286,24 +287,18 @@ only for providers declared by installed plugin manifests. It cannot supply API
 base URLs or request headers, and a catalog older than the installed release's
 build stamp is ignored.
 
-The hosted file is published from the public
-[`openclaw/catalog`](https://github.com/openclaw/catalog) GitHub repository.
-Its scheduled workflow checks OpenClaw's default-branch plugin manifests and
-public pricing sources every four hours; every catalog content change is
-preserved as a public commit. Provider-owned policies select complete price
-schedules, including context tiers, without mixing rates from different sources.
-Declared native sources read the public Cerebras, Chutes, OpenCode, and Venice
-catalogs, so connected installations can receive advertised price changes without
-a new OpenClaw release. When a valid native feed no longer supplies a model's
-price, publication preserves the model metadata without an estimate; it does not
-infer retirement or substitute another source's rate. Explicit user costs still
-win.
+PASO configures no remote catalog service by default. The public
+[`openclaw/catalog`](https://github.com/openclaw/catalog) repository and
+`catalog.openclaw.ai` feed are upstream OpenClaw compatibility resources; they
+are not operated by PASO or Celaya Solutions Research. If you select any remote
+catalog, review and trust its publisher first. Its data can add or update model
+metadata and prices within installed provider manifests, subject to the limits
+above. Explicit user costs still win.
 
-Run `openclaw models refresh` for an immediate metadata and pricing check, or
-disable every hosted catalog request with `models.catalogRefresh.enabled:
-false`. When disabled, pricing stays at bundled and explicitly configured
-values. A self-hosted mirror can be selected with an HTTPS
-`models.catalogRefresh.url` (or localhost HTTP for testing); see
+After setting `models.catalogRefresh.enabled: true` and an HTTPS
+`models.catalogRefresh.url`, run `openclaw models refresh` for an immediate
+metadata and pricing check. With either setting absent, pricing stays at bundled
+and explicitly configured values. Localhost HTTP is allowed for testing; see
 [configuration reference](/gateway/configuration-reference#models).
 
 Custom providers configured under `models.providers` are written into `models.json` under the agent directory (default `~/.openclaw/agents/<agentId>/agent/models.json`). Provider-plugin catalogs are stored separately as generated plugin-owned catalog shards and load automatically. This file is merged with config by default; set `models.mode: "replace"` to use only your configured providers.
@@ -323,11 +318,11 @@ Custom providers configured under `models.providers` are written into `models.js
   </Accordion>
 </AccordionGroup>
 
-Marker persistence is source-authoritative: OpenClaw writes markers from the active source config snapshot (pre-resolution), not from resolved runtime secret values, whenever it regenerates `models.json` — including command-driven paths like `openclaw agent`.
+Marker persistence is source-authoritative: PASO writes markers from the active source config snapshot (pre-resolution), not from resolved runtime secret values, whenever it regenerates `models.json` — including command-driven paths like `openclaw agent`.
 
 ## Related
 
-- [Agent runtimes](/concepts/agent-runtimes) — OpenClaw, Codex, and other agent loop runtimes
+- [Agent runtimes](/concepts/agent-runtimes) — PASO, Codex, and other agent loop runtimes
 - [Configuration reference](/gateway/config-agents#agent-defaults) — model config keys
 - [Image generation](/tools/image-generation) — image model configuration
 - [Model failover](/concepts/model-failover) — fallback chains

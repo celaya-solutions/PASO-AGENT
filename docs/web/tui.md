@@ -149,9 +149,9 @@ pending prompts, and `interrupt` stops the current run before starting the new
 one. Explicit `/steer <message>` is Gateway-only; use `/queue steer` plus a
 normal message in local mode.
 
-OpenClaw:
+PASO:
 
-- `/openclaw [request]` returns from the normal agent TUI to the [OpenClaw](#openclaw-setup-and-repair-helper) setup/repair chat, optionally forwarding one request.
+- `/openclaw [request]` returns from the normal agent TUI to the [PASO](#openclaw-setup-and-repair-helper) setup/repair chat, optionally forwarding one request.
 
 Other Gateway slash commands (for example, `/context`) are forwarded to the Gateway and shown as system output. See [Slash commands](/tools/slash-commands).
 
@@ -163,9 +163,9 @@ Other Gateway slash commands (for example, `/context`) are forwarded to the Gate
 - Local shell commands receive `OPENCLAW_SHELL=tui-local` in their environment.
 - A lone `!` is sent as a normal message; leading spaces do not trigger local exec.
 
-## OpenClaw setup and repair helper
+## PASO setup and repair helper
 
-OpenClaw is the ring-zero setup/repair assistant, exposed as `openclaw setup` after the configured default model passes a live inference check. If inference is unavailable, an interactive invocation returns to inference onboarding and automation fails with repair guidance. It runs inside the same local TUI shell as `openclaw tui --local`, backed by an AI agent restricted to OpenClaw's typed, approval-gated operations:
+PASO is the ring-zero setup/repair assistant, exposed as `openclaw setup` after the configured default model passes a live inference check. If inference is unavailable, an interactive invocation returns to inference onboarding and automation fails with repair guidance. It runs inside the same local TUI shell as `openclaw tui --local`, backed by an AI agent restricted to PASO's typed, approval-gated operations:
 
 ```bash
 openclaw setup                       # start interactively
@@ -175,7 +175,7 @@ openclaw setup -m "set default model openai/gpt-5.2" --yes   # apply a config wr
 
 - Persistent config writes need approval: either confirm interactively or pass `--yes`.
 - `--json` prints the startup overview as JSON instead of starting the chat.
-- From inside OpenClaw, an `open-tui` request (for example, asking to talk to a normal agent) exits OpenClaw and opens the regular agent TUI; use `/openclaw` there to come back.
+- From inside PASO, an `open-tui` request (for example, asking to talk to a normal agent) exits PASO and opens the regular agent TUI; use `/openclaw` there to come back.
 
 Use local mode when the current config already validates and you want the embedded agent to inspect it on the same machine, compare it against the docs, and help repair drift without depending on a running Gateway.
 

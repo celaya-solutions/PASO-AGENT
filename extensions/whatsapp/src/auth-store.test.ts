@@ -419,7 +419,7 @@ describe("auth-store", () => {
     });
   });
 
-  it("does not delete custom auth directories outside the OpenClaw auth root", async () => {
+  it("does not delete custom auth directories outside the PASO auth root", async () => {
     const authDir = createTempAuthDir("openclaw-wa-auth-custom");
     const nestedDir = path.join(authDir, "nested");
     fsSync.mkdirSync(nestedDir);

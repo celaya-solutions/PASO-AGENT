@@ -110,7 +110,7 @@ async function runSetupWizardOnce(
         [
           ...snapshot.issues.map((iss) => `- ${iss.path}: ${iss.message}`),
           "",
-          "Docs: https://docs.openclaw.ai/gateway/configuration",
+          "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         ].join("\n"),
         "Config issues",
       );
@@ -277,7 +277,7 @@ async function runSetupWizardOnce(
     acknowledgeMigrationPromotion = migrationOutcome.acknowledgePromotion;
     const migratedSnapshot = await readSetupConfigFileSnapshot();
     if (!migratedSnapshot.valid) {
-      throw new Error("Migration produced an invalid OpenClaw config. Run `openclaw doctor`.");
+      throw new Error("Migration produced an invalid PASO config. Run `openclaw doctor`.");
     }
     currentSetupSnapshot = migratedSnapshot;
     baseConfig = migratedSnapshot.runtimeConfig ?? migratedSnapshot.config;

@@ -329,9 +329,9 @@ describe("resolveEffectiveModelFallbacks", () => {
 });
 
 describe("assistantAvatarFallbackUrl", () => {
-  it("uses the bundled Molty png for assistant profile fallbacks", () => {
-    expect(assistantAvatarFallbackUrl("/ui")).toBe("/ui/apple-touch-icon.png");
-    expect(assistantAvatarFallbackUrl("")).toBe("/apple-touch-icon.png");
+  it("uses the bundled PASO SVG for assistant profile fallbacks", () => {
+    expect(assistantAvatarFallbackUrl("/ui")).toBe("/ui/favicon.svg");
+    expect(assistantAvatarFallbackUrl("")).toBe("/favicon.svg");
   });
 });
 

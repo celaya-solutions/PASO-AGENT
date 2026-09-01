@@ -1,6 +1,6 @@
 # @openclaw/brave-plugin
 
-Official Brave Search provider plugin for OpenClaw.
+Official Brave Search provider plugin for PASO.
 
 This plugin registers Brave as a `web_search` provider. It supports normal Brave web search and Brave LLM Context API mode.
 
@@ -27,10 +27,10 @@ Provider-specific options live under `plugins.entries.brave.config.webSearch.*`.
 
 Full setup, config examples, search modes, and tool parameters:
 
-- https://docs.openclaw.ai/tools/brave-search
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/tools/brave-search.md
 
 ## Package
 
 - Plugin id: `brave`
 - Package: `@openclaw/brave-plugin`
-- Minimum OpenClaw host: `2026.4.10`
+- Minimum PASO host: `2026.4.10`

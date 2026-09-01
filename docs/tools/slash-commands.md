@@ -13,7 +13,7 @@ Host-only bash commands use `! <cmd>` (with `/bash <cmd>` as an alias).
 
 When a conversation is bound to an ACP session, normal text routes to the ACP
 harness. Gateway management commands remain local: `/acp ...` always reaches
-the OpenClaw command handler, and `/status` plus `/session` stay local whenever
+the PASO command handler, and `/status` plus `/session` stay local whenever
 command handling is enabled for the surface.
 
 ## Three command types
@@ -118,7 +118,7 @@ command handling is enabled for the surface.
 </ParamField>
 
 <ParamField path="commands.mcp" type="boolean" default="false">
-  Enables `/mcp` (reads/writes OpenClaw-managed MCP config under `mcp.servers`). Owner-only.
+  Enables `/mcp` (reads/writes PASO-managed MCP config under `mcp.servers`). Owner-only.
 </ParamField>
 
 <ParamField path="commands.plugins" type="boolean" default="false">
@@ -260,7 +260,7 @@ plugins.
     | `/status plugins` | Show detailed plugin health: load errors, quarantines, channel plugin failures, dependency issues, compatibility notices. Requires `commands.plugins: true` |
     | `/goal [status\|start\|edit\|pause\|resume\|complete\|block\|clear] ...` | Manage the current session's durable [goal](/tools/goal) |
     | `/diagnostics [note]` | Owner-only support-report flow. Asks for exec approval every time |
-    | `/openclaw <request>` | Run the OpenClaw setup and repair helper from an owner DM |
+    | `/openclaw <request>` | Run the PASO setup and repair helper from an owner DM |
     | `/tasks` | List active/recent background tasks for the current session |
     | `/context [list\|detail\|map\|json]` | Explain how context is assembled |
     | `/whoami` | Show your sender id. Alias: `/id` |
@@ -293,10 +293,10 @@ plugins.
     | Command | Requires | Description |
     | --- | --- | --- |
     | `/config show\|get\|set\|unset` | `commands.config: true` | Read or write `openclaw.json`. Owner-only |
-    | `/mcp show\|get\|set\|unset` | `commands.mcp: true` | Read or write OpenClaw-managed MCP server config. Owner-only |
+    | `/mcp show\|get\|set\|unset` | `commands.mcp: true` | Read or write PASO-managed MCP server config. Owner-only |
     | `/plugins list\|inspect\|show\|get\|install\|enable\|disable` | `commands.plugins: true` | Inspect or mutate plugin state. Owner-only for writes. Alias: `/plugin` |
     | `/debug show\|set\|unset\|reset` | `commands.debug: true` | Runtime-only config overrides. Owner-only |
-    | `/restart` | `commands.restart: true` (default) | Restart OpenClaw |
+    | `/restart` | `commands.restart: true` (default) | Restart PASO |
     | `/send on\|off\|inherit` | owner | Set send policy |
   </Accordion>
 
@@ -447,7 +447,7 @@ updates persist across restarts.
 /mcp unset context7
 ```
 
-`/mcp` stores config in OpenClaw config, not embedded-agent project settings.
+`/mcp` stores config in PASO config, not embedded-agent project settings.
 `/mcp show` redacts credential-bearing fields, recognized credential flag
 values, and known secret-shaped arguments. When run from a group, the
 configuration is sent to the owner privately; if no private owner route is
@@ -585,7 +585,7 @@ See [BTW side questions](/tools/btw) for the full behavior.
 
 - **Provider usage/quota** (e.g., "Claude 80% left") shows in `/status` for the current model provider when usage tracking is enabled.
 - **Token/cache lines** in `/status` can fall back to the latest transcript usage entry when the live session snapshot is sparse.
-- **Execution vs runtime:** `/status` reports `Execution` for the effective sandbox path and `Runtime` for who is running the session: `OpenClaw Default`, `OpenAI Codex`, a CLI backend, or an ACP backend.
+- **Execution vs runtime:** `/status` reports `Execution` for the effective sandbox path and `Runtime` for who is running the session: `PASO Default`, `OpenAI Codex`, a CLI backend, or an ACP backend.
 - **Per-response tokens/cost:** controlled by `/usage off|tokens|full`.
 - `/model status` is about models/auth/endpoints, not usage.
 

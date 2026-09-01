@@ -263,7 +263,7 @@ finalize_remote_crabbox_aws_gate() {
           and .headSha == $headSha
           and ((.runId // "") | startswith("run_"))
           and ((.leaseId // "") | startswith("cbx_"))
-          and ((.actionsRunUrl // "") | startswith("https://github.com/openclaw/openclaw/actions/runs/"))
+          and ((.actionsRunUrl // "") | startswith("https://github.com/celaya-solutions/PASO-AGENT/actions/runs/"))
         )
     ' "$log_file" | tail -n 1)
   if [ -z "$stamp" ]; then

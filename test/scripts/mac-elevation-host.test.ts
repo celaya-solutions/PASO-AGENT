@@ -1654,7 +1654,7 @@ describe("mac elevation host command contract", () => {
     expect(result.stdout).toContain("status");
     expect(result.stdout).toContain("recover");
     expect(result.stdout).toContain("uninstall");
-    expect(result.stdout).toContain("never rewrites ordinary OpenClaw");
+    expect(result.stdout).toContain("never rewrites ordinary PASO");
   });
 
   it("keeps the elevation service separate and fail-closed", () => {
@@ -1663,8 +1663,8 @@ describe("mac elevation host command contract", () => {
     expect(script).toContain('ELEVATION_LABEL="ai.openclaw.mac.elevation-host"');
     expect(script).toContain('NORMAL_LABEL="ai.openclaw.mac"');
     expect(script).toContain("ordinary Launch at login is installed");
-    expect(script).toContain("conflicting OpenClaw launch agent is installed");
-    expect(script).toContain("unsupervised or conflicting OpenClaw process is running");
+    expect(script).toContain("conflicting PASO launch agent is installed");
+    expect(script).toContain("unsupervised or conflicting PASO process is running");
     expect(script).toContain("plutil -insert KeepAlive -bool true");
     expect(script).toContain("plutil -insert RunAtLoad -bool true");
     expect(script).toContain('[$executable,"--elevation-host"]');
@@ -2534,7 +2534,7 @@ describe("mac elevation host command contract", () => {
       expect(recovered.status).toBe(1);
       expect(recovered.stderr).toContain("Preserved current elevation app with bundled CUA driver");
       expect(recovered.stderr).toContain(
-        "recovery failed and the current OpenClaw installation could not be restored completely",
+        "recovery failed and the current PASO installation could not be restored completely",
       );
       expect(readFileSync(harness.launchStateFile, "utf8").trim()).toBe("elevation-absent");
       expect(existsSync(harness.elevationPlist)).toBe(false);
@@ -2572,7 +2572,7 @@ describe("mac elevation host command contract", () => {
 
       expect(result.status).toBe(1);
       expect(result.stderr).toContain(
-        "installed OpenClaw app does not pass strict signature and identity validation",
+        "installed PASO app does not pass strict signature and identity validation",
       );
       expect(readFileSync(harness.sourcePlist, "utf8")).toBe(harness.sourceContents);
       expect(readFileSync(harness.launchStateFile, "utf8").trim()).toBe("source-loaded");
@@ -2844,7 +2844,7 @@ describe("mac elevation host command contract", () => {
       const result = runAuthenticatedMigrationInstall(harness);
 
       expect(result.status).toBe(1);
-      expect(result.stderr).toContain("an OpenClaw app process survived owner shutdown");
+      expect(result.stderr).toContain("a PASO app process survived owner shutdown");
       expect(result.stderr).toContain("automatic elevation-host rollback was incomplete");
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
         oldBinary,
@@ -2888,7 +2888,7 @@ describe("mac elevation host command contract", () => {
       const result = runAuthenticatedMigrationInstall(harness);
 
       expect(result.status).toBe(1);
-      expect(result.stderr).toContain("an OpenClaw app process survived owner shutdown");
+      expect(result.stderr).toContain("a PASO app process survived owner shutdown");
       expect(result.stderr).toContain("automatic elevation-host rollback was incomplete");
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
         oldBinary,
@@ -2912,7 +2912,7 @@ describe("mac elevation host command contract", () => {
       const result = runAuthenticatedMigrationInstall(harness);
 
       expect(result.status).toBe(1);
-      expect(result.stderr).toContain("an OpenClaw app process survived owner shutdown");
+      expect(result.stderr).toContain("a PASO app process survived owner shutdown");
       expect(result.stderr).toContain("automatic elevation-host rollback was incomplete");
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
         oldBinary,
@@ -2936,7 +2936,7 @@ describe("mac elevation host command contract", () => {
 
       expect(result.status).toBe(1);
       expect(result.stderr).toContain(
-        "installed OpenClaw app does not pass strict signature and identity validation",
+        "installed PASO app does not pass strict signature and identity validation",
       );
       expect(readFileSync(harness.sourcePlist, "utf8")).toBe(harness.sourceContents);
       expect(readFileSync(harness.launchStateFile, "utf8").trim()).toBe("source-loaded");
@@ -3414,7 +3414,7 @@ describe("mac elevation host command contract", () => {
 
       const recovered = runAuthenticatedElevationRecovery(harness);
       expect(recovered.status).toBe(1);
-      expect(recovered.stderr).toContain("current OpenClaw app has an unsupported entry type");
+      expect(recovered.stderr).toContain("current PASO app has an unsupported entry type");
       expect(readFileSync(installReceiptPath, "utf8")).toBe(receiptContents);
       expect(readFileSync(harness.launchStateFile, "utf8").trim()).toBe("elevation-loaded");
     },
@@ -3487,7 +3487,7 @@ describe("mac elevation host command contract", () => {
       expect(recovered.status).toBe(1);
       expect(recovered.stderr).toContain("Restored replacement app entry at");
       expect(recovered.stderr).toContain(
-        "recovery failed and the current OpenClaw installation could not be restored completely",
+        "recovery failed and the current PASO installation could not be restored completely",
       );
       expect(readFileSync(path.join(harness.appPath, "Contents", "replacement"), "utf8")).toBe(
         "replacement-directory\n",
@@ -3602,7 +3602,7 @@ describe("mac elevation host command contract", () => {
       expect(recovered.status).toBe(1);
       expect(recovered.stderr).toContain("Restored unexpected reversal entry at");
       expect(recovered.stderr).toContain(
-        "recovery failed and the current OpenClaw installation could not be restored completely",
+        "recovery failed and the current PASO installation could not be restored completely",
       );
       expect(readFileSync(harness.sourcePlist, "utf8")).toBe(harness.sourceContents);
       expect(readFileSync(displacedSource, "utf8")).toBe(harness.sourceContents);
@@ -3821,7 +3821,7 @@ describe("mac elevation host command contract", () => {
 
       expect(recovered.status).toBe(1);
       expect(recovered.stderr).toContain(
-        "could not restore the previous OpenClaw installation completely",
+        "could not restore the previous PASO installation completely",
       );
       expect(readFileSync(installReceiptPath, "utf8")).toBe(currentReceipt);
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
@@ -3854,7 +3854,7 @@ describe("mac elevation host command contract", () => {
 
       expect(recovered.status).toBe(1);
       expect(recovered.stderr).toContain(
-        "current OpenClaw installation could not be restored completely",
+        "current PASO installation could not be restored completely",
       );
       expect(readFileSync(installReceiptPath, "utf8")).toBe(currentReceipt);
       expect(readFileSync(installReceiptPath, "utf8")).not.toContain("partial");
@@ -4135,7 +4135,7 @@ describe("mac elevation host command contract", () => {
         harness.env,
       );
       expect(recovered.status).toBe(1);
-      expect(recovered.stderr).toContain("could not restore the previous OpenClaw installation");
+      expect(recovered.stderr).toContain("could not restore the previous PASO installation");
       expect(readFileSync(harness.sourcePlist, "utf8")).toBe("replacement owner\n");
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
         installedBinary,
@@ -4169,7 +4169,7 @@ describe("mac elevation host command contract", () => {
         harness.env,
       );
       expect(recovered.status).toBe(1);
-      expect(recovered.stderr).toContain("could not restore the previous OpenClaw installation");
+      expect(recovered.stderr).toContain("could not restore the previous PASO installation");
       expect(readFileSync(path.join(harness.appPath, "Contents", "MacOS", "OpenClaw"))).toEqual(
         installedBinary,
       );
@@ -4399,8 +4399,8 @@ describe("mac elevation host command contract", () => {
       ],
       "mac-elevation-host.sh verifies the signed app, so its duplicated signing constants must match codesign-mac-app.sh",
     ).toEqual([
-      constant(codesignScript, "ELEVATION_TEAM_ID"),
-      constant(codesignScript, "ELEVATION_IDENTITY"),
+      constant(codesignScript, "LEGACY_ELEVATION_TEAM_ID"),
+      constant(codesignScript, "LEGACY_ELEVATION_IDENTITY"),
     ]);
   });
 

@@ -1,5 +1,5 @@
 ---
-summary: "Android app (node): connection runbook + Connect/Chat/OpenClaw/Voice command surface"
+summary: "Android app (node): connection runbook + Connect/Chat/PASO/Voice command surface"
 read_when:
   - Pairing or reconnecting the Android node
   - Debugging Android gateway discovery or auth
@@ -9,17 +9,17 @@ title: "Android app"
 ---
 
 <Note>
-The official Android app is available on [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN) and as a signed standalone APK on supported [GitHub Releases](https://github.com/openclaw/openclaw/releases). It is a companion node and requires a running OpenClaw Gateway. Source: [apps/android](https://github.com/openclaw/openclaw/tree/main/apps/android) ([build instructions](https://github.com/openclaw/openclaw/blob/main/apps/android/README.md)).
+The PASO Android companion is available as source in [apps/android](https://github.com/celaya-solutions/PASO-AGENT/tree/main/apps/android); see the [build instructions](https://github.com/celaya-solutions/PASO-AGENT/blob/main/apps/android/README.md). When Celaya Solutions Research publishes a signed APK, it will appear on [PASO Releases](https://github.com/celaya-solutions/PASO-AGENT/releases). Upstream store listings are not PASO releases.
 </Note>
 
 ## Support snapshot
 
 - Role: companion node app (Android does not host the Gateway).
 - Gateway required: yes (run it on macOS, Linux, or Windows via WSL2).
-- Install: [Google Play](https://play.google.com/store/apps/details?id=ai.openclaw.app&hl=en_IN) or `OpenClaw-Android.apk` from a supported [GitHub Release](https://github.com/openclaw/openclaw/releases), [Getting Started](/start/getting-started) for the Gateway, then [Pairing](/channels/pairing).
+- Install: build from [apps/android](https://github.com/celaya-solutions/PASO-AGENT/tree/main/apps/android) or use a signed `OpenClaw-Android.apk` when one is published on [PASO Releases](https://github.com/celaya-solutions/PASO-AGENT/releases); then follow [Getting Started](/start/getting-started) for the Gateway and [Pairing](/channels/pairing). The legacy filename is retained for upgrade compatibility; the app is PASO.
 - Gateway: [Runbook](/gateway) + [Configuration](/gateway/configuration).
   - Protocols: [Gateway protocol](/gateway/protocol) (nodes + control plane).
-- **Settings → OpenClaw** opens a dedicated Gateway settings assistant when the operator connection has `operator.admin` and the Gateway supports `openclaw.chat`. Its setup conversation stays separate from ordinary Chat, redacts secret replies locally, and moves to Chat only after you tap **Open Chat**.
+- **Settings → PASO** opens a dedicated Gateway settings assistant when the operator connection has `operator.admin` and the Gateway supports `openclaw.chat`. Its setup conversation stays separate from ordinary Chat, redacts secret replies locally, and moves to Chat only after you tap **Open Chat**.
 
 System control (launchd/systemd) lives on the Gateway host — see [Gateway](/gateway).
 
@@ -40,20 +40,22 @@ The Wear OS companion uses the paired Android phone's authenticated Gateway conn
 
 ## Install outside Google Play
 
-Regular final and correction GitHub Releases include a universal `OpenClaw-Android.apk` and `OpenClaw-Android-SHA256SUMS.txt`. The APK is built from the release tag, signed with the OpenClaw Android release key, and carries GitHub Actions provenance.
+When a PASO GitHub Release includes both `OpenClaw-Android.apk` and
+`OpenClaw-Android-SHA256SUMS.txt`, use the checksum and GitHub attestation attached
+to that exact tag. Do not assume every release includes a signed APK.
 
-Choose a [release](https://github.com/openclaw/openclaw/releases) that lists both assets, then download and verify that exact tag before sideloading:
+Choose a [release](https://github.com/celaya-solutions/PASO-AGENT/releases) that lists both assets, then download and verify that exact tag before sideloading:
 
 ```bash
 release_tag=vYYYY.M.PATCH
 gh release download "$release_tag" \
-  --repo openclaw/openclaw \
+  --repo celaya-solutions/PASO-AGENT \
   --pattern OpenClaw-Android.apk \
   --pattern OpenClaw-Android-SHA256SUMS.txt
 sha256sum --check OpenClaw-Android-SHA256SUMS.txt
 gh attestation verify OpenClaw-Android.apk \
-  --repo openclaw/openclaw \
-  --signer-workflow openclaw/openclaw/.github/workflows/android-release.yml \
+  --repo celaya-solutions/PASO-AGENT \
+  --signer-workflow celaya-solutions/PASO-AGENT/.github/workflows/android-release.yml \
   --source-ref "refs/tags/${release_tag}" \
   --deny-self-hosted-runners
 ```
@@ -63,14 +65,18 @@ Google Play and standalone APK installs use different update channels and may ha
 </Warning>
 
 <Note>
-Building a release artifact (APK or app bundle) from source or a fork requires your own Android signing identity. Debug builds use an automatically generated debug signing key. The official OpenClaw release key is not included in the repository. See [Sign your app](https://developer.android.com/studio/publish/app-signing) for how to generate and configure a signing key for release builds.
+Building a release artifact (APK or app bundle) from source requires an Android
+signing identity. Debug builds use an automatically generated debug signing
+key; no Celaya Solutions Research release key is included in the repository.
+See [Sign your app](https://developer.android.com/studio/publish/app-signing)
+for how to generate and configure a signing key for release builds.
 </Note>
 
 ## Mirror and control Android from a remote Mac
 
 [scrcpy](https://github.com/Genymobile/scrcpy) mirrors an Android screen in a macOS window and
 forwards keyboard and pointer input through Android Debug Bridge (ADB). This is an operator-side
-workflow, separate from the OpenClaw node connection. It is useful when the Android device and the
+workflow, separate from the PASO node connection. It is useful when the Android device and the
 Mac are in different locations but share a private Tailscale network.
 
 ### Before you begin
@@ -238,7 +244,7 @@ In the Android app:
 
 After the first successful pairing, Android auto-reconnects on launch to the active paired gateway (best-effort for discovered gateways, which must be visible on the network).
 
-Official setup codes connect Android as a node and grant full Gateway operator
+PASO setup codes connect Android as a node and grant full Gateway operator
 access by default over `wss://`. Plaintext non-loopback `ws://` setup
 automatically uses limited access for bearer-token safety. **Settings → Gateway**
 shows **Full** or **Limited** access. For a limited connection, configure
@@ -378,31 +384,31 @@ question expires or is cancelled.
 
 ## Assistant entrypoints
 
-Android supports launching OpenClaw from the system assistant trigger (Google Assistant). Holding the home button (or another `ACTION_ASSIST` trigger) opens the app; saying "Hey Google, ask OpenClaw `<prompt>`" matches the app's declared App Actions query pattern and hands the prompt into the chat composer without auto-sending it.
+Android supports launching PASO from the system assistant trigger (Google Assistant). Holding the home button (or another `ACTION_ASSIST` trigger) opens the app; saying "Hey Google, ask PASO `<prompt>`" matches the app's declared App Actions query pattern and hands the prompt into the chat composer without auto-sending it.
 
 This uses Android **App Actions** (`shortcuts.xml` capability) declared in the app manifest. No gateway-side configuration is needed — the assistant intent is handled entirely by the Android app.
 
 <Note>
-App Actions availability depends on the device, Google Play Services version, and whether the user has set OpenClaw as the default assistant app.
+App Actions availability depends on the device, Google Play Services version, and whether the user has set PASO as the default assistant app.
 </Note>
 
 ## Notification forwarding
 
 Android can forward device notifications to the gateway as `node.event` items. This is configured **on the device**, in the app's Settings sheet — not in gateway/`openclaw.json` config.
 
-| Setting                     | Description                                                                                                                                                                                            |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Forward Notification Events | Master toggle. Off by default; requires Notification Listener Access to be granted first.                                                                                                              |
-| Package Filter              | **Allowlist** (only listed package IDs forwarded) or **Blocklist** (default: all packages except listed IDs). OpenClaw's own package is always excluded in Blocklist mode to prevent forwarding loops. |
-| Quiet Hours                 | Local HH:mm start/end window that suppresses forwarding. Disabled by default; defaults to `22:00`-`07:00` once enabled.                                                                                |
-| Max Events / Minute         | Per-device rate limit on forwarded notifications. Default 20.                                                                                                                                          |
-| Route Session Key           | Optional. Pins forwarded notification events into a specific session instead of the device's default notification route.                                                                               |
+| Setting                     | Description                                                                                                                                                                                        |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Forward Notification Events | Master toggle. Off by default; requires Notification Listener Access to be granted first.                                                                                                          |
+| Package Filter              | **Allowlist** (only listed package IDs forwarded) or **Blocklist** (default: all packages except listed IDs). PASO's own package is always excluded in Blocklist mode to prevent forwarding loops. |
+| Quiet Hours                 | Local HH:mm start/end window that suppresses forwarding. Disabled by default; defaults to `22:00`-`07:00` once enabled.                                                                            |
+| Max Events / Minute         | Per-device rate limit on forwarded notifications. Default 20.                                                                                                                                      |
+| Route Session Key           | Optional. Pins forwarded notification events into a specific session instead of the device's default notification route.                                                                           |
 
 <Note>
 Notification forwarding requires the Android Notification Listener permission. The app prompts for this during setup.
 </Note>
 
-WhatsApp, WhatsApp Business, Telegram, Telegram X, Discord, and Signal notifications are always excluded. Their messages are already owned by native OpenClaw channel sessions; forwarding the Android notification as a separate node event could route a reply through the wrong conversation.
+WhatsApp, WhatsApp Business, Telegram, Telegram X, Discord, and Signal notifications are always excluded. Their messages are already owned by native PASO channel sessions; forwarding the Android notification as a separate node event could route a reply through the wrong conversation.
 
 ## Related
 

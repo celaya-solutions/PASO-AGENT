@@ -1,12 +1,12 @@
-# OpenClaw Featherless AI Provider
+# PASO Featherless AI Provider
 
-Official OpenClaw provider plugin for Featherless AI's OpenAI-compatible API.
+Official PASO provider plugin for Featherless AI's OpenAI-compatible API.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/featherless-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/featherless> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/featherless.md> for setup and configuration.

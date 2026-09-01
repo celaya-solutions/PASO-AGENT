@@ -23,7 +23,7 @@ export function createVisitorTools(context: OpenClawPluginToolContext): AnyAgent
       name: "visitor_invite",
       label: "Invite visitor",
       description:
-        "Grant or renew visitor access to team.openclaw.ai. Provide email or GitHub login; private GitHub emails require explicit email. Grants expire after the configured duration (14 days by default); forever must be explicit.",
+        "Grant or renew visitor access to the configured Cloudflare Access application. Provide email or GitHub login; private GitHub emails require explicit email. Grants expire after the configured duration (14 days by default); forever must be explicit.",
       parameters: Type.Object(
         {
           ...identityFields,

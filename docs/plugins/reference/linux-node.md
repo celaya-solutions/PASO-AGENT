@@ -12,7 +12,7 @@ Desktop notifications, camera capture, and location for Linux node hosts.
 ## Distribution
 
 - Package: `@openclaw/linux-node`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

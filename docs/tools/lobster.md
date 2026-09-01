@@ -1,5 +1,5 @@
 ---
-summary: "Typed workflow runtime for OpenClaw with resumable approval gates."
+summary: "Typed workflow runtime for PASO with resumable approval gates."
 title: Lobster
 read_when:
   - You want deterministic multi-step workflows with explicit approvals
@@ -68,7 +68,7 @@ With Lobster, the same job is one call that halts for approval and resumes:
 
 ## How it works
 
-OpenClaw runs Lobster workflows **in-process** using the bundled
+PASO runs Lobster workflows **in-process** using the bundled
 `@clawdbot/lobster` package as an embedded runner. No external `lobster`
 subprocess is spawned; the tool call returns a JSON envelope directly. If the
 pipeline halts for approval, the envelope carries a resume token (or a short
@@ -180,7 +180,7 @@ For a **structured LLM step** inside a workflow, enable the optional
 
 The bundled Lobster plugin runs workflows **in-process** inside the gateway.
 In that embedded mode, `openclaw.invoke` does **not** automatically inherit a
-gateway URL/auth context for nested OpenClaw CLI tool calls.
+gateway URL/auth context for nested PASO CLI tool calls.
 
 That means this pattern is **not currently reliable in the embedded runner**:
 
@@ -319,7 +319,7 @@ run returned. `approve` is required.
 Passing `flowControllerId` and `flowGoal` on `run` (or `flowId` and
 `flowExpectedRevision` on `resume`) drives the call through the plugin
 runtime's managed [Task Flow](/automation/taskflow) API instead of returning
-a bare envelope: OpenClaw creates or resumes a durable flow record, applies the
+a bare envelope: PASO creates or resumes a durable flow record, applies the
 Lobster envelope to it (`waiting` on approval, `succeeded`/`failed`/`cancelled` on
 completion), and returns `{ ok, envelope, flow, mutation }`. This mode requires
 a bound Task Flow runtime and is intended for plugin/controller code that needs
@@ -354,7 +354,7 @@ pointer to that state, not the full pipeline state.
 
 - **Local in-process only** - workflows execute inside the gateway process; no
   network calls from the plugin itself.
-- **No secrets** - Lobster doesn't manage OAuth; it calls OpenClaw tools that
+- **No secrets** - Lobster doesn't manage OAuth; it calls PASO tools that
   do.
 - **Sandbox-aware** - disabled when the tool context is sandboxed.
 - **Hardened** - timeouts and output caps enforced by the embedded runner.

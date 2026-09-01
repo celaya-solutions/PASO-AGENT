@@ -40,7 +40,7 @@ describe("qa scenario catalog", () => {
 
     expect(pack.version).toBe(1);
     expect(pack.agent.identityMarkdown).toContain("Dev C-3PO");
-    expect(pack.kickoffTask).toContain("Lobster Invaders");
+    expect(pack.kickoffTask).toContain("PASO Task Board");
     expect(listQaScenarioYamlPaths().length).toBe(pack.scenarios.length);
     expect(listQaScenarioYamlPaths()).toContain(
       "qa/scenarios/media/image-generation-roundtrip.yaml",

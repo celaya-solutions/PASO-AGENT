@@ -1,5 +1,5 @@
 [Unit]
-Description=OpenClaw Auth Expiry Monitor
+Description=PASO Auth Expiry Monitor
 After=network.target
 
 [Service]

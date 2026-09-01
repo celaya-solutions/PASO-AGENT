@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing OpenClaw release tag to receive Windows Hub installers, for example v2026.6.1
+        description: Existing PASO release tag to receive Windows installers, for example v2026.6.1
         required: true
         type: string
       windows_node_tag:
-        description: Exact openclaw-windows-node release tag to promote, for example v0.6.3
+        description: Exact configured PASO Windows source release tag to promote, for example v0.6.3
         required: true
         type: string
       expected_installer_digests:
@@ -25,9 +25,13 @@ concurrency:
 
 jobs:
   promote_signed_windows_installers:
-    name: Promote signed Windows installers
+    name: Promote PASO-signed Windows installers
     runs-on: windows-latest
     timeout-minutes: 30
+    env:
+      PASO_WINDOWS_NODE_REPOSITORY: ${{ vars.PASO_WINDOWS_NODE_REPOSITORY }}
+      PASO_WINDOWS_SIGNER_SUBJECT: ${{ vars.PASO_WINDOWS_SIGNER_SUBJECT }}
+      PASO_WINDOWS_SIGNER_THUMBPRINT: ${{ vars.PASO_WINDOWS_SIGNER_THUMBPRINT }}
     steps:
       - name: Validate inputs
         shell: pwsh
@@ -37,15 +41,38 @@ jobs:
           EXPECTED_INSTALLER_DIGESTS: ${{ inputs.expected_installer_digests }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          if ($env:GITHUB_REPOSITORY -ne "celaya-solutions/PASO-AGENT") {
+            throw "Windows promotion is restricted to the PASO repository."
+          }
+          if (
+            [string]::IsNullOrWhiteSpace($env:PASO_WINDOWS_NODE_REPOSITORY) -or
+            [string]::IsNullOrWhiteSpace($env:PASO_WINDOWS_SIGNER_SUBJECT) -or
+            [string]::IsNullOrWhiteSpace($env:PASO_WINDOWS_SIGNER_THUMBPRINT)
+          ) {
+            throw "PASO Windows promotion is disabled. Configure PASO_WINDOWS_NODE_REPOSITORY, PASO_WINDOWS_SIGNER_SUBJECT, and PASO_WINDOWS_SIGNER_THUMBPRINT with Celaya-owned release infrastructure."
+          }
+          if ($env:PASO_WINDOWS_NODE_REPOSITORY -notmatch '^celaya-solutions/[A-Za-z0-9_.-]+$') {
+            throw "PASO_WINDOWS_NODE_REPOSITORY must be owned by celaya-solutions."
+          }
+          if (
+            $env:PASO_WINDOWS_SIGNER_SUBJECT -notmatch '(?i)Celaya Solutions' -or
+            $env:PASO_WINDOWS_SIGNER_SUBJECT -match '(?i)OpenClaw Foundation'
+          ) {
+            throw "PASO_WINDOWS_SIGNER_SUBJECT must identify Celaya Solutions, not the upstream signer."
+          }
+          $expectedSignerThumbprint = $env:PASO_WINDOWS_SIGNER_THUMBPRINT -replace '\s', ''
+          if ($expectedSignerThumbprint -notmatch '^[A-Fa-f0-9]{40}$') {
+            throw "PASO_WINDOWS_SIGNER_THUMBPRINT must be an exact 40-character certificate thumbprint."
+          }
           if ($env:RELEASE_TAG -notmatch '^v[0-9]{4}\.[1-9][0-9]*\.[1-9][0-9]*((-(alpha|beta)\.[1-9][0-9]*)|(-[1-9][0-9]*))?$') {
-            throw "Invalid OpenClaw release tag: $env:RELEASE_TAG"
+            throw "Invalid PASO release tag: $env:RELEASE_TAG"
           }
           $stableRelease = -not (
             $env:RELEASE_TAG.Contains("-alpha.") -or
             $env:RELEASE_TAG.Contains("-beta.")
           )
           if ($env:WINDOWS_NODE_TAG -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$') {
-            throw "windows_node_tag must be an explicit openclaw-windows-node release tag, not latest: $env:WINDOWS_NODE_TAG"
+            throw "windows_node_tag must be an explicit PASO Windows source release tag, not latest: $env:WINDOWS_NODE_TAG"
           }
 
           try {
@@ -74,7 +101,7 @@ jobs:
 
           $targetRelease = gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --json tagName,isDraft,isPrerelease,assets,url | ConvertFrom-Json
           if ($targetRelease.tagName -ne $env:RELEASE_TAG) {
-            throw "OpenClaw release tag mismatch: expected $env:RELEASE_TAG, got $($targetRelease.tagName)"
+            throw "PASO release tag mismatch: expected $env:RELEASE_TAG, got $($targetRelease.tagName)"
           }
           $unexpectedTargetCompanionAssets = @(
             $targetRelease.assets |
@@ -86,10 +113,10 @@ jobs:
               Sort-Object
           )
           if ($unexpectedTargetCompanionAssets.Count -ne 0) {
-            throw "Target OpenClaw release contains unexpected OpenClawCompanion assets before upload: $($unexpectedTargetCompanionAssets -join ', ')"
+            throw "Target PASO release contains unexpected OpenClawCompanion compatibility assets before upload: $($unexpectedTargetCompanionAssets -join ', ')"
           }
 
-          $sourceRelease = gh release view $env:WINDOWS_NODE_TAG --repo openclaw/openclaw-windows-node --json tagName,isDraft,isPrerelease,assets,url | ConvertFrom-Json
+          $sourceRelease = gh release view $env:WINDOWS_NODE_TAG --repo $env:PASO_WINDOWS_NODE_REPOSITORY --json tagName,isDraft,isPrerelease,assets,url | ConvertFrom-Json
           if ($sourceRelease.tagName -ne $env:WINDOWS_NODE_TAG) {
             throw "Windows source release tag mismatch: expected $env:WINDOWS_NODE_TAG, got $($sourceRelease.tagName)"
           }
@@ -97,7 +124,7 @@ jobs:
             throw "Windows source release must be published: $($sourceRelease.url)"
           }
           if ($stableRelease -and $sourceRelease.isPrerelease) {
-            throw "Stable OpenClaw releases require a non-prerelease Windows source release: $($sourceRelease.url)"
+            throw "Stable PASO releases require a non-prerelease Windows source release: $($sourceRelease.url)"
           }
           foreach ($name in $requiredInstallerNames) {
             $sourceAssets = @($sourceRelease.assets | Where-Object name -eq $name)
@@ -109,7 +136,7 @@ jobs:
             }
           }
 
-      - name: Download Windows Hub release installers
+      - name: Download PASO Windows release installers
         shell: pwsh
         env:
           WINDOWS_NODE_TAG: ${{ inputs.windows_node_tag }}
@@ -125,7 +152,7 @@ jobs:
           )
           $downloadArgs = @(
             $env:WINDOWS_NODE_TAG,
-            "--repo", "openclaw/openclaw-windows-node",
+            "--repo", $env:PASO_WINDOWS_NODE_REPOSITORY,
             "--dir", "dist"
           )
           foreach ($pattern in $installerPatterns) {
@@ -155,7 +182,8 @@ jobs:
       - name: Verify Authenticode signatures
         shell: pwsh
         run: |
-          $expectedSignerSubject = "CN=OpenClaw Foundation, O=OpenClaw Foundation, L=Mill Valley, S=California, C=US"
+          $expectedSignerSubject = $env:PASO_WINDOWS_SIGNER_SUBJECT
+          $expectedSignerThumbprint = ($env:PASO_WINDOWS_SIGNER_THUMBPRINT -replace '\s', '').ToUpperInvariant()
           Get-ChildItem -LiteralPath dist -File | ForEach-Object {
             $signature = Get-AuthenticodeSignature -LiteralPath $_.FullName
             if ($signature.Status -ne "Valid") {
@@ -166,6 +194,9 @@ jobs:
             }
             if ($signature.SignerCertificate.Subject -ne $expectedSignerSubject) {
               throw "$($_.Name) has unexpected signer subject $($signature.SignerCertificate.Subject)."
+            }
+            if ($signature.SignerCertificate.Thumbprint.ToUpperInvariant() -ne $expectedSignerThumbprint) {
+              throw "$($_.Name) has unexpected signer thumbprint $($signature.SignerCertificate.Thumbprint)."
             }
             [pscustomobject]@{
               File = $_.Name
@@ -184,7 +215,7 @@ jobs:
               "$($hash.Hash.ToLowerInvariant())  $($_.Name)"
             } | Set-Content -Encoding utf8NoBOM -Path dist/OpenClawCompanion-SHA256SUMS.txt
 
-      - name: Upload to OpenClaw release
+      - name: Upload to PASO release
         shell: pwsh
         env:
           RELEASE_TAG: ${{ inputs.tag }}
@@ -273,13 +304,13 @@ jobs:
           WINDOWS_NODE_TAG: ${{ inputs.windows_node_tag }}
         run: |
           @"
-          ## Windows Hub installers promoted
+          ## PASO Windows installers promoted
 
-          OpenClaw release: $env:RELEASE_TAG
-          Source release: openclaw/openclaw-windows-node@$env:WINDOWS_NODE_TAG
+          PASO release: $env:RELEASE_TAG
+          Source release: $env:PASO_WINDOWS_NODE_REPOSITORY@$env:WINDOWS_NODE_TAG
           "@ >> $env:GITHUB_STEP_SUMMARY
           Get-ChildItem -LiteralPath dist -File |
             Sort-Object Name |
             ForEach-Object {
-              "- https://github.com/openclaw/openclaw/releases/download/$env:RELEASE_TAG/$($_.Name)"
+              "- https://github.com/celaya-solutions/PASO-AGENT/releases/download/$env:RELEASE_TAG/$($_.Name)"
             } >> $env:GITHUB_STEP_SUMMARY

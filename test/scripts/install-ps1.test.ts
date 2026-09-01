@@ -90,6 +90,13 @@ function createDeferredPathSuccessFixture(source: string): string {
 }
 
 describe("install.ps1 failure handling", () => {
+  it("defaults public installs to the PASO main checkout and keeps npm explicit", () => {
+    expect(source).toContain('[string]$Tag = ""');
+    expect(source).toContain('[string]$InstallMethod = "git"');
+    expect(source).toContain('$Tag = "main"');
+    expect(source).toContain('$Tag = "latest"');
+  });
+
   const harness = createScriptTestHarness();
   const source = readFileSync(SCRIPT_PATH, "utf8");
   const powershell = findPowerShell();
@@ -1196,7 +1203,7 @@ try {
     const completeInstallBody = extractFunctionBody(source, "Complete-Install");
     expect(completeInstallBody).toMatch(/\$PSCommandPath/);
     expect(completeInstallBody).toMatch(/\bexit \$script:InstallExitCode\b/);
-    expect(completeInstallBody).toMatch(/\bthrow "OpenClaw installation failed with exit code/);
+    expect(completeInstallBody).toMatch(/\bthrow "PASO installation failed with exit code/);
     expect(completeInstallBody).toContain("$script:InstallExitCode -eq 0");
     expect(source).toContain("$null = Main");
     expect(source).toMatch(/\$null = Main\s+Complete-Install\s*$/);
@@ -1398,13 +1405,14 @@ try {
     expect(source).not.toContain("Get-InstallerTempDirectory");
   });
 
-  it("rejects OpenClaw GitHub source targets for npm installs", () => {
+  it("rejects PASO and legacy OpenClaw GitHub source targets for npm installs", () => {
     const npmInstallBody = extractFunctionBody(source, "Install-OpenClaw");
     const sourceTargetBody = extractFunctionBody(source, "Test-OpenClawSourcePackageInstallSpec");
     expect(sourceTargetBody).toContain('$normalizedTag -eq "main"');
+    expect(sourceTargetBody).toContain("^github:celaya-solutions/paso-agent");
     expect(sourceTargetBody).toContain("^github:openclaw/openclaw");
     expect(npmInstallBody).toContain("Test-OpenClawSourcePackageInstallSpec -RequestedTag $Tag");
-    expect(npmInstallBody).toContain("npm installs do not support OpenClaw GitHub source targets");
+    expect(npmInstallBody).toContain("npm installs do not support PASO GitHub source targets");
     expect(npmInstallBody).toContain("-InstallMethod git -Tag main");
   });
 
@@ -1649,7 +1657,7 @@ try {
     expect(gitInstallBody).toContain('Write-Host "[!] pnpm build failed for the Git checkout"');
     expect(gitInstallBody).toContain('$entryPath = Join-Path $RepoDir "dist\\\\entry.js"');
     expect(gitInstallBody).toContain("Test-Path $entryPath");
-    expect(gitInstallBody).toContain('Write-Host "[!] OpenClaw build did not produce $entryPath"');
+    expect(gitInstallBody).toContain('Write-Host "[!] PASO build did not produce $entryPath"');
     expect(gitInstallBody).toContain("node $entryPath --version");
     expect(gitInstallBody).toContain("Format-OpenClawGitWrapper -EntryPath $entryPath");
     expect(gitInstallBody).not.toContain("& $pnpmCommand -C $RepoDir install");

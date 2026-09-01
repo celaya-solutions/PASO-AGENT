@@ -12,7 +12,7 @@ Anthropic models, Claude CLI, and native Claude session catalog.
 ## Distribution
 
 - Package: `@openclaw/anthropic-provider`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

@@ -288,7 +288,7 @@ suite.define(() => {
         )
         .toBe("true");
       await expect.poll(() => languageRow.textContent()).toContain("Default: System");
-      await expect.poll(() => themeSection.textContent()).toContain("Default: Claw");
+      await expect.poll(() => themeSection.textContent()).toContain("Default: PASO");
       await expect.poll(() => colorModeRow.textContent()).toContain("Default: System");
       await expect.poll(() => textSizeSection.textContent()).toContain("Default: 100%");
       await expect.poll(() => page.locator("html").getAttribute("data-theme-mode")).toBe("dark");
@@ -381,7 +381,7 @@ suite.define(() => {
         )
         .toBe("true");
       await expect.poll(() => reloadedLanguageRow.textContent()).toContain("Using default: System");
-      await expect.poll(() => reloadedThemeSection.textContent()).toContain("Using default: Claw");
+      await expect.poll(() => reloadedThemeSection.textContent()).toContain("Using default: PASO");
       await expect
         .poll(() => reloadedColorModeRow.textContent())
         .toContain("Using default: System");
@@ -611,7 +611,7 @@ suite.define(() => {
             themeSection.locator(".settings-theme-card--knot").getAttribute("aria-pressed"),
           )
           .toBe("true");
-        await expect.poll(() => themeDescription.textContent()).toContain("Default: Claw");
+        await expect.poll(() => themeDescription.textContent()).toContain("Default: PASO");
         await expect
           .poll(() => themeDescription.textContent())
           .toContain("Stored in this browser only");
@@ -724,7 +724,7 @@ suite.define(() => {
       await expect
         .poll(() => themeSection.locator(".settings-theme-card--knot").getAttribute("aria-pressed"))
         .toBe("true");
-      await expect.poll(() => themeDescription.textContent()).toContain("Default: Claw");
+      await expect.poll(() => themeDescription.textContent()).toContain("Default: PASO");
       await expect
         .poll(() => themeDescription.textContent())
         .not.toContain("Stored in this browser only");

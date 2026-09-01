@@ -121,8 +121,8 @@ Linux uses the same stable errors: `LOCATION_DISABLED`, `LOCATION_TIMEOUT`, and 
 ## UX copy (suggested)
 
 - Off: "Location sharing is disabled."
-- While Using: "Only when OpenClaw is open."
-- Always: "Allow requested location checks while OpenClaw is in the background."
+- While Using: "Only when PASO is open."
+- Always: "Allow requested location checks while PASO is in the background."
 - Precise: "Use precise GPS location. Toggle off to share approximate location."
 
 ## Related

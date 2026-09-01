@@ -5,8 +5,8 @@ import { inferControlUiPublicAssetPath } from "../../app/public-assets.ts";
 import { icons } from "../../components/icons.ts";
 import { t } from "../../i18n/index.ts";
 import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../../lib/external-link.ts";
+import { pasoDocsUrl } from "../../lib/paso-docs-url.ts";
 import "../../styles/apps.css";
-import { brandIcons } from "../about/brand-icons.ts";
 import { appsBrandIcons } from "./brand-icons.ts";
 
 type AppsProps = {
@@ -38,7 +38,7 @@ type AppSection = {
 
 const docsCta = (path: string): AppCardCta => ({
   kind: "external",
-  href: `https://docs.openclaw.ai${path}`,
+  href: pasoDocsUrl(path),
   label: () => t("appsPage.ctaDocs"),
 });
 
@@ -53,14 +53,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.apple,
         title: () => t("appsPage.cards.ios.title"),
         desc: () => t("appsPage.cards.ios.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://apps.apple.com/app/openclaw-ai-that-does-things/id6780396132",
-            label: () => t("appsPage.ctaAppStore"),
-          },
-          docsCta("/platforms/ios"),
-        ],
+        ctas: [docsCta("/platforms/ios")],
       },
       {
         id: "android",
@@ -68,14 +61,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.android,
         title: () => t("appsPage.cards.android.title"),
         desc: () => t("appsPage.cards.android.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://play.google.com/store/apps/details?id=ai.openclaw.app",
-            label: () => t("appsPage.ctaPlayStore"),
-          },
-          docsCta("/platforms/android"),
-        ],
+        ctas: [docsCta("/platforms/android")],
       },
     ],
   },
@@ -113,14 +99,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.apple,
         title: () => t("appsPage.cards.macos.title"),
         desc: () => t("appsPage.cards.macos.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://github.com/openclaw/openclaw/releases",
-            label: () => t("appsPage.ctaDownload"),
-          },
-          docsCta("/platforms/macos"),
-        ],
+        ctas: [docsCta("/platforms/macos")],
       },
       {
         id: "windows",
@@ -128,14 +107,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.windows,
         title: () => t("appsPage.cards.windows.title"),
         desc: () => t("appsPage.cards.windows.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://github.com/openclaw/openclaw-windows-node/releases/latest",
-            label: () => t("appsPage.ctaDownload"),
-          },
-          docsCta("/platforms/windows"),
-        ],
+        ctas: [docsCta("/platforms/windows")],
       },
       {
         id: "linux",
@@ -143,14 +115,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.linux,
         title: () => t("appsPage.cards.linux.title"),
         desc: () => t("appsPage.cards.linux.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://github.com/openclaw/openclaw/releases",
-            label: () => t("appsPage.ctaDownload"),
-          },
-          docsCta("/platforms/linux"),
-        ],
+        ctas: [docsCta("/platforms/linux")],
       },
     ],
   },
@@ -164,18 +129,7 @@ const APP_SECTIONS: readonly AppSection[] = [
         icon: appsBrandIcons.chrome,
         title: () => t("appsPage.cards.chrome.title"),
         desc: () => t("appsPage.cards.chrome.desc"),
-        ctas: [
-          {
-            kind: "external",
-            href: "https://chromewebstore.google.com/detail/openclaw/kcdjddhmeafeomebliikmbpblkmkfoig",
-            label: () => t("appsPage.ctaChromeWebStore"),
-          },
-          {
-            kind: "external",
-            href: "https://docs.openclaw.ai/tools/chrome-extension",
-            label: () => t("appsPage.ctaSetupGuide"),
-          },
-        ],
+        ctas: [docsCta("/tools/chrome-extension")],
       },
       {
         id: "plugins",
@@ -185,11 +139,6 @@ const APP_SECTIONS: readonly AppSection[] = [
         desc: () => t("appsPage.cards.plugins.desc"),
         ctas: [
           { kind: "internal", routeId: "plugins", label: () => t("appsPage.ctaOpenPlugins") },
-          {
-            kind: "external",
-            href: "https://clawhub.ai",
-            label: () => t("appsPage.ctaBrowseClawHub"),
-          },
         ],
       },
     ],
@@ -199,11 +148,15 @@ const APP_SECTIONS: readonly AppSection[] = [
 const COMMUNITY_LINKS: ReadonlyArray<{ href: string; icon: TemplateResult; label: () => string }> =
   [
     {
-      href: "https://discord.gg/clawd",
-      icon: brandIcons.discord,
+      href: "mailto:hello@celayasolutions.com",
+      icon: icons.mail,
       label: () => t("appsPage.linkDiscord"),
     },
-    { href: "https://docs.openclaw.ai", icon: icons.book, label: () => t("appsPage.linkDocs") },
+    {
+      href: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+      icon: icons.book,
+      label: () => t("appsPage.linkDocs"),
+    },
   ];
 
 function renderCta(cta: AppCardCta, index: number, props: AppsProps) {

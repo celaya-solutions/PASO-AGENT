@@ -104,11 +104,7 @@ async function seedBaselinePluginState(packageRoot) {
   assert(stateDir, "baseline plugin state requires OPENCLAW_STATE_DIR");
   const packageJsonPath = path.join(path.resolve(packageRoot), "package.json");
   const manifest = readJson(packageJsonPath);
-  assert.equal(
-    manifest.name,
-    "openclaw",
-    "baseline SDK must belong to the installed OpenClaw package",
-  );
+  assert.equal(manifest.name, "openclaw", "baseline SDK must belong to the installed PASO package");
   assert.equal(
     manifest.version,
     process.env.OPENCLAW_UPGRADE_SURVIVOR_BASELINE_VERSION,

@@ -1,18 +1,18 @@
 ---
 summary: "Google Meet plugin: join explicit Meet URLs through Chrome or Twilio with agent talk-back defaults"
 read_when:
-  - You want an OpenClaw agent to join a Google Meet call
-  - You want an OpenClaw agent to create a new Google Meet call
+  - You want a PASO agent to join a Google Meet call
+  - You want a PASO agent to create a new Google Meet call
   - You are configuring Chrome, Chrome node, or Twilio as a Google Meet transport
 title: "Google Meet plugin"
 ---
 
-The `google-meet` plugin joins explicit Meet URLs on behalf of an OpenClaw agent. It is deliberately narrow:
+The `google-meet` plugin joins explicit Meet URLs on behalf of a PASO agent. It is deliberately narrow:
 
 - It only joins `https://meet.google.com/...` URLs; it never dials into a meeting from a phone number it discovers itself.
 - `googlemeet create` can mint a new Meet URL through the Google Meet API (or a browser fallback) and join it by default.
 - Chrome participation uses a signed-in Chrome profile, optionally on a paired node. Twilio participation dials a phone number plus PIN/DTMF through the [Voice call plugin](/plugins/voice-call); it cannot dial a Meet URL directly.
-- `mode: "agent"` (default) transcribes participant speech with a realtime provider, routes it to the configured OpenClaw agent, and speaks the answer with regular OpenClaw TTS. `mode: "bidi"` lets a realtime voice model answer directly. `mode: "transcribe"` joins observe-only with no talk-back.
+- `mode: "agent"` (default) transcribes participant speech with a realtime provider, routes it to the configured PASO agent, and speaks the answer with regular PASO TTS. `mode: "bidi"` lets a realtime voice model answer directly. `mode: "transcribe"` joins observe-only with no talk-back.
 - There is no automatic consent announcement when the plugin joins a call.
 - The CLI command is `googlemeet`; `meet` is reserved for broader agent teleconference workflows.
 
@@ -50,7 +50,7 @@ pactl info
 command -v pactl pacat parec
 ```
 
-OpenClaw provisions an `OpenClaw Meeting Audio` null sink and matching source in that desktop user's audio session. Run the Gateway or paired node as the same user that runs Chrome.
+PASO provisions an `PASO Meeting Audio` null sink and matching source in that desktop user's audio session. Run the Gateway or paired node as the same user that runs Chrome.
 
 The plugin is enabled by default after installation. Add an entry only to customize it:
 
@@ -110,7 +110,7 @@ openclaw googlemeet create --no-join
 `create` has two paths, reported in the result's `source` field:
 
 - **`api`**: used when Google Meet OAuth credentials are configured. Deterministic; does not depend on browser UI state.
-- **`browser`**: used without OAuth credentials. OpenClaw opens `https://meet.google.com/new` on the pinned Chrome node and waits for Google to redirect to a real meeting-code URL; the OpenClaw Chrome profile on that node must already be signed in to Google. Join and create both reuse an existing Meet tab (or an in-progress `.../new` / Google account prompt tab) before opening a new one; tab matching ignores harmless query strings like `authuser`.
+- **`browser`**: used without OAuth credentials. PASO opens `https://meet.google.com/new` on the pinned Chrome node and waits for Google to redirect to a real meeting-code URL; the PASO Chrome profile on that node must already be signed in to Google. Join and create both reuse an existing Meet tab (or an in-progress `.../new` / Google account prompt tab) before opening a new one; tab matching ignores harmless query strings like `authuser`.
 
 `create` joins by default and returns `joined: true` plus the join session. Pass `--no-join` (CLI) or `"join": false` (tool) to mint the URL only.
 
@@ -132,7 +132,7 @@ If the browser fallback hits a Google login or Meet permission blocker, the tool
 
 ### Observe-only join
 
-Set `"mode": "transcribe"` to skip the duplex realtime bridge (no virtual-audio requirement, no talk-back). Transcribe-mode Chrome joins also skip OpenClaw's microphone/camera permission grant and the Meet **Use microphone** path; if Meet shows the audio-choice interstitial, automation tries **Continue without microphone** first. Managed Chrome transports install a best-effort Meet caption observer in every mode so durable notes are available without changing the live agent-consult path. `googlemeet status --json` and `googlemeet doctor` report `captioning`, `captionsEnabledAttempted`, `transcriptLines`, `lastCaptionAt`, `lastCaptionSpeaker`, `lastCaptionText`, and a `recentTranscript` tail.
+Set `"mode": "transcribe"` to skip the duplex realtime bridge (no virtual-audio requirement, no talk-back). Transcribe-mode Chrome joins also skip PASO's microphone/camera permission grant and the Meet **Use microphone** path; if Meet shows the audio-choice interstitial, automation tries **Continue without microphone** first. Managed Chrome transports install a best-effort Meet caption observer in every mode so durable notes are available without changing the live agent-consult path. `googlemeet status --json` and `googlemeet doctor` report `captioning`, `captionsEnabledAttempted`, `transcriptLines`, `lastCaptionAt`, `lastCaptionSpeaker`, `lastCaptionText`, and a `recentTranscript` tail.
 
 For the bounded session transcript, read the exact tracked Meet tab:
 
@@ -141,7 +141,7 @@ openclaw googlemeet transcript <session-id>
 openclaw googlemeet transcript <session-id> --since <next-index> --json
 ```
 
-The observer keeps at most 2,000 completed caption lines in the Meet page. Visible progressive text stays in the status health tail until the caption row completes, so saving `nextIndex` cannot skip a later text expansion; leaving finalizes visible rows before the snapshot. `droppedLines` reports lines lost from the head when the cap is exceeded. The bounded `googlemeet transcript` tail still keeps only the four most recently ended sessions and resets with the Gateway. Separately, OpenClaw appends completed caption rows to the shared state database throughout the meeting and writes a derived summary on leave. Use [`openclaw transcripts`](/cli/transcripts) to inspect or export those durable notes.
+The observer keeps at most 2,000 completed caption lines in the Meet page. Visible progressive text stays in the status health tail until the caption row completes, so saving `nextIndex` cannot skip a later text expansion; leaving finalizes visible rows before the snapshot. `droppedLines` reports lines lost from the head when the cap is exceeded. The bounded `googlemeet transcript` tail still keeps only the four most recently ended sessions and resets with the Gateway. Separately, PASO appends completed caption rows to the shared state database throughout the meeting and writes a derived summary on leave. Use [`openclaw transcripts`](/cli/transcripts) to inspect or export those durable notes.
 
 Automatic notes are enabled by default. Set `transcripts.enabled: false` to
 disable durable notes globally; explicit `transcribe` mode still exposes only
@@ -160,17 +160,17 @@ It joins in transcribe mode, waits for fresh caption/transcript movement, and re
 
 During talk-back sessions, `google_meet` status reports Chrome/audio bridge health: `inCall`, `manualAction`, `providerConnected`, `realtimeReady`, `audioInputActive`, `audioOutputActive`, last input/output timestamps, byte counters, and bridge-closed state. Managed Chrome sessions only speak the intro/test phrase after health reports `inCall: true`; otherwise `speechReady: false` and the speech attempt is blocked rather than silently no-opping.
 
-Local Chrome joins through the signed-in OpenClaw browser profile and routes its microphone and speaker through the native backend selected by `chrome.audioBackend`. The default shared loopback device is enough for a first smoke test but can echo; use separate virtual devices or a Loopback-style graph for clean duplex audio.
+Local Chrome joins through the signed-in PASO browser profile and routes its microphone and speaker through the native backend selected by `chrome.audioBackend`. The default shared loopback device is enough for a first smoke test but can echo; use separate virtual devices or a Loopback-style graph for clean duplex audio.
 
 ## Local Gateway + Parallels Chrome
 
 A full Gateway or model API key is not required inside a macOS VM just to give it Chrome. Run the Gateway and agent locally; run a node host in the VM.
 
-| Runs where           | What                                                                                            |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| Gateway host         | OpenClaw Gateway, agent workspace, model/API keys, realtime provider, Google Meet plugin config |
-| Parallels macOS VM   | OpenClaw CLI/node host, Chrome, SoX, BlackHole 2ch, a Chrome profile signed in to Google        |
-| Not needed in the VM | Gateway service, agent config, model provider setup                                             |
+| Runs where           | What                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------- |
+| Gateway host         | PASO Gateway, agent workspace, model/API keys, realtime provider, Google Meet plugin config |
+| Parallels macOS VM   | PASO CLI/node host, Chrome, SoX, BlackHole 2ch, a Chrome profile signed in to Google        |
+| Not needed in the VM | Gateway service, agent config, model provider setup                                         |
 
 Install VM dependencies, reboot, verify:
 
@@ -227,7 +227,7 @@ Route Meet through that node:
         config: {
           defaultTransport: "chrome-node",
           chrome: {
-            guestName: "OpenClaw Agent",
+            guestName: "PASO Agent",
             autoJoin: true,
             reuseExistingTab: true,
           },
@@ -255,7 +255,7 @@ openclaw googlemeet test-speech https://meet.google.com/abc-defg-hij
 
 During realtime join, browser automation fills the guest name, clicks Join/Ask to join, and accepts Meet's first-run "Use microphone" prompt when it appears (or "Continue without microphone" during observe-only join and browser-only meeting creation). If the profile is signed out, Meet is waiting for host admission, Chrome needs mic/camera permission, or Meet is stuck on an unresolved prompt, the result includes `manualAction: { reason, message }`. Stop retrying, report that message plus `browserUrl`/`browserTitle`, and retry only after the manual action completes.
 
-If `chromeNode.node` is omitted, OpenClaw auto-selects only when exactly one connected node advertises both `googlemeet.chrome` and browser control; pin `chromeNode.node` (node id, display name, or remote IP) when several capable nodes are connected.
+If `chromeNode.node` is omitted, PASO auto-selects only when exactly one connected node advertises both `googlemeet.chrome` and browser control; pin `chromeNode.node` (node id, display name, or remote IP) when several capable nodes are connected.
 
 ### Common failure checks
 
@@ -265,19 +265,19 @@ If `chromeNode.node` is omitted, OpenClaw auto-selects only when exactly one con
 | `No connected Google Meet-capable node`                  | Install `npm:@openclaw/google-meet` in the VM, run `openclaw plugins enable browser`, start `openclaw node run`, and approve pairing. If Google Meet was explicitly disabled, enable it too. Confirm `gateway.nodes.commands.allow` includes `googlemeet.chrome` and `browser.proxy`. |
 | `BlackHole 2ch audio device not found`                   | On macOS, install `blackhole-2ch` on the host being checked and reboot.                                                                                                                                                                                                               |
 | `PipeWire-Pulse is unavailable`                          | On Linux, start the desktop user's `pipewire-pulse` service and install `pulseaudio-utils`; do not run the node as root or outside the Chrome user's audio session.                                                                                                                   |
-| Chrome opens but cannot join                             | Sign in to the browser profile in the VM, or keep `chrome.guestName` set. Guest auto-join uses OpenClaw browser automation through the node browser proxy; point the node's `browser.defaultProfile` (or a named existing-session profile) at the profile you want.                   |
-| Duplicate Meet tabs                                      | Leave `chrome.reuseExistingTab: true`. OpenClaw activates an existing tab for the same URL, and creation reuses an in-progress `.../new` or Google account prompt tab, before opening another.                                                                                        |
-| No audio                                                 | Route Meet mic/speaker through the virtual audio path used by OpenClaw; use separate virtual devices or Loopback-style routing for clean duplex audio.                                                                                                                                |
+| Chrome opens but cannot join                             | Sign in to the browser profile in the VM, or keep `chrome.guestName` set. Guest auto-join uses PASO browser automation through the node browser proxy; point the node's `browser.defaultProfile` (or a named existing-session profile) at the profile you want.                       |
+| Duplicate Meet tabs                                      | Leave `chrome.reuseExistingTab: true`. PASO activates an existing tab for the same URL, and creation reuses an in-progress `.../new` or Google account prompt tab, before opening another.                                                                                            |
+| No audio                                                 | Route Meet mic/speaker through the virtual audio path used by PASO; use separate virtual devices or Loopback-style routing for clean duplex audio.                                                                                                                                    |
 
 ## Install notes
 
-The Chrome talk-back default uses host audio tools that OpenClaw does not bundle or redistribute:
+The Chrome talk-back default uses host audio tools that PASO does not bundle or redistribute:
 
 - `sox`: command-line audio utility. The plugin issues explicit CoreAudio device commands for the default 24 kHz PCM16 audio bridge.
 - `blackhole-2ch`: macOS virtual audio driver providing the `BlackHole 2ch` device Chrome/Meet route through.
-- `pactl`, `pacat`, and `parec`: Linux PulseAudio utilities used against PipeWire-Pulse to provision and stream through `OpenClaw Meeting Audio`.
+- `pactl`, `pacat`, and `parec`: Linux PulseAudio utilities used against PipeWire-Pulse to provision and stream through `PASO Meeting Audio`.
 
-SoX is licensed `LGPL-2.0-only AND GPL-2.0-only`; BlackHole is GPL-3.0. If you build an installer or appliance that bundles BlackHole with OpenClaw, review BlackHole's upstream licensing or get a separate license from Existential Audio.
+SoX is licensed `LGPL-2.0-only AND GPL-2.0-only`; BlackHole is GPL-3.0. If you build an installer or appliance that bundles BlackHole with PASO, review BlackHole's upstream licensing or get a separate license from Existential Audio.
 
 ## Transports
 
@@ -289,14 +289,14 @@ SoX is licensed `LGPL-2.0-only AND GPL-2.0-only`; BlackHole is GPL-3.0. If you b
 
 ### Chrome
 
-Opens the Meet URL through OpenClaw browser control and joins as the signed-in OpenClaw browser profile. Before launch, the plugin checks or provisions the host's native virtual-audio backend and then runs any configured audio bridge health/startup command. For local Chrome, pick the profile with `browser.defaultProfile`; `chrome.browserProfile` is passed to `chrome-node` hosts instead.
+Opens the Meet URL through PASO browser control and joins as the signed-in PASO browser profile. Before launch, the plugin checks or provisions the host's native virtual-audio backend and then runs any configured audio bridge health/startup command. For local Chrome, pick the profile with `browser.defaultProfile`; `chrome.browserProfile` is passed to `chrome-node` hosts instead.
 
 ```bash
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome
 openclaw googlemeet join https://meet.google.com/abc-defg-hij --transport chrome-node
 ```
 
-Chrome mic/speaker audio routes through the local OpenClaw audio bridge. If the native backend is unavailable, the join fails with a setup error instead of joining without an audio path.
+Chrome mic/speaker audio routes through the local PASO audio bridge. If the native backend is unavailable, the join fails with a setup error instead of joining without an audio path.
 
 ### Twilio
 
@@ -324,7 +324,7 @@ Enable Voice Call on the Gateway host, not the Chrome node:
           realtime: {
             enabled: true,
             provider: "google",
-            instructions: "Join this Google Meet as an OpenClaw agent. Be brief.",
+            instructions: "Join this Google Meet as a PASO agent. Be brief.",
             toolPolicy: "safe-read-only",
             providers: {
               google: {
@@ -417,7 +417,7 @@ http://localhost:8085/oauth2callback
 </Step>
 </Steps>
 
-`meetings.space.created` is required by `spaces.create`. `meetings.space.readonly` resolves Meet URLs/codes to spaces. `meetings.space.settings` lets OpenClaw pass `SpaceConfig` settings such as `accessType` during API room creation. `meetings.conference.media.readonly` is for Meet Media API preflight and media work; Google may require Developer Preview enrollment for actual Media API use. `calendar.events.readonly` is only needed for `--today`/`--event` calendar lookup. `drive.meet.readonly` is only needed for `--include-doc-bodies` export. If you only need browser-based Chrome joins, skip OAuth entirely.
+`meetings.space.created` is required by `spaces.create`. `meetings.space.readonly` resolves Meet URLs/codes to spaces. `meetings.space.settings` lets PASO pass `SpaceConfig` settings such as `accessType` during API room creation. `meetings.conference.media.readonly` is for Meet Media API preflight and media work; Google may require Developer Preview enrollment for actual Media API use. `calendar.events.readonly` is only needed for `--today`/`--event` calendar lookup. `drive.meet.readonly` is only needed for `--include-doc-bodies` export. If you only need browser-based Chrome joins, skip OAuth entirely.
 
 ### Mint the refresh token
 
@@ -503,7 +503,7 @@ openclaw googlemeet resolve-space --meeting https://meet.google.com/abc-defg-hij
 
 A `403` from these checks usually means the Meet REST API is disabled, the refresh token is missing the required scope, or the Google account cannot access that space. A refresh-token error means rerun `openclaw googlemeet auth login --json` and store the new `oauth` block.
 
-No OAuth is needed for the browser fallback; Google auth there comes from the signed-in Chrome profile on the selected node, not OpenClaw config.
+No OAuth is needed for the browser fallback; Google auth there comes from the signed-in Chrome profile on the selected node, not PASO config.
 
 These environment variables are accepted as fallbacks:
 
@@ -557,7 +557,7 @@ Close the room for an API-created space:
 openclaw googlemeet end-active-conference https://meet.google.com/abc-defg-hij
 ```
 
-Calls `spaces.endActiveConference` and requires OAuth with the `meetings.space.created` scope for a space the authorized account can manage. Accepts a Meet URL, meeting code, or `spaces/{id}` and resolves it to the API space resource first. This is separate from `googlemeet leave`: `leave` stops OpenClaw's local/session participation; `end-active-conference` asks Google Meet to end the active conference for the space.
+Calls `spaces.endActiveConference` and requires OAuth with the `meetings.space.created` scope for a space the authorized account can manage. Accepts a Meet URL, meeting code, or `spaces/{id}` and resolves it to the API space resource first. This is separate from `googlemeet leave`: `leave` stops PASO's local/session participation; `end-active-conference` asks Google Meet to end the active conference for the space.
 
 Write a readable report:
 
@@ -632,10 +632,10 @@ If the browser fallback hits Google login or a Meet permission blocker first, `g
 ```json
 {
   "source": "browser",
-  "error": "google-login-required: Sign in to Google in the OpenClaw browser profile, then retry meeting creation.",
+  "error": "google-login-required: Sign in to Google in the PASO browser profile, then retry meeting creation.",
   "manualAction": {
     "reason": "google-login-required",
-    "message": "Sign in to Google in the OpenClaw browser profile, then retry meeting creation."
+    "message": "Sign in to Google in the PASO browser profile, then retry meeting creation."
   },
   "browser": {
     "nodeId": "ba0f4e4bc...",
@@ -667,13 +667,13 @@ API create JSON:
 }
 ```
 
-Creating joins by default, but Chrome/Chrome-node still needs a signed-in Google profile to join through the browser; if signed out, OpenClaw returns `manualAction` or a browser fallback error and asks the operator to finish Google login before retrying.
+Creating joins by default, but Chrome/Chrome-node still needs a signed-in Google profile to join through the browser; if signed out, PASO returns `manualAction` or a browser fallback error and asks the operator to finish Google login before retrying.
 
 Set `preview.enrollmentAcknowledged: true` only after confirming your Cloud project, OAuth principal, and meeting participants are enrolled in the Google Workspace Developer Preview Program for Meet media APIs.
 
 ## Config
 
-The common Chrome agent path only needs the plugin enabled, BlackHole, SoX, a realtime provider key, and a configured OpenClaw TTS provider:
+The common Chrome agent path only needs the plugin enabled, BlackHole, SoX, a realtime provider key, and a configured PASO TTS provider:
 
 ```json5
 {
@@ -697,14 +697,14 @@ The common Chrome agent path only needs the plugin enabled, BlackHole, SoX, a re
 | `chromeNode.node`                 | unset                                    | Node id/name/IP for `chrome-node`; required when more than one capable node may be connected                                                                                                                      |
 | `chrome.launch`                   | `true`                                   | Launch Chrome for the join; set `false` only when reusing an already-open session                                                                                                                                 |
 | `chrome.audioBackend`             | `"auto"`                                 | Selects `blackhole-2ch` on macOS or `pipewire-pulse` on Linux; set an explicit backend when a paired Chrome node uses a different OS than the Gateway                                                             |
-| `chrome.guestName`                | `"OpenClaw Agent"`                       | Shown on the signed-out Meet guest screen                                                                                                                                                                         |
+| `chrome.guestName`                | `"PASO Agent"`                           | Shown on the signed-out Meet guest screen                                                                                                                                                                         |
 | `chrome.autoJoin`                 | `true`                                   | Best-effort guest-name fill and Join Now click on `chrome-node`                                                                                                                                                   |
 | `chrome.reuseExistingTab`         | `true`                                   | Activates an existing Meet tab instead of opening duplicates                                                                                                                                                      |
 | `chrome.waitForInCallMs`          | `20000`                                  | Wait for the Meet tab to report in-call before the talk-back intro fires                                                                                                                                          |
 | `chrome.audioFormat`              | `"pcm16-24khz"`                          | Command-pair audio format; `"g711-ulaw-8khz"` is only for legacy/custom command pairs that emit telephony audio                                                                                                   |
 | `chrome.audioBufferBytes`         | `4096`                                   | Processing buffer used to derive generated command latency; values are clamped to a minimum of 17 bytes                                                                                                           |
-| `chrome.audioInputCommand`        | generated native command                 | SoX/CoreAudio on macOS; `parec` from the OpenClaw PipeWire-Pulse source on Linux                                                                                                                                  |
-| `chrome.audioOutputCommand`       | generated native command                 | SoX/CoreAudio on macOS; `pacat` into the OpenClaw PipeWire-Pulse sink on Linux                                                                                                                                    |
+| `chrome.audioInputCommand`        | generated native command                 | SoX/CoreAudio on macOS; `parec` from the PASO PipeWire-Pulse source on Linux                                                                                                                                      |
+| `chrome.audioOutputCommand`       | generated native command                 | SoX/CoreAudio on macOS; `pacat` into the PASO PipeWire-Pulse sink on Linux                                                                                                                                        |
 | `chrome.bargeInInputCommand`      | unset                                    | Optional local microphone command writing signed 16-bit little-endian mono PCM for human barge-in detection during assistant playback; applies to the Gateway-hosted command-pair bridge                          |
 | `chrome.bargeInRmsThreshold`      | `650`                                    | RMS level counted as human interruption                                                                                                                                                                           |
 | `chrome.bargeInPeakThreshold`     | `2500`                                   | Peak level counted as human interruption                                                                                                                                                                          |
@@ -716,7 +716,7 @@ The common Chrome agent path only needs the plugin enabled, BlackHole, SoX, a re
 | `realtime.toolPolicy`             | `"safe-read-only"`                       | See [Agent and bidi modes](#agent-and-bidi-modes)                                                                                                                                                                 |
 | `realtime.instructions`           | brief spoken-reply instructions          | Tells the model to speak briefly and use `openclaw_agent_consult` for deeper answers                                                                                                                              |
 | `realtime.introMessage`           | `"Say exactly: I'm here and listening."` | Spoken once when the realtime bridge connects; set to `""` to join silently                                                                                                                                       |
-| `realtime.agentId`                | `"main"`                                 | OpenClaw agent id used for `openclaw_agent_consult`                                                                                                                                                               |
+| `realtime.agentId`                | `"main"`                                 | PASO agent id used for `openclaw_agent_consult`                                                                                                                                                                   |
 | `voiceCall.enabled`               | `true`                                   | Delegates the Twilio PSTN call, DTMF, and intro greeting to the Voice Call plugin                                                                                                                                 |
 | `voiceCall.dtmfDelayMs`           | `12000`                                  | Leading wait before playing a PIN-derived DTMF sequence over Twilio                                                                                                                                               |
 | `voiceCall.postDtmfSpeechDelayMs` | `5000`                                   | Delay before requesting the realtime intro greeting after Voice Call starts the Twilio leg                                                                                                                        |
@@ -736,7 +736,7 @@ An `openclaw doctor --fix` migration exists for the legacy `realtime.provider: "
     defaultProfile: "openclaw",
   },
   chrome: {
-    guestName: "OpenClaw Agent",
+    guestName: "PASO Agent",
     waitForInCallMs: 30000,
     bargeInInputCommand: [
       "sox",
@@ -874,7 +874,7 @@ Agents use the `google_meet` tool:
 
 `test_speech` always forces `mode: "agent"` or `"bidi"` and fails if asked to run in `mode: "transcribe"`, because observe-only sessions cannot emit speech. `speechOutputVerified` requires both fresh realtime output bytes and fresh non-silent audio returning on the bridge's microphone capture path during that output. A reused session's older output or loopback signal does not count, and sink-byte growth alone no longer reports verified speech.
 
-For Chrome transports, `leave` keeps a reused user-owned tab open after clicking Meet's Leave call button. Tabs opened by OpenClaw are closed after departure.
+For Chrome transports, `leave` keeps a reused user-owned tab open after clicking Meet's Leave call button. Tabs opened by PASO are closed after departure.
 
 Use `transport: "chrome"` when Chrome runs on the Gateway host, `transport: "chrome-node"` when it runs on a paired node. In both cases the model providers and `openclaw_agent_consult` run on the Gateway host, so model credentials stay there. Agent-mode logs include the resolved transcription provider/model at bridge startup and the TTS provider/model/voice/output format/sample rate after each synthesized reply. Raw `mode: "realtime"` is still accepted as a legacy compatibility alias for `mode: "agent"`, but it is no longer advertised in the tool's `mode` enum.
 
@@ -926,7 +926,7 @@ Speaking on demand:
 | `inCall`                                                       | Chrome appears to be inside the Meet call                                                                              |
 | `micMuted`                                                     | Best-effort Meet microphone state                                                                                      |
 | `manualAction.reason` / `manualAction.message`                 | Browser profile needs manual login, Meet host admission, permissions, or browser-control repair before speech can work |
-| `speechReady` / `speechBlockedReason` / `speechBlockedMessage` | Whether managed Chrome speech is allowed now; `speechReady: false` means OpenClaw did not send the intro/test phrase   |
+| `speechReady` / `speechBlockedReason` / `speechBlockedMessage` | Whether managed Chrome speech is allowed now; `speechReady: false` means PASO did not send the intro/test phrase       |
 | `providerConnected` / `realtimeReady`                          | Realtime voice bridge state                                                                                            |
 | `lastInputAt` / `lastOutputAt`                                 | Last audio seen from/sent to the bridge                                                                                |
 | `audioInputRouted` / `audioInputDeviceLabel`                   | Whether Meet's microphone is the verified native virtual-audio input                                                   |
@@ -939,14 +939,14 @@ Speaking on demand:
 
 ## Agent and bidi modes
 
-| Mode    | Who decides the answer        | Speech output path                     | Use when                                              |
-| ------- | ----------------------------- | -------------------------------------- | ----------------------------------------------------- |
-| `agent` | The configured OpenClaw agent | Normal OpenClaw TTS runtime            | You want "my agent is in the meeting" behavior        |
-| `bidi`  | The realtime voice model      | Realtime voice provider audio response | You want the lowest-latency conversational voice loop |
+| Mode    | Who decides the answer    | Speech output path                     | Use when                                              |
+| ------- | ------------------------- | -------------------------------------- | ----------------------------------------------------- |
+| `agent` | The configured PASO agent | Normal PASO TTS runtime                | You want "my agent is in the meeting" behavior        |
+| `bidi`  | The realtime voice model  | Realtime voice provider audio response | You want the lowest-latency conversational voice loop |
 
-`agent` mode: the realtime transcription provider hears meeting audio, final participant transcripts route through the configured OpenClaw agent, and the answer is spoken through regular OpenClaw TTS. Nearby final-transcript fragments are coalesced before the consult so one spoken turn does not produce several stale partial answers; realtime input is suppressed while queued assistant audio is still playing, and recent assistant-like transcript echoes are ignored before the consult so BlackHole loopback does not make the agent answer its own speech.
+`agent` mode: the realtime transcription provider hears meeting audio, final participant transcripts route through the configured PASO agent, and the answer is spoken through regular PASO TTS. Nearby final-transcript fragments are coalesced before the consult so one spoken turn does not produce several stale partial answers; realtime input is suppressed while queued assistant audio is still playing, and recent assistant-like transcript echoes are ignored before the consult so BlackHole loopback does not make the agent answer its own speech.
 
-`bidi` mode: the realtime voice model answers directly and can call `openclaw_agent_consult` for deeper reasoning, current information, or normal OpenClaw tools. The consult tool runs the regular OpenClaw agent behind the scenes with recent meeting transcript context and returns a concise spoken answer; in `agent` mode OpenClaw sends that answer directly to TTS, in `bidi` mode the realtime voice model can speak it back. It uses the same shared consult machinery as Voice Call.
+`bidi` mode: the realtime voice model answers directly and can call `openclaw_agent_consult` for deeper reasoning, current information, or normal PASO tools. The consult tool runs the regular PASO agent behind the scenes with recent meeting transcript context and returns a concise spoken answer; in `agent` mode PASO sends that answer directly to TTS, in `bidi` mode the realtime voice model can speak it back. It uses the same shared consult machinery as Voice Call.
 
 By default consults run against the `main` agent; set `realtime.agentId` to point a Meet lane at a dedicated agent workspace, model defaults, tool policy, memory, and session history. Agent-mode consults use a per-meeting `agent:<id>:subagent:google-meet:<session>` session key so follow-up questions keep meeting context while inheriting normal agent policy. When an agent calls `google_meet` in agent mode, the consultant session forks the caller's current transcript before answering participant speech; the Meet session stays separate so meeting follow-ups do not mutate the caller transcript directly.
 
@@ -1091,17 +1091,17 @@ Run `googlemeet test-listen` for observe-only joins or `googlemeet test-speech` 
 
 Common manual actions: sign in to the Chrome profile; admit the guest from the Meet host account; grant Chrome microphone/camera permissions when the native prompt appears; close or repair a stuck Meet permission dialog.
 
-Do not report "not signed in" just because Meet asks "Do you want people to hear you in the meeting?"; that is Meet's audio-choice interstitial. OpenClaw clicks **Use microphone** through browser automation when available and keeps waiting for the real meeting state; for create-only browser fallback it may click **Continue without microphone** instead, since minting the URL does not need the realtime audio path.
+Do not report "not signed in" just because Meet asks "Do you want people to hear you in the meeting?"; that is Meet's audio-choice interstitial. PASO clicks **Use microphone** through browser automation when available and keeps waiting for the real meeting state; for create-only browser fallback it may click **Continue without microphone** instead, since minting the URL does not need the realtime audio path.
 
 ### Meeting creation fails
 
 `googlemeet create` uses the Meet API `spaces.create` when OAuth is configured, otherwise the pinned Chrome node browser. Confirm:
 
 - **API creation**: `oauth.clientId` and `oauth.refreshToken` (or matching `OPENCLAW_GOOGLE_MEET_*` env vars) are present, and the refresh token was minted after create support was added; older tokens may lack `meetings.space.created`, so rerun `openclaw googlemeet auth login --json`.
-- **Browser fallback**: `defaultTransport: "chrome-node"` and `chromeNode.node` point at a connected node with `browser.proxy` and `googlemeet.chrome`; the OpenClaw Chrome profile on that node is signed in and can open `https://meet.google.com/new`.
+- **Browser fallback**: `defaultTransport: "chrome-node"` and `chromeNode.node` point at a connected node with `browser.proxy` and `googlemeet.chrome`; the PASO Chrome profile on that node is signed in and can open `https://meet.google.com/new`.
 - **Browser fallback retries**: reuse an existing `.../new` or Google account prompt tab before opening a new one; retry the tool call rather than manually opening another tab.
 - **Manual action**: if the tool returns `manualAction`, use `browser.nodeId`, `browser.targetId`, `browserUrl`, and `manualAction.message` to guide the operator; do not retry in a loop.
-- **Audio-choice interstitial**: if Meet shows "Do you want people to hear you in the meeting?", leave the tab open. OpenClaw should click **Use microphone** or (create-only) **Continue without microphone** and keep waiting for the generated URL; if it cannot, the error should mention `meet-audio-choice-required`, not `google-login-required`.
+- **Audio-choice interstitial**: if Meet shows "Do you want people to hear you in the meeting?", leave the tab open. PASO should click **Use microphone** or (create-only) **Continue without microphone** and keep waiting for the generated URL; if it cannot, the error should mention `meet-audio-choice-required`, not `google-login-required`.
 
 ### Agent joins but does not talk
 
@@ -1110,9 +1110,9 @@ openclaw googlemeet setup
 openclaw googlemeet doctor
 ```
 
-Use `mode: "agent"` for the STT -> OpenClaw agent -> TTS path, `mode: "bidi"` for the direct realtime voice fallback. `mode: "transcribe"` intentionally starts no talk-back bridge. For observe-only debugging, run `openclaw googlemeet status --json <session-id>` after participants speak and check `captioning`, `transcriptLines`, `lastCaptionText`. If `inCall` is true but `transcriptLines` stays `0`, Meet captions may be disabled, no one has spoken since the observer was installed, the Meet UI changed, or live captions are unavailable for the meeting language/account.
+Use `mode: "agent"` for the STT -> PASO agent -> TTS path, `mode: "bidi"` for the direct realtime voice fallback. `mode: "transcribe"` intentionally starts no talk-back bridge. For observe-only debugging, run `openclaw googlemeet status --json <session-id>` after participants speak and check `captioning`, `transcriptLines`, `lastCaptionText`. If `inCall` is true but `transcriptLines` stays `0`, Meet captions may be disabled, no one has spoken since the observer was installed, the Meet UI changed, or live captions are unavailable for the meeting language/account.
 
-`googlemeet test-speech` always checks the realtime path and reports whether bridge output bytes were observed for that invocation. If `speechOutputVerified` is false and `speechOutputTimedOut` is true, the realtime provider may have accepted the utterance but OpenClaw did not see new output bytes reach the Chrome audio bridge.
+`googlemeet test-speech` always checks the realtime path and reports whether bridge output bytes were observed for that invocation. If `speechOutputVerified` is false and `speechOutputTimedOut` is true, the realtime provider may have accepted the utterance but PASO did not see new output bytes reach the Chrome audio bridge.
 
 Also verify: a realtime provider key (`OPENAI_API_KEY` or `GEMINI_API_KEY`) is available on the Gateway host; the native audio backend is ready on the Chrome host; and Meet mic/speaker are routed through the virtual audio path (`doctor` should show both input and output routed for local Chrome realtime joins).
 
@@ -1228,7 +1228,7 @@ Google Meet's official media API is receive-oriented, so speaking into a call st
 
 Chrome talk-back modes need a supported native virtual-audio backend plus either:
 
-- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: OpenClaw owns the bridge and pipes audio in `chrome.audioFormat` between those commands and the selected provider. `agent` mode uses realtime transcription plus regular TTS; `bidi` mode uses the realtime voice provider. The default path is 24 kHz PCM16 with `chrome.audioBufferBytes: 4096`; 8 kHz G.711 mu-law remains available for legacy command pairs.
+- `chrome.audioInputCommand` plus `chrome.audioOutputCommand`: PASO owns the bridge and pipes audio in `chrome.audioFormat` between those commands and the selected provider. `agent` mode uses realtime transcription plus regular TTS; `bidi` mode uses the realtime voice provider. The default path is 24 kHz PCM16 with `chrome.audioBufferBytes: 4096`; 8 kHz G.711 mu-law remains available for legacy command pairs.
 - `chrome.audioBridgeCommand`: an external bridge command owns the whole local audio path and must exit after starting or validating its daemon. Valid only for `bidi`, because `agent` mode needs direct command-pair access for TTS.
 
 With the command-pair Chrome bridge, `chrome.bargeInInputCommand` can listen to a separate local microphone and clear assistant playback when a human starts talking, keeping human speech ahead of assistant output even while the shared virtual loopback input is temporarily suppressed during assistant playback. Like `chrome.audioInputCommand`/`chrome.audioOutputCommand`, it is an operator-configured local command: use an explicit trusted command path or argument list, never a script from an untrusted location.

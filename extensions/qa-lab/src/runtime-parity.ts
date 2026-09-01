@@ -217,7 +217,8 @@ type RuntimeParityCaptureSources = {
 
 const DEFAULT_AGENT_ID = "qa";
 const HEARTBEAT_RESPONSE_TOOL_NAME = "heartbeat_respond";
-const HEARTBEAT_TRANSCRIPT_PROMPT = "[OpenClaw heartbeat poll]";
+const HEARTBEAT_TRANSCRIPT_PROMPT = "[PASO heartbeat poll]";
+const LEGACY_HEARTBEAT_TRANSCRIPT_PROMPT = "[OpenClaw heartbeat poll]";
 const HEARTBEAT_TASK_PROMPT_PREFIX =
   "Run the following periodic tasks (only those due based on their intervals):";
 const TOOL_RESULT_MISSING_ERROR_CLASS = "tool-result-missing";
@@ -988,7 +989,10 @@ function isHeartbeatRuntimeUserText(text: string) {
   if (!normalized) {
     return false;
   }
-  if (normalized === HEARTBEAT_TRANSCRIPT_PROMPT.toLowerCase()) {
+  if (
+    normalized === HEARTBEAT_TRANSCRIPT_PROMPT.toLowerCase() ||
+    normalized === LEGACY_HEARTBEAT_TRANSCRIPT_PROMPT.toLowerCase()
+  ) {
     return true;
   }
   if (normalized.startsWith("read heartbeat.md") && normalized.includes("heartbeat_ok")) {

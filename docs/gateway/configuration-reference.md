@@ -1,5 +1,5 @@
 ---
-summary: "Gateway config reference for core OpenClaw keys, defaults, and links to dedicated subsystem references"
+summary: "Gateway config reference for core PASO keys, defaults, and links to dedicated subsystem references"
 title: "Configuration reference"
 read_when:
   - You need exact field-level config semantics or defaults
@@ -9,7 +9,7 @@ doc-schema-version: 1
 
 Field-level reference for `~/.openclaw/openclaw.json`: keys, defaults, and links to deeper subsystem pages. For task-oriented setup guidance, see [Configuration](/gateway/configuration). Channel- and plugin-owned command catalogs and deep memory knobs live on their own pages, not here.
 
-Config format is **JSON5** (comments + trailing commas allowed). All fields are optional; OpenClaw uses safe defaults when omitted.
+Config format is **JSON5** (comments + trailing commas allowed). All fields are optional; PASO uses safe defaults when omitted.
 
 Code truth beats this page:
 
@@ -44,7 +44,7 @@ See [Configuration - agents](/gateway/config-agents) for:
 - `session.*` (session lifecycle, compaction, pruning)
 - `messages.*` (message delivery, TTS, markdown rendering)
 - `talk.*` (Talk mode)
-  - `talk.consultThinkingLevel`: thinking level override for the full OpenClaw agent run behind Control UI Talk realtime consults
+  - `talk.consultThinkingLevel`: thinking level override for the full PASO agent run behind Control UI Talk realtime consults
   - `talk.consultFastMode`: one-shot fast-mode override for Control UI Talk realtime consults
   - `talk.speechLocale`: optional BCP 47 locale id for Talk speech recognition on Android, iOS, and macOS, and for iOS system-voice fallback
   - `talk.silenceTimeoutMs`: when unset, Talk keeps the platform default pause window before sending the transcript (`700 ms on macOS and Android, 900 ms on iOS`)
@@ -65,10 +65,10 @@ The `models` root also owns global model-catalog behavior.
 ```json5
 {
   models: {
-    // Optional. Hosted catalog updates default on.
+    // Optional. Remote catalog updates are off until both fields are set.
     catalogRefresh: {
       enabled: true,
-      // url: "https://catalog.example.com/openclaw/catalog.json",
+      url: "https://catalog.example.com/paso/catalog.json",
     },
   },
 }
@@ -77,14 +77,14 @@ The `models` root also owns global model-catalog behavior.
 - `models.mode`: provider catalog behavior (`merge` or `replace`).
 - `models.providers`: custom provider map keyed by provider id.
 - `models.providers.*.localService`: optional on-demand process manager for
-  local model servers. OpenClaw probes the configured health endpoint, starts
+  local model servers. PASO probes the configured health endpoint, starts
   the absolute `command` when needed, waits for readiness, then sends the model
   request. See [Local model services](/gateway/local-model-services).
-- `models.catalogRefresh.enabled`: controls the hosted model catalog refresh
-  (default: `true`). Set it to `false` to prevent all remote catalog requests;
+- `models.catalogRefresh.enabled`: controls the remote model catalog refresh
+  (default: `false`). Set it to `true` together with an explicit URL to allow requests;
   model metadata and pricing then stay at the values shipped in the installed
-  release or declared under `models.providers.*.models[].cost`.
-- `models.catalogRefresh.url`: optional HTTPS mirror override (plain HTTP is
+  release or declared under `models.providers.*.models[].cost` when disabled.
+- `models.catalogRefresh.url`: required trusted HTTPS catalog URL (plain HTTP is
   accepted only for explicit localhost testing). The Gateway
   checks in the background at startup and every six hours. A downloaded catalog
   applies on the next Gateway restart; a release whose bundled catalog is newer
@@ -92,13 +92,13 @@ The `models` root also owns global model-catalog behavior.
 
 Pricing updates ship in the same hosted catalog file as model metadata. The
 retired `models.pricing` toggle is removed automatically by `openclaw doctor
---fix`; use `models.catalogRefresh.enabled: false` when OpenClaw must avoid all
-hosted catalog traffic.
+--fix`. PASO makes no remote catalog request unless refresh is explicitly
+enabled with a URL.
 
 ## MCP
 
-OpenClaw-managed MCP server definitions live under `mcp.servers` and are
-consumed by embedded OpenClaw and other runtime adapters. The `openclaw mcp list`,
+PASO-managed MCP server definitions live under `mcp.servers` and are
+consumed by embedded PASO and other runtime adapters. The `openclaw mcp list`,
 `show`, `set`, and `unset` commands manage this block without connecting to the
 target server during config edits.
 
@@ -148,13 +148,13 @@ target server during config edits.
   `type: "http"` is a CLI-native alias that `openclaw mcp set` and
   `openclaw doctor --fix` normalize into the canonical `transport` field.
 - `mcp.servers.<name>.enabled`: set `false` to keep a saved server definition
-  while excluding it from embedded OpenClaw MCP discovery and tool projection.
+  while excluding it from embedded PASO MCP discovery and tool projection.
 - `mcp.servers.<name>.requestTimeoutMs`: per-server MCP request timeout in milliseconds.
 - `mcp.servers.<name>.connectionTimeoutMs`: per-server connection timeout in milliseconds.
 - `mcp.servers.<name>.supportsParallelToolCalls`: optional concurrency hint for
   adapters that can choose whether to issue parallel MCP tool calls.
 - `mcp.servers.<name>.auth`: set `"oauth"` for HTTP MCP servers that require
-  OAuth. Run `openclaw mcp login <name>` to store tokens under OpenClaw state.
+  OAuth. Run `openclaw mcp login <name>` to store tokens under PASO state.
 - `mcp.servers.<name>.oauth`: optional OAuth scope, redirect URL, and client
   metadata URL overrides.
 - `mcp.servers.<name>.oauth.identity`: credential ownership. Omit it or set
@@ -171,13 +171,13 @@ target server during config edits.
   `resources_read`, `prompts_list`, `prompts_get`), and those names use the
   same filter.
 - `mcp.servers.<name>.codex`: optional Codex app-server projection controls.
-  This block is OpenClaw metadata for Codex app-server threads only; it does not
+  This block is PASO metadata for Codex app-server threads only; it does not
   affect ACP sessions, generic Codex harness config, or other runtime adapters.
-  Non-empty `codex.agents` limits the server to the listed OpenClaw agent ids.
+  Non-empty `codex.agents` limits the server to the listed PASO agent ids.
   Empty, blank, or invalid scoped agent lists are rejected by config validation
   and omitted by the runtime projection path instead of becoming global.
   `codex.defaultToolsApprovalMode` emits Codex's native
-  `default_tools_approval_mode` for that server. OpenClaw strips the `codex`
+  `default_tools_approval_mode` for that server. PASO strips the `codex`
   block before passing native `mcp_servers` config to Codex. Omit the block to
   keep the server projected for every Codex app-server agent with Codex's
   default MCP approval behavior.
@@ -237,7 +237,7 @@ See [MCP](/cli/mcp#openclaw-as-an-mcp-client-registry) and
   specs (`npm` | `pnpm` | `yarn` | `bun`).
 - `install.allowUploadedArchives`: allow trusted `operator.admin` Gateway
   clients to install private zip archives staged through `skills.upload.*`
-  (default: false). This only enables the uploaded-archive path; normal ClawHub
+  (default: false). This only enables the uploaded-archive path; normal external-catalog
   installs do not require it.
 - `entries.<skillKey>.enabled: false` disables a skill even if bundled/installed.
 - `entries.<skillKey>.apiKey`: convenience for skills declaring a primary env var (plaintext string or SecretRef object).
@@ -272,7 +272,7 @@ See [MCP](/cli/mcp#openclaw-as-an-mcp-client-registry) and
 
 - Loaded from package or bundle directories under `~/.openclaw/extensions` and `<workspace>/.openclaw/extensions`, plus files or directories listed in `plugins.load.paths`.
 - Put standalone plugin files in `plugins.load.paths`; auto-discovered extension roots ignore top-level `.js`, `.mjs`, and `.ts` files so helper scripts in those roots do not block startup.
-- Discovery accepts native OpenClaw plugins plus compatible Codex bundles and Claude bundles, including manifestless Claude default-layout bundles.
+- Discovery accepts native PASO plugins plus compatible Codex bundles and Claude bundles, including manifestless Claude default-layout bundles.
 - **Config changes require a gateway restart.**
 - `allow`: optional allowlist (only listed plugins load). `deny` wins.
 - `plugins.entries.<id>.apiKey`: plugin-level API key convenience field (when supported by the plugin).
@@ -286,8 +286,8 @@ See [MCP](/cli/mcp#openclaw-as-an-mcp-client-registry) and
 - `plugins.entries.<id>.llm.allowedCompletionModels`: optional allowlist applied to every plugin LLM completion, including host-resolved defaults and overrides. Use `"*"` only when you intentionally want to allow any model.
 - `plugins.entries.<id>.llm.allowAuthProfileOverride`: explicitly trust this plugin to select a non-default auth profile for isolated `api.runtime.llm.complete` execution. Direct `model@profile` calls remain governed by model-override policy.
 - `plugins.entries.<id>.llm.allowAgentIdOverride`: explicitly trust this plugin to run `api.runtime.llm.complete` against a non-default agent id.
-- `plugins.entries.<id>.config`: plugin-defined config object (validated by native OpenClaw plugin schema when available).
-- Channel plugin account/runtime settings live under `channels.<id>` and should be described by the owning plugin's manifest `channelConfigs` metadata, not by a central OpenClaw option registry.
+- `plugins.entries.<id>.config`: plugin-defined config object (validated by native PASO plugin schema when available).
+- Channel plugin account/runtime settings live under `channels.<id>` and should be described by the owning plugin's manifest `channelConfigs` metadata, not by a central PASO option registry.
 
 ### Codex harness plugin config
 
@@ -297,7 +297,7 @@ The bundled `codex` plugin owns native Codex app-server harness settings under
 surface and [Codex harness](/plugins/codex-harness) for the runtime model.
 
 `codexPlugins` applies only to sessions that select the native Codex harness.
-It does not enable Codex plugins for OpenClaw provider runs, ACP
+It does not enable Codex plugins for PASO provider runs, ACP
 conversation bindings, or any non-Codex harness.
 
 ```json5
@@ -335,7 +335,7 @@ conversation bindings, or any non-Codex harness.
 - `plugins.entries.codex.config.codexPlugins.allow_destructive_actions`:
   default destructive-action policy for configured plugin app elicitations.
   Use `true` to accept safe Codex approval schemas without prompting, `false`
-  to decline them, `"auto"` to route Codex-required approvals through OpenClaw
+  to decline them, `"auto"` to route Codex-required approvals through PASO
   plugin approvals, or `"ask"` to prompt for every plugin write/destructive
   action without durable approval. The `"ask"` mode clears durable Codex
   per-tool approval overrides for the affected app and selects the human
@@ -408,7 +408,7 @@ cannot be read, account-wide exposure fails closed.
   - `agents.entries.*.memory.search.*` for per-agent overrides
   - `memory.citations`
   - `plugins.entries.memory-core.config.dreaming`
-- Enabled Claude bundle plugins can also contribute embedded OpenClaw defaults from `settings.json`; OpenClaw applies those as sanitized agent settings, not as raw OpenClaw config patches.
+- Enabled Claude bundle plugins can also contribute embedded PASO defaults from `settings.json`; PASO applies those as sanitized agent settings, not as raw PASO config patches.
 - `plugins.slots.memory`: pick the active memory plugin id, or `"none"` to disable memory plugins.
 - `plugins.slots.contextEngine`: pick the active context engine plugin id; defaults to `"legacy"` unless you install and select another engine.
 
@@ -474,7 +474,7 @@ See [Plugins](/tools/plugin).
   remain eligible for idle and cap cleanup after restart. Chrome MCP uses
   process-local target handles, so cold existing-session records wait for
   lifecycle cleanup rather than risking an idle sweep against unattributable
-  post-restart activity. OpenClaw verifies the profile and browser instance
+  post-restart activity. PASO verifies the profile and browser instance
   before closing. Chrome MCP auto-connect, missing `/json/version` browser
   identity, and unresolved native targets remain fully process-local, so they
   are not automatically closed after a restart. Older untracked tabs require
@@ -487,28 +487,28 @@ See [Plugins](/tools/plugin).
 - In strict mode, use the wildcard-aware `ssrfPolicy.allowedHostnames` for exact-host and pattern exceptions.
 - Remote profiles are attach-only (start/stop/reset disabled).
 - `profiles.*.cdpUrl` accepts `http://`, `https://`, `ws://`, and `wss://`.
-  Use HTTP(S) when you want OpenClaw to discover `/json/version`; use WS(S)
+  Use HTTP(S) when you want PASO to discover `/json/version`; use WS(S)
   when your provider gives you a direct DevTools WebSocket URL.
 - If an externally managed CDP service is reachable through loopback, set that
-  profile's `attachOnly: true`; otherwise OpenClaw treats the loopback port as a
+  profile's `attachOnly: true`; otherwise PASO treats the loopback port as a
   local managed browser profile and may report local port ownership errors.
 - `existing-session` profiles use Chrome MCP instead of CDP and can attach on
   the selected host or through a connected browser node.
-- `extension` profiles use the authenticated OpenClaw Chrome extension relay.
+- `extension` profiles use the authenticated PASO Chrome extension relay.
   The relay owns its loopback endpoint, so these profiles do not accept
   `cdpUrl`. See [Chrome extension](/tools/chrome-extension).
 - `existing-session` profiles can set `userDataDir` to target a specific
   Chromium-based browser profile such as Brave or Edge.
 - `existing-session` profiles can set `cdpUrl` when Chrome is already running
   behind a DevTools HTTP(S) discovery endpoint or direct WS(S) endpoint. In that
-  mode OpenClaw passes the endpoint to Chrome MCP instead of using auto-connect;
+  mode PASO passes the endpoint to Chrome MCP instead of using auto-connect;
   `userDataDir` is ignored for Chrome MCP launch arguments.
 - `existing-session` profiles keep the current Chrome MCP route limits:
   snapshot/ref-driven actions instead of CSS-selector targeting, one-file upload
   hooks, no dialog timeout overrides, no `wait --load networkidle`, and no
   `responsebody`, PDF export, download interception, or batch actions.
 - Local managed `openclaw` profiles get a `cdpPort` allocated from the managed
-  range when OpenClaw creates the profile. A profile you declare by hand must
+  range when PASO creates the profile. A profile you declare by hand must
   set `cdpPort` itself, or `cdpUrl` for a remote CDP endpoint; the schema
   rejects an `openclaw` or `clawd` profile that sets neither.
 - Local managed profiles can set `executablePath` to override the global
@@ -600,7 +600,7 @@ default.
   memory for that connection. Managed mode always creates its own ephemeral
   password.
 
-OpenClaw connects only through loopback. An explicit `port` always selects
+PASO connects only through loopback. An explicit `port` always selects
 attach mode, and an existing RFB listener on port `5900` takes precedence over
 managed mode. Managed mode requires `Xtigervnc`, `tigervncpasswd`, and
 `startxfce4`; on Debian/Ubuntu, install
@@ -828,16 +828,16 @@ Gateway or node host and check `openclaw nodes pending` again.
   value, so repeated failures from one localhost origin do not automatically
   lock out a different origin.
 - `tailscale.mode`: `serve` (tailnet only, loopback bind) or `funnel` (public, requires auth).
-  OpenClaw holds the route as a foreground claim, so startup fails unless the
+  PASO holds the route as a foreground claim, so startup fails unless the
   route is active and the route is released when the Gateway stops. Named
   Tailscale Services are unsupported because the Tailscale CLI permits them
   only as persistent background routes.
 - `tailscale.preserveFunnel`: deprecated migration guard. When `true` and
-  `tailscale.mode = "serve"`, OpenClaw checks `tailscale funnel status` before
+  `tailscale.mode = "serve"`, PASO checks `tailscale funnel status` before
   re-applying Serve at startup. If that status cannot be inspected, startup
   fails before the ordinary Gateway listener opens. An external Funnel that
   still targets the ordinary Gateway port does not receive managed-ingress
-  provenance. OpenClaw leaves the external route unchanged and warns. The
+  provenance. PASO leaves the external route unchanged and warns. The
   route can use generic proxy attribution only through an explicitly configured
   `gateway.trustedProxies` source with a valid forwarded client address;
   Gateway-protected routes then require configured auth, while aggregate probes
@@ -850,21 +850,21 @@ Gateway or node host and check `openclaw nodes pending` again.
 - `controlUi.environment`: optional visual identity for distinguishing Gateway environments. Set `{ label: "edge", color: "amber" }` to show a matching top stripe, agent-avatar ring, environment pills, browser-title suffix, and tinted favicon. `label` is trimmed and must contain 1–24 characters. `color` must be `teal`, `amber`, `purple`, `coral`, `pink`, `blue`, `green`, `red`, or `gray`. The label and color are visible before sign-in; omit the setting to keep the default appearance unchanged.
 - `controlUi.github.token`: optional SecretRef-backed service credential for Control UI GitHub previews and project discovery. Prefer this explicit setting when the Gateway should own GitHub service access independently of its shared process environment. When omitted, the shipped `GH_TOKEN` then `GITHUB_TOKEN` process-environment fallback remains active. An explicitly configured but unavailable credential fails closed instead of using that fallback. Its exact environment or store name is excluded from agent execution; a custom name does not clear unrelated native `GH_TOKEN` or `GITHUB_TOKEN` values. This credential is separate from `tools.github` agent identities and does not create an OS-user security boundary.
 - `controlUi.toolTitles`: opt in to AI-generated purpose titles for tool calls in Control UI chat. Default: `false` (tool rendering stays fully deterministic with no background model calls). When enabled, the `chat.toolTitles` method labels complex calls through standard utility-model routing — the agent's `utilityModel` (an operator decision that may send bounded tool arguments to the chosen provider, like every utility task), or the session provider's declared small-model default (OpenAI → `gpt-5.6-luna`, Anthropic → `claude-haiku-4-5`) — and caches results in the per-agent state database so repeat views never re-bill. `utilityModel: \"\"` disables titles like every other utility task; titles never fall back to the primary model.
-- `controlUi.automaticallyFetchFavicons`: link favicons in Control UI chat. Default: `true`. The authenticated browser asks its same-origin Gateway for each hostname. The Gateway requests only `https://<hostname>/favicon.ico`, rejects IP literals and private/internal destinations, pins public DNS results, revalidates every redirect under the same strict SSRF policy, limits redirects/time/bytes/concurrency, validates the image, and returns a private-cacheable image blob. OpenClaw does not use Google or another favicon service for this flow. This discloses linked hostnames and the Gateway's network address to those destination sites. Set `false` to prevent the browser from requesting favicon routes and the Gateway from contacting link destinations.
+- `controlUi.automaticallyFetchFavicons`: link favicons in Control UI chat. Default: `true`. The authenticated browser asks its same-origin Gateway for each hostname. The Gateway requests only `https://<hostname>/favicon.ico`, rejects IP literals and private/internal destinations, pins public DNS results, revalidates every redirect under the same strict SSRF policy, limits redirects/time/bytes/concurrency, validates the image, and returns a private-cacheable image blob. PASO does not use Google or another favicon service for this flow. This discloses linked hostnames and the Gateway's network address to those destination sites. Set `false` to prevent the browser from requesting favicon routes and the Gateway from contacting link destinations.
 - `controlUi.dangerouslyAllowHostHeaderOriginFallback`: dangerous mode that enables Host-header origin fallback for deployments that intentionally rely on Host-header origin policy.
 - `cliAgents.enabled`: opt in to the experimental **CLI agents** group in the Control UI new-session model picker. Default: `false`. The group appears only when the Gateway advertises `sessions.catalog.list`, and it includes only catalog providers that support creating sessions. Selecting one opens the same catalog-target new-session flow used by the sidebar catalog action.
 
   Catalog providers can also advertise terminal-based session creation. The method is available only when Labs `cliAgents.enabled` is on, the Gateway terminal is available, and the selected provider exposes the capability. Callers supply `cwd`; create a fresh worktree first with `worktrees.create` when needed, because terminal start does not provision one.
 
 - `terminal.enabled`: the admin-scoped operator terminal. Default: `true`; set `false` to opt out. The terminal starts a host PTY in the selected agent workspace, inherits the Gateway process environment, and is refused for agents with `sandbox.mode: "all"`. Disable it on deployments where admin operators should not get a host shell; changing it restarts the Gateway and updates the Control UI content security policy.
-- `terminal.shell`: optional shell executable. When unset, OpenClaw uses `$SHELL` on Unix and `%ComSpec%` on Windows.
+- `terminal.shell`: optional shell executable. When unset, PASO uses `$SHELL` on Unix and `%ComSpec%` on Windows.
 - `terminal.detachedSessionTimeoutSeconds`: how long a terminal session survives after its connection drops (page reload, laptop sleep), staying reattachable via `terminal.attach` with its recent output replayed. Default: `300`. Set `0` to kill sessions the moment their connection drops. Detached sessions keep running their commands, so shorten this on shared or exposed hosts.
 - `remote.transport`: `ssh` (default) or `direct` (ws/wss). For `direct`, `remote.url` must be `wss://` for public hosts; plaintext `ws://` is accepted only for loopback, LAN, link-local, `.local`, `.ts.net`, and Tailscale CGNAT hosts.
 - `remote.remotePort`: gateway port on the remote SSH host. Defaults to `18789`; use this when the local tunnel port differs from the remote gateway port.
 - `remote.tlsFingerprint`: expected SHA-256 certificate fingerprint for a remote `wss://` Gateway. The macOS app applies it to both operator/control and companion-node connections. Without an explicit value, macOS records a first-use pin only after normal system trust succeeds.
 - `remote.sshHostKeyPolicy`: macOS SSH tunnel host-key policy. `strict` is the default and requires an already trusted key. `openssh` is an explicit opt-in to the effective OpenSSH configuration for managed aliases; review matching user and system SSH settings before using it. The macOS app and `configure-remote` reset this policy to `strict` when changing targets unless explicitly opted in again.
 - `gateway.remote.token` / `.password` are remote-client credential fields. They do not configure gateway auth by themselves.
-- `gateway.push.apns.relay.baseUrl`: base HTTPS URL for the external APNs relay used after relay-backed iOS builds publish registrations to the gateway. Public App Store builds use the hosted OpenClaw relay. Custom relay URLs must match a deliberately separate iOS build/deployment path whose relay URL points at that relay.
+- `gateway.push.apns.relay.baseUrl`: base HTTPS URL for the external APNs relay used after relay-backed iOS builds publish registrations to the gateway. The upstream-compatible public App Store build uses `https://ios-push-relay.openclaw.ai`, an upstream OpenClaw service that is not operated by PASO or Celaya Solutions Research. Custom relay URLs must match a deliberately separate iOS build/deployment path whose relay URL points at that relay.
 - `gateway.push.apns.relay.timeoutMs`: gateway-to-relay send timeout in milliseconds. Defaults to `10000`.
 - Relay-backed registrations are delegated to a specific gateway identity. The paired iOS app fetches `gateway.identity.get`, includes that identity in the relay registration, and forwards a registration-scoped send grant to the gateway. Another gateway cannot reuse that stored registration.
 - `OPENCLAW_APNS_RELAY_BASE_URL` / `OPENCLAW_APNS_RELAY_TIMEOUT_MS`: temporary env overrides for the relay config above.
@@ -964,15 +964,15 @@ Reload debounce and in-flight operation deferral are no longer configurable and 
 
 ## Cloud worker environments
 
-Cloud workers are opt-in. If `cloudWorkers` is absent, or `profiles` is empty, OpenClaw accepts no new cloud-worker creation and does not advertise a Cloud destination. `sessions.dispatch` may remain available for eligible paired-device targets. The config schema and read-only `environments.list` and `environments.status` methods remain available. Durable records created earlier still reconcile and remain visible; the existing gateway/node projection is unchanged.
+Cloud workers are opt-in. If `cloudWorkers` is absent, or `profiles` is empty, PASO accepts no new cloud-worker creation and does not advertise a Cloud destination. `sessions.dispatch` may remain available for eligible paired-device targets. The config schema and read-only `environments.list` and `environments.status` methods remain available. Durable records created earlier still reconcile and remain visible; the existing gateway/node projection is unchanged.
 
 SSH-backed `remote-exec` providers must return a trusted `hostKey` as exactly `algorithm base64`, without a hostname or comment. Bootstrap writes that key to an isolated `known_hosts` file, uses `StrictHostKeyChecking=yes`, and fails before opening a connection when the provider omits it. There is no trust-on-first-use fallback. These providers also carry workspace traffic over separate pinned SSH connections so rsync cannot block control traffic.
 
-Node-backed providers return an authenticated node device id for either `worker-turn` or `remote-exec`. The Gateway installs the current pinned bundle and transfers the workspace through the node transport; these leases do not return or resolve OpenClaw SSH endpoint credentials. `worker-turn` requires a node lease and launches a restricted OpenClaw worker child. `remote-exec` can use either an enrolled node or an existing SSH-backed provider and keeps the harness plus model authentication on the Gateway.
+Node-backed providers return an authenticated node device id for either `worker-turn` or `remote-exec`. The Gateway installs the current pinned bundle and transfers the workspace through the node transport; these leases do not return or resolve PASO SSH endpoint credentials. `worker-turn` requires a node lease and launches a restricted PASO worker child. `remote-exec` can use either an enrolled node or an existing SSH-backed provider and keeps the harness plus model authentication on the Gateway.
 
 ### Crabbox profile
 
-The bundled `crabbox` provider provisions a disposable machine through the local Crabbox CLI, enrolls it as an ephemeral outbound node, and returns the same node transport for OpenClaw `worker-turn` or Codex `remote-exec`. One configured profile can therefore be selected by both harnesses; the selected session runtime determines its execution semantics. The inner `settings.provider` selects the Crabbox backend; it is separate from the outer OpenClaw provider id.
+The bundled `crabbox` provider provisions a disposable machine through the local Crabbox CLI, enrolls it as an ephemeral outbound node, and returns the same node transport for PASO `worker-turn` or Codex `remote-exec`. One configured profile can therefore be selected by both harnesses; the selected session runtime determines its execution semantics. The inner `settings.provider` selects the Crabbox backend; it is separate from the outer PASO provider id.
 
 ```json5
 {
@@ -1004,16 +1004,16 @@ The bundled `crabbox` provider provisions a disposable machine through the local
 ```
 
 - `settings.provider` (required): backend from the [Crabbox provider reference](https://crabbox.sh/providers/index.html), passed through `--provider`. Direct or coordinator-backed operation follows Crabbox's configuration.
-- `settings.class`: optional Crabbox machine class passed to `--class`. Omission leaves selection to Crabbox unless the placement supplies `machineClass`; OpenClaw does not invent a default or hardware size. Explicit `null`, empty or whitespace strings, and nonstring values are invalid. Edit classless profiles through **Settings → Advanced**.
+- `settings.class`: optional Crabbox machine class passed to `--class`. Omission leaves selection to Crabbox unless the placement supplies `machineClass`; PASO does not invent a default or hardware size. Explicit `null`, empty or whitespace strings, and nonstring values are invalid. Edit classless profiles through **Settings → Advanced**.
 - `settings.ttl` and `settings.idleTimeout` (required): positive Go duration strings passed to `--ttl` and `--idle-timeout` as provider-side failsafes.
 - `settings.warmImage`: prepares a project's committed checkout and node runtime for capture before enrollment, then starts later workers for that project and profile from the image. Without a prepared Git project, capture remains at eligible worker teardown. Pair with `suspendAfter` so suspended sessions can wake warm. Enabled by default when a configured or placement class is known and `setupEnv` is empty or omitted. Without an effective class, omission stays cold. A nonempty `setupEnv` keeps the default cold because forwarded host environment could leave setup-derived credentials in a shared image. Explicit `true` opts in but requires a known effective class before provider commands; explicit `false` always stays cold. The resolved class and original cold/checkpoint choice are recorded before allocation and remain fixed through retries and restart. Images incur provider snapshot storage charges and retain machine-level caches, including pristine Git seeds, alongside whatever `setup` wrote outside scrubbed worker state. Scrubbing has a three-minute timeout; checkpoint creation has a separate three-minute timeout, ten on `machine0`. An uncertain project capture blocks enrollment on its source but still permits lease cleanup. See [Warm images](/gateway/cloud-workers#warm-images) for refresh, retention, and Doctor migration and recovery.
-- `settings.binary`: optional absolute Crabbox executable path. Without it, OpenClaw checks the sibling Crabbox checkout, then executable entries on `PATH`, and finally invokes `crabbox` so a missing CLI remains a visible provider error.
+- `settings.binary`: optional absolute Crabbox executable path. Without it, PASO checks the sibling Crabbox checkout, then executable entries on `PATH`, and finally invokes `crabbox` so a missing CLI remains a visible provider error.
 
-Unknown settings are rejected. Crabbox credentials and backend-specific account configuration remain owned by Crabbox; do not place them in `settings`. OpenClaw invokes only the local CLI and makes no provider network calls from this plugin. Provisioning passes one deterministic canonical lease ID through `--lease-id`, keeps `--slug` as display metadata only, and always passes `--keep=true`; OpenClaw owns the external lifecycle and destroys the lease with `crabbox stop --id <canonical-id>`. After an ambiguous result, Gateway reconciliation repeats the same fixed-ID operation. Crabbox must return the exactly attested lease or fail closed; OpenClaw never falls back to slug adoption or replacement allocation.
+Unknown settings are rejected. Crabbox credentials and backend-specific account configuration remain owned by Crabbox; do not place them in `settings`. PASO invokes only the local CLI and makes no provider network calls from this plugin. Provisioning passes one deterministic canonical lease ID through `--lease-id`, keeps `--slug` as display metadata only, and always passes `--keep=true`; PASO owns the external lifecycle and destroys the lease with `crabbox stop --id <canonical-id>`. After an ambiguous result, Gateway reconciliation repeats the same fixed-ID operation. Crabbox must return the exactly attested lease or fail closed; PASO never falls back to slug adoption or replacement allocation.
 
-Provider support and backend-specific setup belong to [Crabbox](https://crabbox.sh/providers/index.html). Configure credentials, coordinator access, networking, and snapshots there rather than duplicating them in OpenClaw settings. The installed backend must satisfy OpenClaw's [cloud-worker lifecycle requirements](/gateway/cloud-workers#crabbox-provider-support).
+Provider support and backend-specific setup belong to [Crabbox](https://crabbox.sh/providers/index.html). Configure credentials, coordinator access, networking, and snapshots there rather than duplicating them in PASO settings. The installed backend must satisfy PASO's [cloud-worker lifecycle requirements](/gateway/cloud-workers#crabbox-provider-support).
 
-Crabbox setup uses an environment-owned one-use pairing credential and the configured public Gateway URL. The provider returns the exact authenticated node id; the Gateway then installs its current bundle and transfers the workspace through authenticated node routes. For Codex remote execution, Crabbox prepares the bundled Codex plugin and pinned managed binary in the node's private state, and the Gateway requires the explicitly allowed `codex.exec-server.stdio.v1` command plus critical allow-once approval for each attempt. No OpenClaw worker child or worker slot is used in that mode. OpenClaw does not persist Crabbox SSH endpoint, key, host-key, or fallback-port output.
+Crabbox setup uses an environment-owned one-use pairing credential and the configured public Gateway URL. The provider returns the exact authenticated node id; the Gateway then installs its current bundle and transfers the workspace through authenticated node routes. For Codex remote execution, Crabbox prepares the bundled Codex plugin and pinned managed binary in the node's private state, and the Gateway requires the explicitly allowed `codex.exec-server.stdio.v1` command plus critical allow-once approval for each attempt. No PASO worker child or worker slot is used in that mode. PASO does not persist Crabbox SSH endpoint, key, host-key, or fallback-port output.
 
 <Note>
   AWS admission requires `providerMetadata.instanceProfileAttached` to be false. Install Crabbox 0.41.1 or newer for the fixed-ID replay and closed inspection contracts.
@@ -1061,8 +1061,8 @@ Profile changes require a Gateway restart. With the default `gateway.reload.mode
 
 <Warning>
   The `static-ssh` provider is a source-tree QA Lab `remote-exec` harness and is excluded from packaged distributions. A worker running on its shared host can read unrelated host data, so do not use this provider as a production isolation boundary.
-  Its operator must supply the expected `hostKey`; OpenClaw will not learn or accept a key from the first connection.
-  Destroying its lease only releases OpenClaw's logical record; it does not stop or clean the host.
+  Its operator must supply the expected `hostKey`; PASO will not learn or accept a key from the first connection.
+  Destroying its lease only releases PASO's logical record; it does not stop or clean the host.
 </Warning>
 
 ---
@@ -1263,6 +1263,7 @@ workspace skill directories; move invalid modules there or remove an invalid
 ### Hook retries and fan-out
 
 Agent replay keys resolve in this order: `Idempotency-Key`,
+`X-PASO-Idempotency-Key`, the legacy compatibility header
 `X-OpenClaw-Idempotency-Key`, then payload `idempotencyKey`. Only trimmed nonempty
 strings of at most 256 characters are used. The same key replays only for the
 same token, path, and resolved dispatch fields; changing the message or routing
@@ -1345,10 +1346,10 @@ example and must be available to the reader. Gmail fields:
 | `hooks.gmail` field          | Runtime default              | Contract                                                                                                                                                      |
 | ---------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `account`                    | required                     | Gmail account already authorized in `gog`.                                                                                                                    |
-| `label`                      | `"INBOX"`                    | Gmail label to watch. OpenClaw excludes `SPAM`, `TRASH`, `DRAFT`, and `SENT` when launching the watcher.                                                      |
+| `label`                      | `"INBOX"`                    | Gmail label to watch. PASO excludes `SPAM`, `TRASH`, `DRAFT`, and `SENT` when launching the watcher.                                                          |
 | `topic`                      | required                     | Full Pub/Sub topic path. Setup can provision the `gog-gmail-watch` topic.                                                                                     |
 | `subscription`               | `"gog-gmail-watch-push"`     | Pub/Sub subscription used by setup.                                                                                                                           |
-| `pushToken`                  | required                     | Authenticates incoming pushes to the watcher. Separate from `hooks.token`, which authenticates forwarding to OpenClaw. Setup generates one if absent.         |
+| `pushToken`                  | required                     | Authenticates incoming pushes to the watcher. Separate from `hooks.token`, which authenticates forwarding to PASO. Setup generates one if absent.             |
 | `hookUrl`                    | local Gateway `/hooks/gmail` | Forwarding URL built from `hooks.path` and Gateway port unless configured.                                                                                    |
 | `includeBody`                | `true`                       | Include email body snippets. Set `false` in config to omit them.                                                                                              |
 | `maxBytes`                   | `20000`                      | Positive integer per-message body limit passed to the watcher. Also used to derive the Gmail HTTP body allowance.                                             |
@@ -1575,7 +1576,7 @@ Validation:
 Notes:
 
 - `file` provider supports `mode: "json"` and `mode: "singleValue"` (`id` must be `"value"` in singleValue mode).
-- File and exec provider paths fail closed when Windows ACL verification is unavailable. Use paths whose ACLs OpenClaw can verify; there is no provider-level bypass.
+- File and exec provider paths fail closed when Windows ACL verification is unavailable. Use paths whose ACLs PASO can verify; there is no provider-level bypass.
 - `exec` provider requires an absolute `command` path and uses protocol payloads on stdin/stdout.
 - Symlink command paths are rejected. Configure the resolved absolute binary path instead; it must not be group- or world-writable and, on POSIX, must be owned by the current user.
 - If `trustedDirs` is configured, the command path (after `~` expansion) must be inside an approved directory; symlinked commands are rejected before this check, so the configured path itself is what `trustedDirs` constrains.
@@ -1691,7 +1692,7 @@ writer is best-effort, not a lossless compliance archive.
 - Set `logging.file` for a stable path.
 - `consoleLevel` bumps to `debug` when `--verbose`.
 - `consoleStyle`: `"pretty"` or `"json"`. The earlier `"compact"` value is retired; [`openclaw doctor --fix`](/cli/doctor) maps it to `"pretty"`.
-- `maxFileBytes`: maximum active log file size in bytes before rotation (positive integer; default: `104857600` = 100 MB). OpenClaw keeps up to five numbered archives beside the active file.
+- `maxFileBytes`: maximum active log file size in bytes before rotation (positive integer; default: `104857600` = 100 MB). PASO keeps up to five numbered archives beside the active file.
 - `redactPatterns`: regexes for best-effort masking of console output, file logs, OTLP log records, and persisted session transcript text. Setting this **replaces** the built-in default patterns for log and transcript output, so include the defaults you still want; omitting them also turns off form-body and structured auth-header redaction. Tool payload redaction is separate and always merges your patterns with the defaults.
 - Redaction is always on and is no longer configurable. [`openclaw doctor --fix`](/cli/doctor) removes the retired switch from older config files; the runtime always applies `tools`-mode redaction to logs and transcripts. UI, tool, and diagnostic safety surfaces redact secrets independently of this policy.
 
@@ -1744,7 +1745,7 @@ writer is best-effort, not a lossless compliance archive.
 - `otel.flushIntervalMs`: periodic telemetry flush interval in ms.
 - `otel.captureContent`: opt-in content capture for OTEL span attributes. Defaults to off. `true` captures non-system visible message, tool, and tool-definition content plus OTLP log bodies; provider-internal thinking payloads remain excluded.
 - `OTEL_SEMCONV_STABILITY_OPT_IN=gen_ai_latest_experimental`: environment toggle for latest experimental GenAI inference span shape, including `{gen_ai.operation.name} {gen_ai.request.model}` span names, `CLIENT` span kind, and `gen_ai.provider.name` instead of legacy `gen_ai.system`. By default spans keep `openclaw.model.call` and `gen_ai.system` for compatibility; GenAI metrics use bounded semantic attributes.
-- `OPENCLAW_OTEL_PRELOADED=1`: environment toggle for hosts that already registered a global OpenTelemetry SDK. OpenClaw then skips plugin-owned SDK startup/shutdown while keeping diagnostic listeners active.
+- `OPENCLAW_OTEL_PRELOADED=1`: environment toggle for hosts that already registered a global OpenTelemetry SDK. PASO then skips plugin-owned SDK startup/shutdown while keeping diagnostic listeners active.
 - `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT`, and `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT`: signal-specific endpoint env vars used when the matching config key is unset.
 - `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL`, `OTEL_EXPORTER_OTLP_METRICS_PROTOCOL`, and `OTEL_EXPORTER_OTLP_LOGS_PROTOCOL`: signal-specific protocol fallbacks used when `otel.protocol` is unset. Each overrides `OTEL_EXPORTER_OTLP_PROTOCOL` for its signal.
 - `OTEL_EXPORTER_OTLP_PROTOCOL`: shared protocol fallback used when neither `otel.protocol` nor the matching signal-specific variable is set. Only `http/protobuf` is supported. Protocol validation is isolated per signal, so an unsupported resolved value disables that signal's OTLP exporter without blocking supported sibling signals. Doctor does not rewrite environment variables.
@@ -1763,10 +1764,10 @@ writer is best-effort, not a lossless compliance archive.
 }
 ```
 
-- `enabled`: include anonymous channel names, provider families, plugin count, and recent session count in the existing daily update-check request (default: `false`). Interactive setup offers an explicit opt-in with **No thanks** selected by default; non-interactive setup never enables it. `DO_NOT_TRACK=1` or `DO_NOT_TRACK=true` always disables feature statistics without disabling the update check.
+- `enabled`: include anonymous channel names, provider families, plugin count, and recent session count in a request to the operator-configured telemetry endpoint (default: `false`). Interactive setup offers an explicit opt-in with **No thanks** selected by default; non-interactive setup never enables it. `DO_NOT_TRACK=1` or `DO_NOT_TRACK=true` always disables feature statistics without disabling a configured update check.
 - `consentedAt`: ISO timestamp recording when the operator accepted or declined feature statistics. Prevents interactive setup from asking again.
 - `openclaw telemetry show` displays the exact current request; `openclaw telemetry on` and `openclaw telemetry off` update the preference and consent timestamp.
-- `OPENCLAW_TELEMETRY_ENDPOINT`: optional full endpoint URL for testing or a self-hosted service. Defaults to `https://telemetry.openclaw.ai/api/latest-version`.
+- `OPENCLAW_TELEMETRY_ENDPOINT`: complete endpoint URL for a service the operator trusts. PASO has no default telemetry endpoint and sends no telemetry-based update request when this variable is unset. The inherited `telemetry.openclaw.ai` service is upstream OpenClaw infrastructure, not a PASO or Celaya Solutions Research service.
 
 See [Usage telemetry and update checks](/gateway/telemetry) for the complete payload, privacy guarantees, and all opt-out controls.
 
@@ -1788,7 +1789,7 @@ See [Usage telemetry and update checks](/gateway/telemetry) for the complete pay
 ```
 
 - `channel`: release channel - `"stable"`, `"extended-stable"`, `"beta"`, or `"dev"`. Extended-stable is package-only: foreground commands own installation, while the Gateway may emit read-only update hints.
-- `checkOnStart`: check for updates through `https://telemetry.openclaw.ai/api/latest-version` when the Gateway starts and at most once every 24 hours afterward (default: `true`). The default request shares only the OpenClaw version and platform information in its `User-Agent`; anonymous feature statistics are included only when `telemetry.enabled` is `true`. Setting this to `false`, or setting `OPENCLAW_NO_AUTO_UPDATE=1`, prevents all automatic update requests, feature statistics, and update notices, even when `auto.enabled` is `true`. Stored extended-stable selections use the same read-only hint and 24-hour hint schedule.
+- `checkOnStart`: when `OPENCLAW_TELEMETRY_ENDPOINT` is configured, check that endpoint when the Gateway starts and at most once every 24 hours afterward (default: `true`). With no endpoint, PASO sends nothing. The request shares only the PASO version and platform information in its `User-Agent`; anonymous feature statistics are included only when `telemetry.enabled` is `true`. Setting this to `false`, or setting `OPENCLAW_NO_AUTO_UPDATE=1`, prevents all automatic update requests, feature statistics, and update notices, even when `auto.enabled` is `true`. Stored extended-stable selections use the same read-only hint and 24-hour hint schedule.
 - `auto.enabled`: enable background auto-update campaigns for stable and beta package installs and dev git installs when `checkOnStart` is also enabled (default: `false`). Extended-stable never applies automatically.
 
 ---
@@ -2013,8 +2014,8 @@ Split config into multiple files:
 - Nested includes: up to 10 levels deep.
 - Paths: resolved relative to the including file, but must stay inside the top-level config directory (`dirname` of `openclaw.json`). Absolute/`../` forms are allowed only when they still resolve inside that boundary. Set `OPENCLAW_INCLUDE_ROOTS` (absolute paths) to allow additional roots outside the config directory.
 - Limits: paths must not contain null bytes and must be strictly shorter than 4096 characters before and after resolution; each included file is capped at 2 MB.
-- OpenClaw-owned writes that change only one top-level section backed by a single-file include write through to that included file. For example, `plugins install` updates `plugins: { $include: "./plugins.json5" }` in `plugins.json5` and leaves `openclaw.json` intact.
-- Root includes, include arrays, and includes with sibling overrides are read-only for OpenClaw-owned writes; those writes fail closed instead of flattening the config.
+- PASO-owned writes that change only one top-level section backed by a single-file include write through to that included file. For example, `plugins install` updates `plugins: { $include: "./plugins.json5" }` in `plugins.json5` and leaves `openclaw.json` intact.
+- Root includes, include arrays, and includes with sibling overrides are read-only for PASO-owned writes; those writes fail closed instead of flattening the config.
 - Errors: clear messages for missing files, parse errors, circular includes, invalid path format, and excessive length.
 
 ---

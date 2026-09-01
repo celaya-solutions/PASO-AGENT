@@ -1,5 +1,5 @@
 ---
-summary: "Frequently asked questions about OpenClaw setup, configuration, and usage"
+summary: "Frequently asked questions about PASO setup, configuration, and usage"
 read_when:
   - Answering common setup, install, onboarding, or runtime support questions
   - Triaging user-reported issues before deeper debugging
@@ -66,14 +66,14 @@ Quick answers plus deeper troubleshooting for real-world setups (local dev, VPS,
 
 First-run Q&A - install, onboard, auth routes, subscriptions, initial failures - lives on the [First-run FAQ](/help/faq-first-run).
 
-## What is OpenClaw?
+## What is PASO?
 
 <AccordionGroup>
-  <Accordion title="What is OpenClaw, in one paragraph?">
-    OpenClaw is an AI assistant you run on your own infrastructure - for yourself, or shared with your team. It replies on the messaging surfaces you already use (Discord, Google Chat, iMessage, Mattermost, Signal, Slack, Telegram, WebChat, WhatsApp, and bundled channel plugins such as QQ Bot) and can also do voice plus hosted widgets in chat, on session dashboards, and in the macOS panel. The **Gateway** is the always-on control plane; the assistant is the product. The same gateway scales from one person's WhatsApp to a shared workspace bot with [multi-user sessions](/concepts/multi-user).
+  <Accordion title="What is PASO, in one paragraph?">
+    PASO is an AI assistant you run on your own infrastructure - for yourself, or shared with your team. It replies on the messaging surfaces you already use (Discord, Google Chat, iMessage, Mattermost, Signal, Slack, Telegram, WebChat, WhatsApp, and bundled channel plugins such as QQ Bot) and can also do voice plus hosted widgets in chat, on session dashboards, and in the macOS panel. The **Gateway** is the always-on control plane; the assistant is the product. The same gateway scales from one person's WhatsApp to a shared workspace bot with [multi-user sessions](/concepts/multi-user).
   </Accordion>
 
-  <Accordion title="Can my team share one OpenClaw?">
+  <Accordion title="Can my team share one PASO?">
     Yes. A shared gateway is a supported, first-class deployment: sessions carry an immutable creator, an assignable owner, and the people who prompted them; the Control UI shows who is viewing and typing in real time; and commits from shared sessions can carry `Co-authored-by` trailers for the people who steered them. [Named operator roles](/gateway/operator-scopes#named-operator-roles) bound what each teammate can do.
 
     One boundary to respect: a gateway is one trust domain. Share it with people who trust each other; mutually adversarial users need separate gateways. See [Team setup](/start/teams), [Multi-user mode](/concepts/multi-user), and [Security](/gateway/security).
@@ -81,7 +81,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   </Accordion>
 
   <Accordion title="Value proposition">
-    OpenClaw is not "just a Claude wrapper." It is a **local-first control plane** that runs a capable assistant on **your own hardware**, reachable from the chat apps you already use, with stateful sessions, memory, and tools - without handing your workflows to a hosted SaaS.
+    PASO is not "just a Claude wrapper." It is a **local-first control plane** that runs a capable assistant on **your own hardware**, reachable from the chat apps you already use, with stateful sessions, memory, and tools - without handing your workflows to a hosted SaaS.
 
     - **Your devices, your data**: run the Gateway wherever you want (Mac, Linux, VPS) and keep the workspace and session history local.
     - **Real channels, not a web sandbox**: Discord/iMessage/Signal/Slack/Telegram/WhatsApp/etc, plus mobile voice and hosted widgets.
@@ -101,7 +101,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="What are the top five everyday use cases for OpenClaw?">
+  <Accordion title="What are the top five everyday use cases for PASO?">
     - **Personal briefings**: summaries of inbox, calendar, and news you care about.
     - **Research and drafting**: quick research, summaries, and first drafts for emails or docs.
     - **Reminders and follow-ups**: cron- or heartbeat-driven nudges and checklists.
@@ -110,17 +110,17 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Can OpenClaw help with lead gen, outreach, ads, and blogs for a SaaS?">
+  <Accordion title="Can PASO help with lead gen, outreach, ads, and blogs for a SaaS?">
     Yes, for **research, qualification, and drafting**: scanning sites, building shortlists, summarizing prospects, writing outreach or ad copy drafts.
 
-    For **outreach or ad runs**, keep a human in the loop. Avoid spam, follow local laws and platform policies, and review anything before it sends. Let OpenClaw draft; you approve.
+    For **outreach or ad runs**, keep a human in the loop. Avoid spam, follow local laws and platform policies, and review anything before it sends. Let PASO draft; you approve.
 
     Docs: [Security](/gateway/security).
 
   </Accordion>
 
   <Accordion title="What are the advantages vs Claude Code for web development?">
-    OpenClaw is an **assistant and coordination layer**, not an IDE replacement. Use Claude Code or Codex for the fastest direct coding loop inside a repo. Use OpenClaw for durable memory, cross-device access, and tool orchestration.
+    PASO is an **assistant and coordination layer**, not an IDE replacement. Use Claude Code or Codex for the fastest direct coding loop inside a repo. Use PASO for durable memory, cross-device access, and tool orchestration.
 
     - Persistent memory and workspace across sessions.
     - Multi-platform access (Telegram, WhatsApp, TUI, WebChat).
@@ -128,7 +128,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
     - Always-on Gateway (run on a VPS, interact from anywhere).
     - Nodes for local browser/screen/camera/exec.
 
-    Showcase: [https://openclaw.ai/showcase](https://openclaw.ai/showcase).
+    PASO use cases: [Showcase](/start/showcase).
 
   </Accordion>
 </AccordionGroup>
@@ -141,7 +141,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   </Accordion>
 
   <Accordion title="Can I load skills from a custom folder?">
-    Yes: add directories via `skills.load.extraDirs` in `~/.openclaw/openclaw.json` (lowest precedence in the order above). `clawhub` installs into `./skills` by default, which OpenClaw treats as `<workspace>/skills` on the next session. To limit visibility to certain agents, pair with `agents.defaults.skills` or `agents.entries.*.skills`.
+    Yes: add directories via `skills.load.extraDirs` in `~/.openclaw/openclaw.json` (lowest precedence in the order above). `clawhub` installs into `./skills` by default, which PASO treats as `<workspace>/skills` on the next session. To limit visibility to certain agents, pair with `agents.defaults.skills` or `agents.entries.*.skills`.
   </Accordion>
 
   <Accordion title="How can I use different models or settings for different tasks?">
@@ -211,10 +211,10 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
     Check the resolved requester route:
 
     - Completion-mode subagent delivery prefers a bound thread or conversation route when one exists.
-    - If the completion origin only carries a channel, OpenClaw falls back to the requester session's stored route (`lastChannel` / `lastTo` / `lastAccountId`) so direct delivery can still succeed.
+    - If the completion origin only carries a channel, PASO falls back to the requester session's stored route (`lastChannel` / `lastTo` / `lastAccountId`) so direct delivery can still succeed.
     - No bound route and no usable stored route: direct delivery can fail and the result falls back to queued session delivery instead of posting immediately.
     - Invalid or stale targets can also force queue fallback or final delivery failure.
-    - If the child's last visible assistant reply is exactly `NO_REPLY` / `no_reply` or `ANNOUNCE_SKIP`, OpenClaw intentionally suppresses the announce instead of posting stale earlier progress.
+    - If the child's last visible assistant reply is exactly `NO_REPLY` / `no_reply` or `ANNOUNCE_SKIP`, PASO intentionally suppresses the announce instead of posting stale earlier progress.
 
     Debug: `openclaw tasks show <lookup>` where `<lookup>` is a task id, run id, or session key.
 
@@ -295,7 +295,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Can OpenClaw run tasks on a schedule or continuously in the background?">
+  <Accordion title="Can PASO run tasks on a schedule or continuously in the background?">
     Yes, via the Gateway scheduler:
 
     - **Cron jobs** for scheduled or recurring tasks (persist across restarts).
@@ -313,7 +313,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
     **Option A - run the Gateway on a Mac (simplest)**. Run the Gateway where the macOS binaries exist, then connect from Linux in [remote mode](#gateway-ports-already-running-and-remote-mode) or over Tailscale. Skills load normally because the Gateway host is macOS.
 
-    **Option B - use a macOS node (no SSH)**. Run the Gateway on Linux, pair a macOS node (menubar app), and set **Node Run Commands** to "Always Ask" or "Always Allow" on the Mac. OpenClaw treats macOS-only skills as eligible when required binaries exist on the node; the agent runs them via the `nodes` tool. With "Always Ask," approving "Always Allow" in the prompt adds that command to the allowlist.
+    **Option B - use a macOS node (no SSH)**. Run the Gateway on Linux, pair a macOS node (menubar app), and set **Node Run Commands** to "Always Ask" or "Always Allow" on the Mac. PASO treats macOS-only skills as eligible when required binaries exist on the node; the agent runs them via the `nodes` tool. With "Always Ask," approving "Always Allow" in the prompt adds that command to the allowlist.
 
     **Option C - proxy macOS binaries over SSH (advanced)**. Keep the Gateway on Linux, but make the required CLI binaries resolve to SSH wrappers that run on a Mac, then override the skill to allow Linux so it stays eligible.
 
@@ -353,11 +353,11 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
     Native installs land in the active workspace `skills/` directory; use `--global` for all local agents, or configure `agents.defaults.skills` / `agents.entries.*.skills` to limit visibility. Some skills expect Homebrew-installed binaries; on Linux that means Linuxbrew.
 
-    See [Skills](/tools/skills), [Skills config](/tools/skills-config), [ClawHub](/clawhub).
+    See [Skills](/tools/skills), [Skills config](/tools/skills-config), and the [external skill catalog](/clawhub).
 
   </Accordion>
 
-  <Accordion title="How do I use my existing signed-in Chrome with OpenClaw?">
+  <Accordion title="How do I use my existing signed-in Chrome with PASO?">
     Use the built-in `user` browser profile, which attaches through Chrome DevTools MCP:
 
     ```bash
@@ -413,16 +413,16 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   <Accordion title="How do I bind a host folder into the sandbox?">
     Set `agents.defaults.sandbox.docker.binds` to `["host:container:mode"]` (for example `"/home/user/src:/src:ro"`). Global and per-agent binds merge; per-agent binds are ignored when `scope: "shared"`. Use `:ro` for anything sensitive; binds bypass the sandbox filesystem walls.
 
-    OpenClaw validates bind sources against both the normalized path and the canonical path resolved through the deepest existing ancestor, so symlink-parent escapes fail closed even when the final path segment does not exist yet.
+    PASO validates bind sources against both the normalized path and the canonical path resolved through the deepest existing ancestor, so symlink-parent escapes fail closed even when the final path segment does not exist yet.
 
     See [Sandboxing](/gateway/sandboxing#multiple-folders-for-one-agent) and [Sandbox vs Tool Policy vs Elevated](/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check).
 
   </Accordion>
 
   <Accordion title="How does memory work?">
-    OpenClaw memory is Markdown files in the agent workspace: daily notes in `memory/YYYY-MM-DD.md`, curated long-term notes in `MEMORY.md` (main/private sessions only).
+    PASO memory is Markdown files in the agent workspace: daily notes in `memory/YYYY-MM-DD.md`, curated long-term notes in `MEMORY.md` (main/private sessions only).
 
-    OpenClaw also runs a silent **pre-compaction memory flush** before compaction summarizes the conversation, reminding the model to write durable notes first. It only runs when the workspace is writable (read-only sandboxes skip it); disable with `agents.defaults.compaction.memoryFlush.enabled: false`. See [Memory](/concepts/memory).
+    PASO also runs a silent **pre-compaction memory flush** before compaction summarizes the conversation, reminding the model to write durable notes first. It only runs when the workspace is writable (read-only sandboxes skip it); disable with `agents.defaults.compaction.memoryFlush.enabled: false`. See [Memory](/concepts/memory).
 
   </Accordion>
 
@@ -451,8 +451,8 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 ## Where things live on disk
 
 <AccordionGroup>
-  <Accordion title="Is all data used with OpenClaw saved locally?">
-    No: **OpenClaw's own state is local**, but **external services still see what you send them**.
+  <Accordion title="Is all data used with PASO saved locally?">
+    No: **PASO's own state is local**, but **external services still see what you send them**.
 
     - **Local by default**: sessions, memory files, config, and workspace live on the Gateway host (`~/.openclaw` plus your workspace directory).
     - **Remote by necessity**: messages sent to model providers (Anthropic/OpenAI/etc.) go to their APIs, and chat platforms (Slack/Telegram/WhatsApp/etc.) store message data on their servers.
@@ -462,7 +462,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Where does OpenClaw store its data?">
+  <Accordion title="Where does PASO store its data?">
     Everything lives under `$OPENCLAW_STATE_DIR` (default: `~/.openclaw`):
 
     | Path                                                               | Purpose                                                            |
@@ -543,12 +543,12 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="How do I completely uninstall OpenClaw?">
+  <Accordion title="How do I completely uninstall PASO?">
     See [Uninstall](/install/uninstall).
   </Accordion>
 
   <Accordion title="Can agents work outside the workspace?">
-    Yes. The workspace is the **default cwd** and memory anchor, not a hard sandbox. Relative paths resolve inside the workspace; absolute paths can access other host locations unless sandboxing is enabled. For isolation, use [`agents.defaults.sandbox`](/gateway/sandboxing) or per-agent sandbox settings. To make a repo the default working directory, point that agent's `workspace` at the repo root - the OpenClaw repo itself is just source code, so keep the workspace separate unless you intentionally want the agent to work inside it.
+    Yes. The workspace is the **default cwd** and memory anchor, not a hard sandbox. Relative paths resolve inside the workspace; absolute paths can access other host locations unless sandboxing is enabled. For isolation, use [`agents.defaults.sandbox`](/gateway/sandboxing) or per-agent sandbox settings. To make a repo the default working directory, point that agent's `workspace` at the repo root - the PASO repo itself is just source code, so keep the workspace separate unless you intentionally want the agent to work inside it.
 
     ```json5
     {
@@ -571,7 +571,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
 <AccordionGroup>
   <Accordion title="What format is the config? Where is it?">
-    OpenClaw reads an optional **JSON5** config from `$OPENCLAW_CONFIG_PATH` (default: `~/.openclaw/openclaw.json`). If the file is missing, it uses safe-ish defaults, including a default workspace of `~/.openclaw/workspace`.
+    PASO reads an optional **JSON5** config from `$OPENCLAW_CONFIG_PATH` (default: `~/.openclaw/openclaw.json`). If the file is missing, it uses safe-ish defaults, including a default workspace of `~/.openclaw/workspace`.
   </Accordion>
 
   <Accordion title='I set gateway.bind: "lan" (or "tailnet") and now nothing listens / the UI says unauthorized'>
@@ -598,7 +598,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   </Accordion>
 
   <Accordion title="Why do I need a token on localhost now?">
-    OpenClaw enforces gateway auth by default, including loopback. If no explicit auth path is configured, startup resolves to token mode and generates a runtime-only token for that startup, so local WS clients must authenticate. This blocks other local processes from calling the Gateway.
+    PASO enforces gateway auth by default, including loopback. If no explicit auth path is configured, startup resolves to token mode and generates a runtime-only token for that startup, so local WS clients must authenticate. This blocks other local processes from calling the Gateway.
 
     On a fresh loopback start, the Gateway prepares the canonical same-user CLI device credential before `/readyz`, so normal `openclaw` CLI calls can authenticate without persisting the generated token. Other clients still need an explicit shared secret or an approved device pairing.
 
@@ -665,7 +665,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
     - Allowlists: add `web_search`/`web_fetch`/`x_search`, or `group:web` for all three.
     - `web_fetch` is enabled by default.
-    - If `tools.web.fetch.provider` is omitted, OpenClaw auto-detects the first ready fetch fallback provider from available credentials; the official Firecrawl plugin provides that fallback.
+    - If `tools.web.fetch.provider` is omitted, PASO auto-detects the first ready fetch fallback provider from available credentials; the official Firecrawl plugin provides that fallback.
     - Daemons read env vars from `~/.openclaw/.env` (or the service environment).
 
     Docs: [Web tools](/tools/web).
@@ -675,10 +675,10 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   <Accordion title="config.apply wiped my config. How do I recover and avoid this?">
     `config.apply` replaces the **entire config**; a partial object removes everything else.
 
-    Current OpenClaw protects most accidental clobbers:
+    Current PASO protects most accidental clobbers:
 
-    - OpenClaw-owned config writes validate the full post-change config before writing.
-    - Invalid or destructive OpenClaw-owned writes are rejected and saved as `openclaw.json.rejected.*`.
+    - PASO-owned config writes validate the full post-change config before writing.
+    - Invalid or destructive PASO-owned writes are rejected and saved as `openclaw.json.rejected.*`.
     - Startup can migrate deterministic legacy keys in eligible single-file configs when the whole result validates, keeping the previous config in the `.bak` ring. Other invalid edits make startup fail closed; hot reload skips invalid edits without rewriting `openclaw.json`.
     - `openclaw doctor --fix` owns repairs beyond that startup migration, can restore last-known-good, and saves the rejected file as `openclaw.json.clobbered.*`.
 
@@ -710,7 +710,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Can the OpenClaw browser run headless?">
+  <Accordion title="Can the PASO browser run headless?">
     Yes:
 
     ```json5
@@ -781,7 +781,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Can two OpenClaw instances talk to each other (local + VPS)?">
+  <Accordion title="Can two PASO instances talk to each other (local + VPS)?">
     Yes, though there is no built-in bot-to-bot bridge.
 
     **Simplest**: use a normal chat channel both bots can access (Slack/Telegram/WhatsApp). Have Bot A message Bot B, then let Bot B reply as usual.
@@ -892,13 +892,13 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 ## Env vars and .env loading
 
 <AccordionGroup>
-  <Accordion title="How does OpenClaw load environment variables?">
-    OpenClaw reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
+  <Accordion title="How does PASO load environment variables?">
+    PASO reads env vars from the parent process (shell, launchd/systemd, CI, etc.) and additionally loads:
 
     - `.env` from the current working directory.
     - a global fallback `.env` from `~/.openclaw/.env` (`$OPENCLAW_STATE_DIR/.env`).
 
-    Normally, neither `.env` file overrides existing env vars. For an OpenClaw-installed systemd service, the global `.env` may replace only service values that OpenClaw recorded as managed; operator-owned service values still take precedence. Provider credential and endpoint-routing keys are an exception for workspace `.env`: keys such as `GEMINI_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, or any key ending in `_ENDPOINT` (and other bundled-provider auth or endpoint env vars) are ignored from workspace `.env` and should live in the process environment, `~/.openclaw/.env`, or config `env.vars`.
+    Normally, neither `.env` file overrides existing env vars. For a PASO-installed systemd service, the global `.env` may replace only service values that PASO recorded as managed; operator-owned service values still take precedence. Provider credential and endpoint-routing keys are an exception for workspace `.env`: keys such as `GEMINI_API_KEY`, `XAI_API_KEY`, `MISTRAL_API_KEY`, or any key ending in `_ENDPOINT` (and other bundled-provider auth or endpoint env vars) are ignored from workspace `.env` and should live in the process environment, `~/.openclaw/.env`, or config `env.vars`.
 
     Inline env vars in config apply only if missing from the process env:
 
@@ -937,7 +937,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   </Accordion>
 
   <Accordion title='I set COPILOT_GITHUB_TOKEN, but models status shows "Shell env: off." Why?'>
-    `openclaw models status` reports whether **shell env import** is enabled. "Shell env: off" does **not** mean your env vars are missing - it just means OpenClaw will not load your login shell automatically.
+    `openclaw models status` reports whether **shell env import** is enabled. "Shell env: off" does **not** mean your env vars are missing - it just means PASO will not load your login shell automatically.
 
     If the Gateway runs as a service (launchd/systemd), it will not inherit your shell environment. Fix by putting the token in `~/.openclaw/.env`, enabling `env.shellEnv.enabled: true`, or adding it to config `env` (applies only if missing), then restarting the gateway and rechecking:
 
@@ -981,7 +981,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Is there a way to make a team of OpenClaw instances (one CEO and many agents)?">
+  <Accordion title="Is there a way to make a team of PASO instances (one CEO and many agents)?">
     Yes, via **multi-agent routing** and **sub-agents**: one coordinator agent plus several worker agents with their own workspaces and models.
 
     This is best seen as a fun experiment - it is token-heavy and often less efficient than one bot with separate sessions. The typical model is one bot you talk to, with different sessions for parallel work, spawning sub-agents when needed.
@@ -1001,7 +1001,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="How do I completely reset OpenClaw but keep it installed?">
+  <Accordion title="How do I completely reset PASO but keep it installed?">
     ```bash
     openclaw reset
     ```
@@ -1061,7 +1061,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
   </Accordion>
 
   <Accordion title='Do I need to add a "bot account" to a WhatsApp group?'>
-    No. OpenClaw runs on **your own account** - if you are in the group, OpenClaw can see it. By default, group replies are blocked until you allow senders (`groupPolicy: "allowlist"`).
+    No. PASO runs on **your own account** - if you are in the group, PASO can see it. By default, group replies are blocked until you allow senders (`groupPolicy: "allowlist"`).
 
     To restrict group replies to only you:
 
@@ -1097,7 +1097,7 @@ First-run Q&A - install, onboard, auth routes, subscriptions, initial failures -
 
   </Accordion>
 
-  <Accordion title="Why does OpenClaw not reply in a group?">
+  <Accordion title="Why does PASO not reply in a group?">
     Two common causes: mention gating is on by default (you must @mention the bot, or match `mentionPatterns`), or you configured `channels.whatsapp.groups` without `"*"` and the group is not allowlisted.
 
     See [Groups](/channels/groups) and [Group messages](/channels/group-messages).
@@ -1163,13 +1163,13 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
   </Accordion>
 
   <Accordion title='What does "another gateway instance is already listening" mean?'>
-    OpenClaw enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` ("another gateway instance is already listening").
+    PASO enforces a runtime lock by binding the WebSocket listener immediately on startup (default `ws://127.0.0.1:18789`). If the bind fails with `EADDRINUSE`, it throws `GatewayLockError` ("another gateway instance is already listening").
 
     Fix: stop the other instance, free the port, or run with `openclaw gateway --port <port>`.
 
   </Accordion>
 
-  <Accordion title="How do I run OpenClaw in remote mode (client connects to a Gateway elsewhere)?">
+  <Accordion title="How do I run PASO in remote mode (client connects to a Gateway elsewhere)?">
     Set `gateway.mode: "remote"` and point to a remote WebSocket URL, optionally with shared-secret remote credentials:
 
     ```json5
@@ -1234,7 +1234,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
     Recommended: `openclaw --profile <name> ...` per instance (auto-creates `~/.openclaw-<name>`), a unique `gateway.port` per profile config (or `--port` for manual runs), and a per-profile service with `openclaw --profile <name> gateway install`.
 
-    Profiles also suffix service names: launchd `ai.openclaw.<profile>`, systemd `openclaw-gateway-<profile>.service`, Windows `OpenClaw Gateway (<profile>)`. The unqualified `openclaw-gateway` systemd unit only exists for the default profile; the legacy pre-rename systemd unit name `clawdbot-gateway` is migrated automatically.
+    Profiles also suffix service names: launchd `ai.openclaw.<profile>`, systemd `openclaw-gateway-<profile>.service`, Windows `OpenClaw Gateway (<profile>)`. The Windows name is a retained technical Scheduled Task identity for the PASO Gateway. The unqualified `openclaw-gateway` systemd unit only exists for the default profile; the legacy pre-rename systemd unit name `clawdbot-gateway` is migrated automatically.
 
     Full guide: [Multiple gateways](/gateway/multiple-gateways).
 
@@ -1272,7 +1272,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
     - macOS launchd stdout: `~/Library/Logs/openclaw/gateway.log` (profiles use `gateway-<profile>.log`; stderr is suppressed).
     - Linux: `journalctl --user -u openclaw-gateway[-<profile>].service -n 200 --no-pager`.
-    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST`.
+    - Windows: `schtasks /Query /TN "OpenClaw Gateway (<profile>)" /V /FO LIST` (retained technical task name for PASO).
 
     See [Troubleshooting](/gateway/troubleshooting) for more.
 
@@ -1288,10 +1288,10 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
   </Accordion>
 
-  <Accordion title="I closed my terminal on Windows - how do I restart OpenClaw?">
+  <Accordion title="I closed my terminal on Windows - how do I restart PASO?">
     Three Windows install modes:
 
-    **1) Windows Hub local setup**: the native app manages a local app-owned WSL Gateway. Open **OpenClaw Companion** from the Start menu or tray, then use **Gateway Setup** or the Connections tab.
+    **1) Windows Hub local setup**: the native app manages a local app-owned WSL Gateway. Open **PASO Companion** from the Start menu or tray, then use **Gateway Setup** or the Connections tab.
 
     **2) Manual WSL2 Gateway**: the Gateway runs inside Linux.
     ```powershell
@@ -1349,7 +1349,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
     Then match the error:
 
-    - `BOT_COMMANDS_TOO_MUCH`: the Telegram menu has too many entries. OpenClaw already trims to the Telegram limit and retries with fewer commands, but some menu entries may still be dropped. Reduce plugin/skill/custom commands, or disable `channels.telegram.commands.native` if you do not need the menu.
+    - `BOT_COMMANDS_TOO_MUCH`: the Telegram menu has too many entries. PASO already trims to the Telegram limit and retries with fewer commands, but some menu entries may still be dropped. Reduce plugin/skill/custom commands, or disable `channels.telegram.commands.native` if you do not need the menu.
     - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, or similar network errors: on a VPS or behind a proxy, confirm outbound HTTPS is allowed and DNS works for `api.telegram.org`.
 
     If the Gateway is remote, check logs on the Gateway host.
@@ -1398,7 +1398,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
 <AccordionGroup>
   <Accordion title="My skill generated an image/PDF, but nothing was sent">
-    Outbound attachments from the agent must use structured media fields such as `media`, `mediaUrl`, `path`, or `filePath`. See [OpenClaw assistant setup](/start/openclaw) and [Agent send](/tools/agent-send).
+    Outbound attachments from the agent must use structured media fields such as `media`, `mediaUrl`, `path`, or `filePath`. See [PASO assistant setup](/start/personal-assistant) and [Agent send](/tools/agent-send).
 
     ```bash
     openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
@@ -1414,7 +1414,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 ## Security and access control
 
 <AccordionGroup>
-  <Accordion title="Is it safe to expose OpenClaw to inbound DMs?">
+  <Accordion title="Is it safe to expose PASO to inbound DMs?">
     Yes - on channels that default to **pairing** (most DM-capable channels), a stranger who DMs your bot never reaches the model:
 
     - With the pairing default, unknown senders receive a pairing code and their message is not processed. Approve with `openclaw pairing approve --channel <channel> [--account <id>] <code>`. Pending requests are capped at **3 per channel**; check `openclaw pairing list --channel <channel> [--account <id>]` if a code did not arrive.
@@ -1438,7 +1438,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
   </Accordion>
 
-  <Accordion title="Is OpenClaw less safe because it uses TypeScript/Node instead of Rust/WASM?">
+  <Accordion title="Is PASO less safe because it uses TypeScript/Node instead of Rust/WASM?">
     Language and runtime matter, but are not the main risk for a personal agent. The practical risks are gateway exposure, who can message the bot, prompt injection, tool scope, credential handling, browser access, exec access, and third-party skill/plugin trust.
 
     Rust and WASM can provide stronger isolation for some code classes, but do not solve prompt injection, bad allowlists, public gateway exposure, overbroad tools, or a browser profile already logged in to sensitive accounts. Treat these as the primary controls: keep the Gateway private or authenticated, use pairing and allowlists for DMs/groups, deny or sandbox risky tools for untrusted inputs, install only trusted plugins and skills, and run `openclaw security audit --deep` after config changes.
@@ -1447,7 +1447,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
   </Accordion>
 
-  <Accordion title="I saw reports about exposed OpenClaw instances. What should I check?">
+  <Accordion title="I saw reports about exposed PASO instances. What should I check?">
     ```bash
     openclaw security audit --deep
     openclaw gateway status
@@ -1459,8 +1459,8 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
   </Accordion>
 
-  <Accordion title="Are ClawHub skills and third-party plugins safe to install?">
-    Treat third-party skills and plugins as code you are choosing to trust. ClawHub skill pages expose scan state before install, but scans are not a complete security boundary. OpenClaw does not run built-in local dangerous-code blocking during plugin/skill install or update; use operator-owned `security.installPolicy` for local allow/warn/block decisions.
+  <Accordion title="Are external-catalog skills and third-party plugins safe to install?">
+    Treat third-party skills and plugins as code you are choosing to trust. External catalog pages expose scan state before install, but scans are not a complete security boundary. PASO does not run built-in local dangerous-code blocking during plugin/skill install or update; use operator-owned `security.installPolicy` for local allow/warn/block decisions.
 
     Safer pattern: prefer trusted authors and pinned versions, read the skill/plugin before enabling it, keep plugin/skill allowlists narrow, run untrusted-input workflows in a sandbox with minimal tools, and avoid giving third-party code broad filesystem, exec, browser, or secret access.
 
@@ -1502,7 +1502,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
   </Accordion>
 
   <Accordion title="WhatsApp: will it message my contacts? How does pairing work?">
-    No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code; their message is **not processed**. OpenClaw only replies to chats it receives or to explicit sends you trigger.
+    No. Default WhatsApp DM policy is **pairing**. Unknown senders only get a pairing code; their message is **not processed**. PASO only replies to chats it receives or to explicit sends you trigger.
 
     ```bash
     openclaw pairing approve whatsapp <code>
@@ -1548,7 +1548,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
   </Accordion>
 
   <Accordion title='How do I send a Discord message from Telegram? ("Cross-context messaging denied")'>
-    OpenClaw blocks **cross-provider** messaging by default. If a tool call is bound to Telegram, it will not send to Discord unless you explicitly allow it - and this takes effect immediately, no gateway restart needed:
+    PASO blocks **cross-provider** messaging by default. If a tool call is bound to Telegram, it will not send to Discord unless you explicitly allow it - and this takes effect immediately, no gateway restart needed:
 
     ```json5
     {
@@ -1588,7 +1588,7 @@ Model Q&A - defaults, selection, aliases, switching, failover, auth profiles - l
 
 ---
 
-Still stuck? Ask in [Discord](https://discord.com/invite/clawd) or use the [GitHub issue chooser](https://github.com/openclaw/openclaw/issues/new/choose).
+Still stuck? Use the [PASO issue chooser](https://github.com/celaya-solutions/PASO-AGENT/issues/new/choose) with sanitized details, or contact [hello@celayasolutions.com](mailto:hello@celayasolutions.com) for general help.
 
 ## Related
 

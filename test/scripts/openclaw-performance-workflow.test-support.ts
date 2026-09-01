@@ -146,7 +146,7 @@ export function preparePerformanceFixture(root: string, options: PerformanceFixt
     TESTED_SHA: target,
     GITHUB_REF_NAME: "main",
     GITHUB_SHA: target,
-    GITHUB_WORKFLOW: "OpenClaw Performance",
+    GITHUB_WORKFLOW: "PASO Performance",
     GITHUB_REPOSITORY: "fixture/performance",
     GITHUB_RUN_ID: "123",
     GITHUB_RUN_ATTEMPT: "1",

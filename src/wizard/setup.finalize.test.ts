@@ -624,7 +624,7 @@ describe("finalizeSetupWizard", () => {
     expectNoteNotContains(prompter, "Web UI:");
     expectNoteNotContains(prompter, gatewayToken);
     expect(prompter.outro).toHaveBeenCalledWith(
-      "OpenClaw is ready. When you're ready: openclaw dashboard",
+      "PASO is ready. When you're ready: openclaw dashboard",
     );
     expect(runTui).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -670,7 +670,7 @@ describe("finalizeSetupWizard", () => {
       expectNoteNotContains(prompter, gatewayToken);
     }
     if (!enabled) {
-      expect(prompter.outro).toHaveBeenCalledWith("OpenClaw is ready.");
+      expect(prompter.outro).toHaveBeenCalledWith("PASO is ready.");
     }
   });
 
@@ -972,7 +972,7 @@ describe("finalizeSetupWizard", () => {
     await finalizeSetupWizard(createFinalizeArgs("quickstart", { prompter }));
 
     expect(prompter.outro).toHaveBeenCalledWith(
-      "Onboarding complete. Use the dashboard link above to control OpenClaw.",
+      "Onboarding complete. Use the dashboard link above to control PASO.",
     );
     expect(runTui).toHaveBeenCalledOnce();
     expect(vi.mocked(prompter.outro).mock.invocationCallOrder[0]).toBeLessThan(
@@ -1300,7 +1300,7 @@ describe("finalizeSetupWizard", () => {
         expect(isContainerEnvironment).not.toHaveBeenCalled();
         expectNoteContains(
           prompter,
-          "OpenClaw gateway lifecycle is managed by an external supervisor",
+          "PASO gateway lifecycle is managed by an external supervisor",
           "Gateway",
         );
         expectNoteNotContains(prompter, "Systemd user services are not available");
@@ -1337,7 +1337,7 @@ describe("finalizeSetupWizard", () => {
         expectNoteNotContains(prompter, "openclaw gateway run");
         expectNoteNotContains(prompter, "openclaw onboard --install-daemon");
         expect(prompter.outro).toHaveBeenCalledWith(
-          "Gateway not detected yet. OpenClaw gateway lifecycle is managed by an external " +
+          "Gateway not detected yet. PASO gateway lifecycle is managed by an external " +
             "supervisor (OPENCLAW_SUPERVISOR_MODE=external). Use that supervisor to start the " +
             "gateway.",
         );

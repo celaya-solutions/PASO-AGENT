@@ -54,20 +54,20 @@ on:
         required: false
         type: string
       release_publish_run_id:
-        description: Approved OpenClaw Release Publish workflow run id
+        description: Approved PASO Release Publish workflow run id
         required: false
         type: string
       release_publish_run_attempt:
-        description: Exact approved OpenClaw Release Publish workflow run attempt
+        description: Exact approved PASO Release Publish workflow run attempt
         required: false
         type: string
       release_publish_branch:
-        description: Branch or protected tag name of the approving OpenClaw Release Publish workflow run
+        description: Branch or protected tag name of the approving PASO Release Publish workflow run
         required: false
         default: ""
         type: string
       release_publish_full_ref:
-        description: Full ref of the approving OpenClaw Release Publish workflow run
+        description: Full ref of the approving PASO Release Publish workflow run
         required: false
         default: ""
         type: string
@@ -113,7 +113,7 @@ jobs:
       all_matrix: ${{ steps.plan.outputs.all_matrix }}
     steps:
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -657,7 +657,7 @@ jobs:
           if (packageJson.openclaw?.install?.npmSpec !== process.env.INSTALL_NPM_SPEC) {
             fail(`Packed npm install route mismatch: expected ${process.env.INSTALL_NPM_SPEC}.`);
           }
-          if (repositoryUrl !== "https://github.com/openclaw/openclaw") {
+          if (repositoryUrl !== "https://github.com/celaya-solutions/PASO-AGENT") {
             fail(`Packed repository route mismatch: ${JSON.stringify(repositoryUrl)}.`);
           }
           if (typeof pluginManifest.id !== "string" || pluginManifest.id.length === 0) {
@@ -761,7 +761,7 @@ jobs:
         plugin: ${{ fromJson(inputs.preflight_only && !inputs.trusted_publisher_preflight && needs.preview_plugins_npm.outputs.all_matrix || needs.preview_plugins_npm.outputs.matrix) }}
     steps:
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout trusted npm preflight tooling
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -994,7 +994,7 @@ jobs:
             packageJson.openclaw?.install?.npmSpec !== process.env.INSTALL_NPM_SPEC ||
             manifest.package.installNpmSpec !== process.env.INSTALL_NPM_SPEC ||
             manifest.package.publishTag !== process.env.PUBLISH_TAG ||
-            repositoryUrl !== "https://github.com/openclaw/openclaw" ||
+            repositoryUrl !== "https://github.com/celaya-solutions/PASO-AGENT" ||
             typeof pluginManifest.id !== "string" ||
             pluginManifest.id.length === 0 ||
             manifest.package.pluginId !== pluginManifest.id ||
@@ -1209,6 +1209,22 @@ jobs:
       contents: read
       id-token: write
     steps:
+      - &require_paso_legacy_npm_publish_step
+        name: Require PASO legacy npm publishing configuration
+        env:
+          PASO_LEGACY_NPM_PUBLISH_ENABLED: ${{ vars.PASO_LEGACY_NPM_PUBLISH_ENABLED }}
+          PASO_NPM_PUBLISH_REPOSITORY: ${{ vars.PASO_NPM_PUBLISH_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REPOSITORY" != "celaya-solutions/PASO-AGENT" ]]; then
+            echo "::error::Legacy openclaw package publishing is restricted to the PASO repository."
+            exit 1
+          fi
+          if [[ "$PASO_LEGACY_NPM_PUBLISH_ENABLED" != "true" || "$PASO_NPM_PUBLISH_REPOSITORY" != "$GITHUB_REPOSITORY" ]]; then
+            echo "::error::Publishing @openclaw compatibility packages is disabled. Set PASO_LEGACY_NPM_PUBLISH_ENABLED=true and PASO_NPM_PUBLISH_REPOSITORY=celaya-solutions/PASO-AGENT only after Celaya Solutions controls the npm trusted-publisher routes."
+            exit 1
+          fi
+
       - name: Checkout trusted OIDC preflight tooling
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -1263,8 +1279,10 @@ jobs:
       matrix:
         plugin: ${{ fromJson(needs.preview_plugins_npm.outputs.matrix) }}
     steps:
+      - *require_paso_legacy_npm_publish_step
+
       - name: Prepare Git owner
-        uses: openclaw/openclaw/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
+        uses: celaya-solutions/PASO-AGENT/.github/actions/git-owner@dd4528b6393e7d00063067a080ca7241b48ce475
 
       - name: Checkout trusted publication tooling
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

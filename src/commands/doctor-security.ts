@@ -99,8 +99,8 @@ function collectExecPolicyConflictWarnings(
   approvals: ExecApprovalsFile,
 ): SecurityAuditFinding[] {
   const findings: SecurityAuditFinding[] = [];
-  const defaultRequestedSecuritySource = "OpenClaw default (full)";
-  const defaultRequestedAskSource = "OpenClaw default (off)";
+  const defaultRequestedSecuritySource = "PASO default (full)";
+  const defaultRequestedAskSource = "PASO default (off)";
 
   const maybeWarn = (params: {
     scopeLabel: string;
@@ -358,7 +358,7 @@ export async function collectSecurityWarnings(
   const saferRemoteAccessLines = [
     "Safer remote access: keep bind loopback and use Tailscale Serve/Funnel or an SSH tunnel.",
     "Example tunnel: ssh -N -L 18789:127.0.0.1:18789 user@gateway-host",
-    "Docs: https://docs.openclaw.ai/gateway/remote",
+    "Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
   ];
 
   if (isExposed) {

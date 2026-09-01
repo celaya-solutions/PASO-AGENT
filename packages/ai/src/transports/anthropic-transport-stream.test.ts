@@ -1632,7 +1632,7 @@ describe("anthropic transport stream", () => {
     );
 
     expect(result.stopReason).toBe("error");
-    expect(result.errorMessage).toBe("OpenClaw transport error: malformed_streaming_fragment");
+    expect(result.errorMessage).toBe("PASO transport error: malformed_streaming_fragment");
   });
 
   it.each([
@@ -3085,7 +3085,7 @@ describe("anthropic transport stream", () => {
       absent: ["reasoning_content"],
     },
     {
-      name: "backfills MiMo v2-flash tool-use replay when OpenClaw thinking is off",
+      name: "backfills MiMo v2-flash tool-use replay when PASO thinking is off",
       model: {
         id: "mimo-v2-flash",
         name: "MiMo V2 Flash",

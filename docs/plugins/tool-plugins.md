@@ -3,14 +3,14 @@ summary: "Build simple typed agent tools with defineToolPlugin and openclaw plug
 title: "Tool plugins"
 sidebarTitle: "Tool Plugins"
 read_when:
-  - You want to build a simple OpenClaw plugin that only adds agent tools
+  - You want to build a simple PASO plugin that only adds agent tools
   - You want to use defineToolPlugin instead of hand-writing plugin manifest metadata
   - You need to scaffold, generate, validate, test, or publish a tool-only plugin
 ---
 
 `defineToolPlugin` builds a plugin that only adds agent-callable tools: no
 channel, model provider, hook, service, or setup backend. It generates the
-manifest metadata OpenClaw needs to discover tools without loading plugin
+manifest metadata PASO needs to discover tools without loading plugin
 runtime code.
 
 For provider, channel, hook, service, or mixed-capability plugins, start with
@@ -122,7 +122,7 @@ specific enough to avoid collisions with core tools or other plugins.
 
 Set `optional: true` when users should explicitly allowlist the tool before it
 is sent to a model. `openclaw plugins build` writes the matching
-`toolMetadata.<tool>.optional` manifest entry, so OpenClaw can see that the
+`toolMetadata.<tool>.optional` manifest entry, so PASO can see that the
 tool is optional without loading plugin runtime code.
 
 ```typescript
@@ -177,12 +177,12 @@ with hooks, services, providers, or commands.
 
 ## Return values
 
-`defineToolPlugin` wraps plain return values into the OpenClaw tool-result
+`defineToolPlugin` wraps plain return values into the PASO tool-result
 format:
 
 - Return a string when the model should see that exact text.
 - Return a JSON-compatible value when you want the model to see formatted JSON
-  and OpenClaw to keep the original value in `details`.
+  and PASO to keep the original value in `details`.
 
 ```typescript
 tool({
@@ -242,7 +242,7 @@ schema into a bounded TypeScript-style output hint. That lets a model call and
 transform a known result in one program instead of spending another model turn
 observing its shape.
 
-OpenClaw compiles the schema before executing a catalog call, then validates the
+PASO compiles the schema before executing a catalog call, then validates the
 final `details` value after tool hooks before returning it through the bridge.
 An invalid schema cannot run the tool; a result mismatch fails the completed
 call. Include every non-throwing result variant, including structured error
@@ -260,7 +260,7 @@ output schema because it could drift from the runtime tool.
 
 ## Configuration
 
-`configSchema` is optional. Omit it and OpenClaw applies a strict empty object
+`configSchema` is optional. Omit it and PASO applies a strict empty object
 schema; the generated manifest still includes `configSchema`.
 
 ```typescript
@@ -295,13 +295,13 @@ export default defineToolPlugin({
 });
 ```
 
-OpenClaw reads plugin config from the plugin's entry in the Gateway config. Do
+PASO reads plugin config from the plugin's entry in the Gateway config. Do
 not hard-code secrets in source or docs examples; use config, environment
 variables, or SecretRefs per the plugin's security model.
 
 ## Generated metadata
 
-OpenClaw must read the plugin manifest before importing plugin runtime code.
+PASO must read the plugin manifest before importing plugin runtime code.
 `defineToolPlugin` exposes static metadata for this, and
 `openclaw plugins build` writes it into the package. Rerun the generator after
 changing plugin id, name, description, config schema, activation, or tool
@@ -334,7 +334,7 @@ Generated manifest for a one-tool plugin:
 }
 ```
 
-`contracts.tools` is the important discovery contract: it tells OpenClaw which
+`contracts.tools` is the important discovery contract: it tells PASO which
 plugin owns each tool without loading every installed plugin's runtime. A
 stale manifest means a tool can go missing from discovery, or a registration
 error gets blamed on the wrong plugin.
@@ -375,7 +375,7 @@ openclaw plugins validate --entry ./dist/index.js
 npm test
 ```
 
-OpenClaw SDK compatibility fields carry TypeScript `@deprecated` annotations,
+PASO SDK compatibility fields carry TypeScript `@deprecated` annotations,
 which editors surface as migration warnings. To enforce them in CI, enable a
 type-aware rule such as
 [`@typescript-eslint/no-deprecated`](https://typescript-eslint.io/rules/no-deprecated/).
@@ -392,7 +392,7 @@ Oxlint is not type-aware, so it cannot enforce these annotations. The generated
 
 ## Install and inspect locally
 
-From a separate OpenClaw checkout or installed CLI, install the package path:
+From a separate PASO checkout or installed CLI, install the package path:
 
 ```bash
 openclaw plugins install ./stock-quotes
@@ -429,7 +429,7 @@ openclaw plugins install clawhub:your-org/stock-quotes
 ```
 
 Bare npm package specs still install from npm during the launch cutover, but
-ClawHub is the preferred discovery and distribution surface for OpenClaw
+ClawHub is the preferred discovery and distribution surface for PASO
 plugins. See [ClawHub publishing](/clawhub/publishing) for owner scope and
 release review.
 

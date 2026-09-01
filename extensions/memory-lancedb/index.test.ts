@@ -104,7 +104,7 @@ vi.mock("./lancedb-runtime.js", async (importOriginal) => {
   };
 });
 
-// Provenance marker OpenClaw appends to every injected inbound-context header.
+// Provenance marker PASO appends to every injected inbound-context header.
 // Detectors key on this marker, not label text. Keep byte-identical with
 // src/auto-reply/reply/inbound-context-marker.ts (extensions cannot import core).
 const CTX = "⟦openclaw:ctx⟧";
@@ -3355,7 +3355,7 @@ describe("memory plugin e2e", () => {
 
   test("looksLikeEnvelopeSludge detects marked inbound context headers", () => {
     // Detection keys on the provenance marker suffix, not label text: any header
-    // OpenClaw injects carries it, and it never collides with user prose.
+    // PASO injects carries it, and it never collides with user prose.
     expect(looksLikeEnvelopeSludge(ctxHeader("Conversation info:"))).toBe(true);
     expect(looksLikeEnvelopeSludge(ctxHeader("Sender:"))).toBe(true);
     expect(looksLikeEnvelopeSludge(`${ctxHeader("Sender:")}\nAlex\nI prefer dark mode`)).toBe(true);
@@ -3609,11 +3609,9 @@ describe("memory plugin e2e", () => {
       "I prefer dark mode",
     );
     expect(
-      sanitizeForMemoryCapture(
-        "[Discord OpenClaw #dev channel id:456 +5m] Alice: I prefer dark mode",
-      ),
+      sanitizeForMemoryCapture("[Discord PASO #dev channel id:456 +5m] Alice: I prefer dark mode"),
     ).toBe("I prefer dark mode");
-    expect(sanitizeForMemoryCapture("[Telegram OpenClaw id:-100] Alice: I prefer dark mode")).toBe(
+    expect(sanitizeForMemoryCapture("[Telegram PASO id:-100] Alice: I prefer dark mode")).toBe(
       "I prefer dark mode",
     );
     expect(sanitizeForMemoryCapture("[Signal Signal Group id:123] Bob (42): ping")).toBe("ping");
@@ -3966,7 +3964,7 @@ describe("memory plugin e2e", () => {
 
   test("sanitizeForMemoryCapture preserves an unknown structured-context label as user content", () => {
     // An arbitrary `<label>:` + fence whose JSON carries no envelope key is the
-    // user's own text, not an OpenClaw injection, so it survives capture intact.
+    // user's own text, not a PASO injection, so it survives capture intact.
     const input = [
       `${"Custom ".repeat(30)}label:`,
       "```json",

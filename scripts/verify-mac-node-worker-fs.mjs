@@ -26,7 +26,7 @@ assert.deepEqual(fs.readFileSync(path.join(home, "native-write-proof")), Buffer.
 assert.deepEqual(fs.readFileSync(path.join(home, "native-create-proof")), Buffer.from(created));
 
 // Dependency imports and symlinks into node_modules can succeed while the
-// bundled loader is broken. Require the exact OpenClaw asset identity on Mac.
+// bundled loader is broken. Require the exact PASO asset identity on Mac.
 const nativeModule = path.join(
   packageRoot,
   "dist/native",

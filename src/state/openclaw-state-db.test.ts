@@ -1,4 +1,4 @@
-// OpenClaw state database tests cover state DB migrations and persistence.
+// PASO state database tests cover state DB migrations and persistence.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import fs from "node:fs";
@@ -6156,7 +6156,7 @@ INSERT INTO macos_port_guardian_records VALUES (4242, 18789, '/usr/bin/ssh', 're
     });
     expect(repairOpenClawStateDatabaseSchema(options)).toEqual({
       changes: [
-        "Migrated shared state operator approvals → OpenClaw system changes",
+        "Migrated shared state operator approvals → PASO system changes",
         expect.stringMatching(/^Rebuilt canonical shared-state SQLite indexes \(\d+\)$/u),
       ],
       warnings: [],
@@ -7483,7 +7483,9 @@ INSERT INTO macos_port_guardian_records VALUES (4242, 18789, '/usr/bin/ssh', 're
     }
     expect(firstFailure).toMatchObject({
       name: "SqliteSchemaVersionError",
-      message: expect.stringContaining("https://docs.openclaw.ai/reference/database-schemas"),
+      message: expect.stringContaining(
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+      ),
     });
 
     for (const candidate of [databasePath, `${databasePath}-wal`, `${databasePath}-shm`]) {

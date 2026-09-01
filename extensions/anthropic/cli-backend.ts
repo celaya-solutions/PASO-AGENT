@@ -94,15 +94,15 @@ function createClaudeCliAuthInput(params: {
 function resolveClaudeCliAuthInput(
   credential: ClaudeCliAuthCredential | undefined,
 ): ClaudeCliPreparedExecution | undefined {
-  // Forwarded OAuth here is OpenClaw-managed material (its refresh path is
-  // OpenClaw-owned). Native `claude` logins are never forwarded; the current
+  // Forwarded OAuth here is PASO-managed material (its refresh path is
+  // PASO-owned). Native `claude` logins are never forwarded; the current
   // Claude process reads its own config directory. An expired token here is
-  // therefore OpenClaw-managed state that must fail loudly.
+  // therefore PASO-managed state that must fail loudly.
   if (credential?.type === "oauth" && "access" in credential) {
     const expires = "expires" in credential ? credential.expires : undefined;
     if (typeof expires !== "number" || !Number.isFinite(expires) || expires <= Date.now()) {
       throw new Error(
-        "Selected Claude CLI OAuth credential is expired or invalid. Re-authenticate the selected profile and retry. OpenClaw did not start the run.",
+        "Selected Claude CLI OAuth credential is expired or invalid. Re-authenticate the selected profile and retry. PASO did not start the run.",
       );
     }
     if (typeof credential.access !== "string") {

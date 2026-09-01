@@ -178,7 +178,7 @@ struct IOSSystemAgentChatTests {
         await Self.start(model)
 
         #expect(model.messages.isEmpty)
-        #expect(model.errorMessage == "The Gateway connection changed. Restart OpenClaw to reconnect.")
+        #expect(model.errorMessage == "The Gateway connection changed. Restart PASO to reconnect.")
     }
 
     @Test func `sensitive answer stays redacted locally and is sent verbatim`() async throws {
@@ -244,7 +244,7 @@ struct IOSSystemAgentChatTests {
         await Self.start(model)
 
         #expect(model.errorMessage != nil)
-        #expect(model.errorMessage != "The Gateway connection changed. Restart OpenClaw to reconnect.")
+        #expect(model.errorMessage != "The Gateway connection changed. Restart PASO to reconnect.")
     }
 
     @Test func `pre-dispatch route change asks for restart`() async {
@@ -262,7 +262,7 @@ struct IOSSystemAgentChatTests {
 
         await Self.start(model)
 
-        #expect(model.errorMessage == "The Gateway connection changed. Restart OpenClaw to reconnect.")
+        #expect(model.errorMessage == "The Gateway connection changed. Restart PASO to reconnect.")
     }
 
     @Test func `leaving settings clears input without canceling an in-flight turn`() async {
@@ -432,7 +432,7 @@ struct IOSSystemAgentChatTests {
     }
 
     @Test func `settings route is visible and handoff uses root chat navigation`() throws {
-        #expect(SettingsProTab(navigateToRoute: { _ in }).title(for: .systemAgent) == "OpenClaw")
+        #expect(SettingsProTab(navigateToRoute: { _ in }).title(for: .systemAgent) == "PASO")
 
         let iosRoot = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
@@ -510,7 +510,7 @@ struct IOSSystemAgentChatTests {
             "question": [
                 "id": "connection",
                 "header": "Connection",
-                "question": "How should OpenClaw connect?",
+                "question": "How should PASO connect?",
                 "options": [
                     [
                         "label": "Use Tailscale",

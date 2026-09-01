@@ -1,5 +1,5 @@
 ---
-summary: "Setup guide for developers working on the OpenClaw macOS app"
+summary: "Setup guide for developers working on the PASO macOS app"
 read_when:
   - Setting up the macOS development environment
 title: "macOS dev setup"
@@ -7,7 +7,7 @@ title: "macOS dev setup"
 
 # macOS developer setup
 
-Build and run the OpenClaw macOS application from source.
+Build and run the PASO macOS application from source.
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ The resulting app has no on-device MLX voice; it is rejected for `release`
 builds, which must ship the helper.
 
 For dev run modes, signing flags, and Team ID troubleshooting, see
-[apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md).
+[apps/macos/README.md](https://github.com/celaya-solutions/PASO-AGENT/blob/main/apps/macos/README.md).
 Fast dev loop from repo root: `scripts/restart-mac.sh` (add `--no-sign` for
 ad-hoc signing; TCC permissions do not stick with `--no-sign`).
 
@@ -74,19 +74,18 @@ The packaged app embeds the canonical `scripts/install-cli.sh` installer. On a
 fresh profile, choose **This Mac** during onboarding; the app installs the
 matching user-space CLI and runtime before starting the Gateway wizard.
 
-For manual development recovery, install the matching CLI yourself:
-
-The npm command below is for npm 12 or npm 11.16+. On npm 11.15 and earlier,
-omit `--allow-scripts=openclaw`.
+For manual development recovery, install the CLI from the PASO source
+repository:
 
 ```bash
-npm install -g openclaw@<version> --allow-scripts=openclaw
+curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh \
+  | bash -s -- --install-method git --version main --no-onboard
 ```
 
-`pnpm add -g --allow-build=openclaw openclaw@<version>` and
-`bun add -g --trust openclaw@<version>` also work. Bun's `--trust` allows the
-OpenClaw lifecycle scripts for that install. Node remains the recommended
-runtime for the Gateway itself.
+The lowercase `openclaw` package on npm is the upstream OpenClaw compatibility
+package, not a PASO release. Do not use its npm, pnpm, or Bun install commands
+as a PASO recovery path. Node remains the recommended runtime for the Gateway
+itself.
 
 ## Run native tests safely
 
@@ -191,7 +190,7 @@ mlx-swift Metal compilation errors non-deterministically (a different `.metal`
 file each run, `Could not read serialized diagnostics file` then a nonzero
 `metal` exit), because the beta `metal` compiler and its separately downloaded
 Metal Toolchain are still unstable. This is an upstream toolchain issue, not an
-OpenClaw one.
+PASO one.
 
 If you do not need on-device MLX voice, skip the helper:
 
@@ -215,7 +214,7 @@ If the app crashes when you try to allow **Speech Recognition** or
    ```
 
 2. If that fails, temporarily change `BUNDLE_ID` in
-   [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh)
+   [`scripts/package-mac-app.sh`](https://github.com/celaya-solutions/PASO-AGENT/blob/main/scripts/package-mac-app.sh)
    to force a clean slate from macOS.
 
 ### Gateway "Starting..." indefinitely

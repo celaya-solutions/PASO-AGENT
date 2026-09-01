@@ -1,4 +1,4 @@
-// Control UI tests cover the global Ask OpenClaw panel toggle and persisted session identity.
+// Control UI tests cover the global Ask PASO panel toggle and persisted session identity.
 import path from "node:path";
 import { chromium, type Browser } from "playwright";
 import { beforeEach, afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -45,7 +45,7 @@ function custodianGatewayScenario() {
   };
 }
 
-describeControlUiE2e("Control UI Ask OpenClaw panel toggle mocked Gateway E2E", () => {
+describeControlUiE2e("Control UI Ask PASO panel toggle mocked Gateway E2E", () => {
   beforeAll(async () => {
     if (!chromiumAvailable) {
       throw new Error(`Playwright Chromium is unavailable at ${chromiumExecutablePath}`);
@@ -99,7 +99,7 @@ describeControlUiE2e("Control UI Ask OpenClaw panel toggle mocked Gateway E2E", 
       const response = await page.goto(`${server.baseUrl}chat`);
       expect(response?.status()).toBe(200);
 
-      // Ask OpenClaw lives in the Inbox header and renders only while
+      // Ask PASO lives in the Inbox header and renders only while
       // openclaw.chat is advertised.
       await page.locator(".sidebar-issues-button").click();
       const footerToggle = page.locator(".sidebar-issues-panel__ask");
@@ -131,8 +131,8 @@ describeControlUiE2e("Control UI Ask OpenClaw panel toggle mocked Gateway E2E", 
       // reopens through the Inbox path — the palette click-through composition
       // proved timing-flaky on loaded CI runners without adding coverage.
       await page.locator(".shell-chrome-controls__search").click();
-      await page.getByPlaceholder("Search chats and commands…").fill("Ask OpenClaw");
-      const paletteItem = page.locator(".cmd-palette__item--active", { hasText: "Ask OpenClaw" });
+      await page.getByPlaceholder("Search chats and commands…").fill("Ask PASO");
+      const paletteItem = page.locator(".cmd-palette__item--active", { hasText: "Ask PASO" });
       await paletteItem.waitFor();
       await page.screenshot({
         animations: "disabled",

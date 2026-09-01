@@ -64,7 +64,7 @@ prepare_qa_channel_fixture() {
       --filter=blob:none \
       --single-branch \
       --branch "$SOURCE_TAG" \
-      https://github.com/openclaw/openclaw.git \
+      https://github.com/celaya-solutions/PASO-AGENT.git \
       "$clone_root"
     source_repo="$clone_root"
     source_ref="HEAD"

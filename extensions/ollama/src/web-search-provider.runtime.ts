@@ -345,7 +345,7 @@ export function createOllamaWebSearchProvider(): WebSearchProviderPlugin {
     envVars: [],
     placeholder: "(run ollama signin)",
     signupUrl: "https://ollama.com/",
-    docsUrl: "https://docs.openclaw.ai/tools/web",
+    docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     autoDetectOrder: 110,
     credentialPath: "",
     getCredentialValue: () => undefined,

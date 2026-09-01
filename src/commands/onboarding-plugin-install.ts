@@ -96,7 +96,7 @@ export type OnboardingPluginInstallEntry = {
   label: string;
   install: PluginPackageInstall;
   trustedSourceLinkedOfficialInstall?: boolean;
-  /** Keep this official runtime package on the same release cohort as OpenClaw. */
+  /** Keep this official runtime package on the same release cohort as PASO. */
   versionBoundToOpenClaw?: boolean;
   preferRemoteInstall?: boolean;
 };
@@ -150,7 +150,7 @@ function shouldFallbackClawHubToNpm(params: {
   if (!isOpenClawOrgNpmSpec(params.npmSpec)) {
     return false;
   }
-  // Only official OpenClaw npm packages are safe fallback targets for ClawHub
+  // Only official PASO npm packages are safe fallback targets for ClawHub
   // availability failures; arbitrary npm fallbacks would change trust source.
   return (
     params.result.code === CLAWHUB_INSTALL_ERROR_CODE.PACKAGE_NOT_FOUND ||

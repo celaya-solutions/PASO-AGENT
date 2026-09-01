@@ -31,11 +31,11 @@ cache and support `--json`/`-j` for scripting. Run `peekaboo` or
 `peekaboo <cmd> --help` for flags; `peekaboo --version` prints build metadata.
 Tip: run via `polter peekaboo` to ensure fresh builds.
 
-## OpenClaw Bridge
+## PASO Bridge
 
-The OpenClaw macOS app hosts Peekaboo Bridge at
+The PASO macOS app hosts Peekaboo Bridge at the compatibility path
 `~/Library/Application Support/OpenClaw/bridge.sock`. Before running Peekaboo
-from OpenClaw, select that socket so the CLI uses the app's Screen Recording
+from PASO, select that socket so the CLI uses the app's Screen Recording
 and Accessibility grants instead of starting its standalone daemon:
 
 ```bash
@@ -201,7 +201,7 @@ peekaboo type "Line 1\nLine 2" --delay 10
 Notes
 
 - Requires Screen Recording + Accessibility permissions.
-- In OpenClaw subprocesses, set `PEEKABOO_BRIDGE_SOCKET` as shown above. Do not
+- In PASO subprocesses, set `PEEKABOO_BRIDGE_SOCKET` as shown above. Do not
   pass `--no-remote` unless the calling process has its own Screen Recording
   grant.
 - Diagnose subprocess capture failures with `peekaboo bridge status --json`,

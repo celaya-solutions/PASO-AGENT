@@ -489,7 +489,7 @@ struct SettingsTabGroup: Identifiable {
             SettingsTabGroup(title: "Automation", tabs: [.channels, .skills, .cron, .execApprovals]),
             SettingsTabGroup(title: "Data", tabs: [.sessions, .instances]),
             SettingsTabGroup(title: "Advanced", tabs: [.config]),
-            SettingsTabGroup(title: "OpenClaw", tabs: [.about]),
+            SettingsTabGroup(title: "PASO", tabs: [.about]),
         ]
 
         if showDebug {
@@ -517,7 +517,7 @@ enum SettingsTab: CaseIterable, Identifiable, Hashable {
         case .gateways: "Gateways"
         case .permissions: "Permissions"
         case .voiceWake: "Voice & Talk"
-        case .systemAgent: "OpenClaw"
+        case .systemAgent: "PASO"
         case .channels: "Channels"
         case .skills: "Skills"
         case .cron: "Cron Jobs"

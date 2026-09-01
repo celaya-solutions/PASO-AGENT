@@ -1,18 +1,18 @@
 ---
-summary: "Use xAI Grok models in OpenClaw"
+summary: "Use xAI Grok models in PASO"
 read_when:
-  - You want to use Grok models in OpenClaw
+  - You want to use Grok models in PASO
   - You are configuring xAI auth or model ids
 title: "xAI"
 ---
 
-OpenClaw ships a bundled `xai` provider plugin for Grok models. The
+PASO ships a bundled `xai` provider plugin for Grok models. The
 recommended path is Grok OAuth with an eligible SuperGrok or X Premium
 subscription. Gateway, config, routing, and tools stay local; only Grok
 requests go to xAI's API.
 
 OAuth does not require an xAI API key or the Grok Build app. xAI may still
-show Grok Build on the consent screen because OpenClaw uses xAI's shared
+show Grok Build on the consent screen because PASO uses xAI's shared
 OAuth client.
 
 ## Setup
@@ -43,7 +43,7 @@ OAuth client.
 
     With no existing primary model, OAuth setup selects `xai/auto`. The plugin
     resolves that stable ref from xAI's authenticated model catalog and remote
-    default, so future xAI default changes do not require an OpenClaw update.
+    default, so future xAI default changes do not require a PASO update.
     It preserves an existing primary; opt in explicitly when needed:
 
     ```bash
@@ -75,7 +75,7 @@ OAuth client.
 </Steps>
 
 <Note>
-OpenClaw uses the xAI Responses API as the bundled xAI transport. The same
+PASO uses the xAI Responses API as the bundled xAI transport. The same
 credential from `openclaw models auth login --provider xai --method oauth` or
 `--method api-key` also powers `web_search` (provider id `grok`), `x_search`,
 `code_execution`, speech/transcription, and xAI image/video generation. If you
@@ -102,7 +102,7 @@ bundled xAI model provider reuses it as a fallback too.
   not eligible, use the API-key path or check the subscription on xAI's side.
 
 <Tip>
-Use `xai-oauth` when signing in from SSH, Docker, or a VPS. OpenClaw prints a
+Use `xai-oauth` when signing in from SSH, Docker, or a VPS. PASO prints a
 URL and short code; finish sign-in in any local browser while the remote
 process polls xAI for the completed token exchange.
 </Tip>
@@ -133,18 +133,18 @@ Catalog context and token-cost metadata follows xAI's live
 [pricing page](https://docs.x.ai/developers/pricing). xAI applies higher rates
 when a request crosses its documented 200k-token long-context threshold:
 for Grok 4.5 and Grok 4.6, input, cached-input, and output rates double.
-OpenClaw's flat catalog cost fields record the short-context rates. The current
+PASO's flat catalog cost fields record the short-context rates. The current
 [Grok Build](https://docs.x.ai/build/overview) coding agent uses Grok 4.6. The
-historical OpenClaw `grok-build-latest` compatibility alias remains pinned to
+historical PASO `grok-build-latest` compatibility alias remains pinned to
 Grok 4.5.
 
 ## Feature coverage
 
-The bundled plugin maps supported xAI APIs onto OpenClaw's shared provider and
+The bundled plugin maps supported xAI APIs onto PASO's shared provider and
 tool contracts. Capabilities that do not fit the shared contract are listed
 below or under known limits.
 
-| xAI capability             | OpenClaw surface                        | Status                                               |
+| xAI capability             | PASO surface                            | Status                                               |
 | -------------------------- | --------------------------------------- | ---------------------------------------------------- |
 | Chat / Responses           | `xai/<model>` model provider            | Yes                                                  |
 | Context compaction         | `/compact` and threshold compaction     | Yes via `/v1/responses/compact`                      |
@@ -158,10 +158,10 @@ below or under known limits.
 | Batch speech-to-text       | `tools.media.audio` media understanding | Yes                                                  |
 | Streaming speech-to-text   | Voice Call `streaming.provider: "xai"`  | Yes                                                  |
 | Realtime voice             | Talk `talk.realtime.provider: "xai"`    | Yes; gateway-relay for native Talk nodes             |
-| Files / batches            | Generic model API compatibility only    | Not a first-class OpenClaw tool                      |
+| Files / batches            | Generic model API compatibility only    | Not a first-class PASO tool                          |
 
 <Note>
-OpenClaw uses xAI's REST image/video/TTS/STT APIs for media generation and
+PASO uses xAI's REST image/video/TTS/STT APIs for media generation and
 batch transcription, xAI's streaming STT WebSocket for live voice-call
 transcription, xAI's Grok Voice Agent WebSocket for Talk realtime sessions,
 and the Responses API for chat, search, and code-execution tools.
@@ -189,12 +189,12 @@ Older aliases normalize as follows:
 | ------------------------------------------------------------- | ---------------- |
 | `grok-code-fast-1`, `grok-code-fast`, `grok-code-fast-1-0825` | `grok-build-0.1` |
 
-The dated 0309 ids are the selectable catalog entries. OpenClaw sends all other
+The dated 0309 ids are the selectable catalog entries. PASO sends all other
 current Grok 4.20 aliases verbatim so xAI retains control of stable, latest,
 beta, experimental, and dated alias semantics. The global `grok-latest` alias is
 also preserved verbatim.
 
-xAI retired the following exact ids. OpenClaw keeps them as hidden compatibility
+xAI retired the following exact ids. PASO keeps them as hidden compatibility
 rows for shipped configurations, with the limits and pricing of their current
 redirect targets:
 
@@ -215,7 +215,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
 <Warning>
   `x_search` and `code_execution` run on xAI's servers. xAI bills $5 per 1,000
   tool calls, plus the model's input and output tokens. With each tool's
-  `enabled` setting omitted, OpenClaw exposes it only for an active xAI model.
+  `enabled` setting omitted, PASO exposes it only for an active xAI model.
   A known non-xAI model provider requires an explicit per-tool `enabled: true`;
   a missing or unresolved provider fails closed. xAI auth is always required,
   and `enabled: false` disables the tool for every provider.
@@ -259,11 +259,11 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     <Warning>
     Local video buffers are not accepted. Use remote `http(s)` URLs for video
     edit/extend inputs. Image-to-video accepts local image buffers because
-    OpenClaw encodes those as data URLs for xAI.
+    PASO encodes those as data URLs for xAI.
     </Warning>
 
     Video 1.5 also recognizes xAI's `grok-imagine-video-1.5-preview` and
-    `grok-imagine-video-1.5-2026-05-30` identifiers. OpenClaw forwards the
+    `grok-imagine-video-1.5-2026-05-30` identifiers. PASO forwards the
     selected identifier unchanged, but applies the same image-only validation.
 
     To use xAI as the default video provider:
@@ -304,7 +304,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     - Default operation timeout: 600 seconds unless `image_generate.timeoutMs`
       or `agents.defaults.mediaModels.image.timeoutMs` is set
 
-    OpenClaw asks xAI for `b64_json` image responses so generated media can be
+    PASO asks xAI for `b64_json` image responses so generated media can be
     stored and delivered through the normal channel attachment path. Local
     reference images are converted to data URLs; remote `http(s)` references
     pass through unchanged.
@@ -327,7 +327,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
 
     <Note>
     xAI also documents `quality`, `mask`, `user`, and an `auto` aspect ratio.
-    OpenClaw forwards only the shared cross-provider image controls today;
+    PASO forwards only the shared cross-provider image controls today;
     these native-only knobs are not exposed through `image_generate`.
     </Note>
 
@@ -364,7 +364,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     ```
 
     <Note>
-    OpenClaw uses xAI's batch `/v1/tts` endpoint for buffered synthesis,
+    PASO uses xAI's batch `/v1/tts` endpoint for buffered synthesis,
     authenticated `/v1/tts/voices` catalog discovery, and native
     `wss://api.x.ai/v1/tts` for streaming synthesis. Streaming is restricted to
     the native `api.x.ai` host, so custom `baseUrl` values are rejected on this
@@ -381,7 +381,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
   </Accordion>
 
   <Accordion title="Speech-to-text">
-    The bundled `xai` plugin registers batch speech-to-text through OpenClaw's
+    The bundled `xai` plugin registers batch speech-to-text through PASO's
     media-understanding transcription surface.
 
     - Endpoint: xAI REST `/v1/stt`
@@ -413,11 +413,11 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     ```
 
     Language can be supplied through the shared audio media config or per-call
-    transcription request. Prompt hints are accepted by the shared OpenClaw
+    transcription request. Prompt hints are accepted by the shared PASO
     surface, but the xAI REST STT integration forwards only file and language
     because those map to the current public xAI endpoint.
 
-    Valid empty transcripts are skipped, and OpenClaw tries any configured
+    Valid empty transcripts are skipped, and PASO tries any configured
     fallback. Malformed responses and HTTP failures remain errors.
 
   </Accordion>
@@ -481,7 +481,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     - Default voice: `eve`
     - Transport: `gateway-relay` (iOS, Android, and Control UI relay paths)
     - Audio: PCM16 24 kHz or G.711 µ-law 8 kHz
-    - Barge-in: xAI server VAD interrupts the response; OpenClaw clears queued playback
+    - Barge-in: xAI server VAD interrupts the response; PASO clears queued playback
       and truncates unplayed provider history
 
     Configure Talk on the Gateway:
@@ -526,7 +526,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     </Note>
 
     <Note>
-    `sessionResumption` defaults to `false`. When set to `true`, OpenClaw asks
+    `sessionResumption` defaults to `false`. When set to `true`, PASO asks
     xAI to retain enough session state to resume the same conversation after a
     reconnect and then reconnects with the returned conversation id. Leave it
     disabled when provider-side replay/retention is not acceptable; interrupted
@@ -536,7 +536,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
   </Accordion>
 
   <Accordion title="x_search configuration">
-    The bundled xAI plugin exposes `x_search` as an OpenClaw tool for
+    The bundled xAI plugin exposes `x_search` as a PASO tool for
     searching X (formerly Twitter) content via Grok.
 
     Config path: `plugins.entries.xai.config.xSearch`
@@ -573,7 +573,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
   </Accordion>
 
   <Accordion title="Code execution configuration">
-    The bundled xAI plugin exposes `code_execution` as an OpenClaw tool for
+    The bundled xAI plugin exposes `code_execution` as a PASO tool for
     remote code execution in xAI's sandbox environment.
 
     Config path: `plugins.entries.xai.config.codeExecution`
@@ -612,7 +612,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     Native `api.x.ai` Responses routes use xAI's server-side
     [`/responses/compact`](https://docs.x.ai/developers/advanced-api-usage/context-compaction)
     endpoint by default for manual `/compact` and threshold-driven preflight
-    compaction. The session keeps its OpenClaw transcript unchanged and stores
+    compaction. The session keeps its PASO transcript unchanged and stores
     xAI's opaque checkpoint for the next request. Completion notices report
     the provider's before and after token counts.
 
@@ -638,7 +638,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
     its `context_management` compaction is already managed by
     `responsesServerCompaction`.
 
-    Endpoint failures fall back to OpenClaw's client-side summarization.
+    Endpoint failures fall back to PASO's client-side summarization.
     Overflow recovery never calls the endpoint because xAI requires the input
     to fit the model context window before compaction.
 
@@ -649,10 +649,10 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
       fallback, or OAuth with an eligible xAI account. OAuth uses device-code
       verification without a localhost callback. xAI decides which accounts
       can receive OAuth API tokens, and the consent page may show Grok Build
-      even though OpenClaw does not require the Grok Build app.
-    - OpenClaw does not currently expose the xAI multi-agent model family. xAI
+      even though PASO does not require the Grok Build app.
+    - PASO does not currently expose the xAI multi-agent model family. xAI
       serves these models through the Responses API, but they do not accept
-      the client-side or custom tools used by OpenClaw's shared agent loop.
+      the client-side or custom tools used by PASO's shared agent loop.
       See the
       [xAI multi-agent limitations](https://docs.x.ai/developers/model-capabilities/text/multi-agent#limitations).
     - xAI Realtime voice currently exposes gateway-relay Talk transport only.
@@ -664,7 +664,7 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
   </Accordion>
 
   <Accordion title="Advanced notes">
-    - OpenClaw applies xAI-specific tool-schema and tool-call compatibility
+    - PASO applies xAI-specific tool-schema and tool-call compatibility
       fixes automatically on the shared runner path.
     - Native xAI requests default `tool_stream: true`. Set
       `agents.defaults.models["xai/<model>"].params.tool_stream` to `false`
@@ -678,8 +678,8 @@ stale context metadata on active 4.20 rows. It does not pin active 4.20
       configurable effort control, but still request
       `include: ["reasoning.encrypted_content"]` so prior encrypted reasoning
       can be replayed on follow-up turns.
-    - `web_search`, `x_search`, and `code_execution` are exposed as OpenClaw
-      tools. OpenClaw attaches only the specific xAI built-in each tool needs
+    - `web_search`, `x_search`, and `code_execution` are exposed as PASO
+      tools. PASO attaches only the specific xAI built-in each tool needs
       to that tool's request instead of attaching every native tool to every
       chat turn.
     - Grok `web_search` reads `plugins.entries.xai.config.webSearch.baseUrl`.
@@ -710,7 +710,7 @@ OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_TEST_QUIET=1 OPENCLAW_LIVE_IMAGE_GENERATION_P
 The provider-specific live file synthesizes normal TTS, telephony-friendly PCM
 TTS, transcribes audio through xAI batch STT, streams the same PCM through xAI
 realtime STT, generates text-to-image output, and edits a reference image.
-The shared image live file verifies the same xAI provider through OpenClaw's
+The shared image live file verifies the same xAI provider through PASO's
 runtime selection, fallback, normalization, and media attachment path. The
 opt-in Video 1.5 case submits one generated first-frame image at 1080P and
 verifies the completed video download.

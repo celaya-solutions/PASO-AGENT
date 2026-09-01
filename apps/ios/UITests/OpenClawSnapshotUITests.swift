@@ -183,7 +183,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
         let agentSelector = try XCTUnwrap(self.app?.buttons["RootTabs.Sidebar.AgentSelector"])
         XCTAssertTrue(agentSelector.waitForExistence(timeout: 5))
         XCTAssertGreaterThanOrEqual(agentSelector.frame.height, 44)
-        XCTAssertEqual(agentSelector.value as? String, "Molty")
+        XCTAssertEqual(agentSelector.value as? String, "PASO")
 
         let newChat = try XCTUnwrap(self.app?.buttons["New Chat"])
         XCTAssertTrue(newChat.exists)
@@ -191,7 +191,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
         XCTAssertGreaterThan(newChat.frame.minY, agentSelector.frame.maxY)
 
         let gatewayFooter = try XCTUnwrap(self.app?.buttons.matching(
-            NSPredicate(format: "label CONTAINS %@", "OpenClaw Gateway")).firstMatch)
+            NSPredicate(format: "label CONTAINS %@", "PASO Gateway")).firstMatch)
         XCTAssertTrue(gatewayFooter.exists)
         let settings = try XCTUnwrap(self.app?.buttons["RootTabs.Sidebar.Destination.settings"])
         XCTAssertTrue(settings.exists)
@@ -201,7 +201,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
 
         agentSelector.tap()
 
-        XCTAssertTrue(self.app?.buttons["Molty"].waitForExistence(timeout: 5) == true)
+        XCTAssertTrue(self.app?.buttons["PASO"].waitForExistence(timeout: 5) == true)
         XCTAssertTrue(self.app?.buttons["Research"].waitForExistence(timeout: 5) == true)
         XCTAssertTrue(self.app?.buttons["Automation"].exists == true)
         self.attachScreenshot(named: "sidebar-agent-selector-open")
@@ -209,7 +209,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
         self.app?.buttons["Research"].tap()
         XCTAssertEqual(agentSelector.value as? String, "Research")
         agentSelector.tap()
-        XCTAssertTrue(self.app?.buttons["Molty"].waitForExistence(timeout: 5) == true)
+        XCTAssertTrue(self.app?.buttons["PASO"].waitForExistence(timeout: 5) == true)
         XCTAssertTrue(self.app?.buttons["Research"].exists == true)
         XCTAssertTrue(self.app?.buttons["Automation"].exists == true)
     }
@@ -701,7 +701,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
         self.attachScreenshot(named: "chat-empty-starters")
 
         starter.tap()
-        let sentText = "Summarize the current OpenClaw status and tell me what needs attention."
+        let sentText = "Summarize the current PASO status and tell me what needs attention."
         let sentRows = self.app?.staticTexts.matching(NSPredicate(format: "label == %@", sentText))
         XCTAssertTrue(sentRows?.firstMatch.waitForExistence(timeout: 5) == true)
         XCTAssertEqual(sentRows?.count, 1)
@@ -726,12 +726,12 @@ final class OpenClawSnapshotUITests: XCTestCase {
             ])
 
         XCTAssertTrue(self.app?.staticTexts["Woran möchtest du arbeiten?"].waitForExistence(timeout: 8) == true)
-        let starter = try XCTUnwrap(self.app?.buttons["OpenClaw-Status prüfen"])
+        let starter = try XCTUnwrap(self.app?.buttons["PASO-Status prüfen"])
         XCTAssertTrue(starter.exists)
         starter.tap()
         XCTAssertTrue(
             self.app?.staticTexts[
-                "Fasse den aktuellen OpenClaw-Status zusammen und sage mir, was Aufmerksamkeit erfordert.",
+                "Fasse den aktuellen PASO-Status zusammen und sage mir, was Aufmerksamkeit erfordert.",
             ].waitForExistence(timeout: 5) == true)
         self.attachScreenshot(named: "chat-empty-starters-german")
     }
@@ -846,7 +846,7 @@ final class OpenClawSnapshotUITests: XCTestCase {
 
         let agentSessionRow = try XCTUnwrap(self.app?.buttons.matching(NSPredicate(
             format: "label BEGINSWITH[c] %@",
-            "Molty, chat")).firstMatch)
+            "PASO, chat")).firstMatch)
         XCTAssertTrue(agentSessionRow.waitForExistence(timeout: 8))
         agentSessionRow.tap()
 
@@ -1374,7 +1374,7 @@ extension OpenClawSnapshotUITests {
         let readiness = self.readinessMarker(in: app)
         XCTAssertTrue(
             readiness.waitForExistence(timeout: 8),
-            "OpenClaw root readiness marker did not appear")
+            "PASO root readiness marker did not appear")
         if screenshotMode {
             self.waitForValue("ready:\(target.initialDestination)", of: readiness, timeout: 8)
         }
@@ -1414,7 +1414,7 @@ extension OpenClawSnapshotUITests {
         self.launchApp(for: target)
         self.waitForReleaseScreenshotTarget(target)
         guard let app = self.app else {
-            XCTFail("OpenClaw is not running for screenshot target \(target.name)")
+            XCTFail("PASO is not running for screenshot target \(target.name)")
             return
         }
         beforeCapture?(app)
@@ -1424,7 +1424,7 @@ extension OpenClawSnapshotUITests {
 
     private func waitForReleaseScreenshotTarget(_ target: ScreenshotTarget) {
         guard let app = self.app else {
-            XCTFail("OpenClaw is not running for screenshot target \(target.name)")
+            XCTFail("PASO is not running for screenshot target \(target.name)")
             return
         }
         let anchor = self.destinationAnchor(in: app, destination: target.initialDestination)
@@ -1441,7 +1441,7 @@ extension OpenClawSnapshotUITests {
         app.terminate()
         XCTAssertTrue(
             app.wait(for: .notRunning, timeout: 5),
-            "OpenClaw did not terminate before the next launch",
+            "PASO did not terminate before the next launch",
             file: file,
             line: line)
         self.app = nil

@@ -1,22 +1,13 @@
 const RESET = "\x1b[0m";
 
 const TERMINAL_INTRO_ART = [
-  "          ..              ..",
-  "        .●●:.:          • •●●",
-  "       .●●●•●●          ●•●●●●",
-  "       :●●●●●•  ..  ..  ●●●●●●.",
-  "       .●●●●●::.:●••●:..•●●●●●",
-  "        :●●●●.  :●●●●.  :●●●●.",
-  "         •●●●•  ●●●●●● .●●●●:",
-  "        ..:••●●•●●●●●●•●●••...",
-  "       ..:●•●••●●●●●●●●••●●•:..",
-  "       :.:•:•••●●●●●●●••••••:.:",
-  "       .•. ●:..:●●●●●●...:• :•",
-  "          .:.   ●●●●●●   .:.",
-  "            .   ●●●●●•   .",
-  "           .   :●●●●●●.   .",
-  "              ●●●●●●●●●•",
-  "              .::•::•::",
+  "            ◆",
+  "            │",
+  "        ◆───◆",
+  "        │",
+  "        ◆───◆",
+  "            │",
+  "            ◆",
 ] as const;
 
 // Always full art: open-time request.cols is the pre-fit boot grid (the client
@@ -26,7 +17,7 @@ const TERMINAL_INTRO_ART = [
 // fixed 256-color indices (223/216) bypass the client theme and vanish on light
 // backgrounds. Yellow/bright-red stay warm on dark and darken on light.
 export function composeTerminalIntroBanner(): string {
-  const headline = `\x1b[33mWelcome to the Claw.${RESET}`;
+  const headline = `\x1b[33mWelcome to PASO.${RESET}`;
   const art = `\x1b[91m${TERMINAL_INTRO_ART.join("\r\n")}\r\n\r\n`;
   return `\r\n${headline}\r\n\r\n${art}${RESET}`;
 }

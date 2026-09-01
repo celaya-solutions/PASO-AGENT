@@ -1180,7 +1180,7 @@ wa-popover.new-session-page__project-popover::part(body) {
     margin-block: auto;
   }
 
-  .new-session-page .agent-chat__welcome-clawd {
+  .new-session-page .agent-chat__welcome-mark {
     margin-bottom: 0;
   }
 

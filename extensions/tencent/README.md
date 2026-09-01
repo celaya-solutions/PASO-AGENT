@@ -1,6 +1,6 @@
-# Tencent Cloud OpenClaw provider
+# Tencent Cloud PASO provider
 
-Official OpenClaw provider plugin for Tencent Cloud.
+Official PASO provider plugin for Tencent Cloud.
 
 ## Install
 
@@ -10,4 +10,4 @@ openclaw plugins install @openclaw/tencent-provider
 
 ## Docs
 
-See `docs/providers/tencent.md` in the OpenClaw repository, or the published docs at `https://docs.openclaw.ai/providers/tencent`.
+See `docs/providers/tencent.md` in the PASO repository, or the published docs at `https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/tencent.md`.

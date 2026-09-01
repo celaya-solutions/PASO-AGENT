@@ -244,12 +244,12 @@ function resolveDescription({ manifest, packageJson }: PluginSourceEntry) {
   if (channels.length > 0) {
     const channelLabel = displayList(channels);
     const channelNoun = channelLabel.toLowerCase().includes("channel") ? "" : " channel";
-    return `Adds the ${channelLabel}${channelNoun} surface for sending and receiving OpenClaw messages.`;
+    return `Adds the ${channelLabel}${channelNoun} surface for sending and receiving PASO messages.`;
   }
 
   const providers = Array.isArray(manifest.providers) ? manifest.providers : [];
   if (providers.length > 0) {
-    return `Adds ${displayList(providers)} model provider support to OpenClaw.`;
+    return `Adds ${displayList(providers)} model provider support to PASO.`;
   }
 
   const contracts = Object.keys(manifest.contracts ?? {}).toSorted((left, right) =>
@@ -281,7 +281,7 @@ function resolveDescription({ manifest, packageJson }: PluginSourceEntry) {
   }
 
   const packageDescription = normalizePackageDescription(packageJson.description);
-  return packageDescription ? `${packageDescription}.` : "Provides an OpenClaw plugin.";
+  return packageDescription ? `${packageDescription}.` : "Provides a PASO plugin.";
 }
 
 function pushUniqueDocLink(values: DocLink[], value: DocLink | null) {
@@ -372,13 +372,13 @@ function resolveInstallRoute(packageJson: PluginPackageJson, status: PluginStatu
   if (status === "core") {
     // Explicit bundle ownership describes the current install surface; release flags may stage future publication.
     if (packageJson.openclaw?.build?.bundledDist === true) {
-      return "included in OpenClaw";
+      return "included in PASO";
     }
     const release = packageJson.openclaw?.release;
     if (release?.publishToClawHub === true || release?.publishToNpm === true) {
-      return `included in OpenClaw; ${resolveInstallRoute(packageJson, "external")}`;
+      return `included in PASO; ${resolveInstallRoute(packageJson, "external")}`;
     }
-    return "included in OpenClaw";
+    return "included in PASO";
   }
   const install = packageJson.openclaw?.install;
   const release = packageJson.openclaw?.release;
@@ -513,9 +513,9 @@ ${record.surface}${manualBlock ? `\n\n${manualBlock}` : ""}${relatedDocs ? `\n\n
 function renderReferenceIndex(records: PluginRecord[]) {
   const referenceCount = records.filter(hasGeneratedReferencePage).length;
   return `---
-summary: "Generated index of OpenClaw plugin reference pages"
+summary: "Generated index of PASO plugin reference pages"
 read_when:
-  - You need a reference page for a specific OpenClaw plugin
+  - You need a reference page for a specific PASO plugin
   - You are auditing plugin docs coverage
 title: "Plugin reference"
 ---
@@ -684,7 +684,7 @@ function renderDocument() {
   };
 
   return `---
-summary: "Generated inventory of OpenClaw plugins shipped in core, published externally, or kept source-only"
+summary: "Generated inventory of PASO plugins shipped in core, published externally, or kept source-only"
 read_when:
   - You are deciding whether a plugin ships in the core npm package or installs separately
   - You are updating bundled plugin package metadata or release automation
@@ -705,7 +705,7 @@ pnpm plugins:inventory:gen
 ## Definitions
 
 - **Core npm package:** built into the \`openclaw\` npm package and available without a separate plugin install.
-- **Official external package:** OpenClaw-maintained plugin omitted from the core npm package, kept in this official inventory, and installed on demand through ClawHub and/or npm.
+- **Official external package:** PASO-maintained plugin omitted from the core npm package, kept in this official inventory, and installed on demand through ClawHub and/or npm.
 - **Source checkout only:** repo-local plugin omitted from published npm artifacts and not advertised as an installable package.
 
 Source checkouts are different from npm installs: after \`pnpm install\`, bundled
@@ -715,7 +715,7 @@ dependencies are available.
 ## Install a plugin
 
 Use the install route in each entry to decide whether install is needed. Plugins
-that say \`included in OpenClaw\` are already present in the core package.
+that say \`included in PASO\` are already present in the core package.
 Official external packages need one install, then a Gateway restart.
 
 For example, Discord is an official external package:

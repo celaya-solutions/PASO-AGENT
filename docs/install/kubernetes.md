@@ -1,26 +1,31 @@
 ---
-summary: "Deploy OpenClaw Gateway to a Kubernetes cluster with Kustomize"
+summary: "Deploy PASO Gateway to a Kubernetes cluster with Kustomize"
 read_when:
-  - You want to run OpenClaw on a Kubernetes cluster
-  - You want to test OpenClaw in a Kubernetes environment
+  - You want to run PASO on a Kubernetes cluster
+  - You want to test PASO in a Kubernetes environment
 title: "Kubernetes"
 ---
 
-A minimal starting point for running OpenClaw on Kubernetes, not a production-ready deployment. It covers the core resources and is meant to be adapted to your environment.
+A minimal starting point for running PASO on Kubernetes, not a production-ready deployment. It covers the core resources and is meant to be adapted to your environment.
 
 ## Why not Helm
 
-OpenClaw is a single container with some config files. The interesting customization is in agent content (Markdown files, skills, config overrides), not infrastructure templating. Kustomize handles overlays without the overhead of a Helm chart. Layer a Helm chart on top of these manifests if your deployment grows more complex.
+PASO is a single container with some config files. The interesting customization is in agent content (Markdown files, skills, config overrides), not infrastructure templating. Kustomize handles overlays without the overhead of a Helm chart. Layer a Helm chart on top of these manifests if your deployment grows more complex.
 
 ## What you need
 
 - A running Kubernetes cluster (AKS, EKS, GKE, k3s, kind, OpenShift, etc.)
 - `kubectl` connected to your cluster
 - An API key for at least one model provider
+- A container image built from this PASO fork and available to the cluster
 
 ## Quick start
 
 ```bash
+# Build the PASO source checkout. Push it to your private registry when the
+# cluster cannot use local images, then update the manifest image reference.
+docker build -t paso-agent:local .
+
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
@@ -92,7 +97,11 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 The Deployment probes `/readyz` for startup and traffic readiness with a five-minute startup budget, and `/healthz` for liveness. Every probe asserts the JSON probe contract rather than the status code alone, because the Control UI answers unknown paths with a catch-all `200`; a status-only check would pass forever against an image whose probe route does not exist yet.
 
-`/startupz` is the better traffic-admission probe because it ignores channel health, so one failing channel account cannot evict an otherwise healthy Gateway from Service endpoints. It requires an image built from the release that introduced it, which is newer than the tag pinned above. After pinning such an image, switch the startup and readiness probes to `/startupz` and keep `/readyz` for monitoring that should include channel-account health.
+`/startupz` is the better traffic-admission probe because it ignores channel
+health, so one failing channel account cannot evict an otherwise healthy
+Gateway from Service endpoints. Confirm that your chosen PASO source revision
+includes it before switching the startup and readiness probes to `/startupz`;
+keep `/readyz` for monitoring that should include channel-account health.
 
 ## Customization
 
@@ -108,14 +117,14 @@ Edit the `AGENTS.md` in `scripts/k8s/manifests/configmap.yaml` and redeploy:
 
 Edit `openclaw.json` in `scripts/k8s/manifests/configmap.yaml`. See [Gateway configuration](/gateway/configuration) for the full reference.
 
-The init container seeds `openclaw.json` and workspace `AGENTS.md` only when each file is missing from the PVC. The persisted copy is the source of truth after first boot: changes made through OpenClaw (`onboard`, `channels add`, `doctor --fix`, Control UI) survive pod restarts, and updating the ConfigMap does not overwrite an existing PVC copy. To intentionally reseed a file from an updated ConfigMap, delete the persisted copy and restart:
+The init container seeds `openclaw.json` and workspace `AGENTS.md` only when each file is missing from the PVC. The persisted copy is the source of truth after first boot: changes made through PASO (`onboard`, `channels add`, `doctor --fix`, Control UI) survive pod restarts, and updating the ConfigMap does not overwrite an existing PVC copy. To intentionally reseed a file from an updated ConfigMap, delete the persisted copy and restart:
 
 ```bash
 kubectl exec -n openclaw deploy/openclaw -- rm /home/node/.openclaw/openclaw.json
 kubectl rollout restart -n openclaw deploy/openclaw
 ```
 
-Deployments created from the previous template applied ConfigMap edits on every pod start (and discarded any config changes made through OpenClaw). If you relied on that flow, use the reseed commands above after ConfigMap edits.
+Deployments created from the previous template applied ConfigMap edits on every pod start (and discarded any config changes made through PASO). If you relied on that flow, use the reseed commands above after ConfigMap edits.
 
 ### Add providers
 
@@ -144,13 +153,15 @@ kubectl rollout restart deployment/openclaw -n openclaw
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### Custom image
+### Container image
 
-Edit the `image` field in `scripts/k8s/manifests/deployment.yaml`:
+The sample manifest uses the local tag `paso-agent:local`. For a remote cluster,
+push the source-built image to a registry you control and edit the `image` field
+in `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-# Bump this immutable versioned tag when upgrading OpenClaw.
-image: ghcr.io/openclaw/openclaw:2026.7.1-2-slim
+# Pin an immutable source-built PASO tag or digest in production.
+image: registry.example.com/celaya/paso-agent:<version-or-digest>
 ```
 
 ### Expose beyond port-forward
@@ -179,13 +190,13 @@ This applies all manifests and restarts the pod to pick up any config or secret 
 
 For the default `openclaw` namespace, this deletes the namespace and everything in it, including the PVC.
 
-For a custom namespace, `--delete` removes only OpenClaw resources and preserves the namespace and unrelated workloads:
+For a custom namespace, `--delete` removes only PASO resources and preserves the namespace and unrelated workloads:
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh --delete
 ```
 
-Use `--delete-resources` to request this scoped teardown explicitly in any namespace. Both scoped modes delete the OpenClaw Deployment, Service, PVC, ConfigMap, and generated Secret. Deleting the PVC removes OpenClaw's claim and access to its persisted data; whether the backing volume and data are deleted depends on the PersistentVolume or StorageClass reclaim policy (`Delete` or `Retain`).
+Use `--delete-resources` to request this scoped teardown explicitly in any namespace. Both scoped modes delete the PASO Deployment, Service, PVC, ConfigMap, and generated Secret. Deleting the PVC removes PASO's claim and access to its persisted data; whether the backing volume and data are deleted depends on the PersistentVolume or StorageClass reclaim policy (`Delete` or `Retain`).
 
 To delete a custom namespace and every workload in it, explicitly opt in:
 

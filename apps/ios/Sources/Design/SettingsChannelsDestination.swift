@@ -683,7 +683,7 @@ private struct SettingsChannelsStatesPreview: View {
         accounts: [
             SettingsChannelAccount(
                 id: "main",
-                name: "OpenClaw Ops",
+                name: "PASO Ops",
                 configured: true,
                 enabled: true,
                 running: true,

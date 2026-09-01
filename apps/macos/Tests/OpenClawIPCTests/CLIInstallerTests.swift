@@ -123,18 +123,18 @@ struct CLIInstallerTests {
             (#"{"event":"step","name":"disk-space","status":"start"}"#, "Checking available disk space…"),
             (#"{"event":"step","name":"node","status":"start"}"#, "Installing Node.js runtime…"),
             (#"{"event":"step","name":"git-tools","status":"start"}"#, "Preparing Git and pnpm…"),
-            (#"{"event":"step","name":"git-clone","status":"start"}"#, "Downloading OpenClaw source…"),
-            (#"{"event":"step","name":"git-update","status":"start"}"#, "Updating OpenClaw source…"),
+            (#"{"event":"step","name":"git-clone","status":"start"}"#, "Downloading PASO source…"),
+            (#"{"event":"step","name":"git-update","status":"start"}"#, "Updating PASO source…"),
             (#"{"event":"step","name":"dependencies","status":"start"}"#, "Installing dependencies…"),
             (#"{"event":"step","name":"control-ui","status":"start"}"#, "Building interface…"),
-            (#"{"event":"step","name":"cli-build","status":"start"}"#, "Building OpenClaw CLI…"),
-            (#"{"event":"step","name":"openclaw","status":"retry"}"#, "Retrying OpenClaw CLI install…"),
+            (#"{"event":"step","name":"cli-build","status":"start"}"#, "Building PASO CLI…"),
+            (#"{"event":"step","name":"openclaw","status":"retry"}"#, "Retrying PASO CLI install…"),
             (
                 #"{"event":"step","name":"disk-space","status":"warn"}"#,
                 "Couldn’t verify free disk space; continuing…"),
             (
                 #"{"event":"step","name":"git-update","status":"warn"}"#,
-                "Using the existing modified OpenClaw source…"),
+                "Using the existing modified PASO source…"),
             (
                 #"{"event":"step","name":"control-ui","status":"warn"}"#,
                 "Interface build did not finish; continuing…"),
@@ -337,11 +337,11 @@ struct CLIInstallerTests {
 
         #expect(CLIInstaller.classifyVersion(
             location: location,
-            output: "OpenClaw 2026.7.3\n",
+            output: "PASO 2026.7.3\n",
             expectedVersion: "2026.7.3") == .ready(location: location, version: "2026.7.3"))
         #expect(CLIInstaller.classifyVersion(
             location: location,
-            output: "OpenClaw\n",
+            output: "PASO\n",
             expectedVersion: "2026.7.3") == .unusable(location: location))
         #expect(CLIInstaller.classifyVersion(
             location: location,
@@ -407,7 +407,7 @@ struct CLIInstallerTests {
         defer { try? FileManager().removeItem(at: root) }
         try FileManager().createDirectory(at: root, withIntermediateDirectories: true)
         let executable = root.appendingPathComponent("openclaw")
-        try "#!/bin/sh\necho 'OpenClaw 2026.7.3'\n".write(
+        try "#!/bin/sh\necho 'PASO 2026.7.3'\n".write(
             to: executable,
             atomically: true,
             encoding: .utf8)
@@ -429,7 +429,7 @@ struct CLIInstallerTests {
         try FileManager().createDirectory(at: root, withIntermediateDirectories: true)
         let executable = root.appendingPathComponent("openclaw")
         let node = root.appendingPathComponent("node")
-        try "#!/bin/sh\necho 'OpenClaw 2026.7.3'\n".write(
+        try "#!/bin/sh\necho 'PASO 2026.7.3'\n".write(
             to: executable,
             atomically: true,
             encoding: .utf8)

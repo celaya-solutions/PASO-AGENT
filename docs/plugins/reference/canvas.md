@@ -12,7 +12,7 @@ Presents hosted widget documents on paired macOS panels.
 ## Distribution
 
 - Package: `@openclaw/canvas-plugin`
-- Install route: included in OpenClaw
+- Install route: included in PASO
 
 ## Surface
 

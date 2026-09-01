@@ -3,12 +3,12 @@ summary: "Migrate from the legacy backwards-compatibility layer to the modern pl
 title: "Plugin SDK migration"
 sidebarTitle: "Migrate to SDK"
 read_when:
-  - You used api.registerEmbeddedExtensionFactory before OpenClaw 2026.4.25
+  - You used api.registerEmbeddedExtensionFactory before PASO 2026.4.25
   - You are updating a plugin to the modern plugin architecture
-  - You maintain an external OpenClaw plugin
+  - You maintain an external PASO plugin
 ---
 
-OpenClaw replaced a broad backwards-compatibility layer with a modern plugin
+PASO replaced a broad backwards-compatibility layer with a modern plugin
 architecture built from small, focused imports. If your plugin predates that
 change, this guide gets it onto the current contracts.
 
@@ -42,7 +42,7 @@ separately recorded later windows; new plugins should use focused subpaths.
   load. Follow the mappings below before upgrading.
 </Warning>
 
-OpenClaw does not remove or reinterpret documented plugin behavior in the same
+PASO does not remove or reinterpret documented plugin behavior in the same
 change that introduces a replacement. Breaking contract changes go through a
 compatibility adapter, diagnostics, docs, and a deprecation window first. That
 applies to SDK imports, manifest fields, setup APIs, hooks, and runtime
@@ -92,7 +92,7 @@ Retained compatibility entrypoints keep their shipped caller names:
 
 ### Harness attempt result migration
 
-In OpenClaw 2026.8.1, `EmbeddedRunAttemptResult` from
+In PASO 2026.8.1, `EmbeddedRunAttemptResult` from
 `openclaw/plugin-sdk/agent-harness-runtime` requires the canonical `terminal`
 field. Source written against the 2026.7 direct alias must migrate when it
 constructs results with legacy fields such as `aborted`, `timedOut`, and
@@ -160,7 +160,7 @@ The setup-entry `legacyStateMigrations` option and feature flag,
 `BundledChannelLegacyStateMigrationDetector`, and
 `ChannelPlugin.lifecycle.detectLegacyStateMigrations` remain supported through
 one doctor-pipeline adapter for external plugins, but are deprecated. Removal
-plan: remove that adapter after OpenClaw 2027.1 only when a published-plugin
+plan: remove that adapter after PASO 2027.1 only when a published-plugin
 reader sweep finds no remaining users.
 
 ### AuthStorage SQLite migration
@@ -227,7 +227,7 @@ permanently. Channel-specific fields remain typed in a deprecated compatibility
 tier so existing external plugins still compile while plugin authors move those
 fields into plugin-local setup input types.
 
-OpenClaw does not ship major releases. A registry sweep on 2026-07-22 inspected
+PASO does not ship major releases. A registry sweep on 2026-07-22 inspected
 426 published out-of-tree channel plugins and removed 21 fields with no readers.
 The 22 retained fields each have a known published reader. Each further field is
 deleted as soon as no published plugin reads it; the retained set shrinks as
@@ -390,7 +390,7 @@ For local media read policy, import `getAgentScopedMediaLocalRoots(...)` or
     runtime-neutral middleware:
 
     ```typescript
-    // OpenClaw runtime tools and Codex runtime dynamic tools (result may be
+    // PASO runtime tools and Codex runtime dynamic tools (result may be
     // transformed). Codex-native tool results are also relayed for observation,
     // but their transformed output never reaches the model: the Codex
     // PostToolUse hook contract cannot replace a native tool response.
@@ -721,7 +721,7 @@ timeline for current status.
     **Old**: `tool()` factory from `openclaw/plugin-sdk/provider-web-search`.
 
     **New**: implement `createTool(...)` directly on the provider plugin.
-    OpenClaw no longer needs the SDK helper to register the tool wrapper.
+    PASO no longer needs the SDK helper to register the tool wrapper.
 
   </Accordion>
 
@@ -794,7 +794,7 @@ timeline for current status.
 
     **New**: a single `resolveThinkingProfile(ctx)` that returns a
     `ProviderThinkingProfile` with the canonical `id`, optional `label`, and a
-    ranked level list. OpenClaw downgrades stale stored values by profile rank
+    ranked level list. PASO downgrades stale stored values by profile rank
     automatically.
 
     The context includes `provider`, `modelId`, optional merged `reasoning`,

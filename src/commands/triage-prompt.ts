@@ -61,13 +61,13 @@ export function renderTriagePrompt(params: {
     return severity || left.checkId.localeCompare(right.checkId);
   });
   const lines = [
-    "You are debugging THIS machine's OpenClaw installation. Identify the root cause, explain the safest repair, and verify the result. You may run `openclaw doctor`, `openclaw doctor --fix`, `openclaw status --all`, and `openclaw logs`. Product documentation: https://docs.openclaw.ai.",
+    "You are debugging THIS machine's PASO installation. Identify the root cause, explain the safest repair, and verify the result. You may run `openclaw doctor`, `openclaw doctor --fix`, `openclaw status --all`, and `openclaw logs`. Product documentation: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs.",
     "",
     "## Environment",
     "",
-    `- OpenClaw: ${VERSION}`,
+    `- PASO: ${VERSION}`,
     `- Platform: ${process.platform}`,
-    `- Node.js: ${process.versions.node} (the runtime executing OpenClaw, which may differ from the shell default)`,
+    `- Node.js: ${process.versions.node} (the runtime executing PASO, which may differ from the shell default)`,
     "- Local shell commands inherit `OPENCLAW_STATE_DIR`, `OPENCLAW_CONFIG_PATH`, and `OPENCLAW_WORKSPACE_DIR` for the diagnosed installation and its default workspace; expand archive references in that shell. In embedded triage, in-process config and session tools use temporary agent run state. The execution cwd is separate from the installation's default workspace. Do not substitute a remote or sandbox installation for this local target.",
     "",
     "## Doctor findings",

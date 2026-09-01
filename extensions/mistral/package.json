@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/mistral-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Mistral provider plugin",
+  "description": "PASO Mistral provider plugin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

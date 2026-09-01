@@ -32,12 +32,12 @@ import Testing
         let opts = VoiceWakeForwarder.forwardOptions(
             sessionKey: entry.key,
             routeEntry: entry,
-            voiceWakeTrigger: "open claw")
+            voiceWakeTrigger: "paso")
 
         #expect(opts.sessionKey == "agent:main:telegram:group:6812765697")
         #expect(opts.channel == .telegram)
         #expect(opts.to == "telegram:6812765697")
-        #expect(opts.voiceWakeTrigger == "open claw")
+        #expect(opts.voiceWakeTrigger == "paso")
         #expect(opts.thinking == nil)
         #expect(opts.channel.shouldDeliver(opts.deliver) == true)
     }

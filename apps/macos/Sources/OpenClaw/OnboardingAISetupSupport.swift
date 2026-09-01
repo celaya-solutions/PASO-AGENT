@@ -337,8 +337,8 @@ extension OnboardingAISetupModel {
     /// Transport/protocol failures deserve plain language, not RPC codes.
     static func friendlyTransportError(_ raw: String) -> String {
         if raw.localizedCaseInsensitiveContains("unknown method") {
-            return "The Gateway is running an older OpenClaw version that doesn’t support " +
-                "app-guided setup. Update OpenClaw on the gateway, then try again."
+            return "The Gateway is running an older PASO version that doesn’t support " +
+                "app-guided setup. Update PASO on the gateway, then try again."
         }
         return raw.isEmpty
             ? "The Gateway setup request failed."
@@ -469,8 +469,8 @@ enum OnboardingAISetupError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .providerCatalogUnavailable:
-            "The Gateway is running an older OpenClaw version that doesn’t provide the " +
-                "supported provider list. Update OpenClaw on the gateway, then try again."
+            "The Gateway is running an older PASO version that doesn’t provide the " +
+                "supported provider list. Update PASO on the gateway, then try again."
         }
     }
 }

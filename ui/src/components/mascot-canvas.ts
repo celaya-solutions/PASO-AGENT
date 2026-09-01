@@ -1,5 +1,6 @@
 /* oxlint-disable unicorn/no-array-fill-with-reference-type -- CanvasRenderingContext2D.fill is not Array.fill. */
-// Canvas-only rendering for the canonical 120x120 Clawd vector.
+// Compatibility canvas for legacy <openclaw-mascot> call sites. The final
+// visible frame is PASO's neutral path/step mark.
 import type { MascotPalette, MascotPose } from "./mascot-pose.ts";
 
 const ART_SIZE = 120;
@@ -417,6 +418,42 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
+function drawPasoMark(ctx: CanvasRenderingContext2D, size: number): void {
+  ctx.save();
+  ctx.clearRect(0, 0, size, size);
+  ctx.scale(size / 64, size / 64);
+
+  ctx.fillStyle = "#0e1015";
+  ctx.fill(roundedRectPath(0, 0, 64, 64, 14));
+
+  const letterPath = new Path2D();
+  letterPath.moveTo(18, 50);
+  letterPath.lineTo(18, 14);
+  letterPath.lineTo(36, 14);
+  letterPath.bezierCurveTo(44.837, 14, 52, 21.163, 52, 30);
+  letterPath.bezierCurveTo(52, 38.837, 44.837, 46, 36, 46);
+  letterPath.lineTo(30, 46);
+  ctx.strokeStyle = "#e8590c";
+  ctx.lineWidth = 7;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.stroke(letterPath);
+
+  const stepPath = new Path2D();
+  stepPath.moveTo(18, 50);
+  stepPath.lineTo(28, 50);
+  stepPath.lineTo(28, 40);
+  stepPath.lineTo(38, 40);
+  stepPath.lineTo(38, 30);
+  stepPath.lineTo(50, 30);
+  ctx.strokeStyle = "#faf9f7";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "square";
+  ctx.lineJoin = "miter";
+  ctx.stroke(stepPath);
+  ctx.restore();
+}
+
 /** Draw one pose. Whole-body float is applied by the host to avoid canvas clipping. */
 export function drawMascot(
   pose: MascotPose,
@@ -469,4 +506,5 @@ export function drawMascot(
   drawMouth(ctx, pose);
   drawEffect(ctx, pose, palette);
   ctx.restore();
+  drawPasoMark(ctx, size);
 }

@@ -1,13 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-# OpenClaw Installer for macOS and Linux
-# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
+# PASO Installer for macOS and Linux
+# Usage: curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash
 
 BOLD='\033[1m'
-ACCENT='\033[38;2;255;77;77m'       # coral-bright  #ff4d4d
+ACCENT='\033[38;2;232;89;12m'        # PASO orange   #e8590c
 # shellcheck disable=SC2034
-ACCENT_BRIGHT='\033[38;2;255;110;110m' # lighter coral
+ACCENT_BRIGHT='\033[38;2;255;126;64m'  # lighter PASO orange
 INFO='\033[38;2;136;146;176m'       # text-secondary #8892b0
 SUCCESS='\033[38;2;0;229;204m'      # cyan-bright   #00e5cc
 WARN='\033[38;2;255;176;32m'        # amber (no site equiv, keep warm)
@@ -15,7 +15,7 @@ ERROR='\033[38;2;230;57;70m'        # coral-mid     #e63946
 MUTED='\033[38;2;90;100;128m'       # text-muted    #5a6480
 NC='\033[0m' # No Color
 
-DEFAULT_TAGLINE="All your chats, one OpenClaw."
+DEFAULT_TAGLINE="All your chats, one PASO."
 NODE_DEFAULT_MAJOR=26
 # Homebrew ships the current Node line as plain "node" (no versioned node@26
 # formula exists); versioned formulas only cover LTS lines like node@24.
@@ -399,7 +399,7 @@ print_gum_status() {
 print_installer_banner() {
     if [[ -n "$GUM" ]]; then
         local title tagline hint card
-        title="$("$GUM" style --foreground "#ff4d4d" --bold "🦞 OpenClaw Installer")"
+        title="$("$GUM" style --foreground "#e8590c" --bold "PASO Installer")"
         tagline="$("$GUM" style --foreground "#8892b0" "$TAGLINE")"
         hint="$("$GUM" style --foreground "#5a6480" "modern installer mode")"
         card="$(printf '%s\n%s\n%s' "$title" "$tagline" "$hint")"
@@ -409,7 +409,7 @@ print_installer_banner() {
     fi
 
     echo -e "${ACCENT}${BOLD}"
-    echo "  🦞 OpenClaw Installer"
+    echo "  PASO Installer"
     echo -e "${NC}${INFO}  ${TAGLINE}${NC}"
     echo ""
 }
@@ -425,7 +425,7 @@ detect_os_or_die() {
     if [[ "$OS" == "unknown" ]]; then
         ui_error "Unsupported operating system"
         echo "This installer supports macOS and Linux (including WSL)."
-        echo "For Windows, use: iwr -useb https://openclaw.ai/install.ps1 | iex"
+        echo "For Windows, use: iwr -useb https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1 | iex"
         exit 1
     fi
 
@@ -545,7 +545,7 @@ show_install_plan() {
 }
 
 show_footer_links() {
-    local faq_url="https://docs.openclaw.ai/start/faq"
+    local faq_url="https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/help/faq.md"
     if [[ -n "$GUM" ]]; then
         local content
         content="$(printf '%s\n%s' "Need help?" "FAQ: ${faq_url}")"
@@ -1080,7 +1080,7 @@ verify_npm_lifecycle_completed() {
     npm_root="$("$npm_cmd" root -g 2>/dev/null | awk 'NF { value = $0 } END { print value }')" || true
     [[ -n "$npm_root" ]] || { echo "Unable to resolve npm global root after install." >&2; return 1; }
     [[ ! -e "${npm_root%/}/openclaw/.openclaw-lifecycle-pending" && ! -e "${npm_root%/}/openclaw/dist/openclaw-install-guard" ]] || {
-      echo "OpenClaw lifecycle scripts did not complete; refusing installer success." >&2
+      echo "PASO lifecycle scripts did not complete; refusing installer success." >&2
       return 1
     }
 }
@@ -1126,9 +1126,9 @@ run_npm_global_install() {
         local log_quoted=""
         printf -v cmd_quoted '%q ' "${cmd[@]}"
         printf -v log_quoted '%q' "$log"
-        run_with_spinner "Installing OpenClaw package" bash -c "${cmd_quoted}>${log_quoted} 2>&1" || install_status=$?
+        run_with_spinner "Installing PASO package" bash -c "${cmd_quoted}>${log_quoted} 2>&1" || install_status=$?
     else
-        ui_info "Installing OpenClaw package"
+        ui_info "Installing PASO package"
         "${cmd[@]}" < /dev/null >"$log" 2>&1 || install_status=$?
     fi
     (( install_status == 0 )) || return "$install_status"
@@ -1229,7 +1229,7 @@ install_openclaw_npm() {
             attempted_build_tool_fix=true
             ui_info "Retrying npm install after build tools setup"
             if run_verified_npm_global_install "$spec" "$log"; then
-                ui_success "OpenClaw npm package installed"
+                ui_success "PASO npm package installed"
                 return 0
             fi
         fi
@@ -1249,7 +1249,7 @@ install_openclaw_npm() {
             ui_warn "npm left stale directory; cleaning and retrying"
             cleanup_npm_stale_rename_dirs || return 1
             if run_verified_npm_global_install "$spec" "$log"; then
-                ui_success "OpenClaw npm package installed"
+                ui_success "PASO npm package installed"
                 return 0
             fi
             return 1
@@ -1259,7 +1259,7 @@ install_openclaw_npm() {
             conflict="$(extract_openclaw_conflict_path "$log" || true)"
             if [[ -n "$conflict" ]] && cleanup_openclaw_bin_conflict "$conflict"; then
                 if run_verified_npm_global_install "$spec" "$log"; then
-                    ui_success "OpenClaw npm package installed"
+                    ui_success "PASO npm package installed"
                     return 0
                 fi
                 return 1
@@ -1272,12 +1272,11 @@ install_openclaw_npm() {
         fi
         return 1
     fi
-    ui_success "OpenClaw npm package installed"
+    ui_success "PASO npm package installed"
     return 0
 }
 
 TAGLINES=()
-TAGLINES+=("Your terminal just grew claws—type something and let the bot pinch the busywork.")
 TAGLINES+=("Welcome to the command line: where dreams compile and confidence segfaults.")
 TAGLINES+=("I run on caffeine, JSON5, and the audacity of \"it worked on my machine.\"")
 TAGLINES+=("Gateway online—please keep hands, feet, and appendages inside the shell at all times.")
@@ -1292,7 +1291,6 @@ TAGLINES+=("I can grep it, git blame it, and gently roast it—pick your coping 
 TAGLINES+=("Hot reload for config, cold sweat for deploys.")
 TAGLINES+=("I'm the assistant your terminal demanded, not the one your sleep schedule requested.")
 TAGLINES+=("I keep secrets like a vault... unless you print them in debug logs again.")
-TAGLINES+=("Automation with claws: minimal fuss, maximal pinch.")
 TAGLINES+=("If you're lost, run doctor; if you're brave, run prod; if you're wise, run tests.")
 TAGLINES+=("Your task has been queued; your dignity has been deprecated.")
 TAGLINES+=("I'm not magic—I'm just extremely persistent with retries and coping strategies.")
@@ -1306,13 +1304,9 @@ TAGLINES+=("I'm like tmux: confusing at first, then suddenly you can't live with
 TAGLINES+=("I can run local, remote, or purely on vibes—results may vary with DNS.")
 TAGLINES+=("If you can describe it, I can probably automate it—or at least make it funnier.")
 TAGLINES+=("Your config is valid, your assumptions are not.")
-TAGLINES+=("Claws out, commit in—let's ship something mildly responsible.")
-TAGLINES+=("I'll butter your workflow like a lobster roll: messy, delicious, effective.")
-TAGLINES+=("Shell yeah—I'm here to pinch the toil and leave you the glory.")
 TAGLINES+=("If it's repetitive, I'll automate it; if it's hard, I'll bring jokes and a rollback plan.")
 TAGLINES+=("WhatsApp, but make it ✨engineering✨.")
 TAGLINES+=("Turning \"I'll reply later\" into \"my bot replied instantly\".")
-TAGLINES+=("The only crab in your contacts you actually want to hear from. 🦞")
 TAGLINES+=("Chat automation for people who peaked at IRC.")
 TAGLINES+=("Because Siri wasn't answering at 3AM.")
 TAGLINES+=("IPC, but it's your phone.")
@@ -1336,7 +1330,7 @@ TAGLINES+=("Ah, the fruit tree company! 🍎")
 
 HOLIDAY_NEW_YEAR="New Year's Day: New year, new config—same old EADDRINUSE, but this time we resolve it like grown-ups."
 HOLIDAY_LUNAR_NEW_YEAR="Lunar New Year: May your builds be lucky, your branches prosperous, and your merge conflicts chased away with fireworks."
-HOLIDAY_CHRISTMAS="Christmas: Ho ho ho—Santa's little claw-sistant is here to ship joy, roll back chaos, and stash the keys safely."
+HOLIDAY_CHRISTMAS="Christmas: ship joy, roll back chaos, and keep the keys safe."
 HOLIDAY_EID="Eid al-Fitr: Celebration mode: queues cleared, tasks completed, and good vibes committed to main with clean history."
 HOLIDAY_DIWALI="Diwali: Let the logs sparkle and the bugs flee—today we light up the terminal and ship with pride."
 HOLIDAY_EASTER="Easter: I found your missing environment variable—consider it a tiny CLI egg hunt with fewer jellybeans."
@@ -1392,7 +1386,7 @@ NO_ONBOARD=${OPENCLAW_NO_ONBOARD:-0}
 NO_PROMPT=${OPENCLAW_NO_PROMPT:-0}
 DRY_RUN=${OPENCLAW_DRY_RUN:-0}
 INSTALL_METHOD=${OPENCLAW_INSTALL_METHOD:-}
-OPENCLAW_VERSION=${OPENCLAW_VERSION:-latest}
+OPENCLAW_VERSION=${OPENCLAW_VERSION:-}
 USE_BETA=${OPENCLAW_BETA:-0}
 GIT_DIR=${OPENCLAW_GIT_DIR:-"$(resolve_openclaw_effective_home)/openclaw"}
 GIT_DIR_EXPLICIT=${OPENCLAW_GIT_DIR:+1}
@@ -1404,20 +1398,21 @@ VERIFY_INSTALL="${OPENCLAW_VERIFY_INSTALL:-0}"
 OPENCLAW_BIN=""
 PNPM_CMD=()
 GIT_REF_KIND=""
+PASO_GIT_REPO_URL="https://github.com/celaya-solutions/PASO-AGENT.git"
 HELP=0
 
 print_usage() {
     cat <<EOF
-OpenClaw installer (macOS + Linux)
+PASO installer (macOS + Linux)
 
 Usage:
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- [options]
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- [options]
 
 Options:
-  --install-method, --method npm|git   Install via npm (default) or from a git checkout
+  --install-method, --method git|npm   Install from the PASO git checkout (default) or via npm compatibility mode
   --npm                               Shortcut for --install-method npm
   --git, --github                     Shortcut for --install-method git
-  --version <version|dist-tag|spec>    npm install target (default: latest)
+  --version <version|dist-tag|spec>    Git ref or npm target (default: main for git, latest for npm)
   --beta                               Use beta if available, else latest
   --git-dir, --dir <path>             Checkout directory (default: ~/openclaw)
   --no-git-update                      Skip git pull for existing checkout
@@ -1430,7 +1425,7 @@ Options:
 
 Environment variables:
   OPENCLAW_INSTALL_METHOD=git|npm
-  OPENCLAW_VERSION=latest|next|<semver>|<spec>
+  OPENCLAW_VERSION=main|latest|next|<semver>|<spec>
   OPENCLAW_BETA=0|1
   OPENCLAW_GIT_DIR=...
   OPENCLAW_GIT_UPDATE=0|1
@@ -1441,11 +1436,11 @@ Environment variables:
   OPENCLAW_VERBOSE=1
   OPENCLAW_NPM_LOGLEVEL=error|warn|notice  Default: error (hide npm deprecation noise)
 Examples:
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard --verify
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --version main
-  curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git --no-onboard
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --no-onboard
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --no-onboard --verify
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main
+  curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --no-onboard
 EOF
 }
 
@@ -1570,7 +1565,7 @@ choose_install_method_interactive() {
 
     if [[ -n "$GUM" ]] && gum_is_tty; then
         local header selection
-        header="Detected OpenClaw checkout in: ${detected_checkout}
+        header="Detected PASO checkout in: ${detected_checkout}
 Choose install method"
         selection="$("$GUM" choose \
             --header "$header" \
@@ -1593,7 +1588,7 @@ Choose install method"
 
     local choice=""
     choice="$(prompt_choice "$(cat <<EOF
-${WARN}→${NC} Detected a OpenClaw source checkout in: ${INFO}${detected_checkout}${NC}
+${WARN}→${NC} Detected a PASO source checkout in: ${INFO}${detected_checkout}${NC}
 Choose install method:
   1) Update this checkout (git) and use it
   2) Install global via npm (migrate away from git)
@@ -1651,7 +1646,7 @@ print_homebrew_admin_fix() {
     echo "  2) Ask an Administrator to grant admin rights, then sign out/in:"
     echo "     sudo dseditgroup -o edit -a ${current_user} -t user admin"
     echo "Then retry:"
-    echo "  curl -fsSL https://openclaw.ai/install.sh | bash"
+    echo "  curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash"
 }
 
 install_homebrew() {
@@ -1688,7 +1683,7 @@ parse_node_version_components_for_binary() {
     version="${version#"${version%%[![:space:]]*}"}"
     version="${version%"${version##*[![:space:]]}"}"
 
-    # This standalone installer runs before OpenClaw exists on disk. Mirror the
+    # This standalone installer runs before PASO exists on disk. Mirror the
     # release grammar in node-version.mjs; parity cases guard this boundary.
     if [[ ! "$version" =~ ^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
         return 1
@@ -2142,7 +2137,7 @@ ensure_default_node_active_shell() {
         echo "  nvm use ${NODE_DEFAULT_MAJOR}"
         echo "  nvm alias default ${NODE_DEFAULT_MAJOR}"
         echo "Then open a new shell and rerun:"
-        echo "  curl -fsSL https://openclaw.ai/install.sh | bash"
+        echo "  curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash"
     else
         echo "Install/select Node.js ${NODE_DEFAULT_MAJOR} and ensure it is first on PATH, then rerun installer."
     fi
@@ -2256,7 +2251,7 @@ install_node_with_user_prefix() {
 
     ui_info "Using a user-space Node.js runtime because the system Node.js links unsafe SQLite"
     run_required_step "Downloading user-space Node.js installer" \
-        download_validated_script "https://openclaw.ai/install-cli.sh" "$cli_installer"
+        download_validated_script "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install-cli.sh" "$cli_installer"
     # The child Bash expands this script's positional arguments, not this shell.
     # shellcheck disable=SC2016
     run_required_step "Installing user-space Node.js" \
@@ -2463,7 +2458,7 @@ fix_npm_permissions() {
     ui_info "Configuring npm for user-local installs"
     mkdir -p "$HOME/.npm-global"
     npm config set prefix "$HOME/.npm-global" < /dev/null
-    ui_warn "Avoid sudo npm i -g for future OpenClaw updates; use npm i -g openclaw@latest so npm keeps using this user prefix instead of a different global prefix."
+    ui_warn "Avoid sudo npm i -g in npm compatibility mode; use the PASO git installer for normal updates, or npm i -g openclaw@latest only when you explicitly want the upstream package so npm keeps using this user prefix."
 
     persist_shell_path_prepend "$HOME/.npm-global/bin" "\$HOME/.npm-global/bin" || true
 
@@ -2497,10 +2492,10 @@ ensure_openclaw_bin_link() {
     "$target" --version >/dev/null 2>&1
 }
 
-# Check for existing OpenClaw installation
+# Check for existing PASO installation
 check_existing_openclaw() {
     if [[ -n "$(type -P openclaw 2>/dev/null || true)" ]]; then
-        ui_info "Existing OpenClaw installation detected, upgrading"
+        ui_info "Existing PASO installation detected, upgrading"
         return 0
     fi
     return 1
@@ -2577,27 +2572,132 @@ should_prefer_offline_pnpm_install() {
     [[ -z "$configured" || "$configured" == "undefined" || "$configured" == "null" ]]
 }
 
+resolve_latest_paso_git_tag() {
+    local repo_dir="$1"
+    local lane="$2"
+    git -C "$repo_dir" ls-remote --tags --refs origin 'refs/tags/v*' 2>/dev/null | awk -v lane="$lane" '
+      {
+        tag = $2
+        sub(/^refs\/tags\//, "", tag)
+        raw = substr(tag, 2)
+        count = split(raw, part, /[.-]/)
+        correction = 0
+        beta = 0
+        valid = 0
+        if (lane == "stable" && (count == 3 || (count == 4 && part[4] ~ /^[0-9]+$/))) {
+          correction = count == 4 ? part[4] + 0 : 0
+          valid = part[1] ~ /^[0-9]+$/ && part[2] ~ /^[0-9]+$/ && part[3] ~ /^[0-9]+$/
+        } else if (lane == "beta" && count == 5 && part[4] == "beta" && part[5] ~ /^[0-9]+$/) {
+          beta = part[5] + 0
+          valid = part[1] ~ /^[0-9]+$/ && part[2] ~ /^[0-9]+$/ && part[3] ~ /^[0-9]+$/
+        }
+        if (!valid) next
+        year = part[1] + 0
+        month = part[2] + 0
+        patch = part[3] + 0
+        suffix = lane == "stable" ? correction : beta
+        if (!found || year > best_year ||
+            (year == best_year && month > best_month) ||
+            (year == best_year && month == best_month && patch > best_patch) ||
+            (year == best_year && month == best_month && patch == best_patch && suffix > best_suffix)) {
+          found = 1
+          best = tag
+          best_year = year
+          best_month = month
+          best_patch = patch
+          best_suffix = suffix
+        }
+      }
+      END { if (found) print best }
+    '
+}
+
+is_paso_git_remote_url() {
+    local normalized
+    normalized="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+    normalized="${normalized%/}"
+    normalized="${normalized%.git}"
+    case "$normalized" in
+        https://github.com/celaya-solutions/paso-agent|http://github.com/celaya-solutions/paso-agent|git://github.com/celaya-solutions/paso-agent|ssh://git@github.com/celaya-solutions/paso-agent|git@github.com:celaya-solutions/paso-agent) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+is_legacy_openclaw_git_remote_url() {
+    local normalized
+    normalized="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+    normalized="${normalized%/}"
+    normalized="${normalized%.git}"
+    case "$normalized" in
+        https://github.com/openclaw/openclaw|http://github.com/openclaw/openclaw|git://github.com/openclaw/openclaw|ssh://git@github.com/openclaw/openclaw|git@github.com:openclaw/openclaw) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+ensure_paso_git_origin() {
+    local repo_dir="$1"
+    local repo_url="$2"
+    local origin_url=""
+    local upstream_url=""
+    local added_upstream=0
+    origin_url="$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"
+    if [[ -z "$origin_url" ]]; then
+        run_quiet_step "Configuring PASO git origin" git -C "$repo_dir" remote add origin "$repo_url"
+        return $?
+    fi
+    if is_paso_git_remote_url "$origin_url"; then
+        return 0
+    fi
+    if ! is_legacy_openclaw_git_remote_url "$origin_url"; then
+        ui_error "Git checkout origin is not the PASO repository: ${origin_url}"
+        ui_error "Use a different --git-dir or change origin to ${repo_url} after preserving your fork remote."
+        return 1
+    fi
+
+    upstream_url="$(git -C "$repo_dir" remote get-url upstream 2>/dev/null || true)"
+    if [[ -n "$upstream_url" ]] && ! is_legacy_openclaw_git_remote_url "$upstream_url"; then
+        ui_error "Cannot preserve the legacy OpenClaw origin because the upstream remote already points elsewhere."
+        ui_error "Move that remote or choose a different --git-dir, then retry."
+        return 1
+    fi
+    if [[ -z "$upstream_url" ]]; then
+        run_quiet_step "Preserving legacy framework remote" git -C "$repo_dir" remote add upstream "$origin_url" || return 1
+        added_upstream=1
+    fi
+    if ! run_quiet_step "Migrating git origin to PASO" git -C "$repo_dir" remote set-url origin "$repo_url"; then
+        if [[ "$added_upstream" -eq 1 ]]; then
+            git -C "$repo_dir" remote remove upstream >/dev/null 2>&1 || true
+        fi
+        return 1
+    fi
+    if ! is_paso_git_remote_url "$(git -C "$repo_dir" remote get-url origin 2>/dev/null || true)"; then
+        ui_error "Could not verify the PASO git origin after migration."
+        return 1
+    fi
+}
+
 resolve_git_openclaw_ref() {
-    local requested="${OPENCLAW_VERSION:-latest}"
+    local repo_dir="${1:-$GIT_DIR}"
+    local requested="${OPENCLAW_VERSION:-main}"
     local resolved_version=""
 
     case "$requested" in
         ""|latest)
-            resolved_version="$(npm view "openclaw" "dist-tags.${requested:-latest}" 2>/dev/null || true)"
+            resolved_version="$(resolve_latest_paso_git_tag "$repo_dir" stable)"
             if [[ -n "$resolved_version" ]]; then
-                echo "v${resolved_version}"
+                echo "$resolved_version"
                 return 0
             fi
             echo "main"
             return 0
             ;;
         next|beta)
-            resolved_version="$(npm view "openclaw" "dist-tags.${requested:-latest}" 2>/dev/null || true)"
+            resolved_version="$(resolve_latest_paso_git_tag "$repo_dir" beta)"
             if [[ -n "$resolved_version" ]]; then
-                echo "v${resolved_version}"
+                echo "$resolved_version"
                 return 0
             fi
-            echo "$requested"
+            echo "main"
             return 0
             ;;
         main)
@@ -2770,7 +2870,7 @@ clone_git_checkout_transactionally() {
     fi
     TMPFILES+=("$staging_dir")
 
-    run_quiet_step "Cloning OpenClaw" git clone "$@" "$repo_url" "$staging_dir" || clone_status=$?
+    run_quiet_step "Cloning PASO" git clone "$@" "$repo_url" "$staging_dir" || clone_status=$?
     if (( clone_status != 0 )); then
         return "$clone_status"
     fi
@@ -2989,8 +3089,8 @@ warn_duplicate_openclaw_global_installs() {
         return 0
     fi
 
-    ui_warn "Multiple OpenClaw global installs detected"
-    echo "  Different Node/npm environments can run different OpenClaw versions."
+    ui_warn "Multiple PASO global installs detected"
+    echo "  Different Node/npm environments can run different PASO versions."
 
     local active_node active_npm active_openclaw
     active_node="$(command -v node 2>/dev/null || true)"
@@ -3271,7 +3371,7 @@ publish_executable_wrapper() {
 
 install_openclaw_from_git() {
     local repo_dir="$1"
-    local repo_url="https://github.com/openclaw/openclaw.git"
+    local repo_url="$PASO_GIT_REPO_URL"
 
     mkdir -p "$(dirname "$repo_dir")"
     if [[ -d "$repo_dir" ]]; then
@@ -3281,9 +3381,9 @@ install_openclaw_from_git() {
     fi
 
     if [[ -d "$repo_dir/.git" ]]; then
-        ui_info "Installing OpenClaw from git checkout: ${repo_dir}"
+        ui_info "Installing PASO from git checkout: ${repo_dir}"
     else
-        ui_info "Installing OpenClaw from GitHub (${repo_url})"
+        ui_info "Installing PASO from GitHub (${repo_url})"
     fi
 
     if ! check_git; then
@@ -3299,8 +3399,10 @@ install_openclaw_from_git() {
         clone_git_checkout_transactionally "$repo_url" "$repo_dir" --filter=blob:none
     fi
 
+    ensure_paso_git_origin "$repo_dir" "$repo_url" || return 1
+
     local git_ref
-    git_ref="$(resolve_git_openclaw_ref)"
+    git_ref="$(resolve_git_openclaw_ref "$repo_dir")"
     if [[ -z "$(git -C "$repo_dir" status --porcelain 2>/dev/null || true)" ]]; then
         ui_info "Using git ref: ${git_ref}"
         checkout_git_openclaw_ref "$repo_dir" "$git_ref"
@@ -3327,7 +3429,7 @@ install_openclaw_from_git() {
     if ! run_quiet_step "Building UI" run_pnpm -C "$repo_dir" ui:build; then
         ui_warn "UI build failed; continuing (CLI may still work)"
     fi
-    run_quiet_step "Building OpenClaw" run_pnpm -C "$repo_dir" build
+    run_quiet_step "Building PASO" run_pnpm -C "$repo_dir" build
 
     ensure_user_local_bin_on_path
 
@@ -3356,11 +3458,11 @@ install_openclaw_from_git() {
 set -euo pipefail
 exec ${node_bin_quoted} ${entry_path_quoted} "\$@"
 EOF
-    ui_success "OpenClaw wrapper installed to \$HOME/.local/bin/openclaw"
-    ui_info "Manual builds need the checkout-pinned pnpm launcher; installer bootstrap is temporary: https://docs.openclaw.ai/install/installer#source-build-toolchain"
+    ui_success "PASO wrapper installed to \$HOME/.local/bin/openclaw"
+    ui_info "Manual builds need the checkout-pinned pnpm launcher; installer bootstrap is temporary: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/install/installer.md#source-build-toolchain"
 }
 
-# Install OpenClaw
+# Install PASO
 resolve_beta_version() {
     local beta=""
     beta="$(npm view openclaw dist-tags.beta 2>/dev/null || true)"
@@ -3387,9 +3489,14 @@ is_openclaw_source_package_install_spec() {
     normalized_value="${normalized_value#openclaw@}"
 
     [[ "$normalized_value" == "main" ]] && return 0
+    [[ "$normalized_value" =~ ^github:celaya-solutions/paso-agent($|[#/]) ]] && return 0
     [[ "$normalized_value" =~ ^github:openclaw/openclaw($|[#/]) ]] && return 0
 
     normalized_value="${normalized_value#git+}"
+    [[ "$normalized_value" =~ ^https?://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+    [[ "$normalized_value" =~ ^ssh://git@github\.com[:/]celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+    [[ "$normalized_value" =~ ^git://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
+    [[ "$normalized_value" =~ ^git@github\.com:celaya-solutions/paso-agent(\.git)?($|[?#]) ]] && return 0
     [[ "$normalized_value" =~ ^https?://github\.com/openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
     [[ "$normalized_value" =~ ^ssh://git@github\.com[:/]openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
     [[ "$normalized_value" =~ ^git://github\.com/openclaw/openclaw(\.git)?($|[?#]) ]] && return 0
@@ -3419,7 +3526,7 @@ resolve_package_install_spec() {
     local normalized_value=""
     normalized_value="$(to_lowercase_ascii "$value")"
     if [[ "$normalized_value" == "main" ]]; then
-        echo "github:openclaw/openclaw#main"
+        echo "github:celaya-solutions/PASO-AGENT#main"
         return 0
     fi
     if is_explicit_package_install_spec "$value"; then
@@ -3453,7 +3560,7 @@ install_openclaw() {
     fi
 
     if is_openclaw_source_package_install_spec "${OPENCLAW_VERSION}"; then
-        ui_error "npm installs do not support OpenClaw GitHub source targets like '${OPENCLAW_VERSION}'."
+        ui_error "npm installs do not support PASO GitHub source targets like '${OPENCLAW_VERSION}'."
         ui_info "Use --install-method git --version main for the moving main checkout, or use latest, beta, an exact version, or a built .tgz package."
         return 1
     fi
@@ -3463,17 +3570,17 @@ install_openclaw() {
         resolved_version="$(npm view "${package_name}@${OPENCLAW_VERSION}" version 2>/dev/null || true)"
     fi
     if [[ -n "$resolved_version" ]]; then
-        ui_info "Installing OpenClaw v${resolved_version}"
+        ui_info "Installing PASO v${resolved_version}"
     else
-        ui_info "Installing OpenClaw (${OPENCLAW_VERSION})"
+        ui_info "Installing PASO (${OPENCLAW_VERSION})"
     fi
     local install_spec=""
     install_spec="$(resolve_package_install_spec "${package_name}" "${OPENCLAW_VERSION}")"
 
     if ! install_openclaw_npm "${install_spec}" || ! ensure_openclaw_bin_link; then
-        ui_warn "npm install did not produce a usable OpenClaw package; retrying"
+        ui_warn "npm install did not produce a usable PASO package; retrying"
         if ! install_openclaw_npm "${install_spec}" || ! ensure_openclaw_bin_link; then
-            ui_error "npm install did not produce a usable OpenClaw package"
+            ui_error "npm install did not produce a usable PASO package"
             restore_openclaw_bin_backup || ui_error "Could not restore the previous openclaw command"
             return 1
         fi
@@ -3680,7 +3787,7 @@ verify_installation() {
         return 1
     fi
 
-    run_quiet_step "Checking OpenClaw version" "$claw" --version || return 1
+    run_quiet_step "Checking PASO version" "$claw" --version || return 1
 
     if [[ "$verify_gateway" != "true" ]]; then
         ui_info "Setup not complete; skipping gateway service check"
@@ -3786,8 +3893,8 @@ main() {
 
     if [[ -z "$INSTALL_METHOD" && -n "$detected_checkout" ]]; then
         if ! is_promptable; then
-            ui_info "Found OpenClaw checkout but no TTY; defaulting to npm install"
-            INSTALL_METHOD="npm"
+            ui_info "Found PASO checkout but no TTY; using the checkout"
+            INSTALL_METHOD="git"
         else
             local selected_method=""
             selected_method="$(choose_install_method_interactive "$detected_checkout" || true)"
@@ -3805,13 +3912,23 @@ main() {
     fi
 
     if [[ -z "$INSTALL_METHOD" ]]; then
-        INSTALL_METHOD="npm"
+        INSTALL_METHOD="git"
     fi
 
     if [[ "$INSTALL_METHOD" != "npm" && "$INSTALL_METHOD" != "git" ]]; then
         ui_error "invalid --install-method: ${INSTALL_METHOD}"
         echo "Use: --install-method npm|git"
         exit 2
+    fi
+
+    if [[ -z "$OPENCLAW_VERSION" ]]; then
+        if [[ "$USE_BETA" == "1" ]]; then
+            OPENCLAW_VERSION="beta"
+        elif [[ "$INSTALL_METHOD" == "git" ]]; then
+            OPENCLAW_VERSION="main"
+        else
+            OPENCLAW_VERSION="latest"
+        fi
     fi
 
     show_install_plan "$detected_checkout"
@@ -3844,7 +3961,7 @@ main() {
         exit 1
     fi
 
-    ui_stage "Installing OpenClaw"
+    ui_stage "Installing PASO"
 
     local final_git_dir=""
     if [[ "$INSTALL_METHOD" == "git" ]]; then
@@ -3870,7 +3987,7 @@ main() {
         # Step 4: npm permissions (Linux)
         fix_npm_permissions
 
-        # Step 5: OpenClaw
+        # Step 5: PASO
         prepare_git_wrapper_backup_for_npm || return $?
         install_openclaw
         local npm_candidate=""
@@ -3884,7 +4001,7 @@ main() {
             restore_openclaw_bin_backup || ui_error "Could not restore the previous openclaw command"
             return 1
         fi
-        ui_success "OpenClaw installed"
+        ui_success "PASO installed"
         retire_git_wrapper_after_npm_install || return $?
     fi
 
@@ -3995,9 +4112,9 @@ main() {
     installed_version="$(resolve_openclaw_version)"
     echo ""
     if [[ -n "$installed_version" ]]; then
-        ui_celebrate "🦞 OpenClaw installed successfully (${installed_version})!"
+        ui_celebrate "PASO installed successfully (${installed_version})!"
     else
-        ui_celebrate "🦞 OpenClaw installed successfully!"
+        ui_celebrate "PASO installed successfully!"
     fi
     if [[ "$is_upgrade" == "true" ]]; then
         ui_info "Upgrade complete"
@@ -4010,8 +4127,8 @@ main() {
             "Settled in. Time to automate your life whether you're ready or not."
             "Cozy. I've already read your calendar. We need to talk."
             "Finally unpacked. Now point me at your problems."
-            "cracks claws Alright, what are we building?"
-            "The lobster has landed. Your terminal will never be the same."
+            "PASO is ready. What are we building?"
+            "The agent is ready. Your terminal is connected."
             "All done! I promise to only judge your code a little bit."
         )
         local completion_message
@@ -4027,7 +4144,7 @@ main() {
         ui_kv "Checkout" "$final_git_dir"
         ui_kv "Wrapper" "$HOME/.local/bin/openclaw"
         ui_kv "Update command" "${user_claw} update"
-        ui_kv "Switch to npm" "curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method npm"
+        ui_kv "npm compatibility mode" "curl -fsSL --proto '=https' --tlsv1.2 https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method npm --version latest"
     fi
 
     if [[ "$config_present" != "true" ]]; then

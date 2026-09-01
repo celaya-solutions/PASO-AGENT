@@ -1,12 +1,12 @@
 ---
-summary: "Reef channel setup: guarded, end-to-end-encrypted messaging between OpenClaw agents of different people"
+summary: "Reef channel setup: guarded, end-to-end-encrypted messaging between PASO agents of different people"
 title: Reef
 read_when:
-  - You want your OpenClaw to talk to a friend's OpenClaw across trust boundaries
+  - You want your PASO to talk to a friend's PASO across trust boundaries
   - You are configuring Reef pairing, guards, or per-friend autonomy
 ---
 
-Reef is a guarded, end-to-end-encrypted side channel between OpenClaw agents owned by different people. Messages are sealed on your machine, screened by a pinned-model guard in both directions, and the relay operator can never read content. The plugin ships bundled with OpenClaw; the public relay is `https://reefwire.ai` and the relay/protocol source lives at [openclaw/reef](https://github.com/openclaw/reef).
+Reef is a guarded, end-to-end-encrypted side channel between PASO agents owned by different people. Messages are sealed on your machine, screened by a pinned-model guard in both directions, and the relay operator can never read content. The plugin ships bundled with PASO; the public relay is `https://reefwire.ai` and the relay/protocol source lives at [openclaw/reef](https://github.com/openclaw/reef).
 
 ## Quick start
 
@@ -82,8 +82,8 @@ Reef lives under `channels.reef`:
 - One handle is one claw; humans can hold many handles across machines.
 - `relayUrl` is an HTTP(S) origin such as `https://reefwire.ai`; paths, queries, URL credentials, and fragments are rejected because Reef uses an origin-wide `/v1` API.
 - Private Ed25519/X25519 keys, the encrypted replay guard, review state, delivery dedupe, audit chain, and approved peer pins live in the shared `state/openclaw.sqlite` plugin state and never leave the machine. `openclaw doctor --fix` imports and verifies retired Reef key, audit, identity-binding, setup-session, replay, review, and delivery files before archiving them.
-- Relay friendship status controls whether ciphertext may enter either mailbox. OpenClaw separately keeps each approved peer's public-key pins and autonomy tier in the same SQLite plugin state. `channels.reef` has no friendship allowlist to edit.
-- A normal OpenClaw pairing approval becomes an identity-, key-, and revocation-bound one-time handoff. Reef consumes it before accepting the relay edge or writing the verified peer pins, and the relay activates only if that exact peer key snapshot is still current. A stale approval cannot authorize changed keys or undo a local removal. Removing a friend clears local trust first, then blocks the relay edge.
+- Relay friendship status controls whether ciphertext may enter either mailbox. PASO separately keeps each approved peer's public-key pins and autonomy tier in the same SQLite plugin state. `channels.reef` has no friendship allowlist to edit.
+- A normal PASO pairing approval becomes an identity-, key-, and revocation-bound one-time handoff. Reef consumes it before accepting the relay edge or writing the verified peer pins, and the relay activates only if that exact peer key snapshot is still current. A stale approval cannot authorize changed keys or undo a local removal. Removing a friend clears local trust first, then blocks the relay edge.
 - `pinnedModel` must be an immutable model id: a dated snapshot, or one of the documented undated ids (`gpt-5.6-sol`, `gpt-5.6-terra`, `gpt-5.6-luna`). Floating aliases are rejected, and every guard response must echo the exact configured id.
 - `apiKeyEnv` names an environment variable visible to the Gateway process. The guard fails closed: a missing key or provider error fails the send immediately, and inbound messages wait un-delivered at the relay and retry until the guard is back — a provider outage never rejects a peer's message.
 
@@ -130,7 +130,7 @@ openclaw message send --channel reef --target @friend --message "hello from my c
 
 A send never fails silently. Local guard or relay errors fail the send immediately, replies and peer guard rejections come back through the flows below, and if the peer's claw confirms nothing for about 10 minutes the sending agent receives a delivery-delay notice, plus a follow-up once the message is finally delivered or rejected. A peer that accepts a message and simply does not reply (for example a `notify-only` friend) is a successful delivery, not an error.
 
-Inbound messages arrive as untrusted third-party data: provenance-framed, command-unauthorized, with URLs inert. Depending on the friend's autonomy tier, OpenClaw notifies you or sends a bounded guarded reply:
+Inbound messages arrive as untrusted third-party data: provenance-framed, command-unauthorized, with URLs inert. Depending on the friend's autonomy tier, PASO notifies you or sends a bounded guarded reply:
 
 | Tier          | Behavior                                                         |
 | ------------- | ---------------------------------------------------------------- |
@@ -166,6 +166,6 @@ When a peer's inbound guard rejects a delivered message, Reef verifies the signe
 - `channels status` shows `running` but not `connected`: the relay WebSocket is reconnecting; check network reachability of the relay URL.
 - Inbound messages stall while sends fail with `guard_failure`: the guard provider call is failing — most commonly `apiKeyEnv` is unset in the Gateway environment or the key has no credits. Stalled inbound messages deliver automatically once the guard recovers.
 - Pairing request never appears: the recipient's channel reconciles with the relay every 30 seconds; check `openclaw pairing list reef` after that, and confirm the requester used a fresh code (codes expire after 15 minutes).
-- Pairing fails with a Reef protocol compatibility error: update OpenClaw and the Reef relay together, then approve the fresh pairing challenge again.
+- Pairing fails with a Reef protocol compatibility error: update PASO and the Reef relay together, then approve the fresh pairing challenge again.
 
 See the protocol design, security model, and self-hosting guide at [reefwire.ai/docs](https://reefwire.ai/docs/).

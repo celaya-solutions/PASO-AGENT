@@ -59,15 +59,15 @@ private class AndroidSystemNotificationPoster(
     val (suffix, importance, name) =
       when (normalizedPriority) {
         "passive" ->
-          Triple("passive", NotificationManager.IMPORTANCE_LOW, nativeString("OpenClaw Passive"))
+          Triple("passive", NotificationManager.IMPORTANCE_LOW, nativeString("PASO Passive"))
         "timesensitive" ->
           Triple(
             "timesensitive",
             NotificationManager.IMPORTANCE_HIGH,
-            nativeString("OpenClaw Time Sensitive"),
+            nativeString("PASO Time Sensitive"),
           )
         else ->
-          Triple("active", NotificationManager.IMPORTANCE_DEFAULT, nativeString("OpenClaw Active"))
+          Triple("active", NotificationManager.IMPORTANCE_DEFAULT, nativeString("PASO Active"))
       }
     val channelId = "$NOTIFICATION_CHANNEL_BASE_ID.$suffix"
     val manager = appContext.getSystemService(NotificationManager::class.java)
@@ -138,7 +138,7 @@ class SystemHandler private constructor(
     } catch (_: SecurityException) {
       GatewaySession.InvokeResult.error(
         code = "NOT_AUTHORIZED",
-        message = "NOT_AUTHORIZED: enable OpenClaw notifications and the selected priority in Android Settings",
+        message = "NOT_AUTHORIZED: enable PASO notifications and the selected priority in Android Settings",
       )
     } catch (err: Throwable) {
       GatewaySession.InvokeResult.error(

@@ -184,7 +184,7 @@ async function nativeFixture() {
     manifestPath,
     `${JSON.stringify({
       name: "ai.openclaw.browser_bootstrap",
-      description: "OpenClaw browser extension bootstrap",
+      description: "PASO browser extension bootstrap",
       path: launcherPath,
       type: "stdio",
       allowed_origins: [ORIGIN],
@@ -249,7 +249,7 @@ describe("native host origin and topology boundary", () => {
       fixture.manifestPath,
       `${JSON.stringify({
         name: "ai.openclaw.browser_bootstrap",
-        description: "OpenClaw browser extension bootstrap",
+        description: "PASO browser extension bootstrap",
         path: fixture.launcherPath,
         type: "stdio",
         allowed_origins: expectedOrigins,
@@ -282,7 +282,7 @@ describe("native host origin and topology boundary", () => {
       fixture.manifestPath,
       `${JSON.stringify({
         name: "ai.openclaw.browser_bootstrap",
-        description: "OpenClaw browser extension bootstrap",
+        description: "PASO browser extension bootstrap",
         path: fixture.launcherPath,
         type: "stdio",
         allowed_origins: [ORIGIN, OTHER_ORIGIN],
@@ -311,7 +311,7 @@ describe("native host origin and topology boundary", () => {
       fixture.manifestPath,
       JSON.stringify({
         name: "ai.openclaw.browser_bootstrap",
-        description: "OpenClaw browser extension bootstrap",
+        description: "PASO browser extension bootstrap",
         path: fixture.launcherPath,
         type: "stdio",
         allowed_origins: ["chrome-extension://*/"],

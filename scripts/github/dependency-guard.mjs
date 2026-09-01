@@ -33,7 +33,7 @@ export {
 
 const maxListedFiles = 25;
 const autoscrubCommitMessage = "chore: remove dependency lockfile change";
-const securityTeamSlug = process.env.OPENCLAW_SECURITY_TEAM_SLUG ?? "openclaw-secops";
+const securityTeamSlug = process.env.OPENCLAW_SECURITY_TEAM_SLUG ?? "";
 const dependencyManifestFields = [
   "dependencies",
   "devDependencies",
@@ -305,7 +305,7 @@ export function renderAuthorizedDependencyComment(override) {
     "",
     "### Dependency graph change authorized",
     "",
-    "This PR includes dependency graph changes. A repository admin or member of `@openclaw/openclaw-secops` authorized this exact head SHA with `/allow-dependencies-change`.",
+    "This PR includes dependency graph changes. `@celaya-solutions` or another repository admin authorized this exact head SHA with `/allow-dependencies-change`.",
     "",
     `- Approved SHA: ${markdownCode(override.sha)}`,
     `- Approved by: @${sanitizeGuardDisplayValue(override.login)}`,
@@ -324,7 +324,7 @@ export function renderTrustedDependencyComment({ actor, headSha }) {
     "",
     "### Dependency graph changes noted",
     "",
-    "This PR includes dependency graph changes. The dependency guard is informational because the PR author is a repository admin, a member of `@openclaw/openclaw-secops`, or an OpenClaw organization member with Maintain or Admin repository access.",
+    "This PR includes dependency graph changes. The dependency guard is informational because the PR author is `@celaya-solutions` or another repository admin or maintainer.",
     "",
     `- Current SHA: ${markdownCode(headSha ?? "<head-sha>")}`,
     `- Trusted actor: @${sanitizeGuardDisplayValue(actor.login)}`,
@@ -361,7 +361,7 @@ export function renderAutoscrubbedDependencyComment({ baseBranch, lockfileChange
 
 ### Dependency lockfile changes were removed
 
-OpenClaw does not accept package lockfile changes through PRs. This PR did not change dependency graph fields in package manifests, so the workflow restored the lockfile residue from the target branch automatically.
+PASO does not accept package lockfile changes through PRs. This PR did not change dependency graph fields in package manifests, so the workflow restored the lockfile residue from the target branch automatically.
 
 Restored lockfiles:
 ${fileLines.join("\n")}
@@ -436,14 +436,14 @@ export function renderBlockedDependencyComment({
     "",
     "### Dependency graph changes are blocked",
     "",
-    "OpenClaw does not accept dependency graph changes through PRs unless a repository admin or security explicitly authorizes the current head SHA. Dependency updates are generated internally by maintainers so external PRs cannot change the resolved graph.",
+    "PASO does not accept dependency graph changes through PRs unless a repository admin or security explicitly authorizes the current head SHA. Dependency updates are generated internally by maintainers so external PRs cannot change the resolved graph.",
     "",
     "Detected dependency graph changes:",
     ...reasons,
     ...autoscrubLines,
     ...removalSteps,
     "",
-    "If this PR intentionally needs a dependency graph change, ask a repository admin or member of `@openclaw/openclaw-secops` to comment:",
+    "If this PR intentionally needs a dependency graph change, ask `@celaya-solutions` or another repository admin to comment:",
     "",
     "```text",
     allowDependenciesCommand,
@@ -515,7 +515,7 @@ export async function findTrustedDependencyGuardActor({
       // from override approvers so Maintain authors cannot authorize another contributor's PR.
       const repositoryRole = await getRepositoryRoleName(candidate.login);
       if (repositoryRole === "maintain" || repositoryRole === "admin") {
-        role = `OpenClaw organization member with repository ${repositoryRole} role`;
+        role = `PASO repository member with ${repositoryRole} role`;
       }
     }
     if (role) {
@@ -720,7 +720,9 @@ async function main() {
   const api = githubApi(token);
   const autoscrubToken = process.env.OPENCLAW_DEPENDENCY_GUARD_AUTOSCRUB_TOKEN;
   const autoscrubApi = autoscrubToken ? githubApi(autoscrubToken) : null;
-  const explicitSecurityApprovers = securityApproverSet(process.env.OPENCLAW_SECURITY_APPROVERS);
+  const explicitSecurityApprovers = securityApproverSet(
+    process.env.OPENCLAW_SECURITY_APPROVERS ?? "celaya-solutions",
+  );
   const trustedCommentAuthors = dependencyGuardCommentAuthors(
     process.env.OPENCLAW_DEPENDENCY_GUARD_COMMENT_BOTS,
   );
@@ -811,7 +813,7 @@ async function main() {
   });
   const isDependencyApprover = async (login) => {
     if (await isSecurityMember(login)) {
-      return securityTeamSlug;
+      return securityTeamSlug || "explicit PASO security approver";
     }
     if (await isRepositoryAdmin(login)) {
       return "repository admin";

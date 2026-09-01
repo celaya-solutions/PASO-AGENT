@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Updates a self-hosted OpenClaw gateway that runs from this source checkout.
+# Updates a self-hosted PASO gateway that runs from this source checkout.
 #
 # Reference workflow for team-operated servers (see docs/install/updating.md).
 # Simple installs should prefer `openclaw update` / `openclaw update --channel

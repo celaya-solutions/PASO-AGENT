@@ -317,7 +317,7 @@ private fun CronJobsSettingsScreen(
     }
   }
 
-  SettingsDetailFrame(title = nativeString("Automations"), subtitle = nativeString("Scheduled OpenClaw work from your gateway."), icon = Icons.Default.Bolt, onBack = onBack) {
+  SettingsDetailFrame(title = nativeString("Automations"), subtitle = nativeString("Scheduled PASO work from your gateway."), icon = Icons.Default.Bolt, onBack = onBack) {
     SettingsMetricPanel(
       rows =
         listOf(
@@ -650,9 +650,9 @@ private fun ProfileSettingsScreen(
   onBack: () -> Unit,
 ) {
   val displayName by viewModel.displayName.collectAsState()
-  var draft by remember(displayName) { mutableStateOf(displayName.ifBlank { "OpenClaw" }) }
+  var draft by remember(displayName) { mutableStateOf(displayName.ifBlank { "PASO" }) }
 
-  SettingsDetailFrame(title = nativeString("Profile"), subtitle = nativeString("How this phone appears to OpenClaw."), icon = Icons.Default.Person, onBack = onBack) {
+  SettingsDetailFrame(title = nativeString("Profile"), subtitle = nativeString("How this phone appears to PASO."), icon = Icons.Default.Person, onBack = onBack) {
     ClawPanel {
       Column(verticalArrangement = Arrangement.spacedBy(9.dp)) {
         ClawTextField(value = draft, onValueChange = { draft = it }, placeholder = nativeString("Device name"))
@@ -725,7 +725,7 @@ private fun VoiceSettingsScreen(
               title = nativeString("Listen for wake words"),
               subtitle =
                 if (voiceWakeAvailable) {
-                  nativeString("Runs on-device while OpenClaw is visible.")
+                  nativeString("Runs on-device while PASO is visible.")
                 } else {
                   nativeString("On-device speech recognition is unavailable.")
                 },
@@ -807,7 +807,7 @@ private fun VoiceSettingsScreen(
         onSelect = viewModel::setPreferredAudioInputDevice,
       )
       Text(text = nativeString("Audio Test"), style = ClawTheme.type.section, color = ClawTheme.colors.text)
-      Text(text = nativeString("Check that OpenClaw can speak clearly on this phone."), style = ClawTheme.type.body, color = ClawTheme.colors.textMuted)
+      Text(text = nativeString("Check that PASO can speak clearly on this phone."), style = ClawTheme.type.body, color = ClawTheme.colors.textMuted)
       SettingsWaveformPanel(active = speakerEnabled, onClick = ::playVoiceSetupTone)
       VoiceSetupActionRow(
         title = if (speakerEnabled) nativeString("Mute speaker") else nativeString("Enable speaker"),
@@ -1095,11 +1095,11 @@ private fun NotificationSettingsScreen(
     }
   }
 
-  SettingsDetailFrame(title = nativeString("Notifications"), subtitle = nativeString("Choose what reaches OpenClaw."), icon = Icons.Default.Notifications, onBack = onBack) {
+  SettingsDetailFrame(title = nativeString("Notifications"), subtitle = nativeString("Choose what reaches PASO."), icon = Icons.Default.Notifications, onBack = onBack) {
     SettingsTogglePanel(
       rows =
         listOf(
-          SettingsToggleRow(nativeString("Forward Notifications"), if (enabled) nativeString("OpenClaw can receive selected alerts.") else nativeString("Alerts stay on this phone."), Icons.Default.Notifications, enabled, ::setForwarding),
+          SettingsToggleRow(nativeString("Forward Notifications"), if (enabled) nativeString("PASO can receive selected alerts.") else nativeString("Alerts stay on this phone."), Icons.Default.Notifications, enabled, ::setForwarding),
           SettingsToggleRow(
             nativeString("Quiet Hours"),
             nativeString("\$quietStart to \$quietEnd", quietStart, quietEnd),
@@ -1485,7 +1485,7 @@ private fun PhoneCapabilitiesScreen(
           },
           SettingsToggleRow(
             nativeString("Installed Apps"),
-            if (installedAppsSharingEnabled) nativeString("OpenClaw can list launcher-visible apps.") else nativeString("App list stays on this phone."),
+            if (installedAppsSharingEnabled) nativeString("PASO can list launcher-visible apps.") else nativeString("App list stays on this phone."),
             Icons.Default.Storage,
             installedAppsSharingEnabled,
             ::setInstalledAppsSharing,
@@ -1506,7 +1506,7 @@ private fun PhoneCapabilitiesScreen(
         )
         if (backgroundLocationAvailable) {
           Text(
-            text = nativeString("Always allows requested location checks while OpenClaw is in the background; Android shows this in the persistent node notification."),
+            text = nativeString("Always allows requested location checks while PASO is in the background; Android shows this in the persistent node notification."),
             style = ClawTheme.type.caption,
             color = ClawTheme.colors.textMuted,
           )
@@ -1545,7 +1545,7 @@ private fun PhoneCapabilitiesScreen(
       text = {
         Text(
           nativeString(
-            "OpenClaw only checks location when your paired Gateway requests it. On the next Android screen, choose \$backgroundPermissionLabel to allow checks while the app is in the background.",
+            "PASO only checks location when your paired Gateway requests it. On the next Android screen, choose \$backgroundPermissionLabel to allow checks while the app is in the background.",
             backgroundPermissionLabel,
           ),
         )
@@ -1581,10 +1581,10 @@ private fun InstalledAppsDisclosureDialog(
     text = {
       Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
-          nativeString("OpenClaw collects and sends the names, package IDs, and status of apps visible on this phone when your paired OpenClaw Gateway asks for them. This lets your assistant answer questions and take actions using installed apps."),
+          nativeString("PASO collects and sends the names, package IDs, and status of apps visible on this phone when your paired PASO Gateway asks for them. This lets your assistant answer questions and take actions using installed apps."),
         )
         Text(
-          nativeString("Your phone sends this information to your Gateway, not to a server run by OpenClaw. Your Gateway may include it in requests to the AI provider you chose."),
+          nativeString("Your phone sends this information to your Gateway, not to a server run by PASO. Your Gateway may include it in requests to the AI provider you chose."),
         )
       }
     },
@@ -1739,7 +1739,7 @@ private fun GatewaySettingsScreen(
 
   SettingsDetailFrame(
     title = nativeString("Gateway"),
-    subtitle = nativeString("Connection between this phone and OpenClaw."),
+    subtitle = nativeString("Connection between this phone and PASO."),
     icon = Icons.Default.Cloud,
     onBack = onBack,
     trailingAction = {
@@ -2116,7 +2116,7 @@ private fun AboutSettingsScreen(
   val currentGatewayVersion = updateAvailable?.currentVersion?.takeIf { it.isNotBlank() } ?: gatewayVersion
   val appLocale = LocalConfiguration.current.locales[0]
 
-  SettingsDetailFrame(title = nativeString("About"), subtitle = nativeString("OpenClaw for Android."), icon = Icons.Default.Info, onBack = onBack) {
+  SettingsDetailFrame(title = nativeString("About"), subtitle = nativeString("PASO for Android."), icon = Icons.Default.Info, onBack = onBack) {
     AboutHeroPanel()
     AboutBuildIdentityPanel(
       versionName = BuildConfig.VERSION_NAME,
@@ -2150,7 +2150,7 @@ private fun AboutSettingsScreen(
     }
     AboutLinksPanel()
     Text(
-      text = nativeString("© 2026 OpenClaw Foundation — MIT License."),
+      text = nativeString("© 2026 Celaya Solutions Research — MIT License."),
       style = ClawTheme.type.caption,
       color = ClawTheme.colors.textSubtle,
       modifier = Modifier.fillMaxWidth(),
@@ -2167,10 +2167,11 @@ private fun AboutHeroPanel() {
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      OpenClawMascot(contentDescription = nativeString("OpenClaw logo"), modifier = Modifier.size(96.dp))
+      OpenClawMascot(contentDescription = nativeString("PASO logo"), modifier = Modifier.size(96.dp))
       Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
-        Text(text = nativeString("OpenClaw"), style = ClawTheme.type.section, color = ClawTheme.colors.text)
-        Text(text = nativeString("Personal AI on your devices"), style = ClawTheme.type.caption, color = ClawTheme.colors.textMuted)
+        Text(text = nativeString("PASO"), style = ClawTheme.type.section, color = ClawTheme.colors.text)
+        Text(text = nativeString("An AI agent by Celaya Solutions Research"), style = ClawTheme.type.caption, color = ClawTheme.colors.textMuted)
+        Text(text = nativeString("El Paso, TX"), style = ClawTheme.type.caption, color = ClawTheme.colors.textMuted)
       }
     }
   }
@@ -2185,10 +2186,10 @@ private data class AboutLink(
 
 private val aboutLinks =
   listOf(
-    AboutLink("Website", "openclaw.ai", "https://openclaw.ai"),
-    AboutLink("Docs", "docs.openclaw.ai", "https://docs.openclaw.ai"),
-    AboutLink("GitHub", "github.com/openclaw/openclaw", "https://github.com/openclaw/openclaw"),
-    AboutLink("Discord", "discord.gg/clawd", "https://discord.gg/clawd"),
+    AboutLink("Website", "celayasolutions.com", "https://celayasolutions.com"),
+    AboutLink("GitHub", "github.com/celaya-solutions/PASO-AGENT", "https://github.com/celaya-solutions/PASO-AGENT"),
+    AboutLink("Email", "hello@celayasolutions.com", "mailto:hello@celayasolutions.com"),
+    AboutLink("Phone", "+1 915-270-0237", "tel:+19152700237"),
   )
 
 @Composable
@@ -2230,7 +2231,7 @@ private fun LicensesSettingsScreen(onBack: () -> Unit) {
 
   SettingsDetailFrame(
     title = nativeString("Licenses"),
-    subtitle = if (selectedLicense == null) nativeString("OpenClaw appreciates its partners in the open-source community.") else "",
+    subtitle = if (selectedLicense == null) nativeString("PASO appreciates its partners in the open-source community.") else "",
     subtitleTextAlign = TextAlign.Center,
     icon = Icons.Default.Info,
     onBack = backToListOrSettings,
@@ -2317,7 +2318,7 @@ private fun AboutStatusRow(
 /** Chooses about-screen copy based on whether the gateway advertises an update. */
 private fun aboutUpdateText(latestVersion: String?): String =
   if (latestVersion == null) {
-    nativeString("OpenClaw turns this phone into a clean mobile command surface for threads, voice, providers, and Gateway.")
+    nativeString("PASO turns this phone into a clean mobile command surface for threads, voice, providers, and Gateway.")
   } else {
     nativeString("A Gateway update is available. Run the update from the Web UI or CLI when you are ready.")
   }
@@ -2712,7 +2713,7 @@ private fun copyCronDetailValue(
   value: String,
 ) {
   val clipboard = context.getSystemService(ClipboardManager::class.java) ?: return
-  clipboard.setPrimaryClip(ClipData.newPlainText("OpenClaw automation $title", value))
+  clipboard.setPrimaryClip(ClipData.newPlainText("PASO automation $title", value))
   Toast.makeText(context, nativeString("\$title copied", title), Toast.LENGTH_SHORT).show()
 }
 

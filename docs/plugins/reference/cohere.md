@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw Cohere provider plugin."
+summary: "PASO Cohere provider plugin."
 read_when:
   - You are installing, configuring, or auditing the cohere plugin
 title: "Cohere plugin"
@@ -7,7 +7,7 @@ title: "Cohere plugin"
 
 # Cohere plugin
 
-OpenClaw Cohere provider plugin.
+PASO Cohere provider plugin.
 
 ## Distribution
 

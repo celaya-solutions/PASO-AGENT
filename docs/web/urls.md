@@ -127,11 +127,11 @@ Native catalog threads use the agent path with a source query:
 /chat/<agentId>?catalog=<catalogId>&host=<hostId>&thread=<threadId>
 ```
 
-URL-encode each query value. The agent in the path owns the OpenClaw pane,
+URL-encode each query value. The agent in the path owns the PASO pane,
 including catalog reads and continuation; `catalog`, `host`, and `thread`
 identify the native source. Opening the same source under different agents
 keeps their panes and drafts separate, including in split view. Continuing a
-thread navigates to the adopted OpenClaw session link. The same catalog query
+thread navigates to the adopted PASO session link. The same catalog query
 also works under `/dashboard/<agentId>`.
 
 ## Focus presentation routes
@@ -243,7 +243,7 @@ no route-specific URL parameters.
 | Dashboard           | `/dashboard`                | -                         | Key-backed session forms above; `?draft=<text>`                   |
 | Beam transcript     | `/beam/<title>-<beam-id>`   | `/beam/<beam-id>`         | Optional title slug and 12-32 lowercase hexadecimal id characters |
 | Dashboards          | `/dashboards`               | -                         | -                                                                 |
-| Ask OpenClaw        | `/custodian`                | -                         | `?intent=new-agent`, `?onboarding=1`                              |
+| Ask PASO            | `/custodian`                | -                         | `?intent=new-agent`, `?onboarding=1`                              |
 | New session         | `/new`                      | -                         | `?agent=<agentId>`, `?catalog=<catalogId>`                        |
 | Activity            | `/activity`                 | -                         | `?view=run&run=<run-id>`, `?view=run&execution=<execution-id>`    |
 | Apps                | `/apps`                     | -                         | -                                                                 |

@@ -97,7 +97,7 @@ suite.define(() => {
       const docsLink = page.getByRole("link", { name: "Learn more", exact: true });
       await docsLink.waitFor();
       expect(await docsLink.getAttribute("href")).toBe(
-        "https://docs.openclaw.ai/gateway/cloud-workers",
+        "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       );
       await gateway.waitForRequest("environments.list");
       await page.getByText("No cloud worker profiles are configured.", { exact: true }).waitFor();

@@ -297,7 +297,7 @@ enum CommandResolver {
             throw error
         }
         #else
-        throw MacNodeHostWorker.WorkerError.unavailable(reason: "The node worker requires a packaged OpenClaw.app")
+        throw MacNodeHostWorker.WorkerError.unavailable(reason: "The node worker requires a packaged PASO app")
         #endif
     }
 
@@ -362,7 +362,7 @@ enum CommandResolver {
         switch runtimeResult {
         case .success:
             let missingEntry = """
-            openclaw CLI not found. Install the CLI, or run pnpm build in an OpenClaw source checkout.
+            openclaw CLI not found. Install the CLI, or run pnpm build in a PASO source checkout.
             """
             return self.errorCommand(with: missingEntry)
         case let .failure(error):

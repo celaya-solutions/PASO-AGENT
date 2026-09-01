@@ -148,7 +148,7 @@ export function collectOpenClawDatabaseVerifyTargets(options: {
   const targets = new Map<string, OpenClawDatabaseVerifyTarget>();
   const statePath = path.resolve(resolveOpenClawStateSqlitePath(options.env));
   if (existsSync(statePath)) {
-    targets.set(statePath, { kind: "state", label: "OpenClaw state database", path: statePath });
+    targets.set(statePath, { kind: "state", label: "PASO state database", path: statePath });
   }
   let registeredDatabases: ReturnType<typeof listOpenClawRegisteredAgentDatabases> = [];
   try {
@@ -165,7 +165,7 @@ export function collectOpenClawDatabaseVerifyTargets(options: {
     }
     targets.set(agentPath, {
       kind: "agent",
-      label: `OpenClaw agent database ${registered.agentId}`,
+      label: `PASO agent database ${registered.agentId}`,
       path: agentPath,
     });
   }

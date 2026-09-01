@@ -119,7 +119,7 @@ async function runEmbeddedAgentViaCliBackend(
     openClaw: dispatch.toolsAllow,
   };
   const onAgentToolResult = params.onAgentToolResult;
-  // The CLI backend writes no OpenClaw session records; mirror the run into
+  // The CLI backend writes no PASO session records; mirror the run into
   // the caller-owned session file so transcript consumers (persistTranscripts,
   // timeout partial-text salvage, the live terminal-search watcher) keep
   // working at parity with embedded runs.

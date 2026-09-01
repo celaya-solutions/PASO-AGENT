@@ -786,7 +786,7 @@ struct OnboardingSystemAgentChatTests {
         #expect(session.snapshotMakeCount() == 1)
         #expect(session.latestTask()?.snapshotSendCount() == 2)
         #expect(chat.messages.map(\.text) == ["ready", "must stay on route a"])
-        #expect(chat.errorMessage == "The Gateway connection changed. Restart OpenClaw to reconnect.")
+        #expect(chat.errorMessage == "The Gateway connection changed. Restart PASO to reconnect.")
         #expect(await recorder.snapshot() == [routeASessionID])
 
         let restartTask = try #require(chat.restartAfterError())
@@ -844,7 +844,7 @@ struct OnboardingSystemAgentChatTests {
         #expect(chat.messages.isEmpty)
         #expect(replyCount == 0)
         #expect(handoffCount == 0)
-        #expect(chat.errorMessage == "The Gateway connection changed. Restart OpenClaw to reconnect.")
+        #expect(chat.errorMessage == "The Gateway connection changed. Restart PASO to reconnect.")
     }
 
     @Test func `cancelled initial request exposes restart and recovers`() async throws {
@@ -880,7 +880,7 @@ struct OnboardingSystemAgentChatTests {
         await requestGate.release()
         await startTask.value
 
-        #expect(chat.errorMessage == "OpenClaw was interrupted. Restart to try again.")
+        #expect(chat.errorMessage == "PASO was interrupted. Restart to try again.")
         #expect(!chat.isSending)
         #expect(chat.messages.isEmpty)
 

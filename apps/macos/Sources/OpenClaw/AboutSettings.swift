@@ -12,9 +12,7 @@ struct AboutSettings: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            // Hero treatment from openclaw.ai: coral silhouette glow at 10% of
-            // size, teal glow at 15% plus scale 1.1 on hover. Clicks go to the
-            // mascot's Easter eggs; the GitHub link lives in the row set below.
+            // Keep the PASO mark interactive; project links live in the row set below.
             OpenClawMascotView(interactive: true)
                 .frame(width: 160, height: 160)
                 .shadow(
@@ -29,29 +27,35 @@ struct AboutSettings: View {
                 }
 
             VStack(spacing: 3) {
-                Text("OpenClaw")
+                Text("PASO")
                     .font(.title3.bold())
                 AboutBuildMetadataStrip(metadata: self.buildMetadata)
                     .padding(.top, 3)
-                Text("Menu bar companion for notifications, screenshots, and privileged agent actions.")
+                Text(verbatim: "An AI agent by Celaya Solutions Research")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 18)
+                Text(verbatim: "El Paso, TX")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             // Unified first-party link set shared with the iOS and Android About screens.
             VStack(alignment: .center, spacing: 6) {
-                AboutLinkRow(icon: "globe", title: "Website", url: "https://openclaw.ai")
-                AboutLinkRow(icon: "book", title: "Docs", url: "https://docs.openclaw.ai")
+                AboutLinkRow(icon: "globe", title: "Website", url: "https://celayasolutions.com")
                 AboutLinkRow(
                     icon: "chevron.left.slash.chevron.right",
                     title: "GitHub",
-                    url: "https://github.com/openclaw/openclaw")
+                    url: "https://github.com/celaya-solutions/PASO-AGENT")
                 AboutLinkRow(
-                    icon: "bubble.left.and.bubble.right",
-                    title: "Discord",
-                    url: "https://discord.gg/clawd")
+                    icon: "envelope",
+                    title: "hello@celayasolutions.com",
+                    url: "mailto:hello@celayasolutions.com")
+                AboutLinkRow(
+                    icon: "phone",
+                    title: "+1 915-270-0237",
+                    url: "tel:+19152700237")
             }
             .frame(maxWidth: .infinity)
             .multilineTextAlignment(.center)
@@ -78,7 +82,7 @@ struct AboutSettings: View {
                 }
             }
 
-            Text("© 2026 OpenClaw Foundation — MIT License.")
+            Text("© 2026 Celaya Solutions Research — MIT License.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .padding(.top, 4)

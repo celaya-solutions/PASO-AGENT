@@ -1247,7 +1247,7 @@ export function registerMacElevationArtifactTests() {
       );
 
       it.each([
-        ["sourceCommit", "OpenClaw source"],
+        ["sourceCommit", "PASO source"],
         ["peekabooCommit", "Peekaboo source"],
         ["version", "version"],
         ["build", "build"],

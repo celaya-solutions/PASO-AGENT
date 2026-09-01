@@ -73,7 +73,7 @@ type MantisDesktopBrowserSmokeSummary = {
   status: "pass" | "fail";
 };
 
-const DEFAULT_BROWSER_URL = "https://openclaw.ai";
+const DEFAULT_BROWSER_URL = "https://github.com/celaya-solutions/PASO-AGENT";
 const DEFAULT_PROVIDER = "hetzner";
 const DEFAULT_CLASS = "beast";
 const DEFAULT_IDLE_TIMEOUT = "60m";

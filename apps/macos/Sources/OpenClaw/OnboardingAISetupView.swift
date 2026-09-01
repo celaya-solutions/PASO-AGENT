@@ -141,7 +141,7 @@ struct OnboardingAISetupView: View {
                     : "Looking for AI you already use…")
                     .font(.callout.weight(.semibold))
                 Text(self.model.waitingForPendingActivationDeadline
-                    ? "OpenClaw will check again before changing any inference settings."
+                    ? "PASO will check again before changing any inference settings."
                     : "Checking CLI logins, saved API keys, and local model servers on the Gateway.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -458,7 +458,7 @@ struct OnboardingAISetupView: View {
                     .font(.headline)
                 Text(
                     "Use an existing subscription or provider account. " +
-                        "OpenClaw opens the provider’s own sign-in flow, then verifies it with a real reply.")
+                        "PASO opens the provider’s own sign-in flow, then verifies it with a real reply.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -557,7 +557,7 @@ struct OnboardingAISetupView: View {
                     Text(self.model.activeAuthOption?.label ?? "Provider setup")
                         .font(.title3.weight(.semibold))
                     Text(self.model.isPreparingModel
-                        ? "OpenClaw will detect and verify the prepared model before using it."
+                        ? "PASO will detect and verify the prepared model before using it."
                         : "Credentials stay on this Gateway and are saved only after the live test succeeds.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -780,15 +780,15 @@ struct OnboardingAISetupView: View {
     private var manualProviderHelp: String {
         let hint = self.model.selectedManualProvider?.hint?.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let hint, !hint.isEmpty else {
-            return "Paste the key or token here, and OpenClaw checks it with a real test question."
+            return "Paste the key or token here, and PASO checks it with a real test question."
         }
-        return "\(hint). Paste it here, and OpenClaw checks it with a real test question."
+        return "\(hint). Paste it here, and PASO checks it with a real test question."
     }
 }
 
-/// Friendly error presentation with a consistent docs escape hatch.
-/// Every onboarding failure points at a docs.openclaw.ai page so people are
-/// never stuck staring at a raw error string.
+/// Friendly error presentation with a consistent project-help escape hatch.
+/// Every onboarding failure points at the PASO project so people are never
+/// stuck staring at a raw error string.
 struct OnboardingErrorCard: View {
     let title: String
     let message: String
@@ -847,7 +847,7 @@ struct OnboardingErrorCard: View {
                             .controlSize(.small)
                     }
                     Button("Open help…") {
-                        if let url = URL(string: "https://docs.openclaw.ai/\(docsSlug)") {
+                        if let url = URL(string: "https://github.com/celaya-solutions/PASO-AGENT") {
                             NSWorkspace.shared.open(url)
                         }
                     }

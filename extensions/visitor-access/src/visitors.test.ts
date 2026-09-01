@@ -12,7 +12,8 @@ const config: VisitorAccessConfig = {
   accountId: "test-account",
   appId: "test-app",
   apiToken: "test-token",
-  policyName: "Visitors (openclaw-managed)",
+  loginUrl: "https://paso.example.test",
+  policyName: "Visitors (paso-managed)",
   defaultTtlDays: 14,
   maxVisitors: 50,
 };
@@ -186,7 +187,7 @@ describe("VisitorAccessService", () => {
     expect(result).toContain("@visitor");
     expect(result).toContain("visitor@example.com");
     expect(result).toContain("2026-09-11T12:00:00.000Z");
-    expect(result).toContain("https://team.openclaw.ai");
+    expect(result).toContain("https://paso.example.test");
     expect(result).toContain("GitHub account");
   });
 

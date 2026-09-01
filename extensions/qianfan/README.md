@@ -1,12 +1,12 @@
-# OpenClaw Qianfan Provider
+# PASO Qianfan Provider
 
-Official OpenClaw provider plugin for Qianfan.
+Official PASO provider plugin for Qianfan.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/qianfan-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/qianfan> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/qianfan.md> for setup and configuration.

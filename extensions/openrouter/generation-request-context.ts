@@ -32,8 +32,8 @@ export async function resolveOpenRouterGenerationRequestContext(params: {
     defaultHeaders: {
       Authorization: `Bearer ${auth.apiKey}`,
       ...(params.jsonContentType ? { "Content-Type": "application/json" } : {}),
-      "HTTP-Referer": "https://openclaw.ai",
-      "X-OpenRouter-Title": "OpenClaw",
+      "HTTP-Referer": "https://github.com/celaya-solutions/PASO-AGENT",
+      "X-OpenRouter-Title": "PASO",
     },
     request: sanitizeConfiguredModelProviderRequest(
       params.cfg.models?.providers?.openrouter?.request,

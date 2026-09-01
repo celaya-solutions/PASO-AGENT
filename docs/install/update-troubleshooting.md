@@ -1,7 +1,7 @@
 ---
-summary: "Recover from failed OpenClaw updates in the Control UI or CLI"
+summary: "Recover from failed PASO updates in the Control UI or CLI"
 read_when:
-  - An OpenClaw update failed
+  - A PASO update failed
   - The Gateway did not report a final update result
 title: "Update troubleshooting"
 ---
@@ -85,7 +85,7 @@ See [Rollback](/install/updating#rollback).
 Collect the following without posting credentials, raw config, or unredacted
 process output:
 
-- OpenClaw version and install type;
+- PASO version and install type;
 - update timestamp, target, phase, and reason code from Settings → Updates;
 - the bounded failure detail shown by **View details**;
 - `openclaw update status --json`;

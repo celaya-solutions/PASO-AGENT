@@ -1,6 +1,6 @@
 # @openclaw/memory-lancedb
 
-Official LanceDB-backed long-term memory plugin for OpenClaw.
+Official LanceDB-backed long-term memory plugin for PASO.
 
 This plugin adds persistent memory tools backed by LanceDB, vector search, auto-recall, and auto-capture.
 
@@ -23,10 +23,10 @@ Restart the Gateway after installing or updating the plugin.
 
 Use the memory plugin docs for embedding provider setup, storage paths, indexing, and recall behavior:
 
-- https://docs.openclaw.ai/plugins/memory-lancedb
+- https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/plugins/memory-lancedb.md
 
 ## Package
 
 - Plugin id: `memory-lancedb`
 - Package: `@openclaw/memory-lancedb`
-- Minimum OpenClaw host: `2026.4.10`
+- Minimum PASO host: `2026.4.10`

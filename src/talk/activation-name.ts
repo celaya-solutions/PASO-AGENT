@@ -164,7 +164,7 @@ function leadingActivationNameCandidates(
   text: string,
   maxWords: number,
 ): EdgeActivationNameCandidate[] {
-  // Consider both the full opener and the text after "hey/ok" so "hey Molty"
+  // Consider both the full opener and the text after "hey/ok" so "hey PASO"
   // records a useful heardName without letting the opener become required.
   const opener = /^\s*(?:(?:hey|ok|okay)(?:\s*[-,:;]+\s*|\s+))?/i.exec(text);
   const nameStart = opener?.[0].length ?? 0;
@@ -231,7 +231,7 @@ function trailingActivationNameCandidates(
       break;
     }
     // Trailing fuzzy matches are only trusted when the speaker clearly used
-    // direct address as a question, e.g. "what changed, Molty?".
+    // direct address as a question, e.g. "what changed, PASO?".
     const directAddressBoundary = /(^|[,.:;!?-]\s*)$/.test(text.slice(0, startIndex));
     const trailingQuestion = /\?\s*$/.test(text);
     if (wordCount > 1) {

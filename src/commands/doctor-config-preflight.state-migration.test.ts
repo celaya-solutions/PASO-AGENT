@@ -891,7 +891,7 @@ describe("runDoctorConfigPreflight state migration", () => {
     });
 
     await expect(runDoctorConfigPreflight(startupCheckpointOptions)).rejects.toThrow(
-      "OpenClaw startup migrations did not complete cleanly; refusing to report the gateway ready.",
+      "PASO startup migrations did not complete cleanly; refusing to report the gateway ready.",
     );
 
     expect(recordSuccessfulStartupMigrations).not.toHaveBeenCalled();
@@ -1024,7 +1024,7 @@ describe("runDoctorConfigPreflight state migration", () => {
     );
 
     await expect(runDoctorConfigPreflight(startupCheckpointOptions)).rejects.toThrow(
-      "OpenClaw config is invalid",
+      "PASO config is invalid",
     );
 
     expect(recordSuccessfulStartupMigrations).not.toHaveBeenCalled();

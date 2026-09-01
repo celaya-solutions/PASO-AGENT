@@ -1680,7 +1680,7 @@ describeBrowserLayout.concurrent("chat responsive browser layout", () => {
     const page = await openBrowserPage(430, 720);
     try {
       await page.setContent(`<!doctype html><html><head><style>${readUiCss()}</style></head><body>
-        <img class="chat-avatar assistant chat-avatar--logo" src="/apple-touch-icon.png" alt="Logo" />
+        <img class="chat-avatar assistant chat-avatar--logo" src="/favicon.svg" alt="PASO" />
         <img class="chat-avatar assistant" src="/avatar/main" alt="Custom" />
         <img class="chat-avatar user" src="/avatar/user" alt="User" />
       </body></html>`);

@@ -61,7 +61,9 @@ describe("createNewerSqliteSchemaVersionError", () => {
     const error = createNewerSqliteSchemaVersionError("test database", "/tmp/test.sqlite", 12, 11);
 
     expect(error.name).toBe("SqliteSchemaVersionError");
-    expect(error.message).toContain("https://docs.openclaw.ai/reference/database-schemas");
+    expect(error.message).toContain(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
   });
 
   it("names the refusing install and both schema versions", () => {
@@ -79,7 +81,7 @@ describe("createNewerSqliteSchemaVersionError", () => {
     const error = createNewerSqliteSchemaVersionError("test database", "/tmp/test.sqlite", 12, 11);
 
     expect(error.message).not.toContain("Do not downgrade");
-    expect(error.message).not.toContain("Upgrade OpenClaw");
+    expect(error.message).not.toContain("Upgrade PASO");
   });
 });
 

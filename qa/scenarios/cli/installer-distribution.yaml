@@ -10,7 +10,7 @@ scenario:
       - cli.source-checkout-install
     secondary:
       - cli.installer-scripts
-  objective: Verify the hosted installer installs an exact package candidate and the CLI installer builds an exact source checkout into a dedicated Node and OpenClaw prefix.
+  objective: Verify the hosted installer installs an exact package candidate and the CLI installer builds an exact source checkout into a dedicated Node and CLI prefix.
   successCriteria:
     - "`install.sh` validates the supported Node runtime, installs the exact package candidate, honors no-onboard mode, and exposes a PATH-resolved CLI."
     - "`install-cli.sh` provisions prefix-owned Node and an OpenClaw wrapper without using the system prefix."

@@ -127,15 +127,15 @@ describe("AppSidebar session pagination", () => {
   });
 });
 
-describe("AppSidebar lobster outcome wiring", () => {
+describe("AppSidebar legacy pet removal", () => {
   it.each([
     ["panel", "failed", "error"],
     ["panel", "killed", "aborted"],
     ["drawer", "failed", "error"],
     ["drawer", "killed", "aborted"],
   ] as const)(
-    "passes the %s variant's latest %s session outcome",
-    async (variant, status, expectedOutcome) => {
+    "omits the %s variant pet after a latest %s session outcome",
+    async (variant, status, _expectedOutcome) => {
       const client = {} as GatewayBrowserClient;
       const gateway = createGateway(client);
       const sessions = createSessionsHarness("main", ["agent:main:main"]);
@@ -166,7 +166,7 @@ describe("AppSidebar lobster outcome wiring", () => {
       await sidebar.updateComplete;
 
       const pet = sidebar.querySelector<LobsterPetElement>("openclaw-lobster-pet");
-      expect(pet?.runOutcome).toBe(expectedOutcome);
+      expect(pet).toBeNull();
     },
   );
 });

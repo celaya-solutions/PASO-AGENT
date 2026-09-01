@@ -1,5 +1,5 @@
 ---
-summary: "Scripted onboarding and agent setup for the OpenClaw CLI"
+summary: "Scripted onboarding and agent setup for the PASO CLI"
 read_when:
   - You are automating onboarding in scripts or CI
   - You need non-interactive examples for specific providers
@@ -28,7 +28,7 @@ explicit consent. For OpenAI setup, install the official Codex runtime:
 openclaw plugins install codex --accept-capabilities
 ```
 
-The `codex` selector lets OpenClaw's official catalog choose the runtime package.
+The `codex` selector lets PASO's official catalog choose the runtime package.
 Then run your onboarding command below. If onboarding reports a required plugin
 capability review, review and install the named plugin and rerun the same
 command. For an already-installed plugin that needs approval to enable it, use
@@ -189,7 +189,7 @@ openclaw onboard --non-interactive --accept-risk --skip-health \
 
     `--custom-api-key` is optional; some endpoints do not require auth. If omitted, onboarding checks `CUSTOM_API_KEY` in env. `--custom-provider-id` is optional and auto-derived from the base URL when omitted. `--custom-compatibility` defaults to `openai` (other values: `openai-responses`, `anthropic`).
 
-    OpenClaw infers image-input support from known vision model-id patterns (`gpt-4o`, `claude-3/4`, `gemini`, `-vl`/`vision` suffixes, and similar). Add `--custom-image-input` to force it on for an unrecognized vision model, or `--custom-text-input` to force text-only.
+    PASO infers image-input support from known vision model-id patterns (`gpt-4o`, `claude-3/4`, `gemini`, `-vl`/`vision` suffixes, and similar). Add `--custom-image-input` to force it on for an unrecognized vision model, or `--custom-text-input` to force text-only.
 
     Ref-mode variant, storing `apiKey` as `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`:
 
@@ -210,7 +210,7 @@ openclaw onboard --non-interactive --accept-risk --skip-health \
   </Accordion>
 </AccordionGroup>
 
-Anthropic setup-token auth remains supported, but OpenClaw prefers Claude CLI reuse when a local Claude CLI login is available. For production, prefer an Anthropic API key.
+Anthropic setup-token auth remains supported, but PASO prefers Claude CLI reuse when a local Claude CLI login is available. For production, prefer an Anthropic API key.
 
 ## Add another agent
 

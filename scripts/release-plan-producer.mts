@@ -52,7 +52,7 @@ type ReleasePlan = {
 };
 type ReleasePlanLock = Record<"schema" | "digest", string> & { plan: ReleasePlan };
 
-const REPOSITORY = "openclaw/openclaw";
+const REPOSITORY = "celaya-solutions/PASO-AGENT";
 const EXECUTION_ROOT = fileURLToPath(new URL("..", import.meta.url));
 const BOOTSTRAP_PATH = "scripts/release-plan-producer.mts",
   CORE_PATH = "scripts/release-plan-producer-core.mts";

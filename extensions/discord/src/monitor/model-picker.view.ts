@@ -221,8 +221,8 @@ function getRuntimeChoices(params: {
   return [
     {
       id: "openclaw",
-      label: "OpenClaw Default",
-      description: "Use the built-in OpenClaw runtime.",
+      label: "PASO Default",
+      description: "Use the built-in PASO runtime.",
     },
   ];
 }

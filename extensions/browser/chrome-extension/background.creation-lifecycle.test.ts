@@ -47,7 +47,7 @@ async function setup(mode: "all" | "selected" = "all", deferSocketClose = false)
     return groupId;
   });
   harness.tabGroupsUpdate.mockImplementation(async () => {
-    harness.tabGroupUpdatedListener?.({ id: 7, title: "OpenClaw" });
+    harness.tabGroupUpdatedListener?.({ id: 7, title: "PASO" });
   });
   const create = async (url = "about:blank") => {
     expect(await request({ type: "createTab", url, background: true })).toMatchObject({
@@ -155,7 +155,7 @@ describe("physical tab creation authority", () => {
   it("revokes a later empty group title during creation", async () => {
     const h = await setup("selected");
     h.tabGroupsUpdate.mockImplementationOnce(async () => {
-      h.tabGroupUpdatedListener?.({ id: 7, title: "OpenClaw" });
+      h.tabGroupUpdatedListener?.({ id: 7, title: "PASO" });
       h.tabGroupUpdatedListener?.({ id: 7, title: "" });
     });
     expect(await h.request({ type: "createTab", url: "about:blank" })).toMatchObject({

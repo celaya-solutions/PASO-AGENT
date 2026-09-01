@@ -26,7 +26,7 @@ class VoiceWakeManagerTest {
 
     session.emit(VoiceWakeRecognitionEvent.Ready)
     session.retire()
-    session.emit(VoiceWakeRecognitionEvent.Transcript("openclaw stale command", isFinal = true))
+    session.emit(VoiceWakeRecognitionEvent.Transcript("paso stale command", isFinal = true))
 
     assertEquals(listOf(VoiceWakeRecognitionEvent.Ready), events)
   }
@@ -147,7 +147,7 @@ class VoiceWakeManagerTest {
 
       manager.setForeground(true)
       manager.setEnabled(true)
-      recognizer.emit(VoiceWakeRecognitionEvent.Transcript("openclaw show status", isFinal = true))
+      recognizer.emit(VoiceWakeRecognitionEvent.Transcript("paso show status", isFinal = true))
       runCurrent()
       assertTrue(commandStarted)
 
@@ -232,7 +232,7 @@ class VoiceWakeManagerTest {
       context = RuntimeEnvironment.getApplication(),
       scope = this,
       recognizer = recognizer,
-      initialTriggerWords = listOf("openclaw"),
+      initialTriggerWords = listOf("paso"),
       onCommand = onCommand,
       restartDelayMs = 1,
       hasRecordAudioPermission = hasPermission,

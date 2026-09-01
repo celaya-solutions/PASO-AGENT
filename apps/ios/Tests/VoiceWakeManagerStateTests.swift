@@ -54,7 +54,7 @@ private actor VoiceWakeCommandBarrier {
 
     @Test @MainActor func `handle recognition callback dispatches command`() async throws {
         let manager = VoiceWakeManager()
-        manager.triggerWords = ["openclaw"]
+        manager.triggerWords = ["paso"]
         manager.isEnabled = true
 
         actor CaptureBox {
@@ -68,11 +68,11 @@ private actor VoiceWakeCommandBarrier {
             await capture.set(cmd)
         }
 
-        let transcript = "openclaw hello"
-        let triggerRange = try #require(transcript.range(of: "openclaw"))
+        let transcript = "paso hello"
+        let triggerRange = try #require(transcript.range(of: "paso"))
         let helloRange = try #require(transcript.range(of: "hello"))
         let segments = [
-            WakeWordSegment(text: "openclaw", start: 0.0, duration: 0.2, range: triggerRange),
+            WakeWordSegment(text: "paso", start: 0.0, duration: 0.2, range: triggerRange),
             WakeWordSegment(text: "hello", start: 0.8, duration: 0.2, range: helloRange),
         ]
 
@@ -87,16 +87,16 @@ private actor VoiceWakeCommandBarrier {
     @Test @MainActor func `failed Voice Wake delivery replaces the triggered status`() async throws {
         let appModel = NodeAppModel()
         let manager = appModel.voiceWake
-        manager.triggerWords = ["openclaw"]
+        manager.triggerWords = ["paso"]
         manager.isEnabled = true
 
-        let transcript = "openclaw hello"
-        let triggerRange = try #require(transcript.range(of: "openclaw"))
+        let transcript = "paso hello"
+        let triggerRange = try #require(transcript.range(of: "paso"))
         let commandRange = try #require(transcript.range(of: "hello"))
         manager._test_handleRecognitionCallback(
             transcript: transcript,
             segments: [
-                WakeWordSegment(text: "openclaw", start: 0, duration: 0.2, range: triggerRange),
+                WakeWordSegment(text: "paso", start: 0, duration: 0.2, range: triggerRange),
                 WakeWordSegment(text: "hello", start: 0.8, duration: 0.2, range: commandRange),
             ],
             errorText: nil)
@@ -118,7 +118,7 @@ private actor VoiceWakeCommandBarrier {
             }
         }
         let capture = CaptureBox()
-        manager.triggerWords = ["openclaw"]
+        manager.triggerWords = ["paso"]
         manager.isEnabled = true
         manager.isListening = true
         manager.configure { command in
@@ -131,13 +131,13 @@ private actor VoiceWakeCommandBarrier {
             await capture.set(command)
         }
 
-        let transcript = "openclaw hello"
-        let triggerRange = try #require(transcript.range(of: "openclaw"))
+        let transcript = "paso hello"
+        let triggerRange = try #require(transcript.range(of: "paso"))
         let commandRange = try #require(transcript.range(of: "hello"))
         manager._test_handleRecognitionCallback(
             transcript: transcript,
             segments: [
-                WakeWordSegment(text: "openclaw", start: 0, duration: 0.2, range: triggerRange),
+                WakeWordSegment(text: "paso", start: 0, duration: 0.2, range: triggerRange),
                 WakeWordSegment(text: "hello", start: 0.8, duration: 0.2, range: commandRange),
             ],
             errorText: nil)

@@ -760,7 +760,7 @@ struct SettingsSkillsDestination: View {
                 skillKey: "github",
                 primaryEnv: nil,
                 emoji: "🐙",
-                homepage: "https://docs.openclaw.ai/tools/skills",
+                homepage: "https://github.com/celaya-solutions/PASO-AGENT",
                 always: false,
                 disabled: false,
                 eligible: true,

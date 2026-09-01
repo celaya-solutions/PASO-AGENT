@@ -91,9 +91,7 @@ async function buildCodexMemoryItems(params: {
         throw new Error("Codex memory import destination must stay in the selected workspace.");
       }
       if (isPathInside(source, destination) || isPathInside(destination, source)) {
-        throw new Error(
-          "Codex memory source and OpenClaw import destination must be separate paths.",
-        );
+        throw new Error("Codex memory source and PASO import destination must be separate paths.");
       }
     }
     const targetConflict = targetStat !== undefined && !params.overwrite;
@@ -110,7 +108,7 @@ async function buildCodexMemoryItems(params: {
           : targetConflict
             ? MIGRATION_REASON_TARGET_EXISTS
             : undefined,
-        message: "Copy consolidated Codex memory into the OpenClaw memory index.",
+        message: "Copy consolidated Codex memory into the PASO memory index.",
         details: {
           sourceType: "codex-memory",
           sourceLabel: memory.label,
@@ -168,7 +166,7 @@ async function buildCodexSkillItems(params: {
           : conflict
             ? MIGRATION_REASON_TARGET_EXISTS
             : undefined,
-        message: `Copy ${item.skill.sourceLabel} into this OpenClaw agent workspace.`,
+        message: `Copy ${item.skill.sourceLabel} into this PASO agent workspace.`,
         details: { skillName: item.name, sourceLabel: item.skill.sourceLabel },
       });
     }),
@@ -282,7 +280,7 @@ function buildPluginItems(
           applyPhase: "after-promotion",
           source: plugin.source,
           target: `plugins.entries.codex.config.codexPlugins.plugins.${configKey}`,
-          message: `Install Codex plugin "${plugin.pluginName}" in the OpenClaw-managed Codex app-server runtime.`,
+          message: `Install Codex plugin "${plugin.pluginName}" in the PASO-managed Codex app-server runtime.`,
           details: {
             configKey,
             marketplaceName: CODEX_PLUGINS_MARKETPLACE_NAME,
@@ -519,7 +517,7 @@ function buildPluginConfigItem(
     reason: conflict ? MIGRATION_REASON_TARGET_EXISTS : undefined,
     applyPhase: "after-promotion",
     message:
-      "Enable OpenClaw's Codex plugin integration and record migrated source-installed curated plugins.",
+      "Enable PASO's Codex plugin integration and record migrated source-installed curated plugins.",
     details: {
       path: [...CODEX_PLUGIN_CONFIG_PATH],
       value,
@@ -617,7 +615,7 @@ export async function buildCodexMigrationPlan(
       ? []
       : [
           "Run openclaw doctor after applying the migration.",
-          "Review skipped or auth-required Codex plugin/config/hook items before exposing them in OpenClaw sessions.",
+          "Review skipped or auth-required Codex plugin/config/hook items before exposing them in PASO sessions.",
         ],
     metadata: {
       agentDir: targets.agentDir,

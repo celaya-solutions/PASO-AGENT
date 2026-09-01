@@ -891,7 +891,7 @@ describe("package-mac-app plist stamping", () => {
   });
 
   it.each([
-    { key: "OpenClawGitCommit", diagnostic: "Release app OpenClaw source mismatch" },
+    { key: "OpenClawGitCommit", diagnostic: "Release app PASO source mismatch" },
     { key: "PeekabooSourceCommit", diagnostic: "Release app Peekaboo source mismatch" },
   ])("fails release validation independently for a wrong $key", ({ key, diagnostic }) => {
     const { result } = runSourceProvenanceStampHarness(key);
@@ -1299,7 +1299,7 @@ describe("package-mac-app plist stamping", () => {
     });
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain("OpenClaw macOS app packaging requires Swift tools 6.3+");
+    expect(result.stderr).toContain("PASO macOS app packaging requires Swift tools 6.3+");
     expect(result.stderr).toContain("Current Swift is 6.0");
   });
 
@@ -1338,7 +1338,7 @@ describe("package-mac-app plist stamping", () => {
     });
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain("OpenClaw macOS app packaging requires Xcode 26.4+");
+    expect(result.stderr).toContain("PASO macOS app packaging requires Xcode 26.4+");
     expect(result.stderr).toContain("current Xcode is 26.3");
   });
 
@@ -1395,7 +1395,7 @@ describe("package-mac-app plist stamping", () => {
     expect(result.status).toBe(1);
     const diagnosticIndex = result.stderr.indexOf(diagnostic);
     const guidanceIndex = result.stderr.indexOf(
-      "ERROR: OpenClaw macOS app packaging requires a full Xcode developer directory",
+      "ERROR: PASO macOS app packaging requires a full Xcode developer directory",
     );
     expect(diagnosticIndex).toBeGreaterThanOrEqual(0);
     expect(guidanceIndex).toBeGreaterThan(diagnosticIndex);
@@ -1496,7 +1496,7 @@ describe("package-mac-app plist stamping", () => {
     const result = runStopPackagedAppHarness(0);
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain("ERROR: Packaged OpenClaw bundle did not exit: 123");
+    expect(result.stderr).toContain("ERROR: Packaged PASO bundle did not exit: 123");
   });
 
   it("fails release packaging when the Swift compatibility library is missing", () => {

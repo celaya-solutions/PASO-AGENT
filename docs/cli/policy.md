@@ -1,7 +1,7 @@
 ---
 summary: "CLI reference for `openclaw policy` conformance checks"
 read_when:
-  - You want to check OpenClaw settings against an authored policy.jsonc
+  - You want to check PASO settings against an authored policy.jsonc
   - You want policy findings in doctor lint
   - You need a policy attestation hash for audit evidence
 title: "Policy"
@@ -10,8 +10,8 @@ title: "Policy"
 # `openclaw policy`
 
 `openclaw policy` is provided by the bundled Policy plugin. It is an enterprise
-conformance layer over existing OpenClaw settings, not a second configuration
-system. You author requirements in `policy.jsonc`; OpenClaw observes the active
+conformance layer over existing PASO settings, not a second configuration
+system. You author requirements in `policy.jsonc`; PASO observes the active
 workspace as evidence; policy reports drift through `doctor --lint`. Policy
 does not enforce tool calls or rewrite runtime behavior at request time, and it
 does not attest per-agent credential stores such as `openclaw-agent.sqlite`.
@@ -205,7 +205,7 @@ Cross-cutting notes not obvious from the rule tables below:
   redaction invariant. It does not inspect logs, telemetry exports,
   transcripts, or memory files, and a clean result does not prove that no
   personal data or secrets exist in them.
-- Routing probes reuse OpenClaw's runtime binding resolver. Routing evidence
+- Routing probes reuse PASO's runtime binding resolver. Routing evidence
   records only the probe id, resolved agent, match kind, and redacted binding
   metadata. It never records peer, account, guild, team, or role identifiers.
   Adding a routing section intentionally changes the policy and attestation
@@ -214,7 +214,7 @@ Cross-cutting notes not obvious from the rule tables below:
 ### Policy rule reference
 
 Every rule below is optional; a check runs only when the rule is present. The
-observed state is existing OpenClaw config or workspace metadata.
+observed state is existing PASO config or workspace metadata.
 
 #### Scoped overlays
 
@@ -228,7 +228,7 @@ and the scoped rule can add its own finding against the same evidence.
 | `agentIds`   | `tools`, `agents.workspace`, `sandbox`, `dataHandling.memory`, `execApprovals` | One or more runtime agents need stricter rules.   |
 | `channelIds` | `ingress.channels`                                                             | One or more channels need stricter ingress rules. |
 
-If an `agentIds` entry is not present in `agents.entries.*`, OpenClaw evaluates
+If an `agentIds` entry is not present in `agents.entries.*`, PASO evaluates
 the scoped rule against inherited global/default posture for that runtime
 agent id instead of skipping it.
 
@@ -348,7 +348,7 @@ Every scope present in `policy.jsonc` must be valid and enforceable.
 | ----------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
 | `routing.requireBindings`           | Channel route bindings, excluding ACP bindings      | Require at least one message-routing binding.                          |
 | `routing.requireConfiguredChannels` | Binding channel ids and configured `channels.*` ids | Detect stale or misspelled binding channel ids.                        |
-| `routing.probes[].route`            | The public OpenClaw route resolver                  | Describe a representative inbound route without sending a message.     |
+| `routing.probes[].route`            | The public PASO route resolver                      | Describe a representative inbound route without sending a message.     |
 | `routing.probes[].expect.agentId`   | Resolved agent id                                   | Require the route to reach the reviewed agent.                         |
 | `routing.probes[].expect.matchedBy` | Resolver match kind                                 | Require peer, account, channel, or other reviewed binding specificity. |
 
@@ -374,21 +374,21 @@ private messages.
 
 #### Gateway
 
-| Policy field                            | Observed state                                | Use when                                                                             |
-| --------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                | Set to `false` to require loopback Gateway binding.                                  |
-| `gateway.exposure.allowTailscaleFunnel` | Tailscale serve/funnel Gateway posture        | Set to `false` to deny Tailscale Funnel exposure.                                    |
-| `gateway.auth.requireAuth`              | `gateway.auth.mode`                           | Set to `true` to reject disabled Gateway auth.                                       |
-| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                      | Set to `true` to require explicit auth rate-limit config.                            |
-| `gateway.controlUi.allowInsecure`       | Device-identity invariant and origin fallback | Set to `false` to require device identity and deny Host-header origin fallback.      |
-| `gateway.remote.allow`                  | Remote Gateway mode/config                    | Set to `false` to deny remote Gateway mode.                                          |
-| `gateway.http.denyEndpoints`            | Gateway HTTP API endpoints                    | Deny endpoint ids such as `chatCompletions` or `responses`.                          |
-| `gateway.http.requireUrlAllowlists`     | Gateway HTTP URL-fetch inputs                 | Set to `true` to require URL allowlists on URL-fetch inputs.                         |
-| `gateway.nodes.denyCommands`            | `gateway.nodes.commands.deny`                 | Require exact node command ids such as `system.run` to be denied in OpenClaw config. |
+| Policy field                            | Observed state                                | Use when                                                                         |
+| --------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------- |
+| `gateway.exposure.allowNonLoopbackBind` | `gateway.bind`                                | Set to `false` to require loopback Gateway binding.                              |
+| `gateway.exposure.allowTailscaleFunnel` | Tailscale serve/funnel Gateway posture        | Set to `false` to deny Tailscale Funnel exposure.                                |
+| `gateway.auth.requireAuth`              | `gateway.auth.mode`                           | Set to `true` to reject disabled Gateway auth.                                   |
+| `gateway.auth.requireExplicitRateLimit` | `gateway.auth.rateLimit`                      | Set to `true` to require explicit auth rate-limit config.                        |
+| `gateway.controlUi.allowInsecure`       | Device-identity invariant and origin fallback | Set to `false` to require device identity and deny Host-header origin fallback.  |
+| `gateway.remote.allow`                  | Remote Gateway mode/config                    | Set to `false` to deny remote Gateway mode.                                      |
+| `gateway.http.denyEndpoints`            | Gateway HTTP API endpoints                    | Deny endpoint ids such as `chatCompletions` or `responses`.                      |
+| `gateway.http.requireUrlAllowlists`     | Gateway HTTP URL-fetch inputs                 | Set to `true` to require URL allowlists on URL-fetch inputs.                     |
+| `gateway.nodes.denyCommands`            | `gateway.nodes.commands.deny`                 | Require exact node command ids such as `system.run` to be denied in PASO config. |
 
 `gateway.nodes.denyCommands` is an exact, case-sensitive policy deny-superset rule.
 Use it when policy must prove that privileged node commands are explicitly
-denied by OpenClaw config. A deployment that intentionally allows a privileged
+denied by PASO config. A deployment that intentionally allows a privileged
 node command should update `policy.jsonc` after review instead of relying on
 `gateway.nodes.commands.allow` alone.
 
@@ -420,7 +420,7 @@ allowlist such as `["all"]`.
 
 | Policy field                                        | Observed state                                                                                                   | Use when                                                               |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `dataHandling.sensitiveLogging.requireRedaction`    | Runtime invariant `oc://openclaw.invariant/logging/redaction`                                                    | Set to `true` to record the requirement; OpenClaw always satisfies it. |
+| `dataHandling.sensitiveLogging.requireRedaction`    | Runtime invariant `oc://openclaw.invariant/logging/redaction`                                                    | Set to `true` to record the requirement; PASO always satisfies it.     |
 | `dataHandling.telemetry.denyContentCapture`         | `diagnostics.otel.captureContent`                                                                                | Set to `true` to reject telemetry content capture.                     |
 | `dataHandling.retention.requireSessionMaintenance`  | `session.maintenance.mode`                                                                                       | Set to `true` to require effective session maintenance mode `enforce`. |
 | `dataHandling.memory.denySessionTranscriptIndexing` | `memory.search.experimental.sessionMemory`, `memory.search.rememberAcrossConversations`, and per-agent overrides | Set to `true` to reject session transcript indexing into memory.       |
@@ -539,7 +539,7 @@ and attestation hashes. The same findings also appear in
 In a multi-agent fleet with explicit ownership, pass `--agent <id>` so the
 command reads governed declarations and `policy.jsonc` from that agent's
 workspace. A sole-agent or retained legacy-owner configuration still resolves
-without the flag; OpenClaw never selects an arbitrary first agent.
+without the flag; PASO never selects an arbitrary first agent.
 
 Compare an operator policy file against an authored baseline:
 
@@ -770,7 +770,7 @@ Example JSON output:
 ```
 
 `attestation.policy.hash` identifies the authored rule artifact. `evidence`
-records the observed OpenClaw state used by the checks, and
+records the observed PASO state used by the checks, and
 `workspace.hash` identifies that evidence payload. `findingsHash` identifies
 the exact finding set. `checkedAt` records when the check ran.
 `attestationHash` identifies the stable claim (policy hash, evidence hash,
@@ -845,7 +845,7 @@ the interval.
 | `policy/gateway-remote-enabled`                          | Gateway remote mode is active when policy denies it.                              |
 | `policy/gateway-http-endpoint-enabled`                   | A Gateway HTTP API endpoint is enabled while denied by policy.                    |
 | `policy/gateway-http-url-fetch-unrestricted`             | Gateway HTTP URL-fetch input lacks a required URL allowlist.                      |
-| `policy/gateway-node-command-denied`                     | A node command denied by policy is not denied by OpenClaw config.                 |
+| `policy/gateway-node-command-denied`                     | A node command denied by policy is not denied by PASO config.                     |
 | `policy/agents-workspace-access-denied`                  | Agent sandbox mode or workspace access is outside the policy allowlist.           |
 | `policy/agents-tool-not-denied`                          | An agent or default config does not deny a tool required by policy.               |
 | `policy/tools-profile-unapproved`                        | A configured global or per-agent tool profile is outside the allowlist.           |
@@ -978,7 +978,7 @@ Example findings:
 {
   "checkId": "policy/gateway-node-command-denied",
   "severity": "error",
-  "message": "Gateway node command 'system.run' is denied by policy but not denied by OpenClaw config.",
+  "message": "Gateway node command 'system.run' is denied by policy but not denied by PASO config.",
   "source": "policy",
   "path": "openclaw config",
   "ocPath": "oc://openclaw.config/gateway/nodes/commands/deny",
@@ -1034,7 +1034,7 @@ also skipped when the finding reports shared telemetry config, because changing
 the shared setting would affect more than the scoped policy target.
 
 `dataHandling.sensitiveLogging.requireRedaction` has no check and no repair.
-Sensitive log redaction is unconditional in OpenClaw, so nothing can report it
+Sensitive log redaction is unconditional in PASO, so nothing can report it
 as disabled. The key stays a supported policy rule: `openclaw policy` validates
 its shape, `openclaw policy compare` still requires a candidate policy to be at
 least as strict as the baseline for it, and `openclaw policy check` records the

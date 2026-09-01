@@ -934,7 +934,7 @@ describe("firecrawl tools", () => {
 
   it("keeps the compare-helper fetch facade owned by the Firecrawl extension", async () => {
     await fetchFirecrawlContent({
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       apiKey: "firecrawl-key",
       baseUrl: "https://api.firecrawl.dev",
@@ -965,7 +965,7 @@ describe("firecrawl tools", () => {
           },
         },
       },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       maxChars: 1500,
       proxy: "stealth",
@@ -1003,7 +1003,7 @@ describe("firecrawl tools", () => {
     }
 
     await tool.execute({
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       maxChars: 1500,
       proxy: "stealth",
@@ -1012,7 +1012,7 @@ describe("firecrawl tools", () => {
 
     expect(runFirecrawlScrape).toHaveBeenCalledWith({
       cfg: { test: true },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       access: "keyless",
       maxChars: 1500,
@@ -1031,20 +1031,20 @@ describe("firecrawl tools", () => {
     }
 
     await tool.execute({
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       maxChars: "1500",
     });
 
     expect(runFirecrawlScrape).toHaveBeenCalledWith({
       cfg: { test: true },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       access: "keyless",
       maxChars: 1500,
     });
     await expect(
       tool.execute({
-        url: "https://docs.openclaw.ai",
+        url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         maxChars: "1500.5",
       }),
     ).rejects.toThrow("maxChars must be a positive integer");
@@ -1139,7 +1139,7 @@ describe("firecrawl tools", () => {
     expect(tool.resultContentSource).toBe("network");
 
     const result = await tool.execute("call-1", {
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       maxChars: 1500,
       onlyMainContent: false,
       maxAgeMs: 5000,
@@ -1150,7 +1150,7 @@ describe("firecrawl tools", () => {
 
     expect(runFirecrawlScrape).toHaveBeenCalledWith({
       cfg: { env: "test" },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       maxChars: 1500,
       onlyMainContent: false,
@@ -1163,7 +1163,7 @@ describe("firecrawl tools", () => {
     expect(details.ok).toBe(true);
     expect(details.params).toEqual({
       cfg: { env: "test" },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "markdown",
       maxChars: 1500,
       onlyMainContent: false,
@@ -1202,19 +1202,19 @@ describe("firecrawl tools", () => {
 
     await expect(
       scrapeTool.execute("call-scrape-max-chars", {
-        url: "https://docs.openclaw.ai",
+        url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         maxChars: 1500.5,
       }),
     ).rejects.toThrow("maxChars must be a positive integer");
     await expect(
       scrapeTool.execute("call-scrape-max-age", {
-        url: "https://docs.openclaw.ai",
+        url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         maxAgeMs: -1,
       }),
     ).rejects.toThrow("maxAgeMs must be a non-negative integer");
     await expect(
       scrapeTool.execute("call-scrape-timeout", {
-        url: "https://docs.openclaw.ai",
+        url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         timeoutSeconds: 22.5,
       }),
     ).rejects.toThrow("timeoutSeconds must be a positive integer");
@@ -1228,14 +1228,14 @@ describe("firecrawl tools", () => {
     } as never);
 
     await tool.execute("call-2", {
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "text",
       proxy: "invalid",
     });
 
     expect(runFirecrawlScrape).toHaveBeenCalledWith({
       cfg: { env: "test" },
-      url: "https://docs.openclaw.ai",
+      url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       extractMode: "text",
       maxChars: undefined,
       onlyMainContent: undefined,

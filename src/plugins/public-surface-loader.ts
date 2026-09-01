@@ -113,9 +113,7 @@ function loadBundledPublicSurfaceAtLocation(params: {
     modulePath: params.location.modulePath,
     boundaryRoot: params.location.boundaryRoot,
     boundaryLabel:
-      params.location.boundaryRoot === OPENCLAW_PACKAGE_ROOT
-        ? "OpenClaw package root"
-        : "plugin root",
+      params.location.boundaryRoot === OPENCLAW_PACKAGE_ROOT ? "PASO package root" : "plugin root",
     surfaceLabel: `bundled plugin public surface ${params.dirName}/${params.artifactBasename}`,
     origin: "bundled",
   });

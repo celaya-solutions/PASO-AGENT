@@ -99,9 +99,9 @@ describe("searxng real transport", () => {
         JSON.stringify({
           results: [
             {
-              title: "OpenClaw",
-              url: "https://docs.openclaw.ai/",
-              content: "OpenClaw documentation",
+              title: "PASO",
+              url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+              content: "PASO documentation",
             },
           ],
         }),
@@ -118,7 +118,7 @@ describe("searxng real transport", () => {
     ).resolves.toMatchObject({
       provider: "searxng",
       count: 1,
-      results: [{ url: "https://docs.openclaw.ai/" }],
+      results: [{ url: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" }],
     });
   });
 

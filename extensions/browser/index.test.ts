@@ -474,7 +474,7 @@ describe("browser plugin", () => {
       descriptors: [
         {
           name: "browser",
-          description: "Manage OpenClaw's dedicated browser (Chrome/Chromium)",
+          description: "Manage PASO's dedicated browser (Chrome/Chromium)",
           hasSubcommands: true,
           machineOutput: expect.any(Function),
         },

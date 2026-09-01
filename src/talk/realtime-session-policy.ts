@@ -116,9 +116,12 @@ function resolveRealtimeVoiceWakeNames(params: {
   const configuredAgentNames = [agent?.name, agent?.identity?.name]
     .map((name) => normalizeSupportedRealtimeVoiceActivationName(name))
     .filter((name): name is string => Boolean(name));
-  const productWakeNames = [normalizeSupportedRealtimeVoiceActivationName("OpenClaw")].filter(
-    (name): name is string => Boolean(name),
-  );
+  // Keep the former product name as a hidden wake alias so existing hands-free
+  // setups continue to respond after upgrading. PASO remains the displayed and
+  // documented default.
+  const productWakeNames = ["PASO", "OpenClaw"]
+    .map((name) => normalizeSupportedRealtimeVoiceActivationName(name))
+    .filter((name): name is string => Boolean(name));
   const defaults =
     configuredAgentNames.length > 0
       ? [...configuredAgentNames, ...productWakeNames]

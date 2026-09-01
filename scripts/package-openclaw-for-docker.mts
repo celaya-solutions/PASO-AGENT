@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Builds the canonical OpenClaw package artifact used by Docker E2E.
+// Builds the canonical PASO package artifact used by Docker E2E.
 import { spawn } from "node:child_process";
 import { closeSync, openSync } from "node:fs";
 import fs from "node:fs/promises";
@@ -216,7 +216,7 @@ function resolvePackedOpenClawFileName(value: string) {
     filename !== path.basename(filename) ||
     filename !== path.win32.basename(filename)
   ) {
-    throw new Error(`npm pack reported unsafe OpenClaw tarball filename: ${filename}`);
+    throw new Error(`npm pack reported unsafe PASO tarball filename: ${filename}`);
   }
   return filename;
 }
@@ -508,11 +508,11 @@ export async function buildPackageArtifacts(
   );
   const distDir = path.join(sourceDir, "dist");
   assertRealOutputRoot(distDir);
-  console.error("==> Cleaning OpenClaw package artifacts");
+  console.error("==> Cleaning PASO package artifacts");
   await fs.rm(distDir, { force: true, recursive: true });
 
   // Frozen sources own their build entrypoint and may predate clean:dist.
-  console.error("==> Building OpenClaw package artifacts");
+  console.error("==> Building PASO package artifacts");
   await runImpl("pnpm", ["run", "build"], sourceDir, { env: buildEnv, timeoutMs });
 }
 
@@ -546,7 +546,7 @@ async function newestOpenClawTarball(outputDir: string, packOutput: string) {
     .toSorted()
     .at(-1);
   if (!packed) {
-    throw new Error(`missing packed OpenClaw tarball in ${outputDir}`);
+    throw new Error(`missing packed PASO tarball in ${outputDir}`);
   }
   return path.join(outputDir, packed);
 }
@@ -855,7 +855,7 @@ async function normalizeOpenClawTarballModes(tarballPath: string) {
     };
     await normalizeStagedModes(stageDir);
     if (stagedFileCount === 0) {
-      throw new Error(`packed OpenClaw tarball has no file entries: ${tarballPath}`);
+      throw new Error(`packed PASO tarball has no file entries: ${tarballPath}`);
     }
     const stageRootEntries = await fs.readdir(stageDir);
     const normalizedPath = `${tarballPath}.modes-tmp`;
@@ -972,7 +972,7 @@ export async function packOpenClawPackageForDocker(
   if (packageOptions.packJsonPath && packageOptions.pnpmPack) {
     throw new Error("packJsonPath cannot be combined with pnpmPack");
   }
-  console.error("==> Packing OpenClaw package");
+  console.error("==> Packing PASO package");
   // This receipt is the package lifecycle lock; acquire it before touching CHANGELOG.md.
   await prepareDocsMap(sourcePath);
   const deferSignalExit: KillChild = () => {};
@@ -1152,7 +1152,7 @@ async function main() {
     await buildPackageArtifacts(sourceDir, { bundlePlugins: options.bundlePlugins });
   }
 
-  console.error("==> Writing OpenClaw package inventory");
+  console.error("==> Writing PASO package inventory");
   await writePackageInventoryForDocker(sourceDir);
 
   const tarball = await packOpenClawPackageForDocker(sourceDir, outputDir, {
@@ -1163,7 +1163,7 @@ async function main() {
     pnpmPack: options.pnpmPack,
   });
 
-  console.error("==> Checking OpenClaw package tarball");
+  console.error("==> Checking PASO package tarball");
   const checkStartedAt = Date.now();
   await run(
     "node",
@@ -1181,7 +1181,7 @@ async function main() {
     },
   );
   console.error(
-    `==> OpenClaw package tarball check finished in ${Math.round((Date.now() - checkStartedAt) / 1000)}s`,
+    `==> PASO package tarball check finished in ${Math.round((Date.now() - checkStartedAt) / 1000)}s`,
   );
 
   process.stdout.write(`${tarball}\n`);

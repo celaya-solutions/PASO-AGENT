@@ -25,9 +25,9 @@ extension OnboardingView {
         onboardingPage {
             VStack(spacing: 18) {
                 VStack(spacing: 8) {
-                    Text("Welcome to OpenClaw")
+                    Text("Welcome to PASO")
                         .font(.largeTitle.weight(.semibold))
-                    Text("Your personal AI assistant, living on your own Mac.")
+                    Text(verbatim: "An AI agent by Celaya Solutions Research")
                         .font(.title3)
                         .foregroundStyle(.secondary)
                 }
@@ -58,7 +58,7 @@ extension OnboardingView {
 
                 Label {
                     Text(
-                        "OpenClaw can take actions using the permissions and services you enable. " +
+                        "PASO can take actions using the permissions and services you enable. " +
                             "Review prompts and only connect tools you trust.")
                 } icon: {
                     Image(systemName: "info.circle")
@@ -76,7 +76,7 @@ extension OnboardingView {
             Text("Where should your assistant live?")
                 .font(.largeTitle.weight(.semibold))
             Text(
-                "Most people pick this Mac — OpenClaw installs everything and keeps it " +
+                "Most people pick this Mac — PASO installs everything and keeps it " +
                     "running in the background. You can change this anytime in Settings.")
                 .font(.body)
                 .foregroundStyle(.secondary)
@@ -132,7 +132,7 @@ extension OnboardingView {
                 Spacer(minLength: 0)
             }
             if self.selectedConnectionMode == .unconfigured {
-                Text("OK — OpenClaw won’t start anything yet. Pick Local or Remote later in Settings → General.")
+                Text("OK — PASO won’t start anything yet. Pick Local or Remote later in Settings → General.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
@@ -352,7 +352,7 @@ extension OnboardingView {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Remote connection")
                         .font(.callout.weight(.semibold))
-                    Text("Verify OpenClaw can reach this gateway.")
+                    Text("Verify PASO can reach this gateway.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -447,7 +447,7 @@ extension OnboardingView {
                     .frame(width: labelWidth, alignment: .leading)
                 Text(
                     "The current gateway.remote.token value is not plain text. "
-                        + "OpenClaw for macOS cannot use it directly; "
+                        + "PASO for macOS cannot use it directly; "
                         + "enter a plaintext token here to replace it.")
                     .font(.caption)
                     .foregroundStyle(.orange)
@@ -514,7 +514,7 @@ extension OnboardingView {
                 Text("Project root")
                     .font(.callout.weight(.semibold))
                     .frame(width: labelWidth, alignment: .leading)
-                TextField("/home/you/Projects/openclaw", text: self.$state.remoteProjectRoot)
+                TextField("/home/you/Projects/paso-agent", text: self.$state.remoteProjectRoot)
                     .textFieldStyle(.roundedBorder)
                     .frame(width: fieldWidth)
             }
@@ -803,9 +803,9 @@ extension OnboardingView {
     }
 
     func cliPage() -> some View {
-        let detail = "OpenClaw is setting up its Gateway background service on this Mac. " +
+        let detail = "PASO is setting up its Gateway background service on this Mac. " +
             "Published Stable and Beta installs are usually quick. " +
-            "Dev (Git main) downloads and builds OpenClaw from source, so allow several minutes " +
+            "Dev (Git main) downloads and builds PASO from source, so allow several minutes " +
             "and several gigabytes of free space. No administrator password is required."
         return onboardingPage {
             Text("Getting things ready")
@@ -819,7 +819,7 @@ extension OnboardingView {
 
             self.onboardingCard(spacing: 14, padding: 16) {
                 self.installStepRow(
-                    title: "Install OpenClaw",
+                    title: "Install PASO",
                     detail: self.cliExecutableReady
                         ? (self.cliInstallLocation ?? "Installed")
                         : "A private copy inside your user folder.",
@@ -838,7 +838,7 @@ extension OnboardingView {
                     OnboardingErrorCard(
                         title: self.cliExecutableReady
                             ? "The Gateway didn’t start"
-                            : "OpenClaw installation failed",
+                            : "PASO installation failed",
                         message: self.cliStatus ?? "The installer did not finish.",
                         docsSlug: "platforms/mac/bundled-gateway",
                         retryTitle: "Try again")
@@ -979,7 +979,7 @@ extension OnboardingView {
                     .padding(.vertical, 6)
                 self.featureRow(
                     title: "Open the menu bar panel",
-                    subtitle: "Click the OpenClaw menu bar icon for the compact chat panel and status.",
+                    subtitle: "Click the PASO menu bar icon for the compact chat panel and status.",
                     systemImage: "bubble.left.and.bubble.right")
                 self.featureActionRow(
                     title: "Connect Discord, Slack, Telegram, WhatsApp, …",

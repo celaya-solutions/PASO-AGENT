@@ -133,11 +133,11 @@ enum CLIInstaller {
         var message: String {
             switch self {
             case let .ready(_, version):
-                "OpenClaw Gateway \(version) is ready."
+                "PASO Gateway \(version) is ready."
             case .missing:
-                "OpenClaw Gateway is not installed yet."
+                "PASO Gateway is not installed yet."
             case .unusable:
-                "The OpenClaw Gateway could not be verified. Setup will repair it."
+                "The PASO Gateway could not be verified. Setup will repair it."
             case let .incompatible(_, found, required):
                 "Gateway \(found) does not match app \(required). Setup will update it."
             }
@@ -335,9 +335,9 @@ enum CLIInstaller {
         statusHandler: @escaping @MainActor @Sendable (String) async -> Void) async -> Bool
     {
         let prefix = Self.installPrefix()
-        await statusHandler("Installing OpenClaw CLI (\(target.selector))…")
+        await statusHandler("Installing PASO CLI (\(target.selector))…")
         guard let installerURL = Bundle.main.url(forResource: "install-cli", withExtension: "sh") else {
-            await statusHandler("Install failed: installer resource is missing. Reinstall OpenClaw.")
+            await statusHandler("Install failed: installer resource is missing. Reinstall PASO.")
             return false
         }
         let appVersion = GatewayEnvironment.appVersionString()
@@ -505,8 +505,8 @@ enum CLIInstaller {
     {
         let executable = self.managedExecutableLocation()
         await statusHandler(repair
-            ? String(localized: "Repairing the OpenClaw Gateway update…")
-            : String(localized: "Updating the OpenClaw Gateway to \(targetVersion)…"))
+            ? String(localized: "Repairing the PASO Gateway update…")
+            : String(localized: "Updating the PASO Gateway to \(targetVersion)…"))
         let command = self.managedUpdateCommand(
             executable: executable,
             targetVersion: targetVersion,
@@ -551,7 +551,7 @@ enum CLIInstaller {
 
         self.rememberInstallPolicy(.exact(targetVersion))
         NotificationCenter.default.post(name: .openclawCLIInstalled, object: nil)
-        await statusHandler(String(localized: "OpenClaw Gateway \(installedVersion) is installed."))
+        await statusHandler(String(localized: "PASO Gateway \(installedVersion) is installed."))
         return .success(
             fromVersion: summary?.before?.version,
             toVersion: installedVersion)
@@ -629,14 +629,14 @@ enum CLIInstaller {
         case ("disk-space", "start"): "Checking available disk space…"
         case ("node", "start"): "Installing Node.js runtime…"
         case ("git-tools", "start"): "Preparing Git and pnpm…"
-        case ("git-clone", "start"): "Downloading OpenClaw source…"
-        case ("git-update", "start"): "Updating OpenClaw source…"
+        case ("git-clone", "start"): "Downloading PASO source…"
+        case ("git-update", "start"): "Updating PASO source…"
         case ("dependencies", "start"): "Installing dependencies…"
         case ("control-ui", "start"): "Building interface…"
-        case ("cli-build", "start"): "Building OpenClaw CLI…"
-        case ("openclaw", "retry"): "Retrying OpenClaw CLI install…"
+        case ("cli-build", "start"): "Building PASO CLI…"
+        case ("openclaw", "retry"): "Retrying PASO CLI install…"
         case ("disk-space", "warn"): "Couldn’t verify free disk space; continuing…"
-        case ("git-update", "warn"): "Using the existing modified OpenClaw source…"
+        case ("git-update", "warn"): "Using the existing modified PASO source…"
         case ("control-ui", "warn"): "Interface build did not finish; continuing…"
         default: nil
         }

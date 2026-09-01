@@ -24,7 +24,8 @@ const validCloseoutParams = {
   mainChangelog: changelog,
   tagChangelog: changelog,
   mainAppcast:
-    "https://github.com/openclaw/openclaw/releases/download/v2026.6.8/OpenClaw-2026.6.8.zip\n",
+    "<link>https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml</link>\n" +
+    "https://github.com/celaya-solutions/PASO-AGENT/releases/download/v2026.6.8/OpenClaw-2026.6.8.zip\n",
   release,
   releaseTagSha: "tag-sha",
   mainSha: "main-sha",
@@ -66,6 +67,23 @@ describe("stable release closeout", () => {
       rollbackDrill: { id: "rollback-drill-2026-q2", date: "2026-06-01" },
     });
     expect(result.manifest).not.toHaveProperty("verifiedAt");
+  });
+
+  it("rejects an upstream appcast even when its tag and asset names match", () => {
+    const result = verifyStableMainCloseout({
+      ...validCloseoutParams,
+      mainAppcast:
+        "<link>https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml</link>\n" +
+        "https://github.com/openclaw/openclaw/releases/download/v2026.6.8/OpenClaw-2026.6.8.zip\n",
+      nowMs: Date.parse("2026-06-17T00:00:00Z"),
+    });
+
+    expect(result.errors).toContain(
+      "main appcast.xml does not point at OpenClaw-2026.6.8.zip from v2026.6.8 in the PASO release repository.",
+    );
+    expect(result.errors).toContain(
+      "main appcast.xml does not use the PASO repository as its feed self-link.",
+    );
   });
 
   it("accepts closeout after main advances to a later stable CalVer", () => {
@@ -144,7 +162,8 @@ describe("stable release closeout", () => {
         assets: [{ name: "openclaw-2026.6.8-dependency-evidence.zip" }],
       },
       mainAppcast:
-        "https://github.com/openclaw/openclaw/releases/download/v2026.6.8/openclaw-2026.6.8-dependency-evidence.zip\n",
+        "<link>https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml</link>\n" +
+        "https://github.com/celaya-solutions/PASO-AGENT/releases/download/v2026.6.8/openclaw-2026.6.8-dependency-evidence.zip\n",
       nowMs: Date.parse("2026-06-17T00:00:00Z"),
     });
 
@@ -171,7 +190,8 @@ describe("stable release closeout", () => {
       tagChangelog: changelog.replaceAll("2026.6.8", "2026.6.8-2"),
       release: correctionRelease,
       mainAppcast:
-        "https://github.com/openclaw/openclaw/releases/download/v2026.6.8-2/OpenClaw-2026.6.8-2.zip\n",
+        "<link>https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml</link>\n" +
+        "https://github.com/celaya-solutions/PASO-AGENT/releases/download/v2026.6.8-2/OpenClaw-2026.6.8-2.zip\n",
       nowMs: Date.parse("2026-06-17T00:00:00Z"),
     });
 
@@ -193,7 +213,8 @@ describe("stable release closeout", () => {
         tagName: "v2026.6.8-2",
       },
       mainAppcast:
-        "https://github.com/openclaw/openclaw/releases/download/v2026.6.8-2/OpenClaw-2026.6.8.zip\n",
+        "<link>https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/appcast.xml</link>\n" +
+        "https://github.com/celaya-solutions/PASO-AGENT/releases/download/v2026.6.8-2/OpenClaw-2026.6.8.zip\n",
       nowMs: Date.parse("2026-06-17T00:00:00Z"),
     });
 
@@ -294,13 +315,16 @@ describe("stable release closeout", () => {
     });
 
     expect(result.errors).toContain(
-      "main package.json version is 2026.6.7, expected shipped version 2026.6.8 or a later stable OpenClaw CalVer.",
+      "main package.json version is 2026.6.7, expected shipped version 2026.6.8 or a later stable PASO CalVer.",
     );
     expect(result.errors).toContain(
       "main CHANGELOG.md ## 2026.6.8 does not exactly match the shipped release section.",
     );
     expect(result.errors).toContain(
-      "main appcast.xml does not point at OpenClaw-2026.6.8.zip from v2026.6.8.",
+      "main appcast.xml does not point at OpenClaw-2026.6.8.zip from v2026.6.8 in the PASO release repository.",
+    );
+    expect(result.errors).toContain(
+      "main appcast.xml does not use the PASO repository as its feed self-link.",
     );
     expect(result.errors).toContain(
       "rollback drill is older than 90 days: 2026-03-01. Run the private rollback drill before stable closeout.",
@@ -315,7 +339,7 @@ describe("stable release closeout", () => {
     });
 
     expect(result.errors).toContain(
-      "main package.json version is 2026.6.9-beta.1, expected shipped version 2026.6.8 or a later stable OpenClaw CalVer.",
+      "main package.json version is 2026.6.9-beta.1, expected shipped version 2026.6.8 or a later stable PASO CalVer.",
     );
   });
 });

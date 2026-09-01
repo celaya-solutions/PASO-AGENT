@@ -1,13 +1,13 @@
 ---
 summary: "LINE Messaging API plugin setup, config, and usage"
 read_when:
-  - You want to connect OpenClaw to LINE
+  - You want to connect PASO to LINE
   - You need LINE webhook + credential setup
   - You want LINE-specific message options
 title: LINE
 ---
 
-LINE connects to OpenClaw via the LINE Messaging API. The plugin runs as a webhook
+LINE connects to PASO via the LINE Messaging API. The plugin runs as a webhook
 receiver on the Gateway and uses your channel access token + channel secret for
 authentication.
 
@@ -61,8 +61,8 @@ If you need a custom path, set `channels.line.webhookPath` or
 
 Security notes:
 
-- LINE signature verification is body-dependent (HMAC over the raw body), so OpenClaw applies a strict pre-auth body limit (64 KB) and read timeout before verification.
-- OpenClaw processes webhook events from the verified raw request bytes. Upstream middleware-transformed `req.body` values are ignored for signature-integrity safety.
+- LINE signature verification is body-dependent (HMAC over the raw body), so PASO applies a strict pre-auth body limit (64 KB) and read timeout before verification.
+- PASO processes webhook events from the verified raw request bytes. Upstream middleware-transformed `req.body` values are ignored for signature-integrity safety.
 
 ## Inbound durability
 
@@ -377,7 +377,7 @@ suffix. Native suffix inference supports JPEG/PNG, MP4, and MP3/M4A; suffixless 
 retain the image fallback. Other suffixed URLs and inferred MP4 without a preview
 become text links. Explicit video still requires `previewImageUrl`.
 
-Outbound media URLs must be public HTTPS URLs of at most 2000 characters. OpenClaw
+Outbound media URLs must be public HTTPS URLs of at most 2000 characters. PASO
 validates the target hostname before handing the URL to LINE and rejects loopback,
 link-local, and private-network targets.
 

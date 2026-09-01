@@ -101,14 +101,14 @@ struct VoiceWakeGlobalSettingsSyncTests {
     @Test func `applies voice wake changed event to app state`() async {
         let previous = await applyTriggersAndCapturePrevious(["before"])
         let evt = self.voiceWakeChangedEvent(payload: OpenClawProtocol.AnyCodable(["triggers": [
-            "openclaw",
+            "paso",
             "computer",
         ]]))
 
         await VoiceWakeGlobalSettingsSync.shared.handle(push: .event(evt))
 
         let updated = await MainActor.run { AppStateStore.shared.swabbleTriggerWords }
-        #expect(updated == ["openclaw", "computer"])
+        #expect(updated == ["paso", "computer"])
 
         await MainActor.run {
             AppStateStore.shared.applyGlobalVoiceWakeTriggers(previous)

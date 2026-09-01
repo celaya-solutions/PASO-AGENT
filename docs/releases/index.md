@@ -1,29 +1,22 @@
 ---
 title: "Release notes"
-summary: "Curated OpenClaw release notes for people who want the product story, not the raw changelog."
-description: "Browse polished OpenClaw release notes with highlights, reader-facing context, source links, and contributor credits."
+summary: "PASO release status and inherited upstream compatibility history."
+description: "See PASO release availability and clearly labeled upstream provenance records."
 ---
 
 # Release notes
 
-These pages will be the reader-facing version of OpenClaw releases. They keep
-the main story, practical impact, source links, and contributor credit together
-without making you scan the raw changelog first.
+PASO does not have a published fork-owned release yet. Celaya Solutions
+Research will add release notes here after the first signed PASO build ships.
 
-## Releases
+Check [PASO GitHub releases](https://github.com/celaya-solutions/PASO-AGENT/releases)
+for current availability.
 
-- [v2026.8.1](/releases/2026.8.1) - A rebuilt web experience, simpler
-  onboarding, stronger memory and session continuity, and a very large
-  reliability pass across OpenClaw.
-- [v2026.7.1](/releases/2026.7.1) - Control UI and onboarding overhauls,
-  major iOS and Android updates, expanded model support, and Gateway recovery.
-- [v2026.6.11](/releases/2026.6.11) - Reliability fixes for replies, sends,
-  reconnects, model setup, sessions, and safer admin defaults.
+## Inherited compatibility history
 
-## Raw release history
+These versions belong to the upstream OpenClaw framework. They are retained
+only for compatibility provenance and are not PASO releases:
 
-Use the curated notes when you want the product story. Use the raw history when
-you need compact maintainer accounting:
-
-- [GitHub releases](https://github.com/openclaw/openclaw/releases)
-- [CHANGELOG.md](https://github.com/openclaw/openclaw/blob/main/CHANGELOG.md)
+- [Upstream v2026.8.1](/releases/2026.8.1)
+- [Upstream v2026.7.1](/releases/2026.7.1)
+- [Upstream v2026.6.11](/releases/2026.6.11)

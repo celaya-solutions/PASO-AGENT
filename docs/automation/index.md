@@ -2,13 +2,13 @@
 doc-schema-version: 1
 summary: "Overview of automation mechanisms: tasks, automations, hooks, standing orders, and Task Flow"
 read_when:
-  - Deciding how to automate work with OpenClaw
+  - Deciding how to automate work with PASO
   - Choosing between heartbeat, automations, hooks, and standing orders
   - Looking for the right automation entry point
 title: "Automation"
 ---
 
-OpenClaw runs work in the background through tasks, scheduled jobs, event hooks,
+PASO runs work in the background through tasks, scheduled jobs, event hooks,
 and standing instructions. Use this page to pick the right mechanism.
 
 ## Quick decision guide
@@ -66,7 +66,7 @@ when periodic main-session awareness is useful.
 
 ### Automations
 
-Automations are OpenClaw's built-in scheduler for all recurring and one-shot
+Automations are PASO's built-in scheduler for all recurring and one-shot
 work, including heartbeat monitors. The scheduler persists jobs, wakes the agent
 at the right time, and can deliver output to a chat channel or webhook endpoint.
 It supports one-shot reminders, recurring intervals and cron expressions, and

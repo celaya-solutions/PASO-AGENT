@@ -7,7 +7,7 @@ scenario:
   coverage:
     secondary:
       - tools.exec-routing-bash
-  objective: Verify shell command behavior is tracked across OpenClaw and Codex while Codex owns exec/process natively.
+  objective: Verify shell command behavior is tracked across PASO and Codex while Codex owns exec/process natively.
   successCriteria:
     - OpenClaw may expose OpenClaw exec while Codex app-server mode may omit duplicate OpenClaw dynamic exec/process.
     - Mock provider exec plans are reported as fixture intent, not as actual runtime tool calls.
@@ -20,7 +20,7 @@ scenario:
     - extensions/qa-lab/src/runtime-tool-fixture.ts
   execution:
     kind: flow
-    summary: Exercise the bash family through the OpenClaw exec tool.
+    summary: Exercise the bash family through the PASO exec tool.
     config:
       toolName: exec
       toolCoverage:

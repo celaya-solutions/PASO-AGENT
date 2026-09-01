@@ -53,7 +53,12 @@ describe("appcast.xml", () => {
   it("keeps every appcast entry on the canonical sparkle build for its version", () => {
     const appcast = readFileSync(APPCAST_URL, "utf8");
     const items = parseItems(appcast);
-    expect(items.length).toBeGreaterThan(0);
+    if (items.length === 0) {
+      expect(appcast).toContain("<sparkle:updatesDisabled>true</sparkle:updatesDisabled>");
+      expect(appcast).not.toContain("<enclosure");
+      expect(appcast).not.toContain("github.com/openclaw/openclaw/releases");
+      return;
+    }
 
     for (const item of items) {
       if (item.shortVersion === null || item.sparkleVersion === null) {
@@ -70,7 +75,10 @@ describe("appcast.xml", () => {
       (item) => item.sparkleVersion !== null && item.sparkleVersion % 100 === 90,
     );
 
-    expect(stableItems.length).toBeGreaterThan(0);
+    if (stableItems.length === 0) {
+      expect(appcast).toContain("<sparkle:updatesDisabled>true</sparkle:updatesDisabled>");
+      return;
+    }
     const firstStable = expectDefined(stableItems[0], "first stable appcast item");
     const newestStable = expectDefined(
       [...stableItems].toSorted(

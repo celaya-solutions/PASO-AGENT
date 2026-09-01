@@ -1,4 +1,4 @@
-// Copy Assets script supports OpenClaw repository automation.
+// Copy Assets script supports PASO repository automation.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 

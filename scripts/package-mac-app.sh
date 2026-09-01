@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Build and bundle OpenClaw with its matching private worker runtime.
+# Build and bundle PASO with its matching private worker runtime.
 # Outputs to dist/OpenClaw.app
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -79,12 +79,26 @@ if [[ "${BUILD_ARCHS_VALUE}" == "all" ]]; then
 fi
 IFS=' ' read -r -a BUILD_ARCHS <<< "$BUILD_ARCHS_VALUE"
 PRIMARY_ARCH="${BUILD_ARCHS[0]}"
-SPARKLE_PUBLIC_ED_KEY="${SPARKLE_PUBLIC_ED_KEY:-AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=}"
-SPARKLE_FEED_URL="${SPARKLE_FEED_URL:-https://raw.githubusercontent.com/openclaw/openclaw/main/appcast.xml}"
+SPARKLE_PUBLIC_ED_KEY="${SPARKLE_PUBLIC_ED_KEY:-}"
+SPARKLE_FEED_URL="${SPARKLE_FEED_URL:-}"
 AUTO_CHECKS=true
 if [[ "$BUNDLE_ID" == *.debug ]]; then
   SPARKLE_FEED_URL=""
   AUTO_CHECKS=false
+fi
+if [[ "$BUILD_CONFIG" == "release" ]]; then
+  if [[ -z "$SPARKLE_PUBLIC_ED_KEY" || -z "$SPARKLE_FEED_URL" ]]; then
+    echo "ERROR: PASO release builds require a Celaya-owned SPARKLE_PUBLIC_ED_KEY and SPARKLE_FEED_URL." >&2
+    exit 1
+  fi
+  if [[ "$SPARKLE_PUBLIC_ED_KEY" == "AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=" ]]; then
+    echo "ERROR: Refusing the inherited upstream OpenClaw Sparkle public key." >&2
+    exit 1
+  fi
+  if [[ "$SPARKLE_FEED_URL" == *"githubusercontent.com/openclaw/openclaw/"* ]]; then
+    echo "ERROR: Refusing the upstream OpenClaw Sparkle feed for a PASO release." >&2
+    exit 1
+  fi
 fi
 
 resolve_peekaboo_source_commit() {
@@ -820,7 +834,7 @@ if [[ "$BUILD_CONFIG" == "release" ]]; then
   EMBEDDED_GIT_COMMIT="$(plist_print_required "$APP_ROOT/Contents/Info.plist" OpenClawGitCommit)"
   BRIDGE_SOURCE_COMMIT="$(plist_print_required "$APP_ROOT/Contents/Info.plist" PeekabooSourceCommit)"
   if [[ "$EMBEDDED_GIT_COMMIT" != "$BUILD_GIT_COMMIT" ]]; then
-    echo "ERROR: Release app OpenClaw source mismatch: OpenClawGitCommit='$EMBEDDED_GIT_COMMIT', expected='$BUILD_GIT_COMMIT'." >&2
+    echo "ERROR: Release app PASO source mismatch: OpenClawGitCommit='$EMBEDDED_GIT_COMMIT', expected='$BUILD_GIT_COMMIT'." >&2
     exit 1
   fi
   if [[ "$BRIDGE_SOURCE_COMMIT" != "$PEEKABOO_SOURCE_COMMIT" ]]; then
@@ -993,7 +1007,7 @@ stop_packaged_app_if_running() {
     return 0
   fi
 
-  echo "⏹  Stopping packaged OpenClaw bundle (${pids[*]})"
+  echo "⏹  Stopping packaged PASO bundle (${pids[*]})"
   kill "${pids[@]}" 2>/dev/null || true
   for _ in $(seq 1 40); do
     local alive=0
@@ -1016,7 +1030,7 @@ stop_packaged_app_if_running() {
     [[ "$alive" == "0" ]] && return 0
     sleep 0.1
   done
-  echo "ERROR: Packaged OpenClaw bundle did not exit: ${pids[*]}" >&2
+  echo "ERROR: Packaged PASO bundle did not exit: ${pids[*]}" >&2
   return 1
 }
 

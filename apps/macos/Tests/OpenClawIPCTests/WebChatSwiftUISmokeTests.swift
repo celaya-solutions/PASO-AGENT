@@ -128,7 +128,7 @@ struct WebChatSwiftUISmokeTests {
         let controller = WebChatSwiftUIWindowController(
             sessionKey: "main",
             transport: TestTransport(),
-            windowTitle: "Studio — OpenClaw")
+            windowTitle: "Studio — PASO")
         let window = try #require(controller._testWindow)
 
         #expect(window.styleMask.contains(.fullSizeContentView))
@@ -138,9 +138,9 @@ struct WebChatSwiftUISmokeTests {
         #expect(window.titlebarSeparatorStyle == .none)
         #expect(window.isMovableByWindowBackground)
         #expect(window.isRestorable == false)
-        #expect(window.title == "Studio — OpenClaw")
+        #expect(window.title == "Studio — PASO")
         window.title = "main"
-        #expect(window.title == "Studio — OpenClaw")
+        #expect(window.title == "Studio — PASO")
         #expect(controller._testSceneBridgingOptions?.contains(.toolbars) == true)
         #expect(controller._testSceneBridgingOptions?.contains(.title) == false)
 

@@ -91,11 +91,11 @@ function placeholderPackageJson(packageName) {
   return {
     name: packageName,
     version: PACKAGE_VERSION,
-    description: "Reserved package name for an official OpenClaw plugin.",
+    description: "Reserved package name for an official PASO plugin.",
     license: "MIT",
     repository: {
       type: "git",
-      url: "git+https://github.com/openclaw/openclaw.git",
+      url: "git+https://github.com/celaya-solutions/PASO-AGENT.git",
     },
     publishConfig: {
       access: "public",
@@ -105,7 +105,7 @@ function placeholderPackageJson(packageName) {
 }
 
 function placeholderReadme(packageName) {
-  return `# ${packageName}\n\nReserved placeholder for the official OpenClaw plugin package. Use a published release version instead.\n`;
+  return `# ${packageName}\n\nReserved placeholder for the official PASO plugin package. Use a published release version instead.\n`;
 }
 
 function writeTarString(header, offset, length, value) {
@@ -141,7 +141,7 @@ function tarEntry(path, content) {
 
 export function createPlaceholderTarball(packageName) {
   if (!PACKAGE_NAME_RE.test(packageName)) {
-    throw new Error(`Invalid OpenClaw package name: ${packageName}`);
+    throw new Error(`Invalid PASO package name: ${packageName}`);
   }
   const packageJson = Buffer.from(canonicalJson(placeholderPackageJson(packageName)), "utf8");
   const readme = Buffer.from(placeholderReadme(packageName), "utf8");
@@ -161,7 +161,7 @@ export function parseSelectedPackages(input) {
   }
   for (const packageName of packages) {
     if (!PACKAGE_NAME_RE.test(packageName)) {
-      throw new Error(`Invalid OpenClaw package name: ${packageName}`);
+      throw new Error(`Invalid PASO package name: ${packageName}`);
     }
   }
   if (new Set(packages).size !== packages.length) {

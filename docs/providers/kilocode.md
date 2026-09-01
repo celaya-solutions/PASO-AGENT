@@ -1,9 +1,9 @@
 ---
-summary: "Use Kilo Gateway's unified API to access many models in OpenClaw"
+summary: "Use Kilo Gateway's unified API to access many models in PASO"
 title: "Kilo Gateway"
 read_when:
   - You want a single API key for many LLMs
-  - You want to run models via Kilo Gateway in OpenClaw
+  - You want to run models via Kilo Gateway in PASO
 ---
 
 Kilo Gateway routes requests to many models behind a single OpenAI-compatible endpoint and API key.
@@ -50,10 +50,10 @@ openclaw gateway restart
 ## Default model and catalog
 
 The default model is `kilocode/kilo-auto/balanced`, Kilo Gateway's balanced smart-routing tier.
-OpenClaw does not publish a task-to-upstream-model mapping for it; routing behind
+PASO does not publish a task-to-upstream-model mapping for it; routing behind
 `kilo-auto/balanced` is owned by Kilo Gateway.
 
-At startup OpenClaw queries `GET https://api.kilo.ai/api/gateway/models` and merges discovered models
+At startup PASO queries `GET https://api.kilo.ai/api/gateway/models` and merges discovered models
 ahead of a static fallback catalog. The static fallback contains only
 `kilocode/kilo-auto/balanced` (`Auto Balanced`, `input: ["text", "image"]`, `reasoning: true`,
 `contextWindow: 1000000`, `maxTokens: 65536`).
@@ -82,7 +82,7 @@ Any model on the gateway is addressable as `kilocode/<upstream-id>` (for example
     Kilo Gateway is OpenRouter-compatible, so it uses the proxy-style OpenAI-compatible request
     path rather than native OpenAI request shaping (no `store`, no OpenAI reasoning-effort payload).
 
-    - Gemini-backed Kilo refs stay on the proxy-Gemini path: OpenClaw sanitizes Gemini thought
+    - Gemini-backed Kilo refs stay on the proxy-Gemini path: PASO sanitizes Gemini thought
       signatures there but does not enable native Gemini replay validation or bootstrap rewrites.
     - Requests use a Bearer token built from your API key.
 
@@ -101,7 +101,7 @@ Any model on the gateway is addressable as `kilocode/<upstream-id>` (for example
   </Accordion>
 
   <Accordion title="Troubleshooting">
-    - If model discovery fails at startup, OpenClaw falls back to the static catalog containing `kilocode/kilo-auto/balanced`.
+    - If model discovery fails at startup, PASO falls back to the static catalog containing `kilocode/kilo-auto/balanced`.
     - Confirm your API key is valid and that your Kilo account has the desired models enabled.
     - When Gateway runs as a daemon, ensure `KILOCODE_API_KEY` is available to that process (for example in `~/.openclaw/.env` or via `env.shellEnv`).
 
@@ -115,7 +115,7 @@ Any model on the gateway is addressable as `kilocode/<upstream-id>` (for example
     Choosing providers, model refs, and failover behavior.
   </Card>
   <Card title="Configuration reference" href="/gateway/configuration-reference" icon="gear">
-    Full OpenClaw configuration reference.
+    Full PASO configuration reference.
   </Card>
   <Card title="Kilo Gateway" href="https://app.kilo.ai" icon="arrow-up-right-from-square">
     Kilo Gateway dashboard, API keys, and account management.

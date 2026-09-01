@@ -348,18 +348,20 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
 
   it("bounds public installer fetches on Windows and POSIX", () => {
     const windowsScript = buildInstallerSmokeScript({
-      installerUrl: "https://openclaw.ai/install.ps1",
+      installerUrl:
+        "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1",
       installTarget: "2026.7.1",
       platform: "win32",
     });
     const posixScript = buildInstallerSmokeScript({
-      installerUrl: "https://openclaw.ai/install.sh",
+      installerUrl:
+        "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh",
       installTarget: "2026.7.1",
       platform: "linux",
     });
 
     expect(windowsScript).toContain(
-      "curl.exe -fsSL --connect-timeout 10 --max-time 120 -o $installerPath 'https://openclaw.ai/install.ps1'",
+      "curl.exe -fsSL --connect-timeout 10 --max-time 120 -o $installerPath 'https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1'",
     );
     expect(windowsScript).toContain("openclaw-installer-");
     expect(windowsScript).toContain("if ($LASTEXITCODE -ne 0)");
@@ -375,7 +377,7 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
     );
     expect(posixScript).toContain("trap 'rm -f \"$installer_path\"' EXIT");
     expect(posixScript).toContain(
-      "curl -fsSL --connect-timeout 10 --max-time 120 -o \"$installer_path\" 'https://openclaw.ai/install.sh'",
+      "curl -fsSL --connect-timeout 10 --max-time 120 -o \"$installer_path\" 'https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh'",
     );
     expect(posixScript).toContain("bash -- \"$installer_path\" --version '2026.7.1' --no-onboard");
     expect(posixScript).not.toContain("| bash");
@@ -467,6 +469,12 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
       "http://127.0.0.1:18789/assets/index.css",
       "http://127.0.0.1:18789/assets/index.js",
     ]);
+  });
+
+  it("accepts the PASO dashboard title for current candidate builds", () => {
+    const html = "<title>PASO Control</title><openclaw-app></openclaw-app>";
+
+    expect(dashboardHtmlMarkerStatus(html)).toEqual({ app: true, ready: true, title: true });
   });
 
   it("fails dashboard readiness when assets are missing or unreachable", async () => {
@@ -1700,9 +1708,9 @@ describe("scripts/openclaw-cross-os-release-checks", () => {
       decide: resolvePublishedInstallerUrl,
       inputs: ["darwin", "linux", "win32"] as const,
       expected: [
-        "https://openclaw.ai/install.sh",
-        "https://openclaw.ai/install.sh",
-        "https://openclaw.ai/install.ps1",
+        "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh",
+        "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh",
+        "https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1",
       ],
     },
     {

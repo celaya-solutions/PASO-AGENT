@@ -1,13 +1,13 @@
 # `@openclaw/gateway-client`
 
-Reference WebSocket client for the OpenClaw Gateway protocol. It provides the
-connection state machine used by OpenClaw's own Node and browser clients:
+Reference WebSocket client for the PASO Gateway protocol. It provides the
+connection state machine used by PASO's own Node and browser clients:
 challenge-based authentication, typed protocol frames, request correlation,
 timeouts, reconnect backoff, device-token handling, and event delivery.
 
 The current wire protocol is version 4. General clients must advertise exactly v4 with
 `minProtocol: 4` and `maxProtocol: 4`. See the
-[Gateway protocol specification](https://docs.openclaw.ai/gateway/protocol) for
+[Gateway protocol specification](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/protocol.md) for
 the complete handshake, authentication, role, scope, and method contracts.
 Exact node identities (`role: "node"` plus `mode: "node"`) and probe clients
 can use v3. The built-in node host starts with an exact v4 envelope, then retries
@@ -19,8 +19,8 @@ same bounded negotiation.
 
 ## Versioning
 
-Package versions follow the OpenClaw calendar release train: `YYYY.M.PATCH`,
-including the OpenClaw prerelease suffix when applicable. The package version is
+Package versions follow the PASO calendar release train: `YYYY.M.PATCH`,
+including the PASO prerelease suffix when applicable. The package version is
 separate from the Gateway's current wire protocol number reported in `hello-ok`.
 
 ## Install
@@ -31,7 +31,7 @@ Use the verified stable release with exact pins:
 npm install --save-exact @openclaw/gateway-client@2026.8.1 @openclaw/gateway-protocol@2026.8.1
 ```
 
-See the canonical [installation guide](https://docs.openclaw.ai/gateway/clients#install-the-packages)
+See the canonical [installation guide](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/clients.md#install-the-packages)
 for package/wire-version rules and recovery from reserved `0.0.0` artifacts.
 Test it with the Gateway version you deploy; the root `openclaw` CLI has its own
 package versions and dist-tags.
@@ -43,7 +43,7 @@ WebSocket through the browser-safe protocol client surface.
 For device-authenticated Node connections, supply `deviceIdentity` (or
 `hostDeps.loadOrCreateDeviceIdentity`) and the `hostDeps.signDevicePayload` and
 `hostDeps.publicKeyRawBase64UrlFromPem` callbacks. The host also owns device-token
-storage through `GatewayClientHostDeps`; the package does not load OpenClaw's
+storage through `GatewayClientHostDeps`; the package does not load PASO's
 local identity or credentials automatically.
 
 ## Entry points
@@ -96,7 +96,7 @@ Gateway accepts a compatible connection, so requests should wait for that callba
 This loopback example uses the default `gateway-client` / `backend` identity.
 It is not a device-pairing example. UI clients should declare their actual `mode`
 and supply the device-auth host callbacks described above; see
-[device identity and pairing](https://docs.openclaw.ai/gateway/protocol#device-identity-and-pairing).
+[device identity and pairing](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/protocol.md#device-identity-and-pairing).
 
 For remote connections, prefer `wss://`. The Node client also accepts plaintext
 `ws://` by default for loopback, private/link-local/CGNAT IP addresses, and
@@ -134,7 +134,7 @@ the next delay.
 
 The canonical defaults table and the server policy fields that can replace
 pre-handshake values are documented in the
-[Gateway protocol specification](https://docs.openclaw.ai/gateway/protocol#client-constants).
+[Gateway protocol specification](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/gateway/protocol.md#client-constants).
 
 Use the `./timeouts` entry point when a host must align readiness or watchdog
 budgets with these defaults. Use the `./readiness` entry point when startup must

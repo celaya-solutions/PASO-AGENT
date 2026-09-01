@@ -461,10 +461,10 @@ describe("Parallels smoke model selection", () => {
     expect(isLikelyMacosDesktopHome("/var/empty")).toBe(false);
   });
 
-  it("extracts the last OpenClaw version from a bounded log tail", async () => {
+  it("extracts PASO and legacy OpenClaw versions from a bounded log tail", async () => {
     const tempDir = makeTempDir(tempDirs, "openclaw-parallels-log-tail-");
     const logPath = join(tempDir, "phase.log");
-    writeFileSync(logPath, ["OpenClaw 0.0.1", "x".repeat(4096), "OpenClaw 2026.6.7"].join("\n"));
+    writeFileSync(logPath, ["OpenClaw 0.0.1", "x".repeat(4096), "PASO 2026.6.7"].join("\n"));
 
     await expect(extractLastOpenClawVersionFromLog(logPath, undefined, 128)).resolves.toBe(
       "2026.6.7",

@@ -1,12 +1,12 @@
 ---
-summary: "Host OpenClaw on a DigitalOcean Droplet"
+summary: "Host PASO on a DigitalOcean Droplet"
 read_when:
-  - Setting up OpenClaw on DigitalOcean
-  - Looking for a simple paid VPS for OpenClaw
+  - Setting up PASO on DigitalOcean
+  - Looking for a simple paid VPS for PASO
 title: "DigitalOcean"
 ---
 
-Run a persistent OpenClaw Gateway on a DigitalOcean Droplet (~$6/month for the 1 GB Basic plan).
+Run a persistent PASO Gateway on a DigitalOcean Droplet (~$6/month for the 1 GB Basic plan).
 
 DigitalOcean is a straightforward paid VPS path. For cheaper or free options:
 
@@ -48,10 +48,10 @@ DigitalOcean is a straightforward paid VPS path. For cheaper or free options:
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # Install OpenClaw; run onboarding later as the non-root owner.
-    curl -fsSL https://openclaw.ai/install.sh | bash -s -- --no-onboard
+    # Install PASO; run onboarding later as the non-root owner.
+    curl -fsSL https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.sh | bash -s -- --install-method git --version main --no-onboard
 
-    # Create the non-root user that will own OpenClaw state and services.
+    # Create the non-root user that will own PASO state and services.
     adduser openclaw
     usermod -aG sudo openclaw
     loginctl enable-linger openclaw
@@ -60,7 +60,7 @@ DigitalOcean is a straightforward paid VPS path. For cheaper or free options:
     openclaw --version
     ```
 
-    Use the root shell only for system bootstrap. Run OpenClaw commands as the non-root `openclaw` user so state lives under `/home/openclaw/.openclaw/` and the Gateway installs as that user's systemd `--user` service.
+    Use the root shell only for system bootstrap. Run PASO commands as the non-root `openclaw` user so state lives under `/home/openclaw/.openclaw/` and the Gateway installs as that user's systemd `--user` service.
 
   </Step>
 
@@ -121,7 +121,7 @@ DigitalOcean is a straightforward paid VPS path. For cheaper or free options:
 
 ## Persistence and backups
 
-OpenClaw state lives under:
+PASO state lives under:
 
 - `~/.openclaw/` -- `openclaw.json`, channel/provider credentials, shared and per-agent SQLite auth stores, and session data.
 - `~/.openclaw/workspace/` -- the agent workspace (SOUL.md, memory, artifacts).
@@ -159,7 +159,7 @@ The $6 Droplet only has 1 GB RAM. To keep things smooth:
 
 - [Channels](/channels) -- connect Telegram, WhatsApp, Discord, and more
 - [Gateway configuration](/gateway/configuration) -- all config options
-- [Updating](/install/updating) -- keep OpenClaw up to date
+- [Updating](/install/updating) -- keep PASO up to date
 
 ## Related
 

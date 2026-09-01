@@ -26,7 +26,7 @@ register(api) {
 }
 ```
 
-`api.runtime.version` is the current OpenClaw product version, sourced from the shared version resolver so plugins see the same value the CLI reports.
+`api.runtime.version` is the current PASO product version, sourced from the shared version resolver so plugins see the same value the CLI reports.
 
 ## Config loading and writes
 
@@ -49,7 +49,7 @@ Use `current()`, a passed-in `cfg`, `mutateConfigFile(...)`, or
 
 For direct SDK imports, prefer the focused config subpaths over the broad `openclaw/plugin-sdk/config-runtime` compatibility barrel: `config-contracts` for types, `runtime-config-snapshot` for current process snapshots, and `config-mutation` for writes. Read entry-scoped values from `api.pluginConfig`; use a supplied tool context only for its runtime-wide config snapshot, and keep plugin-specific merging at that boundary. Bundled plugin tests should mock these focused subpaths directly instead of mocking the broad compatibility barrel.
 
-Internal OpenClaw runtime code follows the same direction: load config once at the CLI, gateway, or process boundary, then pass that value through. Successful mutation writes refresh the process runtime snapshot and advance its internal revision; long-lived caches should key off the runtime-owned cache key instead of serializing config locally. Long-lived runtime modules have a zero-tolerance scanner for ambient `loadConfig()` calls; use a passed `cfg`, a request `context.getRuntimeConfig()`, or `getRuntimeConfig()` at an explicit process boundary.
+Internal PASO runtime code follows the same direction: load config once at the CLI, gateway, or process boundary, then pass that value through. Successful mutation writes refresh the process runtime snapshot and advance its internal revision; long-lived caches should key off the runtime-owned cache key instead of serializing config locally. Long-lived runtime modules have a zero-tolerance scanner for ambient `loadConfig()` calls; use a passed `cfg`, a request `context.getRuntimeConfig()`, or `getRuntimeConfig()` at an explicit process boundary.
 
 Provider and channel execution paths must use the active runtime config snapshot, not a file snapshot returned for config readback or editing. File snapshots preserve source values such as SecretRef markers for UI and writes; provider callbacks need the resolved runtime view. When a helper may be called with either the active source snapshot or the active runtime snapshot, route through `selectApplicableRuntimeConfig()` before reading credentials.
 
@@ -155,7 +155,7 @@ The capability is absent when no current session is bound; a retained callback
 fails closed after the handler settles. Do not retain it or reconstruct
 compaction with session-store patches and harness calls. The result contains
 `compacted`, optional `reason`, and optional `tokensBefore` and `tokensAfter`
-snapshots; OpenClaw owns all persistence and lifecycle coordination.
+snapshots; PASO owns all persistence and lifecycle coordination.
 
 ## Runtime namespaces
 
@@ -212,7 +212,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     });
     ```
 
-    `runEmbeddedAgent(...)` is the neutral helper for starting a normal OpenClaw agent turn from plugin code. It uses the same provider/model resolution and agent-harness selection as channel-triggered replies.
+    `runEmbeddedAgent(...)` is the neutral helper for starting a normal PASO agent turn from plugin code. It uses the same provider/model resolution and agent-harness selection as channel-triggered replies.
 
     `resolveCliBackendDispatchEligibility({ provider, model, agentId, authProfileId, config, agentDir, workspaceDir })` shares the embedded runner's CLI-backend dispatch decision (route, the backend's declared `subscriptionAuthDispatch` capability, stored credential mode — honoring an explicitly pinned `authProfileId`) with callers that opt embedded runs into `cliBackendDispatch: "subscription-auth"`. It returns `{ provider }` when the run would execute through the CLI backend and `undefined` when it stays on the direct passthrough, so callers can budget timeouts for the run that will actually execute.
 
@@ -265,7 +265,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
     Before advertising an ACP-backed action, use `resolveAcpSessionAvailability(...)` from `openclaw/plugin-sdk/acp-runtime`. It applies the canonical enablement, dispatch, allowed-agent, registered-backend, and backend-health checks; recheck it immediately before creating the session.
 
-    ACP backends can return `AcpRuntimeConfigOptionResult` from `setConfigOption(...)`: a complete `configOptions` array of `{ id, category?, currentValue, options? }`, where `currentValue` is a string or boolean. Select `options` contain `{ value }` entries or groups of `{ options: [{ value }] }`. OpenClaw reconciles an already-selected thinking override from the accepted `thought_level` category or a recognized thinking key. Automatic model replay preserves a pending thinking value only when it is still current or selectable; explicit controls always use the accepted value. An empty array removes that override; omitted or null `category` is allowed, and backend defaults are not pinned. Existing third-party backends returning `void` retain requested-value persistence. Return the snapshot after backend persistence succeeds; reject failed writes.
+    ACP backends can return `AcpRuntimeConfigOptionResult` from `setConfigOption(...)`: a complete `configOptions` array of `{ id, category?, currentValue, options? }`, where `currentValue` is a string or boolean. Select `options` contain `{ value }` entries or groups of `{ options: [{ value }] }`. PASO reconciles an already-selected thinking override from the accepted `thought_level` category or a recognized thinking key. Automatic model replay preserves a pending thinking value only when it is still current or selectable; explicit controls always use the accepted value. An empty array removes that override; omitted or null `category` is allowed, and backend defaults are not pinned. Existing third-party backends returning `void` retain requested-value persistence. Return the snapshot after backend persistence succeeds; reject failed writes.
 
     Creation holds the session lifecycle mutation fence through `afterCreate`, so new work waits for plugin-owned initialization to finish and pre-existing admitted work makes creation fail. The callback receives a clone of the created state. If it returns a patch, that patch may contain only `pluginExtensions`, and its value is the complete final `pluginExtensions` field. A callback or final-persistence failure rolls back the unchanged new row and transcript; guarded rollback preserves a row changed or claimed concurrently. `recoverMatchingInitialEntry: true` is only for retrying interrupted initialization when the persisted trusted fields match exactly, and recovery requires `afterCreate` to return a final patch.
 
@@ -302,7 +302,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
   <Accordion title="api.runtime.llm">
     Run a host-owned text completion without importing provider internals or
-    duplicating OpenClaw model/auth/base URL preparation.
+    duplicating PASO model/auth/base URL preparation.
 
     ```typescript
     const result = await api.runtime.llm.complete({
@@ -378,7 +378,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     Studio adapters. The host owns startup serialization, readiness probes,
     request leases, abort handling, and idle shutdown.
 
-    The helper uses the same simple-completion preparation path as OpenClaw's
+    The helper uses the same simple-completion preparation path as PASO's
     built-in runtime and the host-owned runtime config snapshot. Context engines
     receive a session-bound `llm.complete` capability, so model calls use the
     active session's agent and do not silently fall back to the default agent. The
@@ -498,7 +498,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
     `promptMode: "minimal"` selects the bounded subagent prompt instead of the full conversation prompt. The plugin runtime exposes only this mode; omission keeps the full prompt. Use `disableTools: true` as well when the run must have an exact empty tool surface.
 
-    `completionDelivery: "current-requester"` is default-off and is only available while a `before_dispatch` hook is handling an authenticated inbound request. OpenClaw captures the canonical requester session and delivery route before invoking the plugin, then delivers the subagent completion through the normal announce path. Plugins cannot provide or override requester lineage or destination fields. Calls outside that requester-bound hook context are rejected.
+    `completionDelivery: "current-requester"` is default-off and is only available while a `before_dispatch` hook is handling an authenticated inbound request. PASO captures the canonical requester session and delivery route before invoking the plugin, then delivers the subagent completion through the normal announce path. Plugins cannot provide or override requester lineage or destination fields. Calls outside that requester-bound hook context are rejected.
 
     `deleteSession(...)` can delete sessions created by the same plugin through `api.runtime.subagent.run(...)`. Deleting arbitrary user or operator sessions still requires an admin-scoped Gateway request.
 
@@ -595,13 +595,13 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     `maxMessageBytes`, cannot be smaller than that limit, and cannot exceed
     100 MiB. A protocol that can follow a maximum-sized response with a bounded
     asynchronous notification may request a larger outstanding-delivery budget
-    without raising its per-message ceiling. OpenClaw splits each binary message
+    without raising its per-message ceiling. PASO splits each binary message
     into ordered 8 KiB payload fragments that fit the existing 16 KiB
     transport-frame limit; callers always send and receive complete
     `Uint8Array` messages. Concurrent sends preserve message boundaries.
 
     Register the channel's single message listener immediately after
-    `openDuplex` resolves. Before a listener is registered, OpenClaw buffers at
+    `openDuplex` resolves. Before a listener is registered, PASO buffers at
     most eight complete messages and 1 MiB total; exceeding either limit closes
     the invocation. The unsubscribe callback removes that listener. Listeners
     may return `Promise<void>`; a thrown error or rejected promise, caller
@@ -679,12 +679,12 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     for later availability changes and `onDisconnect` for execution cleanup.
 
     <Warning>
-    The optional `scopes` field requests Gateway operator scopes for the invocation. OpenClaw honors it only for bundled plugins and trusted official plugin installations; requests from other plugins do not elevate the call. When `openDuplex` runs inside an authenticated Gateway request, its effective scopes never exceed that authenticated caller's actual scopes, even if a trusted plugin requests stronger scopes. Without an authenticated incoming client, existing trusted-plugin scope behavior applies. Use requested scopes only when a trusted plugin must invoke a node command with a stricter Gateway scope, such as `operator.admin`.
+    The optional `scopes` field requests Gateway operator scopes for the invocation. PASO honors it only for bundled plugins and trusted official plugin installations; requests from other plugins do not elevate the call. When `openDuplex` runs inside an authenticated Gateway request, its effective scopes never exceed that authenticated caller's actual scopes, even if a trusted plugin requests stronger scopes. Without an authenticated incoming client, existing trusted-plugin scope behavior applies. Use requested scopes only when a trusted plugin must invoke a node command with a stricter Gateway scope, such as `operator.admin`.
     </Warning>
 
   </Accordion>
   <Accordion title="api.runtime.tasks">
-    Bind Task Flow and Task Run state to an existing OpenClaw session key or trusted tool context.
+    Bind Task Flow and Task Run state to an existing PASO session key or trusted tool context.
 
     - `api.runtime.tasks.managedFlows` is mutation-capable: create, advance, and cancel Task Flows.
     - `api.runtime.tasks.flows` and `api.runtime.tasks.runs` are read-only DTO views for listing and status lookups; both expose `bindSession(...)` / `fromToolContext(...)` plus `get`, `list`, `findLatest`, and `resolve`.
@@ -719,7 +719,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     });
     ```
 
-    Use `bindSession({ sessionKey, requesterOrigin })` when you already have a trusted OpenClaw session key from your own binding layer. Do not bind from raw user input.
+    Use `bindSession({ sessionKey, requesterOrigin })` when you already have a trusted PASO session key from your own binding layer. Do not bind from raw user input.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -728,13 +728,13 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     ```typescript
     // Standard TTS
     const clip = await api.runtime.tts.textToSpeech({
-      text: "Hello from OpenClaw",
+      text: "Hello from PASO",
       cfg: api.config,
     });
 
     // Telephony-optimized TTS
     const telephonyClip = await api.runtime.tts.textToSpeechTelephony({
-      text: "Hello from OpenClaw",
+      text: "Hello from PASO",
       cfg: api.config,
     });
 
@@ -859,7 +859,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
 
     const result = await api.runtime.webSearch.search({
       config: api.config,
-      args: { query: "OpenClaw plugin SDK", count: 5 },
+      args: { query: "PASO plugin SDK", count: 5 },
     });
     ```
 
@@ -874,14 +874,14 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     const isVoice = api.runtime.media.isVoiceCompatibleAudio(filePath);
     const metadata = await api.runtime.media.getImageMetadata(filePath);
     const resized = await api.runtime.media.resizeToJpeg(buffer, { maxWidth: 800 });
-    const terminalQr = await api.runtime.media.renderQrTerminal("https://openclaw.ai");
-    const pngQr = await api.runtime.media.renderQrPngBase64("https://openclaw.ai", {
+    const terminalQr = await api.runtime.media.renderQrTerminal("https://github.com/celaya-solutions/PASO-AGENT");
+    const pngQr = await api.runtime.media.renderQrPngBase64("https://github.com/celaya-solutions/PASO-AGENT", {
       scale: 6, // 1-12
       marginModules: 4, // 0-16
     });
-    const pngQrDataUrl = await api.runtime.media.renderQrPngDataUrl("https://openclaw.ai");
+    const pngQrDataUrl = await api.runtime.media.renderQrPngDataUrl("https://github.com/celaya-solutions/PASO-AGENT");
     const tmpRoot = resolvePreferredOpenClawTmpDir();
-    const pngQrFile = await api.runtime.media.writeQrPngTempFile("https://openclaw.ai", {
+    const pngQrFile = await api.runtime.media.writeQrPngTempFile("https://github.com/celaya-solutions/PASO-AGENT", {
       tmpRoot,
       dirPrefix: "my-plugin-qr-",
       fileName: "qr.png",
@@ -1059,7 +1059,7 @@ snapshots; OpenClaw owns all persistence and lifecycle coordination.
     });
     ```
 
-    Use `saveRemoteMedia(...)` when a remote URL should become OpenClaw media. Use `saveResponseMedia(...)` when the plugin already fetched a `Response` with plugin-owned auth, redirect, or allowlist handling. Use `readRemoteMediaBuffer(...)` only when the plugin needs raw bytes for inspection, transforms, decryption, or reupload. `fetchRemoteMedia(...)` remains a deprecated compatibility alias for `readRemoteMediaBuffer(...)`.
+    Use `saveRemoteMedia(...)` when a remote URL should become PASO media. Use `saveResponseMedia(...)` when the plugin already fetched a `Response` with plugin-owned auth, redirect, or allowlist handling. Use `readRemoteMediaBuffer(...)` only when the plugin needs raw bytes for inspection, transforms, decryption, or reupload. `fetchRemoteMedia(...)` remains a deprecated compatibility alias for `readRemoteMediaBuffer(...)`.
 
     Remote media options and `fetchWithSsrFGuard(...)` from `openclaw/plugin-sdk/ssrf-runtime` accept a synchronous `beforeRequest` callback for final-dispatch authorization checks. It runs after proxy, DNS, and dispatcher preparation and immediately before every physical request. Redirects invoke it once per hop; media retries invoke it again for every attempt and hop. If it throws, that request is not sent and the same error propagates. Promise or thenable results are rejected before transport dispatch.
 

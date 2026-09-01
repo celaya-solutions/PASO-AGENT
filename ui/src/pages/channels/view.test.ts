@@ -442,7 +442,7 @@ describe("channel detail", () => {
     );
 
     const docs = container.querySelector<HTMLAnchorElement>(".channels-detail__header-actions a");
-    expect(docs?.href).toBe("https://docs.openclaw.ai/channels/telegram");
+    expect(docs?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
     expect(docs?.textContent?.trim()).toBe("Docs");
   });
 

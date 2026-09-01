@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">PASO</title>
+  <desc id="desc">PASO, an AI agent by Celaya Solutions Research in El Paso, Texas</desc>
+  <rect width="1200" height="300" rx="28" fill="#0E1015"/>
+  <g transform="translate(64 60) scale(2.8125)">
+    <rect width="64" height="64" rx="14" fill="#0E1015"/>
+    <path d="M18 50V14H36C44.837 14 52 21.163 52 30C52 38.837 44.837 46 36 46H30" stroke="#E8590C" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 50H28V40H38V30H50" stroke="#FAF9F7" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+  <text x="286" y="168" fill="#FAF9F7" font-family="Arial, Helvetica, sans-serif" font-size="122" font-weight="800" letter-spacing="10">PASO</text>
+  <text x="294" y="202" fill="#FAF9F7" opacity="0.82" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="3">AI AGENT</text>
+  <text x="294" y="231" fill="#FAF9F7" opacity="0.82" font-family="Arial, Helvetica, sans-serif" font-size="22" letter-spacing="1">CELAYA SOLUTIONS RESEARCH</text>
+  <text x="294" y="260" fill="#FAF9F7" opacity="0.82" font-family="Arial, Helvetica, sans-serif" font-size="20" letter-spacing="3">EL PASO, TEXAS</text>
+</svg>

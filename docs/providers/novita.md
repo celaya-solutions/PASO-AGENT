@@ -1,13 +1,13 @@
 ---
-summary: "Use NovitaAI's OpenAI-compatible API with OpenClaw"
+summary: "Use NovitaAI's OpenAI-compatible API with PASO"
 read_when:
-  - You want to run OpenClaw with NovitaAI models
+  - You want to run PASO with NovitaAI models
   - You need the Novita provider id, key, or endpoint
 title: "NovitaAI"
 ---
 
 NovitaAI is a hosted AI infrastructure provider with an OpenAI-compatible API.
-OpenClaw provides NovitaAI through the official external
+PASO provides NovitaAI through the official external
 `@openclaw/novita-provider` plugin. Model refs use the
 `novita/deepseek/deepseek-v4-pro` form.
 

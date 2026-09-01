@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/llama-cpp-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw provider for managed and external llama.cpp servers",
+  "description": "PASO provider for managed and external llama.cpp servers",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

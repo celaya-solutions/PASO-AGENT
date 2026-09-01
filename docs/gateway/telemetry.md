@@ -1,32 +1,25 @@
 ---
-summary: "What OpenClaw sends: a daily update check by default, optional anonymous feature statistics, and every privacy control"
+summary: "What PASO sends only after you configure a telemetry endpoint, plus every privacy control"
 title: "Usage telemetry and update checks"
 read_when:
-  - Checking what information OpenClaw sends and what it never collects
+  - Checking what information PASO sends and what it never collects
   - Deciding whether to share anonymous feature statistics
   - Enabling or disabling anonymous feature statistics
   - Disabling all automatic update-check requests
 ---
 
-**The only thing OpenClaw sends on its own is a daily update check.** It asks
-whether a newer version exists, and the request carries nothing but the version,
-operating system, and CPU architecture already visible to any package registry.
-Everything else on this page is opt-in.
+**PASO sends no usage telemetry or telemetry-based update request by default.**
+Celaya Solutions Research does not operate a default collection endpoint in
+this repository. Requests begin only when an operator sets the complete
+`OPENCLAW_TELEMETRY_ENDPOINT` URL.
 
 Anonymous feature statistics — which channels and providers you have configured
-— are **off by default** and never turn themselves on. When you do enable them,
-they ride along with that same daily update check instead of adding a second
-request.
+— are also **off by default**. If you configure an endpoint and explicitly
+enable feature statistics, they ride along with the same daily request instead
+of adding a second request. PASO never sends them to the inherited upstream
+OpenClaw service unless you deliberately configure that service yourself.
 
-If you turn them on: thank you. Feature statistics are the only way we learn
-which channels, providers, and plugins people actually use, and they decide what
-gets improved, what gets fixed first, and what can safely be retired. A handful
-of Discord anecdotes is otherwise the entire evidence base. We publish what we
-learn back to everyone at
-[telemetry.openclaw.ai](https://telemetry.openclaw.ai), so the data you
-contribute stays visible to you.
-
-Declining is a completely normal choice and changes nothing about how OpenClaw
+Declining is a completely normal choice and changes nothing about how PASO
 works for you.
 
 ## Inspect what is sent
@@ -48,22 +41,22 @@ and its `User-Agent` header instead. When automation or update-check policy
 disables all requests, it shows `Request: none` with the reason (`request: null`
 in JSON).
 
-## Daily update check
+## Configured daily request
 
-The default request is:
+After you configure an endpoint, the request is:
 
 ```http
-GET https://telemetry.openclaw.ai/api/latest-version
+GET https://telemetry.example.com/api/latest-version
 User-Agent: openclaw/2026.8.2 (darwin; node/26.0.1; arm64; gateway)
 ```
 
-The `User-Agent` contains the OpenClaw version, operating system, Node.js
+The `User-Agent` contains the PASO version, operating system, Node.js
 version, CPU architecture, and whether the request came from the Gateway or
 CLI. It has no request body, install identifier, machine identifier, or random
 tracking identifier.
 
 The service responds with the latest version and, optionally, a short
-operator-facing note. OpenClaw displays an available update and its note through
+operator-facing note. PASO displays an available update and its note through
 the existing update notice. Unreachable services, timeouts, invalid responses,
 and other failed checks do not interrupt startup or normal operation.
 
@@ -72,19 +65,21 @@ database. Startup reuses the cached result for the next 24 hours, and a running
 Gateway checks again during normal maintenance with a small random delay. Failed
 checks do not count as successful daily checks.
 
-For testing or self-hosting, set `OPENCLAW_TELEMETRY_ENDPOINT` to your complete
-replacement endpoint URL. The public server source is available at
-[openclaw/telemetry](https://github.com/openclaw/telemetry).
+Set `OPENCLAW_TELEMETRY_ENDPOINT` to the complete endpoint URL for a service you
+operate or trust. The inherited
+[OpenClaw telemetry server](https://github.com/openclaw/telemetry) is an
+upstream compatibility option; it is not operated by PASO or Celaya Solutions
+Research.
 
 ## Optional anonymous feature statistics
 
 Feature statistics are **off by default**. Interactive setup offers a one-time
 opt-in with **No thanks** selected by default. Non-interactive and scripted
-installations never opt in automatically. OpenClaw records when you accepted or
+installations never opt in automatically. PASO records when you accepted or
 declined so it does not ask again.
 
 When you explicitly enable feature statistics, the same daily request becomes a
-`POST` with this complete JSON payload:
+`POST` to your configured endpoint with this complete JSON payload:
 
 ```json
 {
@@ -106,7 +101,7 @@ When you explicitly enable feature statistics, the same daily request becomes a
 | Field                       | Meaning                                                                   |
 | --------------------------- | ------------------------------------------------------------------------- |
 | `schema`                    | Payload format version, currently `1`.                                    |
-| `version`                   | Installed OpenClaw version.                                               |
+| `version`                   | Installed PASO version.                                                   |
 | `platform`                  | Operating system and CPU architecture.                                    |
 | `node`                      | Running Node.js version.                                                  |
 | `surface`                   | Request origin: `gateway` or `cli`.                                       |
@@ -116,7 +111,7 @@ When you explicitly enable feature statistics, the same daily request becomes a
 | `features.pluginsEnabled`   | Total enabled plugins, including privately developed plugins never named. |
 | `features.sessionsLast24h`  | Number of sessions observed during the preceding 24 hours.                |
 
-OpenClaw names only plugins and channels that are bundled with OpenClaw or
+PASO names only plugins and channels that are bundled with PASO or
 already appear in its official plugin catalog. Privately developed plugins are
 counted but never named because a private plugin name could identify its
 organization. Subtract `features.plugins.length` from `features.pluginsEnabled`
@@ -136,9 +131,9 @@ it worth paying.
 
 Neither request tier includes message content, prompts, model names, API keys,
 credentials, secret references, file paths, hostnames, account identifiers,
-user identifiers, or installation and machine identifiers. OpenClaw does not
+user identifiers, or installation and machine identifiers. PASO does not
 create a random UUID or other persistent request identifier, so daily requests
-cannot be linked through an OpenClaw-issued identifier.
+cannot be linked through a PASO-issued identifier.
 
 Anonymous feature statistics are separate from optional, operator-configured
 [OpenTelemetry export](/gateway/opentelemetry).
@@ -163,20 +158,20 @@ You can also configure the same preference directly:
 ```
 
 Set `DO_NOT_TRACK=1` or `DO_NOT_TRACK=true` to force feature statistics off,
-even when `telemetry.enabled` is `true`. `DO_NOT_TRACK` does not disable the
-daily update check: OpenClaw sends the update-only `GET` request without a
+even when `telemetry.enabled` is `true`. If an endpoint is configured,
+`DO_NOT_TRACK` still allows the update-only `GET` request without a
 feature-statistics body.
 
 ## Automated environments
 
-OpenClaw sends nothing when it detects an automated environment, meaning the
+PASO also sends nothing when it detects an automated environment, meaning the
 `CI` environment variable is set to a truthy value. Continuous integration jobs
 are not installations: they would outnumber real operators by orders of
 magnitude and make version and platform counts meaningless, and your pipeline
 should not report to us on every job.
 
 This applies to both tiers, so a CI job sends no update check and no feature
-statistics. Setting `OPENCLAW_TELEMETRY_ENDPOINT` overrides the suppression,
+statistics. Setting `OPENCLAW_TELEMETRY_ENDPOINT` overrides the CI suppression,
 because a configured endpoint means the run is deliberately exercising this
 path.
 

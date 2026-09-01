@@ -103,7 +103,7 @@ struct AppProfile: Equatable, Sendable {
             return "macOS profile names must be lowercase so state and LaunchAgent identities cannot collide"
         }
         guard !self.reservedLaunchAgentNames.contains(value) else {
-            return "\"\(value)\" is reserved by an existing OpenClaw LaunchAgent"
+            return "\"\(value)\" is reserved by an existing PASO LaunchAgent"
         }
         return nil
     }

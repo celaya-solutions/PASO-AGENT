@@ -20,14 +20,16 @@ import {
 } from "./extension-install-layout.js";
 import { BROWSER_NATIVE_HOST_NAME } from "./extension-native-host.js";
 
-const OWNED_LAUNCHER_MARKER = "# OpenClaw native messaging bootstrap v1";
+const OWNED_LAUNCHER_MARKER = "# PASO native messaging bootstrap v1";
+const LEGACY_OWNED_LAUNCHER_MARKER = "# OpenClaw native messaging bootstrap v1";
+const OWNED_LAUNCHER_MARKERS = [OWNED_LAUNCHER_MARKER, LEGACY_OWNED_LAUNCHER_MARKER] as const;
 const BROWSER_EXTENSION_INSTALL_WAIT_DEFAULT_MS = 30_000;
 const BROWSER_EXTENSION_INSTALL_WAIT_MIN_MS = 1_000;
 const BROWSER_EXTENSION_INSTALL_WAIT_MAX_MS = 120_000;
-const NATIVE_HOST_DESCRIPTION = "OpenClaw browser extension bootstrap";
+const NATIVE_HOST_DESCRIPTION = "PASO browser extension bootstrap";
 // Chrome authorizes native messaging by extension ID. This trust grant intentionally
 // includes user-loaded unpacked builds that preserve the Store ID; those builds must be trusted.
-// The ID is never proof that an arbitrary extension path is OpenClaw-owned.
+// The ID is never proof that an arbitrary extension path is PASO-owned.
 const FOUNDATION_CHROME_WEB_STORE_EXTENSION_ID = "kcdjddhmeafeomebliikmbpblkmkfoig";
 export const FOUNDATION_CHROME_WEB_STORE_URL = `https://chromewebstore.google.com/detail/openclaw/${FOUNDATION_CHROME_WEB_STORE_EXTENSION_ID}`;
 
@@ -155,8 +157,9 @@ function parseOwnedLauncherTargets(params: {
       escapeRegExp(shellQuote(origin)),
     ]),
   ].join(" ");
+  const ownedMarkerPattern = OWNED_LAUNCHER_MARKERS.map(escapeRegExp).join("|");
   const pattern = new RegExp(
-    `^#!/bin/sh\\n${escapeRegExp(OWNED_LAUNCHER_MARKER)}\\nexport OPENCLAW_STATE_DIR=${quotedValue}\\n(?:export OPENCLAW_CONFIG_PATH=${quotedValue}\\n)?exec ${command} "\\$@"\\n$`,
+    `^#!/bin/sh\\n(?:${ownedMarkerPattern})\\nexport OPENCLAW_STATE_DIR=${quotedValue}\\n(?:export OPENCLAW_CONFIG_PATH=${quotedValue}\\n)?exec ${command} "\\$@"\\n$`,
     "u",
   );
   // Decode only shellQuote's two target words after the entire ownership grammar matches.
@@ -360,7 +363,7 @@ async function installRegistration(params: {
   if (await pathInfo(launcherPath)) {
     await assertOwnedPath(launcherPath, "file");
     const existingLauncher = await fs.readFile(launcherPath, "utf8");
-    if (!existingLauncher.includes(OWNED_LAUNCHER_MARKER)) {
+    if (!OWNED_LAUNCHER_MARKERS.some((marker) => existingLauncher.includes(marker))) {
       throw new Error(`Refusing to overwrite foreign native host launcher: ${launcherPath}`);
     }
     if (existingLauncher !== launcher.content) {
@@ -465,7 +468,7 @@ export async function installChromeExtensionBootstrap(params: {
   }
   if (preRegisteredRoots > 0) {
     params.onProgress?.(
-      `Native bootstrap is ready. Add OpenClaw from the Chrome Web Store: ${FOUNDATION_CHROME_WEB_STORE_URL}. For development, load unpacked from ${installed}.`,
+      `Native bootstrap is ready. In Chrome, open chrome://extensions, enable Developer mode, and load the bundled PASO extension unpacked from ${installed}. The inherited Web Store listing is upstream OpenClaw compatibility, not a PASO release: ${FOUNDATION_CHROME_WEB_STORE_URL}.`,
     );
   } else {
     preRegistrationIssues.push(
@@ -493,7 +496,7 @@ export async function installChromeExtensionBootstrap(params: {
     now() < deadline
   ) {
     if (!announcedWait) {
-      params.onProgress?.("Waiting for Chrome to verify the OpenClaw extension…");
+      params.onProgress?.("Waiting for Chrome to verify the PASO extension…");
       announcedWait = true;
     }
     await sleep(Math.min(500, Math.max(1, deadline - now())));
@@ -563,7 +566,7 @@ export async function browserExtensionStatus(params: {
       unavailableRegistration,
     issues: [
       ...(installedCopy.present && !installedCopy.owned
-        ? [`Chrome extension copy is not OpenClaw-owned: ${installedPath}`]
+        ? [`Chrome extension copy is not PASO-owned: ${installedPath}`]
         : []),
       ...discovery.issues,
       ...registrations.flatMap((entry) =>
@@ -573,7 +576,7 @@ export async function browserExtensionStatus(params: {
   };
 }
 
-/** Remove only registrations and launchers that carry OpenClaw ownership. */
+/** Remove only registrations and launchers that carry PASO ownership. */
 export async function uninstallChromeExtensionNativeHosts(
   params: { deps?: ExtensionInstallDeps } = {},
 ): Promise<{ removed: string[]; refused: string[]; manualRequired: boolean }> {
@@ -596,7 +599,8 @@ export async function uninstallChromeExtensionNativeHosts(
     const launcher = await pathInfo(launcherPath);
     if (launcher) {
       await assertOwnedPath(launcherPath, "file");
-      if (!(await fs.readFile(launcherPath, "utf8")).includes(OWNED_LAUNCHER_MARKER)) {
+      const launcherContent = await fs.readFile(launcherPath, "utf8");
+      if (!OWNED_LAUNCHER_MARKERS.some((marker) => launcherContent.includes(marker))) {
         refused.push(launcherPath);
         continue;
       }
@@ -696,7 +700,7 @@ export async function repairOwnedChromeExtensionNativeHosts(params: {
         pluginRoot: params.pluginRoot,
         deps,
       });
-      changes.push(`Repaired ${root.label} OpenClaw native messaging registration.`);
+      changes.push(`Repaired ${root.label} PASO native messaging registration.`);
     } catch (error) {
       warnings.push(`${root.label} native host repair failed: ${String(error)}`);
     }

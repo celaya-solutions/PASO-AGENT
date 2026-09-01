@@ -2018,7 +2018,7 @@ describe("runCopilotAttempt", () => {
     expect(result.feedback).toContain("no permission policy installed");
   });
 
-  it("registers ask_user and resolves it from the active OpenClaw queue", async () => {
+  it("registers ask_user and resolves it from the active PASO queue", async () => {
     const onBlockReply = vi.fn();
     const sdk = makeFakeSdk((session, cfg) => {
       session.sendAndWait.mockImplementationOnce(async () => {
@@ -2433,7 +2433,7 @@ describe("runCopilotAttempt", () => {
       // receives it as system context without having to read the file
       // via its read tool. The SDK's `append` mode keeps the SDK
       // foundation (identity/safety/tool-instruction sections) intact
-      // while layering OpenClaw context after it. See
+      // while layering PASO context after it. See
       // workspace-bootstrap.ts and @github/copilot-sdk types.d.ts
       // L1052 (SystemMessageConfig).
       const cfg = (sdk.createSession.mock.calls[0] as unknown[] | undefined)?.[0] as {
@@ -2495,7 +2495,7 @@ describe("runCopilotAttempt", () => {
           ?.content,
         "Copilot appended developer instructions",
       );
-      expect(content).toContain("You are a personal agent running inside OpenClaw.");
+      expect(content).toContain("You are a personal agent running inside PASO.");
       expect(content).toContain("## Skill Workshop");
       expect(content).toContain("## Delegation");
       expect(content).toContain("spawn `sessions_spawn` with `visible=true`");
@@ -2639,7 +2639,7 @@ describe("runCopilotAttempt", () => {
 
       // SystemMessage is in ResumeSessionConfig's Pick set (per SDK
       // types.d.ts:1198), so it must be propagated on resume too,
-      // otherwise resumed sessions would silently lose OpenClaw
+      // otherwise resumed sessions would silently lose PASO
       // persona/identity context after every reconnect.
       const cfg = sdk.resumeSession.mock.calls[0]?.[1] as {
         systemMessage?: { mode?: string; content?: string };
@@ -4665,7 +4665,7 @@ describe("runCopilotAttempt", () => {
   // (`@github/copilot-sdk/dist/types.d.ts:1059-1066`). Without it, the
   // CLI keeps its native read/write/shell/url/mcp/memory/hook tools
   // visible to the model alongside our bridged overrides, which would
-  // bypass OpenClaw's wrapped-tool enforcement under any permissive
+  // bypass PASO's wrapped-tool enforcement under any permissive
   // permission policy and pollute the catalog under the default reject
   // policy. `createSessionConfig` derives `availableTools` from the
   // post-filter `sdkTools` so create- and resume-session always carry
@@ -4715,7 +4715,7 @@ describe("runCopilotAttempt", () => {
       expect(readAvailableTools(sdk.createSession.mock.calls[0])).toEqual(["read"]);
     });
 
-    it("keeps native ask_user when its restricted OpenClaw equivalent remains allowed", async () => {
+    it("keeps native ask_user when its restricted PASO equivalent remains allowed", async () => {
       const sdk = makeFakeSdk();
       const pool = makeFakePool(sdk);
       const sdkTools = [makeFakeSdkTool("read"), makeFakeSdkTool("ask_user")];
@@ -4733,7 +4733,7 @@ describe("runCopilotAttempt", () => {
       ]);
     });
 
-    it("keeps a host-scoped OpenClaw create-session surface ring-zero", async () => {
+    it("keeps a host-scoped PASO create-session surface ring-zero", async () => {
       const sdk = makeFakeSdk();
       const pool = makeFakePool(sdk);
       const sdkTools = [makeFakeSdkTool("openclaw")];
@@ -4837,7 +4837,7 @@ describe("runCopilotAttempt", () => {
       expect(requireResumeSessionConfig(sdk).availableTools).toEqual(["read"]);
     });
 
-    it("keeps a host-scoped OpenClaw resume-session surface ring-zero", async () => {
+    it("keeps a host-scoped PASO resume-session surface ring-zero", async () => {
       const sdk = makeFakeSdk({
         onResumeSession: (session) => {
           session.sendAndWait.mockResolvedValueOnce(makeAssistantMessageEvent("resumed"));

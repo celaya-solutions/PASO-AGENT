@@ -60,9 +60,9 @@ In Nix mode (`OPENCLAW_NIX_MODE=1`), `openclaw.json` is immutable. `install`, `u
 </Note>
 
 <Note>
-Bundled plugins ship with OpenClaw. Some are enabled by default (for example bundled model providers, bundled speech providers, and the bundled browser plugin); others require `plugins enable`.
+Bundled plugins ship with PASO. Some are enabled by default (for example bundled model providers, bundled speech providers, and the bundled browser plugin); others require `plugins enable`.
 
-Native OpenClaw plugins ship `openclaw.plugin.json` with an inline JSON Schema (`configSchema`, even if empty). Compatible bundles use their own bundle manifests instead.
+Native PASO plugins ship `openclaw.plugin.json` with an inline JSON Schema (`configSchema`, even if empty). Compatible bundles use their own bundle manifests instead.
 
 `plugins list` shows `Format: openclaw` or `Format: bundle`. Verbose list/info output also shows the bundle subtype (`agent (Agent Plugins)`, `codex`, `claude`, or `cursor`) plus detected bundle capabilities.
 </Note>
@@ -77,7 +77,7 @@ npm run plugin:validate
 ```
 
 `plugins init` creates a minimal TypeScript tool plugin by default. The first
-argument is the plugin id; `--name` sets the display name. OpenClaw uses the
+argument is the plugin id; `--name` sets the display name. PASO uses the
 id for the default output directory and package naming. Tool scaffolds use
 `defineToolPlugin` and generate `package.json` scripts `plugin:build` and
 `plugin:validate` that build then call `openclaw plugins build`/`validate`.
@@ -143,11 +143,11 @@ sources with guarded environment variables. See
 [Plugin install overrides](/plugins/install-overrides).
 
 <Warning>
-Bare package names install from npm by default during the launch cutover, unless they match a bundled or official plugin id, in which case OpenClaw uses that local/official copy instead of hitting the npm registry. Use `npm:<package>` when you deliberately want an external npm package instead. Use `clawhub:<package>` for ClawHub. Treat plugin installs like running code; prefer pinned versions.
+Bare package names install from npm by default during the launch cutover, unless they match a bundled or official plugin id, in which case PASO uses that local/official copy instead of hitting the npm registry. Use `npm:<package>` when you deliberately want an external npm package instead. Use `clawhub:<package>` for ClawHub. Treat plugin installs like running code; prefer pinned versions.
 </Warning>
 
 <Warning>
-ClawHub packages and OpenClaw's bundled/official catalog are trusted install
+ClawHub packages and PASO's bundled/official catalog are trusted install
 sources. A new arbitrary npm, `npm-pack:`, git, local path/archive, or
 marketplace source warns and asks before continuing. Noninteractive arbitrary
 installs must pass `--force` after you review and trust the source. The same
@@ -166,7 +166,7 @@ summary, and an install hint such as `openclaw plugins install clawhub:<package>
 
 <Note>
 ClawHub is the primary distribution and discovery surface for most plugins. Npm
-remains a supported fallback and direct-install path. OpenClaw-owned
+remains a supported fallback and direct-install path. PASO-owned
 `@openclaw/*` plugin packages are published on npm again; see the current list
 on [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) or the
 [plugin inventory](/plugins/plugin-inventory). Stable installs use `latest`.
@@ -185,41 +185,41 @@ third-party packages, and non-npm sources are not rewritten.
 
     If config is invalid before install, `plugins install` normally fails closed and tells you to run `openclaw doctor --fix` first. Gateway startup can apply [safe legacy-key migrations](/gateway/doctor#detailed-behavior-and-rationale), but plugin config that remains invalid still fails closed; hot reload also rejects invalid plugin config. `openclaw doctor --fix` can quarantine the invalid plugin entry. The only pre-existing-config exception for plugin installation is a narrow bundled-plugin recovery path for plugins that explicitly opt into `openclaw.install.allowInvalidConfigRecovery`.
 
-    When the existing host config is valid but the newly installed plugin's own config is absent, OpenClaw records the install disabled instead of writing an invalid enabled entry. Configure `plugins.entries.<id>.config`, then run `openclaw plugins enable <id>`. If an existing plugin config entry is present but invalid, install fails without rewriting it.
+    When the existing host config is valid but the newly installed plugin's own config is absent, PASO records the install disabled instead of writing an invalid enabled entry. Configure `plugins.entries.<id>.config`, then run `openclaw plugins enable <id>`. If an existing plugin config entry is present but invalid, install fails without rewriting it.
 
   </Accordion>
   <Accordion title="--force confirmation and reinstall vs update">
     `--force` confirms a non-ClawHub source without prompting. It does not bypass `security.installPolicy` or remaining install safety checks. When the plugin or hook pack is already installed, it also reuses the existing target and overwrites it in place. Use it after reviewing an arbitrary npm, local, archive, git, or marketplace source, or when intentionally reinstalling the same id. For routine upgrades of an already tracked npm plugin, prefer `openclaw plugins update <id-or-npm-spec>`.
 
-    If you run `plugins install` for a plugin id that is already installed, OpenClaw stops and points you at `plugins update <id-or-npm-spec>` for a normal upgrade, or at `plugins install <package> --force` when you genuinely want to overwrite the current install from a different source. Arbitrary sources still show the interactive provenance warning; noninteractive installs must pass `--force` after review. Trusted ClawHub and OpenClaw-catalog sources do not need it. With `--link`, `--force` confirms the source but does not change the linked-path install mode.
+    If you run `plugins install` for a plugin id that is already installed, PASO stops and points you at `plugins update <id-or-npm-spec>` for a normal upgrade, or at `plugins install <package> --force` when you genuinely want to overwrite the current install from a different source. Arbitrary sources still show the interactive provenance warning; noninteractive installs must pass `--force` after review. Trusted ClawHub and PASO-catalog sources do not need it. With `--link`, `--force` confirms the source but does not change the linked-path install mode.
 
   </Accordion>
   <Accordion title="--pin scope">
     `--pin` applies to npm installs only and records the resolved exact `<name>@<version>`. It is not supported with `git:` installs (pin the ref in the spec instead, e.g. `git:github.com/acme/plugin@v1.2.3`) or with `--marketplace` (marketplace installs persist marketplace source metadata instead of an npm spec).
   </Accordion>
   <Accordion title="--acknowledge-install-policy-warning">
-    When `security.installPolicy` returns `warn` in an interactive terminal, OpenClaw prints the reason and findings, then uses the same acknowledgement copy as a suspicious ClawHub release: `type: '<plugin>' to install anyway`. If the fully rendered review exceeds 4,000 characters, OpenClaw fails closed before prompting; reduce or coalesce the policy output first. A matching answer re-evaluates the staged source before continuing. A declined or non-interactive direct CLI install stops before commit; after review, `--acknowledge-install-policy-warning` explicitly approves every warning for that command invocation. Automatic and managed install surfaces cannot use that flag themselves; rerun the equivalent direct CLI command when one exists, or change `security.installPolicy` to return `allow` for the reviewed request before retrying the managed flow. Every approved warning is re-evaluated before continuing. Neither acknowledgement nor `--force` overrides `block` or a policy failure.
+    When `security.installPolicy` returns `warn` in an interactive terminal, PASO prints the reason and findings, then uses the same acknowledgement copy as a suspicious ClawHub release: `type: '<plugin>' to install anyway`. If the fully rendered review exceeds 4,000 characters, PASO fails closed before prompting; reduce or coalesce the policy output first. A matching answer re-evaluates the staged source before continuing. A declined or non-interactive direct CLI install stops before commit; after review, `--acknowledge-install-policy-warning` explicitly approves every warning for that command invocation. Automatic and managed install surfaces cannot use that flag themselves; rerun the equivalent direct CLI command when one exists, or change `security.installPolicy` to return `allow` for the reviewed request before retrying the managed flow. Every approved warning is re-evaluated before continuing. Neither acknowledgement nor `--force` overrides `block` or a policy failure.
 
     If a plugin you published on ClawHub is hidden or blocked by a registry scan, use the publisher steps in [ClawHub publishing](/clawhub/publishing). This flag does not ask ClawHub to rescan the plugin or make a blocked release public. The deprecated `--dangerously-force-unsafe-install` flag remains a no-op.
 
   </Accordion>
   <Accordion title="ClawHub Security Audit">
-    Community ClawHub installs check the selected release's trust record before downloading. OpenClaw prints the outcome, exact audit overview, and details link. A Review outcome is informational and installation continues. If ClawHub disables download or returns a blocking moderation outcome, OpenClaw refuses the release. Official ClawHub packages and bundled OpenClaw plugin sources bypass this release-trust check.
+    Community ClawHub installs check the selected release's trust record before downloading. PASO prints the outcome, exact audit overview, and details link. A Review outcome is informational and installation continues. If ClawHub disables download or returns a blocking moderation outcome, PASO refuses the release. Official ClawHub packages and bundled PASO plugin sources bypass this release-trust check.
   </Accordion>
   <Accordion title="Hook packs and npm specs">
     `plugins install` is also the install surface for hook packs that expose `openclaw.hooks` in `package.json`. Use `openclaw hooks` for filtered hook visibility and per-hook enablement, not package installation.
 
-    Npm specs are **registry-only** (package name plus optional **exact version** or **dist-tag**). Git/URL/file specs and semver ranges are rejected. Dependency installs run in one managed npm project per plugin with `--ignore-scripts` for safety, even when your shell has global npm install settings. Managed plugin npm projects inherit the npm-compatible parts of OpenClaw's dependency overrides. pnpm parent-child selectors are skipped; npm aliases remain unless the installed npm version rejects them.
+    Npm specs are **registry-only** (package name plus optional **exact version** or **dist-tag**). Git/URL/file specs and semver ranges are rejected. Dependency installs run in one managed npm project per plugin with `--ignore-scripts` for safety, even when your shell has global npm install settings. Managed plugin npm projects inherit the npm-compatible parts of PASO's dependency overrides. pnpm parent-child selectors are skipped; npm aliases remain unless the installed npm version rejects them.
 
     Use `npm:<package>` to make npm resolution explicit. Bare package specs also install directly from npm during the launch cutover unless they match an official plugin id.
 
-    Raw `@openclaw/*` specs that match bundled plugins resolve to the image-owned bundled copy before npm fallback. For example, `openclaw plugins install @openclaw/discord@2026.5.20 --pin` uses the bundled Discord plugin from the current OpenClaw build instead of creating a managed npm override. To force the external npm package, use `openclaw plugins install npm:@openclaw/discord@2026.5.20 --pin`.
+    Raw `@openclaw/*` specs that match bundled plugins resolve to the image-owned bundled copy before npm fallback. For example, `openclaw plugins install @openclaw/discord@2026.5.20 --pin` uses the bundled Discord plugin from the current PASO build instead of creating a managed npm override. To force the external npm package, use `openclaw plugins install npm:@openclaw/discord@2026.5.20 --pin`.
 
-    Bare specs and `@latest` stay on the stable track. OpenClaw date-stamped correction versions such as `2026.5.3-1` count as stable for this check. If npm resolves either form to a prerelease, OpenClaw stops and asks you to opt in explicitly with a prerelease tag (`@beta`/`@rc`) or an exact prerelease version (`@1.2.3-beta.4`).
+    Bare specs and `@latest` stay on the stable track. PASO date-stamped correction versions such as `2026.5.3-1` count as stable for this check. If npm resolves either form to a prerelease, PASO stops and asks you to opt in explicitly with a prerelease tag (`@beta`/`@rc`) or an exact prerelease version (`@1.2.3-beta.4`).
 
-    For npm installs without an exact version (`npm:<package>` or `npm:<package>@latest`), OpenClaw checks the resolved package metadata before install. If the latest stable package requires a newer OpenClaw plugin API or minimum host version, OpenClaw inspects older stable versions and installs the newest compatible release instead. Exact versions and explicit dist-tags stay strict: an incompatible selection fails and asks you to upgrade OpenClaw or choose a compatible version.
+    For npm installs without an exact version (`npm:<package>` or `npm:<package>@latest`), PASO checks the resolved package metadata before install. If the latest stable package requires a newer PASO plugin API or minimum host version, PASO inspects older stable versions and installs the newest compatible release instead. Exact versions and explicit dist-tags stay strict: an incompatible selection fails and asks you to upgrade PASO or choose a compatible version.
 
-    If a bare install spec matches an official plugin id (for example `diffs`), OpenClaw installs the catalog entry directly. To install an npm package with the same name, use an explicit scoped spec (for example `@scope/diffs`).
+    If a bare install spec matches an official plugin id (for example `diffs`), PASO installs the catalog entry directly. To install an npm package with the same name, use an explicit scoped spec (for example `@scope/diffs`).
 
   </Accordion>
   <Accordion title="Git repositories">
@@ -229,11 +229,11 @@ third-party packages, and non-npm sources are not rewritten.
 
     Reinstalling the same Git source and ref without `--force` refuses an existing managed checkout, even if the repository now declares a different plugin id. Use `openclaw plugins update <id>` for a tracked upgrade, or `openclaw plugins install git:<repo>@<ref> --force` to intentionally reinstall the same plugin id. `--force` does not migrate an existing install record to a different plugin id.
 
-    After installing from git, use `openclaw plugins inspect <id> --runtime --json` to verify runtime registrations such as gateway methods and CLI commands. If the plugin registered a CLI root with `api.registerCli`, run that command directly through the OpenClaw root CLI, for example `openclaw demo-plugin ping`.
+    After installing from git, use `openclaw plugins inspect <id> --runtime --json` to verify runtime registrations such as gateway methods and CLI commands. If the plugin registered a CLI root with `api.registerCli`, run that command directly through the PASO root CLI, for example `openclaw demo-plugin ping`.
 
   </Accordion>
   <Accordion title="Archives">
-    Supported archives: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Native OpenClaw plugin archives must contain a valid `openclaw.plugin.json` at the extracted plugin root; archives that only contain `package.json` are rejected before OpenClaw writes install records.
+    Supported archives: `.zip`, `.tgz`, `.tar.gz`, `.tar`. Native PASO plugin archives must contain a valid `openclaw.plugin.json` at the extracted plugin root; archives that only contain `package.json` are rejected before PASO writes install records.
 
     Use `npm-pack:<path.tgz>` when the file is an npm-pack tarball and you want
     the same per-plugin managed npm project path used by registry installs,
@@ -267,7 +267,7 @@ openclaw plugins install npm:@openclaw/discord@2026.5.20
 openclaw plugins install npm:@scope/plugin-name@1.0.1
 ```
 
-OpenClaw checks the advertised plugin API / minimum gateway compatibility before install. When the selected ClawHub version publishes a ClawPack artifact, OpenClaw downloads the versioned npm-pack `.tgz`, verifies the ClawHub digest header and the artifact digest, then installs it through the normal archive path. Older ClawHub versions without ClawPack metadata still install through the legacy package archive verification path. Recorded installs keep their ClawHub source metadata, artifact kind, npm integrity, npm shasum, tarball name, and ClawPack digest facts for later updates.
+PASO checks the advertised plugin API / minimum gateway compatibility before install. When the selected ClawHub version publishes a ClawPack artifact, PASO downloads the versioned npm-pack `.tgz`, verifies the ClawHub digest header and the artifact digest, then installs it through the normal archive path. Older ClawHub versions without ClawPack metadata still install through the legacy package archive verification path. Recorded installs keep their ClawHub source metadata, artifact kind, npm integrity, npm shasum, tarball name, and ClawPack digest facts for later updates.
 Unversioned ClawHub installs keep an unversioned recorded spec so `openclaw plugins update` can follow newer ClawHub releases; explicit version or tag selectors such as `clawhub:pkg@1.2.3` and `clawhub:pkg@beta` remain pinned to that selector.
 
 ### Marketplace shorthand
@@ -298,13 +298,13 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 
   </Tab>
   <Tab title="Remote marketplace rules">
-    For remote marketplaces loaded from GitHub or git, plugin entries must stay inside the cloned marketplace repo. OpenClaw accepts relative path sources from that repo and rejects HTTP(S), absolute-path, git, GitHub, and other non-path plugin sources from remote manifests.
+    For remote marketplaces loaded from GitHub or git, plugin entries must stay inside the cloned marketplace repo. PASO accepts relative path sources from that repo and rejects HTTP(S), absolute-path, git, GitHub, and other non-path plugin sources from remote manifests.
   </Tab>
 </Tabs>
 
-For local paths and archives, OpenClaw auto-detects:
+For local paths and archives, PASO auto-detects:
 
-- native OpenClaw plugins (`openclaw.plugin.json`)
+- native PASO plugins (`openclaw.plugin.json`)
 - Agent Plugins bundles (root `plugin.json` declaring the [Agent Plugins](https://agent-plugins.org) `$schema`)
 - Codex-compatible bundles (`.codex-plugin/plugin.json`)
 - Claude-compatible bundles (`.claude-plugin/plugin.json`, or the default Claude component layout when that manifest file is absent)
@@ -374,7 +374,7 @@ openclaw plugins list --json
 `plugins list` reads the persisted local plugin registry first, with a manifest-only derived fallback when the registry is missing or invalid. It is useful for checking whether a plugin is installed, enabled, and visible to cold startup planning, but it is not a live runtime probe of an already-running Gateway process. After changing plugin code, enablement, hook policy, or `plugins.load.paths`, restart the Gateway that serves the channel before expecting new `register(api)` code or hooks to run. For remote/container deployments, verify you are restarting the actual `openclaw gateway run` child, not only a wrapper process.
 
 `plugins list --json` includes each plugin's `dependencyStatus` from `package.json`
-`dependencies` and `optionalDependencies`. OpenClaw checks whether those package
+`dependencies` and `optionalDependencies`. PASO checks whether those package
 names are present along the plugin's normal Node `node_modules` lookup path; it
 does not import plugin runtime code, run a package manager, or repair missing
 dependencies.
@@ -388,11 +388,11 @@ warning can list every discovered plugin, it prints a ready-to-paste
 `plugins.allow` snippet that already includes those ids. If a plugin loads
 without install/load-path provenance, inspect that plugin id, then either pin
 the trusted id in `plugins.allow` or reinstall the plugin from a trusted source
-so OpenClaw records install provenance.
+so PASO records install provenance.
 
 For bundled plugin work inside a packaged Docker image, bind-mount the plugin
 source directory over the matching packaged source path, such as
-`/app/extensions/synology-chat`. OpenClaw discovers that mounted source overlay
+`/app/extensions/synology-chat`. PASO discovers that mounted source overlay
 before `/app/dist/extensions/synology-chat`; a plain copied source directory
 remains inert, so normal packaged installs still use compiled dist.
 
@@ -405,7 +405,7 @@ For runtime hook debugging:
 
 ### Plugin index
 
-Plugin install metadata is machine-managed state, not user config. Installs and updates write it to the shared SQLite state database under the active OpenClaw state directory. The `config_machine_state` value keyed by `plugins.installedIndex` stores durable `installRecords` metadata, including records for broken or missing plugin manifests, plus a manifest-derived cold registry cache used by `openclaw plugins update`, uninstall, diagnostics, and the cold plugin registry.
+Plugin install metadata is machine-managed state, not user config. Installs and updates write it to the shared SQLite state database under the active PASO state directory. The `config_machine_state` value keyed by `plugins.installedIndex` stores durable `installRecords` metadata, including records for broken or missing plugin manifests, plus a manifest-derived cold registry cache used by `openclaw plugins update`, uninstall, diagnostics, and the cold plugin registry.
 
 An unreadable index is not invalid data. Permission, lock, and other read errors stop fallback, migration, and refresh with the original error. Restore database access, then rerun `openclaw plugins registry` to inspect the state before attempting repair. Do not delete the `plugins.installedIndex` row unless inspection succeeds and confirms invalid install records; a failed read alone does not justify deletion.
 
@@ -420,11 +420,11 @@ openclaw plugins uninstall <id> --keep-files
 openclaw plugins uninstall <id> --force
 ```
 
-`uninstall` removes plugin records from `plugins.entries`, the persisted plugin index, plugin allow/deny list entries, and any `plugins.load.paths` entry that exactly resolves to the recorded install path. For a package with multiple child entries, any child id resolves to the package owner; uninstall removes every sibling's policy and slot/channel references, the one package install record, and the managed directory once. Linked path installs also remove an exact entry for their recorded source path. Parent directories, child paths, prefix matches, and unrelated load paths are preserved. Unless `--keep-files` is set, uninstall also removes the tracked managed install directory, but only when it resolves inside OpenClaw's plugin extensions root. If the plugin currently owns the `memory` or `contextEngine` slot, that slot resets to its default (`memory-core` for memory, `legacy` for context engine).
+`uninstall` removes plugin records from `plugins.entries`, the persisted plugin index, plugin allow/deny list entries, and any `plugins.load.paths` entry that exactly resolves to the recorded install path. For a package with multiple child entries, any child id resolves to the package owner; uninstall removes every sibling's policy and slot/channel references, the one package install record, and the managed directory once. Linked path installs also remove an exact entry for their recorded source path. Parent directories, child paths, prefix matches, and unrelated load paths are preserved. Unless `--keep-files` is set, uninstall also removes the tracked managed install directory, but only when it resolves inside PASO's plugin extensions root. If the plugin currently owns the `memory` or `contextEngine` slot, that slot resets to its default (`memory-core` for memory, `legacy` for context engine).
 
 `uninstall` prints a preview of what will be removed. Multi-entry packages name the package owner and every affected child before prompting. Pass `--force` to skip the confirmation prompt (useful for scripts and non-interactive runs); without it, uninstall requires an interactive TTY. `--dry-run` prints the same preview and exits without prompting or changing anything.
 
-If OpenClaw cannot prove exactly one package owner and a complete child list, lifecycle mutations fail closed without changing package files, config, or the installed index. Run `openclaw plugins registry --refresh`, inspect `openclaw plugins doctor`, and use `openclaw doctor --fix` for repairable legacy index state. If ownership is still ambiguous, reinstall the package before retrying update or uninstall.
+If PASO cannot prove exactly one package owner and a complete child list, lifecycle mutations fail closed without changing package files, config, or the installed index. Run `openclaw plugins registry --refresh`, inspect `openclaw plugins doctor`, and use `openclaw doctor --fix` for repairable legacy index state. If ownership is still ambiguous, reinstall the package before retrying update or uninstall.
 
 <Note>
 `--keep-config` is supported as a deprecated alias for `--keep-files`.
@@ -445,15 +445,15 @@ Updates apply to tracked plugin installs in the managed plugin index and tracked
 
 <AccordionGroup>
   <Accordion title="Resolving plugin id vs npm spec">
-    When you pass a plugin id, OpenClaw reuses the recorded install spec for that plugin. For a multi-entry package, a child id resolves to its package owner and updates every sibling together. If the new package version removes or renames children, OpenClaw removes the retired children's entries, allow/deny policy, exact child load paths, channel config, and memory/context slot selections while preserving retained/new children and unrelated plugins. Previously stored dist-tags such as `@beta` and exact pinned versions continue to be used on later `update <id>` runs.
+    When you pass a plugin id, PASO reuses the recorded install spec for that plugin. For a multi-entry package, a child id resolves to its package owner and updates every sibling together. If the new package version removes or renames children, PASO removes the retired children's entries, allow/deny policy, exact child load paths, channel config, and memory/context slot selections while preserving retained/new children and unrelated plugins. Previously stored dist-tags such as `@beta` and exact pinned versions continue to be used on later `update <id>` runs.
 
     The narrow exception is a trusted official package completing a catalog-declared plugin id replacement. That update starts from the catalog package selector so the renamed manifest can replace the legacy id.
 
-    During `update <id> --dry-run`, exact pinned npm installs stay pinned. If OpenClaw can also resolve the package's registry default line and that default line is newer than the installed pinned version, the dry run reports the pin and prints the explicit `@latest` package update command to follow the registry default line.
+    During `update <id> --dry-run`, exact pinned npm installs stay pinned. If PASO can also resolve the package's registry default line and that default line is newer than the installed pinned version, the dry run reports the pin and prints the explicit `@latest` package update command to follow the registry default line.
 
-    That targeted-update rule differs from the bulk `openclaw plugins update --all` maintenance path. Bulk updates still respect ordinary tracked install specs, but trusted official OpenClaw plugin records can sync to the current official catalog target instead of staying on a stale exact official package. Use targeted `update <id>` when you intentionally want to keep an exact or tagged official spec untouched.
+    That targeted-update rule differs from the bulk `openclaw plugins update --all` maintenance path. Bulk updates still respect ordinary tracked install specs, but trusted official PASO plugin records can sync to the current official catalog target instead of staying on a stale exact official package. Use targeted `update <id>` when you intentionally want to keep an exact or tagged official spec untouched.
 
-    For npm installs, you can also pass an explicit npm package spec with a dist-tag or exact version. OpenClaw resolves that package name back to the tracked plugin record, updates that installed plugin, and records the new npm spec for future id-based updates.
+    For npm installs, you can also pass an explicit npm package spec with a dist-tag or exact version. PASO resolves that package name back to the tracked plugin record, updates that installed plugin, and records the new npm spec for future id-based updates.
 
     Passing the npm package name without a version or tag also resolves back to the tracked plugin record. Use this when a plugin was pinned to an exact version and you want to move it back to the registry's default release line.
 
@@ -465,16 +465,16 @@ Updates apply to tracked plugin installs in the managed plugin index and tracked
 
   </Accordion>
   <Accordion title="Version checks and integrity drift">
-    Before a live npm update, OpenClaw checks the installed package version against the npm registry metadata. If the installed version and recorded artifact identity already match the resolved target, the update is skipped without downloading, reinstalling, or rewriting `openclaw.json`.
+    Before a live npm update, PASO checks the installed package version against the npm registry metadata. If the installed version and recorded artifact identity already match the resolved target, the update is skipped without downloading, reinstalling, or rewriting `openclaw.json`.
 
-    When a stored integrity hash exists and the fetched artifact hash changes, OpenClaw treats that as npm artifact drift. The interactive `openclaw plugins update` command prints the expected and actual hashes and asks for confirmation before proceeding. Non-interactive update helpers fail closed unless the caller supplies an explicit continuation policy.
+    When a stored integrity hash exists and the fetched artifact hash changes, PASO treats that as npm artifact drift. The interactive `openclaw plugins update` command prints the expected and actual hashes and asks for confirmation before proceeding. Non-interactive update helpers fail closed unless the caller supplies an explicit continuation policy.
 
   </Accordion>
   <Accordion title="--acknowledge-install-policy-warning on update">
     `plugins update` uses the same warning acknowledgement as install, with `type: '<plugin>' to update anyway` in an interactive terminal. The policy is re-evaluated, and `block` or a policy failure remains terminal.
   </Accordion>
   <Accordion title="ClawHub Security Audit on update">
-    Community ClawHub-backed plugin updates run the same exact-release trust check as installs before downloading the replacement package. Review outcomes are printed informationally and continue; blocked releases remain non-installable. Official ClawHub packages and bundled OpenClaw plugin sources bypass this release-trust check.
+    Community ClawHub-backed plugin updates run the same exact-release trust check as installs before downloading the replacement package. Review outcomes are printed informationally and continue; blocked releases remain non-installable. Official ClawHub packages and bundled PASO plugin sources bypass this release-trust check.
   </Accordion>
 </AccordionGroup>
 
@@ -532,7 +532,7 @@ openclaw plugins registry --refresh
 openclaw plugins registry --json
 ```
 
-The local plugin registry is OpenClaw's persisted cold read model for installed plugin identity, enablement, source metadata, and contribution ownership. Normal startup, provider owner lookup, channel setup classification, and plugin inventory can read it without importing plugin runtime modules.
+The local plugin registry is PASO's persisted cold read model for installed plugin identity, enablement, source metadata, and contribution ownership. Normal startup, provider owner lookup, channel setup classification, and plugin inventory can read it without importing plugin runtime modules.
 
 Use `plugins registry` to inspect whether the persisted registry is present, current, or stale. Use `--refresh` to rebuild it from the persisted plugin index, config policy, and manifest/package metadata. This is a repair path, not a runtime activation path.
 
@@ -556,13 +556,13 @@ openclaw plugins marketplace refresh --feed-url <url>
 openclaw plugins marketplace refresh --expected-sha256 <sha256> --json
 ```
 
-`plugins marketplace entries` lists entries from the configured OpenClaw marketplace feed. By default it attempts the hosted feed and falls back to the latest accepted snapshot or bundled data. Use `--feed-profile <name>` to read a specific configured profile, `--feed-url <url>` to read an explicit hosted feed URL, and `--offline` to read the latest accepted snapshot without fetching the feed.
+`plugins marketplace entries` lists entries from the configured PASO marketplace feed. By default it attempts the hosted feed and falls back to the latest accepted snapshot or bundled data. Use `--feed-profile <name>` to read a specific configured profile, `--feed-url <url>` to read an explicit hosted feed URL, and `--offline` to read the latest accepted snapshot without fetching the feed.
 
-`plugins marketplace refresh` refreshes the configured hosted feed snapshot and reports whether OpenClaw accepted hosted data, a hosted snapshot, or bundled fallback data. Use `--expected-sha256` when a caller needs the command to fail unless a fresh hosted payload matches a pinned checksum.
+`plugins marketplace refresh` refreshes the configured hosted feed snapshot and reports whether PASO accepted hosted data, a hosted snapshot, or bundled fallback data. Use `--expected-sha256` when a caller needs the command to fail unless a fresh hosted payload matches a pinned checksum.
 
 Marketplace `list` accepts a local marketplace path, a `marketplace.json` path, a GitHub shorthand like `owner/repo`, a GitHub repo URL, or a git URL. `--json` prints the resolved source label plus the parsed marketplace manifest and plugin entries.
 
-Marketplace refresh loads a hosted OpenClaw marketplace feed and persists the
+Marketplace refresh loads a hosted PASO marketplace feed and persists the
 validated response as the local hosted-feed snapshot. Without options, it uses
 the configured default feed profile. Use `--feed-profile <name>` to refresh a
 specific configured profile, `--feed-url <url>` to refresh an explicit hosted
@@ -572,15 +572,15 @@ machine-readable output. Explicit hosted feed URLs must not include
 credentials, query strings, or fragments. Unpinned refreshes can report a
 hosted snapshot or bundled fallback result without failing the command. Pinned
 refreshes fail unless they accept a fresh hosted payload, and successful hosted
-refreshes fail if OpenClaw cannot persist the validated snapshot.
+refreshes fail if PASO cannot persist the validated snapshot.
 
 The built-in `clawhub-public` profile expects payload identity
-`clawhub-official`. OpenClaw will bundle ClawHub's production public key after
+`clawhub-official`. PASO will bundle ClawHub's production public key after
 ClawHub generates and hands off that key. Until then, the built-in profile does
 not grant signed-feed install authority. Public keys must come from a trusted
 release or operator channel, not from a key endpoint on the feed host.
 
-OpenClaw verifies the DSSE envelope and, when a profile declares `feedId`,
+PASO verifies the DSSE envelope and, when a profile declares `feedId`,
 requires the decoded payload ID to match it. The built-in `clawhub-public`
 profile always declares its identity, preventing a valid document for another
 feed from being replayed through that profile.

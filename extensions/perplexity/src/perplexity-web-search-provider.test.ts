@@ -78,11 +78,11 @@ describe("perplexity web search provider", () => {
           throw new Error("Expected tool definition");
         }
 
-        await expect(tool.execute({ query: "OpenClaw docs" })).resolves.toEqual({
+        await expect(tool.execute({ query: "PASO docs" })).resolves.toEqual({
           error: "missing_perplexity_api_key",
           message:
             "web_search (perplexity) needs an API key. Set PERPLEXITY_API_KEY or OPENROUTER_API_KEY in the Gateway environment, or configure plugins.entries.perplexity.config.webSearch.apiKey. If you do not want to configure a search API key, use web_fetch for a specific URL or the browser tool for interactive pages.",
-          docs: "https://docs.openclaw.ai/tools/web",
+          docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
         });
       },
     );
@@ -216,7 +216,7 @@ describe("perplexity web search provider", () => {
       ).resolves.toEqual({
         error,
         message,
-        docs: "https://docs.openclaw.ai/tools/web",
+        docs: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       });
     },
   );
@@ -541,7 +541,7 @@ describe("perplexity web search provider", () => {
         }
 
         await tool.execute({
-          query: "OpenClaw releases",
+          query: "PASO releases",
           date_after: "2024-01-01",
           date_before: "2024-06-30",
         });
@@ -551,7 +551,7 @@ describe("perplexity web search provider", () => {
     expect(withTrustedWebSearchEndpointMock).toHaveBeenCalledOnce();
     const [request] = withTrustedWebSearchEndpointMock.mock.calls[0] as [{ init: RequestInit }];
     expect(JSON.parse(request.init.body as string)).toEqual({
-      query: "OpenClaw releases",
+      query: "PASO releases",
       max_results: 5,
       search_after_date_filter: "1/1/2024",
       search_before_date_filter: "6/30/2024",
@@ -573,9 +573,7 @@ describe("perplexity web search provider", () => {
           throw new Error("Expected tool definition");
         }
 
-        await expect(tool.execute({ query: "OpenClaw docs", [key]: value })).rejects.toThrow(
-          message,
-        );
+        await expect(tool.execute({ query: "PASO docs", [key]: value })).rejects.toThrow(message);
       },
     );
   });

@@ -6,6 +6,7 @@ import {
   resolveControlUiDistIndexPathForRoot,
 } from "./control-ui-assets.js";
 import { readPackageVersion } from "./package-json.js";
+import { ensurePasoGitOrigin } from "./paso-git-origin.js";
 import { resolveStableNodePath } from "./stable-node-path.js";
 import { DEV_BRANCH, type UpdateChannel } from "./update-channels.js";
 import {
@@ -278,10 +279,15 @@ export async function updateGitCheckout(params: {
     return buildError("dirty", "skipped");
   }
 
+  const origin = await ensurePasoGitOrigin({ root: gitRoot, runCommand, timeoutMs });
+  if (origin.status === "error") {
+    return buildError(origin.reason);
+  }
+
   if (channel === "dev") {
     const fetchFailure = await runRequiredStep(
       "git fetch",
-      ["git", "-C", gitRoot, "fetch", "--all", "--prune", "--no-tags"],
+      ["git", "-C", gitRoot, "fetch", "origin", "--prune", "--no-tags"],
       "fetch-failed",
     );
     if (fetchFailure) {
@@ -379,7 +385,7 @@ export async function updateGitCheckout(params: {
   } else {
     const fetchFailure = await runRequiredStep(
       "git fetch",
-      ["git", "-C", gitRoot, "fetch", "--all", "--prune", "--tags"],
+      ["git", "-C", gitRoot, "fetch", "origin", "--prune", "--force", "--tags"],
       "fetch-failed",
     );
     if (fetchFailure) {

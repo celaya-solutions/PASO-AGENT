@@ -76,39 +76,28 @@ suite.define(() => {
         .toContain("separate from this Control UI build");
 
       const hero = page.locator(".about-hero");
-      await expect.poll(() => hero.locator(".about-hero__name").textContent()).toBe("OpenClaw");
+      await expect.poll(() => hero.locator(".about-hero__name").textContent()).toBe("PASO");
       await expect
         .poll(() => hero.locator(".about-hero__version").textContent())
         .toBe("v2026.7.10");
+      await hero.locator("svg.about-hero__mark").waitFor();
+      await expect
+        .poll(() => hero.locator(".about-hero__tagline").textContent())
+        .toContain("Celaya Solutions Research");
+      await expect
+        .poll(() => hero.locator(".about-hero__location").textContent())
+        .toBe("El Paso, TX");
 
-      const githubLink = hero.getByRole("link", { name: "GitHub", exact: true });
+      const githubLink = hero.getByRole("link", { name: "Project source", exact: true });
       await expect
         .poll(() => githubLink.getAttribute("href"))
-        .toBe("https://github.com/openclaw/openclaw");
+        .toBe("https://github.com/celaya-solutions/PASO-AGENT");
       await expect.poll(() => githubLink.getAttribute("target")).toBe("_blank");
       await expect.poll(() => githubLink.getAttribute("rel")).toContain("noopener");
-      const discordLink = hero.getByRole("link", { name: "Discord", exact: true });
-      await expect.poll(() => discordLink.getAttribute("href")).toBe("https://discord.gg/clawd");
-      const xLink = hero.getByRole("link", { name: "X (Twitter)", exact: true });
-      await expect.poll(() => xLink.getAttribute("href")).toBe("https://x.com/openclaw");
-
-      const clawd = page.getByRole("button", { name: "Wave hello to Clawd" });
-      // CLAWD_WAVE_MS clears the class after 1400ms, so click and read it in one browser step.
-      const clawdWaving = await clawd.evaluate(async (element) => {
-        const button = element as HTMLButtonElement;
-        const owner = element.closest("openclaw-about-page") as
-          | (HTMLElement & {
-              updateComplete: Promise<unknown>;
-            })
-          | null;
-        if (!owner) {
-          throw new Error("About page owner is unavailable");
-        }
-        button.click();
-        await owner.updateComplete;
-        return button.classList.contains("about-hero__clawd--wave");
-      });
-      expect(clawdWaving).toBe(true);
+      const emailLink = hero.getByRole("link", { name: "hello@celayasolutions.com", exact: true });
+      await expect
+        .poll(() => emailLink.getAttribute("href"))
+        .toBe("mailto:hello@celayasolutions.com");
 
       await expect.poll(() => page.locator(".about-footer").textContent()).toContain("MIT License");
 

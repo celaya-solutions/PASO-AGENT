@@ -23,6 +23,7 @@ import { execGhRead } from "./lib/plain-gh.mjs";
 import { classifyReleaseTrain, parseReleaseVersion } from "./lib/release-version.mjs";
 
 const WORKFLOW = "full-release-validation.yml";
+const RELEASE_REPOSITORY = "celaya-solutions/PASO-AGENT";
 const TRUSTED_WORKFLOW_PATH = `.github/workflows/${WORKFLOW}`;
 const RELEASE_ISOLATION_TOOLING_CONTRACT = "2";
 const RELEASE_ISOLATION_TOOLING_CONTRACT_ENV = "RELEASE_ISOLATION_TOOLING_CONTRACT";
@@ -283,7 +284,7 @@ export function parseArgs(argv: string[]) {
     !RELEASE_CONTEXT_BRANCH_PATTERN.test(args.targetRef) &&
     !RELEASE_TAG_PATTERN.test(args.targetRef)
   ) {
-    throw new Error("--target-ref must be a canonical OpenClaw release branch or tag");
+    throw new Error("--target-ref must be a canonical PASO release branch or tag");
   }
   if (
     args.trustedWorkflowRef !== "main" &&
@@ -539,7 +540,7 @@ function readWorkflowRun(parentRunId: string, workflowSha: string) {
     throw new Error("parent run ID must be a positive decimal");
   }
   const workflowRun: unknown = JSON.parse(
-    execGhRead(["api", `repos/openclaw/openclaw/actions/runs/${parentRunId}`], GH_READ_OPTIONS),
+    execGhRead(["api", `repos/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`], GH_READ_OPTIONS),
   );
   if (!isJsonRecord(workflowRun)) {
     throw new Error(`Full Release Validation run ${parentRunId} returned an invalid response`);
@@ -555,7 +556,7 @@ function readWorkflowRun(parentRunId: string, workflowSha: string) {
 function readActiveParentJobs(parentRunId: string) {
   const response: unknown = JSON.parse(
     execGhRead(
-      ["api", `repos/openclaw/openclaw/actions/runs/${parentRunId}/jobs?per_page=100`],
+      ["api", `repos/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}/jobs?per_page=100`],
       GH_READ_OPTIONS,
     ),
   );
@@ -619,7 +620,7 @@ export function tryReadReleaseDecision(
         "download",
         parentRunId,
         "--repo",
-        "openclaw/openclaw",
+        RELEASE_REPOSITORY,
         "--name",
         artifactName,
         "--dir",
@@ -713,7 +714,7 @@ function waitForWorkflowRun(parentRunId: string, workflowSha: string) {
       );
       if (releaseDecision && releaseDecisionStopsForeground(releaseDecision.state)) {
         throw new Error(
-          `${formatReleaseStateOutcome(releaseDecision)}\nhttps://github.com/openclaw/openclaw/actions/runs/${parentRunId}`,
+          `${formatReleaseStateOutcome(releaseDecision)}\nhttps://github.com/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`,
         );
       }
     }
@@ -722,7 +723,7 @@ function waitForWorkflowRun(parentRunId: string, workflowSha: string) {
         return suite;
       }
       throw new Error(
-        `Full Release Validation concluded ${stringValue(suite.conclusion, "unknown").toLowerCase()}: https://github.com/openclaw/openclaw/actions/runs/${parentRunId}`,
+        `Full Release Validation concluded ${stringValue(suite.conclusion, "unknown").toLowerCase()}: https://github.com/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`,
       );
     }
     const now = Date.now();
@@ -755,7 +756,7 @@ function waitForWorkflowRun(parentRunId: string, workflowSha: string) {
     );
   }
   throw new Error(
-    `Timed out after ${FULL_RELEASE_WAIT_TIMEOUT_MINUTES} minutes waiting for Full Release Validation: https://github.com/openclaw/openclaw/actions/runs/${parentRunId}`,
+    `Timed out after ${FULL_RELEASE_WAIT_TIMEOUT_MINUTES} minutes waiting for Full Release Validation: https://github.com/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`,
   );
 }
 
@@ -1002,12 +1003,12 @@ function main() {
       throw new Error("Could not determine Full Release Validation run id.");
     }
 
-    console.log(`Parent run: https://github.com/openclaw/openclaw/actions/runs/${parentRunId}`);
+    console.log(`Parent run: https://github.com/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`);
     const completedRun = waitForWorkflowRun(parentRunId, workflowSha);
     parentConclusion = stringValue(completedRun.conclusion);
     if (parentConclusion !== "success") {
       throw new Error(
-        `Full Release Validation concluded ${parentConclusion.toLowerCase() || "without a conclusion"}: https://github.com/openclaw/openclaw/actions/runs/${parentRunId}`,
+        `Full Release Validation concluded ${parentConclusion.toLowerCase() || "without a conclusion"}: https://github.com/${RELEASE_REPOSITORY}/actions/runs/${parentRunId}`,
       );
     }
     verifyReleaseEvidence(parentRunId, workflowSha, args.trustedWorkflowRef);

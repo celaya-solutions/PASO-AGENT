@@ -62,7 +62,7 @@ describe("release plan contract", () => {
       "exactly one trailing LF",
     );
     expect(() =>
-      parseReleasePlanLockJson(lockText.replace("openclaw/openclaw", "opénclaw")),
+      parseReleasePlanLockJson(lockText.replace("celaya-solutions/PASO-AGENT", "opénclaw")),
     ).toThrow("printable ASCII");
   });
 

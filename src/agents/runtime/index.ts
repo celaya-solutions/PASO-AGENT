@@ -1,4 +1,4 @@
-/** OpenClaw-owned agent runtime facade; the plugin SDK module owns the adapter. */
+/** PASO-owned agent runtime facade; the plugin SDK module owns the adapter. */
 export {
   Agent,
   bashExecutionToText,

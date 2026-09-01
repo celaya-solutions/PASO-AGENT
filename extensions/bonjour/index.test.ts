@@ -67,25 +67,25 @@ describe("bonjour plugin entry", () => {
     const stop = vi.fn();
     mocks.startGatewayBonjourAdvertiser.mockResolvedValueOnce({ stop });
 
-    await expect(
-      discoveryService.advertise({
-        machineDisplayName: "Dev Box",
-        gatewayPort: 3210,
-        gatewayTlsEnabled: true,
-        gatewayTlsFingerprintSha256: "abc123",
-        gatewayDirectReachable: true,
-        sshPort: 22,
-        tailnetDns: "dev.tailnet.ts.net",
-        cliPath: "/usr/local/bin/openclaw",
-        minimal: false,
-      }),
-    ).resolves.toEqual({ stop });
+    const advertiseContext = {
+      machineDisplayName: "Dev Box",
+      gatewayPort: 3210,
+      gatewayTlsEnabled: true,
+      gatewayTlsFingerprintSha256: "abc123",
+      gatewayDirectReachable: true,
+      sshPort: 22,
+      tailnetDns: "dev.tailnet.ts.net",
+      cliPath: "/usr/local/bin/openclaw",
+      minimal: false,
+    };
+
+    await expect(discoveryService.advertise(advertiseContext)).resolves.toEqual({ stop });
 
     expect(mocks.advertiserModuleLoaded).toHaveBeenCalledTimes(1);
     expect(mocks.runtimeModuleLoaded).toHaveBeenCalledTimes(1);
     expect(mocks.startGatewayBonjourAdvertiser).toHaveBeenCalledWith(
       {
-        instanceName: "Dev Box (OpenClaw)",
+        instanceName: "Dev Box (PASO)",
         gatewayPort: 3210,
         gatewayTlsEnabled: true,
         gatewayTlsFingerprintSha256: "abc123",
@@ -100,6 +100,21 @@ describe("bonjour plugin entry", () => {
         registerUncaughtExceptionHandler: mocks.registerUncaughtExceptionHandler,
         registerUnhandledRejectionHandler: mocks.registerUnhandledRejectionHandler,
       },
+    );
+
+    await discoveryService.advertise({
+      ...advertiseContext,
+      machineDisplayName: "Legacy OpenClaw Box",
+    });
+    expect(mocks.startGatewayBonjourAdvertiser).toHaveBeenLastCalledWith(
+      expect.objectContaining({ instanceName: "Legacy PASO Box" }),
+      expect.anything(),
+    );
+
+    await discoveryService.advertise({ ...advertiseContext, machineDisplayName: "PASO Lab" });
+    expect(mocks.startGatewayBonjourAdvertiser).toHaveBeenLastCalledWith(
+      expect.objectContaining({ instanceName: "PASO Lab" }),
+      expect.anything(),
     );
   });
 });

@@ -243,7 +243,7 @@ describe("dependency guard script", () => {
         candidates: untrustedAuthorCandidate,
         pullRequest: { author_association: "COLLABORATOR" },
         isDependencyApprover: async (login) =>
-          login === "security-user" || login === "repo-admin" ? "openclaw-secops" : null,
+          login === "security-user" || login === "repo-admin" ? "paso-security-approver" : null,
         getRepositoryRoleName: async () => "maintain",
       }),
     ).resolves.toBeNull();
@@ -268,7 +268,7 @@ describe("dependency guard script", () => {
       }),
     ).resolves.toEqual({
       login: "maintainer",
-      reason: "pull request author; OpenClaw organization member with repository maintain role",
+      reason: "pull request author; PASO repository member with maintain role",
     });
 
     const rejectedAuthorRoles: Array<[string, string]> = [
@@ -294,9 +294,9 @@ describe("dependency guard script", () => {
       .mockResolvedValueOnce({ permission: "admin", role_name: "admin" });
     const checks = createGuardApproverChecks({
       api: { request },
-      owner: "openclaw",
-      repo: "openclaw",
-      securityTeamSlug: "openclaw-secops",
+      owner: "celaya-solutions",
+      repo: "PASO-AGENT",
+      securityTeamSlug: "paso-security-approver",
       explicitSecurityApprovers: new Set(),
     });
 
@@ -306,11 +306,26 @@ describe("dependency guard script", () => {
     expect(request).toHaveBeenCalledTimes(2);
   });
 
+  it("skips team API requests when PASO uses explicit account approvers", async () => {
+    const request = vi.fn();
+    const checks = createGuardApproverChecks({
+      api: { request },
+      owner: "celaya-solutions",
+      repo: "PASO-AGENT",
+      securityTeamSlug: "",
+      explicitSecurityApprovers: new Set(["celaya-solutions"]),
+    });
+
+    await expect(checks.isSecurityMember("celaya-solutions")).resolves.toBe(true);
+    await expect(checks.isSecurityMember("contributor")).resolves.toBe(false);
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it("renders trusted dependency graph comments without blocker language", () => {
     const body = renderTrustedDependencyComment({
       actor: {
         login: "maintainer",
-        reason: "pull request author; OpenClaw organization member with repository maintain role",
+        reason: "pull request author; PASO repository member with maintain role",
       },
       headSha,
     });
@@ -318,7 +333,7 @@ describe("dependency guard script", () => {
     expect(body).toContain("<!-- openclaw:dependency-graph-guard -->");
     expect(body).toContain("Dependency graph changes noted");
     expect(body).toContain("informational");
-    expect(body).toContain("OpenClaw organization member with Maintain or Admin repository access");
+    expect(body).toContain("`@celaya-solutions` or another repository admin or maintainer");
     expect(body).toContain("@maintainer");
     expect(body).toContain(headSha);
     expect(body).not.toContain("are blocked");
@@ -730,8 +745,8 @@ describe("dependency guard script", () => {
   });
 
   it("parses explicit security approver allowlists", () => {
-    expect(securityApproverSet("vincentkoc, steipete\njoshavant")).toEqual(
-      new Set(["vincentkoc", "steipete", "joshavant"]),
+    expect(securityApproverSet("celaya-solutions, security-user")).toEqual(
+      new Set(["celaya-solutions", "security-user"]),
     );
   });
 

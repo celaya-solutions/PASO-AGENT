@@ -30,7 +30,7 @@ function createOverview(overrides: Partial<SystemAgentOverview> = {}): SystemAge
     },
     gateway: { url: "ws://127.0.0.1:18789", source: "test", reachable: true },
     references: {
-      docsUrl: "https://docs.openclaw.ai",
+      docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
       sourceUrl: "https://github.com/openclaw/openclaw",
     },
     ...overrides,
@@ -686,9 +686,9 @@ describe("system agent greeting cache", () => {
 });
 
 describe("system agent greeting identity", () => {
-  it("identifies OpenClaw as the machine caretaker and describes every mild fact", () => {
+  it("identifies PASO as the machine caretaker and describes every mild fact", () => {
     expect(SYSTEM_AGENT_GREETING_SYSTEM_PROMPT).toContain(
-      "You are OpenClaw, the system itself — caretaker of this machine's gateway, config, channels, and agents.",
+      "You are PASO, the system itself — caretaker of this machine's gateway, config, channels, and agents.",
     );
     expect(SYSTEM_AGENT_GREETING_SYSTEM_PROMPT).toContain("nominal systems get one calm line");
     expect(SYSTEM_AGENT_GREETING_SYSTEM_PROMPT).toContain("If an update is available");

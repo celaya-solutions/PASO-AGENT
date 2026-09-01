@@ -37,7 +37,7 @@ Safe media smoke:
 
 ```bash
 pnpm openclaw infer tts convert --local --json \
-  --text "OpenClaw live smoke." \
+  --text "PASO live smoke." \
   --output /tmp/openclaw-live-smoke.mp3
 ```
 
@@ -196,7 +196,7 @@ OPENCLAW_LIVE_TEST=1 \
 ```
 
 This does not ask Gemini to generate a response. It writes the same system
-settings OpenClaw gives Gemini, then runs `gemini --debug mcp list` to prove a
+settings PASO gives Gemini, then runs `gemini --debug mcp list` to prove a
 saved `transport: "streamable-http"` server is normalized to Gemini's HTTP MCP
 shape and can connect to a local streamable-HTTP MCP server.
 
@@ -222,7 +222,7 @@ Notes:
 - It runs the live CLI-backend smoke inside the repo Docker image as the non-root `node` user.
 - It resolves CLI smoke metadata from the owning plugin, then installs the matching Linux CLI package (`@anthropic-ai/claude-code` or `@google/gemini-cli`) into a cached writable prefix at `OPENCLAW_DOCKER_CLI_TOOLS_DIR` (default: `~/.cache/openclaw/docker-cli-tools`).
 - `codex-cli` is no longer a bundled CLI backend; use `openai/*` with the Codex app-server runtime instead (see [Live: Codex app-server harness smoke](#live-codex-app-server-harness-smoke)).
-- `pnpm test:docker:live-cli-backend:claude-subscription` requires portable Claude Code subscription OAuth through either `~/.claude/.credentials.json` with `claudeAiOauth.subscriptionType` or `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`. It first proves direct `claude -p` in Docker, then runs two Gateway CLI-backend turns without preserving Anthropic API-key env vars. This subscription lane disables the Claude MCP/tool and image probes by default because it consumes the signed-in subscription's usage limits and Anthropic can change Claude Agent SDK / `claude -p` billing and rate-limit behavior without an OpenClaw release.
+- `pnpm test:docker:live-cli-backend:claude-subscription` requires portable Claude Code subscription OAuth through either `~/.claude/.credentials.json` with `claudeAiOauth.subscriptionType` or `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`. It first proves direct `claude -p` in Docker, then runs two Gateway CLI-backend turns without preserving Anthropic API-key env vars. This subscription lane disables the Claude MCP/tool and image probes by default because it consumes the signed-in subscription's usage limits and Anthropic can change Claude Agent SDK / `claude -p` billing and rate-limit behavior without a PASO release.
 - Claude and Gemini support the same probe set (text turn, image classification, MCP `automations` tool call, model-switch continuity) through the flags above, but none of those probes run by default - opt in per flag as needed.
 
 ## Live: APNs HTTP/2 proxy reachability
@@ -300,7 +300,7 @@ Docker notes:
 - It stages the matching CLI auth material into the container, then installs the requested live CLI (`@anthropic-ai/claude-code`, `@openai/codex`, Factory Droid via `https://app.factory.ai/cli`, `@google/gemini-cli`, or `opencode-ai`) if missing. The ACP backend itself is the embedded `acpx/runtime` package from the official `acpx` plugin.
 - The Droid Docker variant stages `~/.factory` for settings, forwards `FACTORY_API_KEY`, and requires that API key because local Factory OAuth/keyring auth is not portable into the container. It uses ACPX's built-in `droid exec --output-format acp` registry entry.
 - The OpenCode Docker variant is a strict single-agent regression lane. It writes a temporary `OPENCODE_CONFIG_CONTENT` default model from `OPENCLAW_LIVE_ACP_BIND_OPENCODE_MODEL` (default `opencode/kimi-k2.6`).
-- Direct `acpx` CLI calls are only a manual/workaround path for comparing behavior outside the Gateway. The Docker ACP bind smoke exercises OpenClaw's embedded `acpx` runtime backend.
+- Direct `acpx` CLI calls are only a manual/workaround path for comparing behavior outside the Gateway. The Docker ACP bind smoke exercises PASO's embedded `acpx` runtime backend.
 
 ## Live: Codex app-server harness smoke
 
@@ -309,7 +309,7 @@ Docker notes:
   - load the bundled `codex` plugin
   - select an OpenAI model through `/model <ref> --runtime codex`
   - send a first gateway agent turn with the requested thinking level
-  - send a second turn to the same OpenClaw session and verify the app-server
+  - send a second turn to the same PASO session and verify the app-server
     thread can resume
   - run `/codex status` and `/codex models` through the same gateway command
     path
@@ -367,7 +367,7 @@ Docker notes:
 - Known Codex catalog models derive that exact native effort automatically.
   Unknown model overrides must state the expected mapped effort.
 - The smoke forces provider/model `agentRuntime.id: "codex"` so a broken Codex
-  harness cannot pass by silently falling back to OpenClaw.
+  harness cannot pass by silently falling back to PASO.
 - Auth: Codex app-server auth from the local Codex subscription login, or
   `OPENAI_API_KEY` when `OPENCLAW_LIVE_CODEX_HARNESS_AUTH=api-key`. Docker can
   copy `~/.codex/auth.json` and `~/.codex/config.toml` for subscription runs.
@@ -432,7 +432,7 @@ OPENCLAW_LIVE_CODEX_HARNESS_AUTH=api-key \
 
 ## Live: OpenAI long context
 
-- Goal: validate exact-model embedded OpenClaw execution through a
+- Goal: validate exact-model embedded PASO execution through a
   process-owned isolated Gateway, cross the long-context pricing boundary,
   observe a first-class OpenAI Responses compaction item, and prove opaque
   replay plus prefix pruning on the next request.
@@ -477,11 +477,11 @@ OPENCLAW_LIVE_OPENAI_LONG_CONTEXT=1 \
 The full embedded and native recipes are proof runs, not throughput
 benchmarks. They fail unless the following runtime contracts hold:
 
-- Runtime and model identity are exact: embedded OpenClaw or native Codex as
+- Runtime and model identity are exact: embedded PASO or native Codex as
   requested, both on `openai/gpt-5.6-sol`.
 - At least one provider request crosses `272000` input tokens and every call
   reports priority service.
-- Embedded OpenClaw receives and persists a first-class encrypted Responses
+- Embedded PASO receives and persists a first-class encrypted Responses
   `compaction` item, replays the exact opaque item on the next request, and
   prunes the earlier input prefix. The encrypted content must never appear in
   display or diagnostics.
@@ -515,7 +515,7 @@ This proof leaves `OPENCLAW_LIVE_GATEWAY_MODELS` unset, resolves the model throu
 the fresh onboarding inference-selection seam, asserts `openai/gpt-5.6-sol`, and then
 runs a real gateway turn with that resolved model.
 
-GPT-5.6 embedded OpenClaw matrix:
+GPT-5.6 embedded PASO matrix:
 
 ```bash
 OPENCLAW_LIVE_GATEWAY_THINKING=ultra \
@@ -535,7 +535,7 @@ Docker notes:
   `OPENCLAW_LIVE_CODEX_HARNESS_MCP_PROBE=0` or
   `OPENCLAW_LIVE_CODEX_HARNESS_GUARDIAN_PROBE=0` when you need a narrower debug
   run.
-- Docker uses the same explicit Codex runtime config, so legacy aliases or OpenClaw
+- Docker uses the same explicit Codex runtime config, so legacy aliases or PASO
   fallback cannot hide a Codex harness regression.
 - Matrix targets run sequentially in one container. The Docker script scales its
   default 35-minute timeout by target count; any outer shell or CI timeout must
@@ -579,8 +579,8 @@ Notes:
 - `google-gemini-cli/...` uses the local Gemini CLI on your machine (separate auth + tooling quirks).
 - `google-antigravity/...` is not a registered provider or supported setup path. Do not add it to live-test allowlists.
 - Gemini API vs Gemini CLI:
-  - API: OpenClaw calls Google's hosted Gemini API over HTTP (API key / profile auth); this is what most users mean by "Gemini".
-  - CLI: OpenClaw shells out to a local `gemini` binary; it has its own auth and can behave differently (streaming/tool support/version skew).
+  - API: PASO calls Google's hosted Gemini API over HTTP (API key / profile auth); this is what most users mean by "Gemini".
+  - CLI: PASO shells out to a local `gemini` binary; it has its own auth and can behave differently (streaming/tool support/version skew).
 
 ## Live: model matrix (what we cover)
 
@@ -770,7 +770,7 @@ request. Plugin dependencies are expected to be present before runtime load.
 - Harness: `pnpm test:live:media video`
 - Scope:
   - Exercises the shared bundled video-generation provider path across `alibaba`, `byteplus`, `deepinfra`, `fal`, `google`, `minimax`, `openai`, `openrouter`, `pixverse`, `qwen`, `runway`, `together`, `vydra`, `xai`
-  - Defaults to the release-safe smoke path: one text-to-video request per provider, one-second lobster prompt, and a per-provider operation cap from `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` by default)
+  - Defaults to the release-safe smoke path: one text-to-video request per provider, one-second landscape prompt, and a per-provider operation cap from `OPENCLAW_LIVE_VIDEO_GENERATION_TIMEOUT_MS` (`180000` by default)
   - Skips FAL by default because provider-side queue latency can dominate release time; pass `OPENCLAW_LIVE_VIDEO_GENERATION_PROVIDERS="fal"` (or clear the skip list) to run it explicitly
   - Uses already-exported provider env vars before probing
   - Uses live/env API keys ahead of stored auth profiles by default, so stale test keys in SQLite auth stores do not mask real shell credentials

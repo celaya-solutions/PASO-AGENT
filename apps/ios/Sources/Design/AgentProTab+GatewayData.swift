@@ -19,7 +19,7 @@ extension AgentProTab {
             .split(whereSeparator: { $0.isWhitespace || $0 == "-" || $0 == "_" })
             .prefix(2)
         let initials = words.compactMap(\.first).map(String.init).joined()
-        return initials.isEmpty ? "OC" : initials.uppercased()
+        return initials.isEmpty ? "P" : initials.uppercased()
     }
 
     func agentTint(for agent: AgentSummary, state: AgentRosterState) -> Color {

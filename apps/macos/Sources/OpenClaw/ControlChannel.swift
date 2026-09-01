@@ -361,8 +361,8 @@ final class ControlChannel {
             case .notConnectedToInternet:
                 if Self.isLikelyLocalNetworkPermissionBlock(configRoot: configRoot) {
                     return """
-                    macOS is blocking OpenClaw Local Network access.
-                    Allow OpenClaw in System Settings → Privacy & Security → Local Network, then relaunch the app.
+                    macOS is blocking PASO Local Network access.
+                    Allow PASO in System Settings → Privacy & Security → Local Network, then relaunch the app.
                     """
                 }
                 return "No network connectivity; cannot reach gateway."

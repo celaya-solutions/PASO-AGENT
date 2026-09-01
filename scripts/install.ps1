@@ -1,12 +1,12 @@
-# OpenClaw Installer for Windows
-# Usage: powershell -c "irm https://openclaw.ai/install.ps1 | iex"
-#        powershell -c "& ([scriptblock]::Create((irm https://openclaw.ai/install.ps1))) -Tag beta -NoOnboard -DryRun"
+# PASO Installer for Windows
+# Usage: powershell -c "irm https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1 | iex"
+#        powershell -c "& ([scriptblock]::Create((irm https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) -Tag beta -NoOnboard -DryRun"
 
 [CmdletBinding(PositionalBinding = $false)]
 param(
-    [string]$Tag = "latest",
+    [string]$Tag = "",
     [ValidateSet("npm", "git")]
-    [string]$InstallMethod = "npm",
+    [string]$InstallMethod = "git",
     [string]$GitDir,
     [switch]$NoOnboard,
     [switch]$NoGitUpdate,
@@ -20,11 +20,11 @@ if ($Help) {
     @"
 Usage:
   powershell -File install.ps1 [options]
-  & ([scriptblock]::Create((irm https://openclaw.ai/install.ps1))) [options]
+  & ([scriptblock]::Create((irm https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1))) [options]
 
 Options:
-  -InstallMethod npm|git  Install method (default: npm)
-  -Tag <tag|version>      OpenClaw version or dist-tag (default: latest)
+  -InstallMethod git|npm  Install from the PASO git checkout (default) or via npm compatibility mode
+  -Tag <tag|version>      Git ref or npm target (default: main for git, latest for npm)
   -GitDir <path>          Git checkout directory
   -NoOnboard              Skip onboarding
   -NoGitUpdate            Skip git pull
@@ -118,7 +118,7 @@ function Complete-Install {
         exit $script:InstallExitCode
     }
 
-    throw "OpenClaw installation failed with exit code $($script:InstallExitCode)."
+    throw "PASO installation failed with exit code $($script:InstallExitCode)."
 }
 
 function Resolve-InstallerTempDirectory {
@@ -210,6 +210,18 @@ if (-not $PSBoundParameters.ContainsKey("InstallMethod")) {
         $InstallMethod = $env:OPENCLAW_INSTALL_METHOD
     }
 }
+if (-not $PSBoundParameters.ContainsKey("Tag")) {
+    if (-not [string]::IsNullOrWhiteSpace($env:OPENCLAW_VERSION)) {
+        $Tag = $env:OPENCLAW_VERSION
+    }
+}
+if ([string]::IsNullOrWhiteSpace($Tag)) {
+    if ($InstallMethod -eq "git") {
+        $Tag = "main"
+    } else {
+        $Tag = "latest"
+    }
+}
 if (-not $PSBoundParameters.ContainsKey("GitDir")) {
     if (-not [string]::IsNullOrWhiteSpace($env:OPENCLAW_GIT_DIR)) {
         $GitDir = $env:OPENCLAW_GIT_DIR
@@ -239,7 +251,7 @@ if ([string]::IsNullOrWhiteSpace($GitDir)) {
 Initialize-InstallerTempDirectory
 
 Write-Host ""
-Write-Host "  OpenClaw Installer" -ForegroundColor Cyan
+Write-Host "  PASO Installer" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "[OK] Windows detected" -ForegroundColor Green
 
@@ -250,7 +262,7 @@ function Test-NodeVersionSupported {
     if ([string]::IsNullOrWhiteSpace($Version)) {
         return $false
     }
-    # This standalone installer runs before OpenClaw exists on disk. Mirror the
+    # This standalone installer runs before PASO exists on disk. Mirror the
     # release grammar in node-version.mjs; parity cases guard this boundary.
     $versionMatch = [regex]::Match(
         $Version,
@@ -622,10 +634,10 @@ function Install-Node {
     return $false
 }
 
-# Check for existing OpenClaw installation
+# Check for existing PASO installation
 function Check-ExistingOpenClaw {
     if (Get-OpenClawCommandPath) {
-        Write-Host "[*] Existing OpenClaw installation detected" -ForegroundColor Yellow
+        Write-Host "[*] Existing PASO installation detected" -ForegroundColor Yellow
         return $true
     }
     return $false
@@ -885,7 +897,7 @@ function Ensure-Git {
     }
 
     Write-Host ""
-    Write-Host "Error: Git is required to install OpenClaw." -ForegroundColor Red
+    Write-Host "Error: Git is required to install PASO." -ForegroundColor Red
     Write-Host "Auto-bootstrap of user-local Git did not succeed." -ForegroundColor Yellow
     Write-Host "Install Git for Windows manually, then re-run this installer:" -ForegroundColor Yellow
     Write-Host "  https://git-scm.com/download/win" -ForegroundColor Cyan
@@ -1178,7 +1190,7 @@ function Ensure-Pnpm {
     return $pnpmCommand
 }
 
-# Install OpenClaw
+# Install PASO
 function Resolve-LocalNpmPackagePath {
     param([string]$PackagePath)
 
@@ -1265,6 +1277,9 @@ function Test-OpenClawSourcePackageInstallSpec {
     if ($normalizedTag -eq "main") {
         return $true
     }
+    if ($normalizedTag -match '^github:celaya-solutions/paso-agent($|[#/])') {
+        return $true
+    }
     if ($normalizedTag -match '^github:openclaw/openclaw($|[#/])') {
         return $true
     }
@@ -1273,6 +1288,10 @@ function Test-OpenClawSourcePackageInstallSpec {
         $normalizedTag = $normalizedTag.Substring("git+".Length)
     }
     return (
+        $normalizedTag -match '^https?://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#])' -or
+        $normalizedTag -match '^ssh://git@github\.com[:/]celaya-solutions/paso-agent(\.git)?($|[?#])' -or
+        $normalizedTag -match '^git://github\.com/celaya-solutions/paso-agent(\.git)?($|[?#])' -or
+        $normalizedTag -match '^git@github\.com:celaya-solutions/paso-agent(\.git)?($|[?#])' -or
         $normalizedTag -match '^https?://github\.com/openclaw/openclaw(\.git)?($|[?#])' -or
         $normalizedTag -match '^ssh://git@github\.com[:/]openclaw/openclaw(\.git)?($|[?#])' -or
         $normalizedTag -match '^git://github\.com/openclaw/openclaw(\.git)?($|[?#])' -or
@@ -1546,7 +1565,7 @@ function Install-OpenClaw {
         $Tag = "latest"
     }
     if (Test-OpenClawSourcePackageInstallSpec -RequestedTag $Tag) {
-        Write-Host "Error: npm installs do not support OpenClaw GitHub source targets like '$Tag'." -ForegroundColor Red
+        Write-Host "Error: npm installs do not support PASO GitHub source targets like '$Tag'." -ForegroundColor Red
         Write-Host "Use -InstallMethod git -Tag main for the moving main checkout, or use latest, beta, an exact version, or a built .tgz package." -ForegroundColor Yellow
         return $false
     }
@@ -1563,7 +1582,7 @@ function Install-OpenClaw {
     $npmCommand = Get-NpmCommandPath
     $npmCwd = Get-WindowsCommandSafeDirectory
     $lifecycleArgument = Get-NpmLifecycleAllowArgument -NpmCommand $npmCommand -InstallSpec $installSpec -NpmCwd $npmCwd
-    Write-Host "[*] Installing OpenClaw ($installSpec)..." -ForegroundColor Yellow
+    Write-Host "[*] Installing PASO ($installSpec)..." -ForegroundColor Yellow
     $freshnessArgs = @("--min-release-age=0")
     $minReleaseAge = (Invoke-NpmCommand -CommandPath $npmCommand -WorkingDirectory $npmCwd -Arguments @("config", "get", "min-release-age", "--global") 2>$null)
     $minReleaseAgeStatus = $LASTEXITCODE
@@ -1607,13 +1626,13 @@ function Install-OpenClaw {
                 Write-Host "  https://git-scm.com/download/win" -ForegroundColor Cyan
             } else {
                 Write-Host "Re-run with verbose output to see the full error:" -ForegroundColor Yellow
-                Write-Host '  powershell -c "irm https://openclaw.ai/install.ps1 | iex"' -ForegroundColor Cyan
+                Write-Host '  powershell -c "irm https://raw.githubusercontent.com/celaya-solutions/PASO-AGENT/main/scripts/install.ps1 | iex"' -ForegroundColor Cyan
             }
             Write-NpmInstallFailureDetails -Output $npmOutput -CacheRoots $npmDebugLogRoots
             return $false
         }
         if (-not (Test-NpmLifecycleCompleted -NpmCommand $npmCommand -NpmCwd $npmCwd)) {
-            Write-Host "[!] npm install did not produce a usable OpenClaw package; lifecycle scripts may not have completed." -ForegroundColor Red
+            Write-Host "[!] npm install did not produce a usable PASO package; lifecycle scripts may not have completed." -ForegroundColor Red
             return $false
         }
     } finally {
@@ -1624,11 +1643,11 @@ function Install-OpenClaw {
         $env:NPM_CONFIG_BEFORE = $prevBefore
         $env:NPM_CONFIG_MIN_RELEASE_AGE = $prevMinReleaseAge
     }
-    Write-Host "[OK] OpenClaw installed" -ForegroundColor Green
+    Write-Host "[OK] PASO installed" -ForegroundColor Green
     return $true
 }
 
-# Install OpenClaw from GitHub
+# Install PASO from GitHub
 function Assert-GitCheckoutHasCommit {
     param([string]$RepoDir)
 
@@ -1744,9 +1763,176 @@ function New-TransactionalGitCheckout {
     }
 }
 
+function Normalize-GitRemoteUrl {
+    param([string]$Url)
+
+    if ([string]::IsNullOrWhiteSpace($Url)) {
+        return ""
+    }
+    $normalized = $Url.Trim().TrimEnd("/").ToLowerInvariant()
+    if ($normalized.EndsWith(".git")) {
+        $normalized = $normalized.Substring(0, $normalized.Length - 4)
+    }
+    return $normalized
+}
+
+function Test-PasoGitRemoteUrl {
+    param([string]$Url)
+
+    $normalized = Normalize-GitRemoteUrl -Url $Url
+    return $normalized -in @(
+        "https://github.com/celaya-solutions/paso-agent",
+        "http://github.com/celaya-solutions/paso-agent",
+        "git://github.com/celaya-solutions/paso-agent",
+        "ssh://git@github.com/celaya-solutions/paso-agent",
+        "git@github.com:celaya-solutions/paso-agent"
+    )
+}
+
+function Test-LegacyOpenClawGitRemoteUrl {
+    param([string]$Url)
+
+    $normalized = Normalize-GitRemoteUrl -Url $Url
+    return $normalized -in @(
+        "https://github.com/openclaw/openclaw",
+        "http://github.com/openclaw/openclaw",
+        "git://github.com/openclaw/openclaw",
+        "ssh://git@github.com/openclaw/openclaw",
+        "git@github.com:openclaw/openclaw"
+    )
+}
+
+function Get-GitRemoteUrl {
+    param(
+        [string]$RepoDir,
+        [string]$Name
+    )
+
+    $output = @()
+    try { $output = @(git -C $RepoDir remote get-url $Name 2>$null) } catch { return "" }
+    if ($LASTEXITCODE -ne 0 -or $output.Count -eq 0) {
+        return ""
+    }
+    return $output[-1].ToString().Trim()
+}
+
+function Ensure-PasoGitOrigin {
+    param(
+        [string]$RepoDir,
+        [string]$RepoUrl
+    )
+
+    $originUrl = Get-GitRemoteUrl -RepoDir $RepoDir -Name "origin"
+    if ([string]::IsNullOrWhiteSpace($originUrl)) {
+        git -C $RepoDir remote add origin $RepoUrl
+        if ($LASTEXITCODE -ne 0) { throw "Could not configure the PASO git origin." }
+        return
+    }
+    if (Test-PasoGitRemoteUrl -Url $originUrl) {
+        return
+    }
+    if (-not (Test-LegacyOpenClawGitRemoteUrl -Url $originUrl)) {
+        throw "Git checkout origin is not the PASO repository: $originUrl. Use a different -GitDir or preserve your fork remote before changing origin to $RepoUrl."
+    }
+
+    $upstreamUrl = Get-GitRemoteUrl -RepoDir $RepoDir -Name "upstream"
+    if (-not [string]::IsNullOrWhiteSpace($upstreamUrl) -and -not (Test-LegacyOpenClawGitRemoteUrl -Url $upstreamUrl)) {
+        throw "Cannot preserve the legacy OpenClaw origin because the upstream remote already points elsewhere. Move that remote or choose a different -GitDir, then retry."
+    }
+    $addedUpstream = $false
+    if ([string]::IsNullOrWhiteSpace($upstreamUrl)) {
+        git -C $RepoDir remote add upstream $originUrl
+        if ($LASTEXITCODE -ne 0) { throw "Could not preserve the legacy framework remote." }
+        $addedUpstream = $true
+    }
+    git -C $RepoDir remote set-url origin $RepoUrl
+    if ($LASTEXITCODE -ne 0) {
+        if ($addedUpstream) { git -C $RepoDir remote remove upstream 2>$null | Out-Null }
+        throw "Could not migrate the git origin to PASO."
+    }
+    if (-not (Test-PasoGitRemoteUrl -Url (Get-GitRemoteUrl -RepoDir $RepoDir -Name "origin"))) {
+        throw "Could not verify the PASO git origin after migration."
+    }
+}
+
+function Resolve-PasoGitRef {
+    param(
+        [string]$RepoDir,
+        [string]$RequestedTag
+    )
+
+    $requested = if ([string]::IsNullOrWhiteSpace($RequestedTag)) { "main" } else { $RequestedTag.Trim() }
+    if ($requested -eq "main") { return "main" }
+    if ($requested -match '^\d+\.\d+\.\d+(?:-.+)?$') { return "v$requested" }
+    if ($requested -match '^v\d+\.\d+\.\d+(?:-.+)?$') { return $requested }
+
+    $lane = if ($requested -in @("beta", "next")) { "beta" } elseif ($requested -eq "latest") { "stable" } else { "" }
+    if ([string]::IsNullOrWhiteSpace($lane)) { return $requested }
+
+    $lines = @()
+    try { $lines = @(git -C $RepoDir ls-remote --tags --refs origin "refs/tags/v*" 2>$null) } catch {}
+    $candidates = foreach ($line in $lines) {
+        $ref = ($line -split '\s+')[-1]
+        if ($lane -eq "stable" -and $ref -match '^refs/tags/(v(\d+)\.(\d+)\.(\d+)(?:-(\d+))?)$') {
+            [PSCustomObject]@{ Tag = $Matches[1]; Year = [int]$Matches[2]; Month = [int]$Matches[3]; Patch = [int]$Matches[4]; Suffix = if ($Matches[5]) { [int]$Matches[5] } else { 0 } }
+        } elseif ($lane -eq "beta" -and $ref -match '^refs/tags/(v(\d+)\.(\d+)\.(\d+)-beta\.(\d+))$') {
+            [PSCustomObject]@{ Tag = $Matches[1]; Year = [int]$Matches[2]; Month = [int]$Matches[3]; Patch = [int]$Matches[4]; Suffix = [int]$Matches[5] }
+        }
+    }
+    $selected = $candidates | Sort-Object -Property @(
+        @{ Expression = "Year"; Descending = $true },
+        @{ Expression = "Month"; Descending = $true },
+        @{ Expression = "Patch"; Descending = $true },
+        @{ Expression = "Suffix"; Descending = $true }
+    ) | Select-Object -First 1
+    return $(if ($selected) { $selected.Tag } else { "main" })
+}
+
+function Invoke-CheckedGit {
+    param(
+        [string]$RepoDir,
+        [string[]]$Arguments,
+        [string]$FailureMessage
+    )
+
+    & git -C $RepoDir @Arguments
+    if ($LASTEXITCODE -ne 0) { throw $FailureMessage }
+}
+
+function Checkout-PasoGitRef {
+    param(
+        [string]$RepoDir,
+        [string]$RequestedTag,
+        [switch]$SkipUpdate
+    )
+
+    $ref = Resolve-PasoGitRef -RepoDir $RepoDir -RequestedTag $RequestedTag
+    Write-Host "[*] Using PASO git ref: $ref" -ForegroundColor Yellow
+    if ($ref -eq "main") {
+        Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("fetch", "--no-tags", "origin", "refs/heads/main:refs/remotes/origin/main") -FailureMessage "Could not fetch PASO main."
+        Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("checkout", "main") -FailureMessage "Could not check out PASO main."
+        if (-not $SkipUpdate) {
+            Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("rebase", "origin/main") -FailureMessage "Could not update the PASO checkout from origin/main."
+        } else {
+            Write-Host "[!] Git update disabled; leaving PASO main at its current commit" -ForegroundColor Yellow
+        }
+        return
+    }
+
+    if ($ref -match '^v\d') {
+        Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("fetch", "--no-tags", "origin", "refs/tags/${ref}:refs/tags/${ref}") -FailureMessage "Could not fetch PASO tag $ref."
+        Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("checkout", "--detach", "refs/tags/$ref") -FailureMessage "Could not check out PASO tag $ref."
+        return
+    }
+
+    Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("fetch", "--no-tags", "origin", "refs/heads/${ref}:refs/remotes/origin/${ref}") -FailureMessage "Could not fetch PASO branch $ref."
+    Invoke-CheckedGit -RepoDir $RepoDir -Arguments @("checkout", "-B", $ref, "origin/$ref") -FailureMessage "Could not check out PASO branch $ref."
+}
+
 function Install-OpenClawFromGit {
     param(
         [string]$RepoDir,
+        [string]$RequestedTag,
         [switch]$SkipUpdate
     )
     if (-not (Ensure-Git)) {
@@ -1754,27 +1940,22 @@ function Install-OpenClawFromGit {
     }
 
     $RepoDir = Resolve-GitCheckoutPath -RepoDir $RepoDir
-    $repoUrl = "https://github.com/openclaw/openclaw.git"
-    Write-Host "[*] Installing OpenClaw from GitHub ($repoUrl)..." -ForegroundColor Yellow
+    $repoUrl = "https://github.com/celaya-solutions/PASO-AGENT.git"
+    Write-Host "[*] Installing PASO from GitHub ($repoUrl)..." -ForegroundColor Yellow
 
     Assert-GitCheckoutHasCommit -RepoDir $RepoDir
     if (-not (Test-Path $RepoDir) -or @(Get-ChildItem -LiteralPath $RepoDir -Force).Count -eq 0) {
         New-TransactionalGitCheckout -RepoUrl $repoUrl -RepoDir $RepoDir
     }
 
-    if (-not $SkipUpdate) {
-        # PowerShell 7+ surfaces native-command stderr as terminating errors when
-        # $ErrorActionPreference=Stop, so git's normal "From <url>" progress line
-        # would abort the script. Swallow failures here — pull is best-effort.
-        $dirty = $null
-        try { $dirty = git -C $RepoDir status --porcelain 2>$null } catch {}
-        if (-not $dirty) {
-            try { git -C $RepoDir pull --rebase 2>$null } catch {}
-        } else {
-            Write-Host "[!] Repo is dirty; skipping git pull" -ForegroundColor Yellow
-        }
+    Ensure-PasoGitOrigin -RepoDir $RepoDir -RepoUrl $repoUrl
+
+    $dirty = $null
+    try { $dirty = git -C $RepoDir status --porcelain 2>$null } catch {}
+    if (-not $dirty) {
+        Checkout-PasoGitRef -RepoDir $RepoDir -RequestedTag $RequestedTag -SkipUpdate:$SkipUpdate
     } else {
-        Write-Host "[!] Git update disabled; skipping git pull" -ForegroundColor Yellow
+        Write-Host "[!] Repo is dirty; skipping git checkout/update" -ForegroundColor Yellow
     }
     Remove-LegacySubmodule -RepoDir $RepoDir
 
@@ -1865,7 +2046,7 @@ function Install-OpenClawFromGit {
 
     $entryPath = Join-Path $RepoDir "dist\\entry.js"
     if (-not (Test-Path $entryPath)) {
-        Write-Host "[!] OpenClaw build did not produce $entryPath" -ForegroundColor Red
+        Write-Host "[!] PASO build did not produce $entryPath" -ForegroundColor Red
         return $false
     }
 
@@ -1886,8 +2067,8 @@ function Install-OpenClawFromGit {
         Write-Host "[!] Added $binDir to user PATH (restart terminal if command not found)" -ForegroundColor Yellow
     }
 
-    Write-Host "[OK] OpenClaw wrapper installed to $cmdPath" -ForegroundColor Green
-    Write-Host "[i] Manual builds need the checkout-pinned pnpm launcher; installer bootstrap is temporary: https://docs.openclaw.ai/install/installer#source-build-toolchain" -ForegroundColor Gray
+    Write-Host "[OK] PASO wrapper installed to $cmdPath" -ForegroundColor Green
+    Write-Host "[i] Manual builds need the checkout-pinned pnpm launcher; installer bootstrap is temporary: https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/install/installer.md#source-build-toolchain" -ForegroundColor Gray
     return $true
 }
 
@@ -1997,7 +2178,7 @@ function Remove-PreviousNpmOwner {
         Remove-Item -LiteralPath $packageRoot -Recurse -Force
     } else {
         Invoke-NpmCommand -CommandPath $npmCommand -Arguments @("uninstall", "-g", "openclaw") | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "npm could not retire the previous OpenClaw package." }
+        if ($LASTEXITCODE -ne 0) { throw "npm could not retire the previous PASO package." }
     }
     Write-Host "[OK] Previous npm install retired" -ForegroundColor Green
 }
@@ -2094,7 +2275,7 @@ function Main {
 
     $finalGitDir = $null
 
-    # Step 2: OpenClaw
+    # Step 2: PASO
     if ($InstallMethod -eq "git") {
         $hadNpmOwner = $false
         try {
@@ -2105,7 +2286,7 @@ function Main {
             }
         } catch { }
         $finalGitDir = $GitDir
-        $gitInstallResults = @(Install-OpenClawFromGit -RepoDir $GitDir -SkipUpdate:$NoGitUpdate)
+        $gitInstallResults = @(Install-OpenClawFromGit -RepoDir $GitDir -RequestedTag $Tag -SkipUpdate:$NoGitUpdate)
         if (-not (Test-BooleanSuccessResult -Results $gitInstallResults)) {
             Fail-Install
             return
@@ -2173,7 +2354,7 @@ function Main {
     }
 
     if (-not (Ensure-OpenClawOnPath)) {
-        Write-Host "Install completed, but OpenClaw is not on PATH yet." -ForegroundColor Yellow
+        Write-Host "Install completed, but PASO is not on PATH yet." -ForegroundColor Yellow
         Write-Host "Open a new terminal, then run: openclaw doctor" -ForegroundColor Cyan
         return
     }
@@ -2208,22 +2389,22 @@ function Main {
 
     Write-Host ""
     if ($installedVersion) {
-        Write-Host "OpenClaw installed successfully ($installedVersion)!" -ForegroundColor Green
+        Write-Host "PASO installed successfully ($installedVersion)!" -ForegroundColor Green
     } else {
-        Write-Host "OpenClaw installed successfully!" -ForegroundColor Green
+        Write-Host "PASO installed successfully!" -ForegroundColor Green
     }
     Write-Host ""
     if ($isUpgrade) {
         $updateMessages = @(
             "Leveled up! New skills unlocked. You're welcome.",
-            "Fresh code, same lobster. Miss me?",
+            "Fresh code, same PASO.",
             "Back and better. Did you even notice I was gone?",
             "Update complete. I learned some new tricks while I was out.",
             "Upgraded! Now with 23% more sass.",
             "I've evolved. Try to keep up.",
             "New version, who dis? Oh right, still me but shinier.",
-            "Patched, polished, and ready to pinch. Let's go.",
-            "The lobster has molted. Harder shell, sharper claws.",
+            "Patched, polished, and ready to go.",
+            "The update is installed and ready.",
             "Update done! Check the changelog or just trust me, it's good.",
             "Reborn from the boiling waters of npm. Stronger now.",
             "I went away and came back smarter. You should try it sometime.",
@@ -2232,8 +2413,8 @@ function Main {
             "Firmware fresh. Brain wrinkles: increased.",
             "I've seen things you wouldn't believe. Anyway, I'm updated.",
             "Back online. The changelog is long but our friendship is longer.",
-            "Upgraded! Peter fixed stuff. Blame him if it breaks.",
-            "Molting complete. Please don't look at my soft shell phase.",
+            "Upgraded and ready for the next task.",
+            "Update complete.",
             "Version bump! Same chaos energy, fewer crashes (probably)."
         )
         Write-Host (Get-Random -InputObject $updateMessages) -ForegroundColor Gray
@@ -2247,8 +2428,8 @@ function Main {
             "Settled in. Time to automate your life whether you're ready or not.",
             "Cozy. I've already read your calendar. We need to talk.",
             "Finally unpacked. Now point me at your problems.",
-            "cracks claws Alright, what are we building?",
-            "The lobster has landed. Your terminal will never be the same.",
+            "PASO is ready. What are we building?",
+            "The agent is ready. Your terminal is connected.",
             "All done! I promise to only judge your code a little bit."
         )
         Write-Host (Get-Random -InputObject $completionMessages) -ForegroundColor Gray

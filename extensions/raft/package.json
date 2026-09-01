@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/raft",
   "version": "2026.8.1",
-  "description": "OpenClaw Raft channel plugin for Raft CLI wake bridges.",
+  "description": "PASO Raft channel plugin for Raft CLI wake bridges.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

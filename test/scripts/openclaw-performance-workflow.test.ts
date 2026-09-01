@@ -110,12 +110,12 @@ function runCandidateTrustClassification({
   return { outputs, result };
 }
 
-describe("OpenClaw performance workflow", () => {
+describe("PASO performance workflow", () => {
   it("uses an optional dispatch identifier to name parent-owned runs", () => {
     const workflow = readFileSync(WORKFLOW, "utf8");
 
     expect(workflow).toContain(
-      "run-name: ${{ inputs.dispatch_id != '' && format('OpenClaw Performance {0}', inputs.dispatch_id) || 'OpenClaw Performance' }}",
+      "run-name: ${{ inputs.dispatch_id != '' && format('PASO Performance {0}', inputs.dispatch_id) || 'PASO Performance' }}",
     );
     expect(workflow).toContain("dispatch_id:");
     expect(workflow).toContain("Optional parent workflow dispatch identifier");
@@ -129,7 +129,7 @@ describe("OpenClaw performance workflow", () => {
     const install = findStep("Install OCM and Kova");
     const installRun = install.run ?? "";
     const targetCheckout = findStep("Checkout target metadata", "resolve_target");
-    const resolveTarget = findStep("Resolve OpenClaw target ref", "resolve_target");
+    const resolveTarget = findStep("Resolve PASO target ref", "resolve_target");
 
     expect(workflow).toContain(`KOVA_CANONICAL_CONFIG_REF: ${canonicalKovaRef}`);
     expect(workflow).toContain(`KOVA_LEGACY_LIST_CONFIG_REF: ${legacyKovaRef}`);
@@ -211,7 +211,7 @@ describe("OpenClaw performance workflow", () => {
   });
 
   it("keeps live credentials away from custom Kova refs", () => {
-    const resolveTarget = findStep("Resolve OpenClaw target ref", "resolve_target");
+    const resolveTarget = findStep("Resolve PASO target ref", "resolve_target");
     const decideLane = findStep("Decide lane");
     const configureLiveAuth = findStep("Configure live OpenAI auth");
     const runKova = findStep("Run Kova");
@@ -472,10 +472,10 @@ describe("OpenClaw performance workflow", () => {
   it("resolves each target once before benchmark and publication fan out", () => {
     const workflow = readWorkflow();
     const targetCheckout = findStep("Checkout target metadata", "resolve_target");
-    const resolveTarget = findStep("Resolve OpenClaw target ref", "resolve_target");
-    const checkout = findStep("Checkout OpenClaw");
+    const resolveTarget = findStep("Resolve PASO target ref", "resolve_target");
+    const checkout = findStep("Checkout PASO");
     const record = findStep("Record tested revision");
-    const sourceCheckout = findStep("Checkout OpenClaw source target", "source_performance");
+    const sourceCheckout = findStep("Checkout PASO source target", "source_performance");
     const sourceRecord = findStep("Record source performance revision", "source_performance");
 
     expect(workflow.jobs?.kova?.needs).toBe("resolve_target");
@@ -502,7 +502,7 @@ describe("OpenClaw performance workflow", () => {
     expect(
       Object.values(workflow.jobs ?? {})
         .flatMap((job) => job.steps ?? [])
-        .filter((step) => step.name === "Resolve OpenClaw target ref"),
+        .filter((step) => step.name === "Resolve PASO target ref"),
     ).toHaveLength(1);
   });
 
@@ -539,7 +539,7 @@ describe("OpenClaw performance workflow", () => {
   });
 
   it("builds only the QA and startup artifacts required by source probes", () => {
-    const run = findStep("Run OpenClaw source performance probes", "source_performance").run ?? "";
+    const run = findStep("Run PASO source performance probes", "source_performance").run ?? "";
     const typedBuild =
       "OPENCLAW_BUILD_PRIVATE_QA=1 node --import tsx scripts/build-all.mts sourcePerformance";
     const nativeBuild = "OPENCLAW_BUILD_PRIVATE_QA=1 node scripts/build-all.mjs sourcePerformance";
@@ -557,7 +557,7 @@ describe("OpenClaw performance workflow", () => {
   });
 
   it("runs only gateway startup cases advertised by the frozen target", () => {
-    const run = findStep("Run OpenClaw source performance probes", "source_performance").run ?? "";
+    const run = findStep("Run PASO source performance probes", "source_performance").run ?? "";
 
     expect(run).toContain("scripts/bench-gateway-startup.ts --help");
     expect(run).toContain('grep -Fxq "$startup_case"');
@@ -566,7 +566,7 @@ describe("OpenClaw performance workflow", () => {
   });
 
   it("keeps source gateway health waits within one startup budget", () => {
-    const run = findStep("Run OpenClaw source performance probes", "source_performance").run ?? "";
+    const run = findStep("Run PASO source performance probes", "source_performance").run ?? "";
     const deadline = "gateway_ready_deadline=$((SECONDS + gateway_ready_timeout_seconds))";
     const remaining = "gateway_ready_remaining=$((gateway_ready_deadline - SECONDS))";
     const deadlineFailure = [
@@ -623,7 +623,7 @@ describe("OpenClaw performance workflow", () => {
   });
 
   it("runs trusted CLI performance cases against the frozen candidate entrypoint", () => {
-    const run = findStep("Run OpenClaw source performance probes", "source_performance").run ?? "";
+    const run = findStep("Run PASO source performance probes", "source_performance").run ?? "";
 
     expect(run).toContain('"$PERFORMANCE_HELPER_DIR/scripts/bench-cli-startup.ts"');
     expect(run).toContain('--entry "$GITHUB_WORKSPACE/openclaw.mjs"');
@@ -656,12 +656,12 @@ describe("OpenClaw performance workflow", () => {
       "${{ github.event_name == 'schedule' || inputs.profile == 'release' }}",
     );
     expect(kovaSteps.some((step) => step.name === "Upload Kova artifacts")).toBe(true);
-    expect(kovaSteps.some((step) => step.name === "Run OpenClaw source performance probes")).toBe(
+    expect(kovaSteps.some((step) => step.name === "Run PASO source performance probes")).toBe(
       false,
     );
     expect(
       workflow.jobs?.source_performance?.steps?.some(
-        (step) => step.name === "Run OpenClaw source performance probes",
+        (step) => step.name === "Run PASO source performance probes",
       ),
     ).toBe(true);
     expect(JSON.stringify(kovaSteps)).not.toContain("CLAWSWEEPER_APP_PRIVATE_KEY");

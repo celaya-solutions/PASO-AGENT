@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/firecrawl-plugin",
   "version": "2026.8.1",
-  "description": "OpenClaw Firecrawl plugin.",
+  "description": "PASO Firecrawl plugin.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

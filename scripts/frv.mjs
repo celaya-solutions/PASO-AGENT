@@ -20,7 +20,7 @@ import {
 import { plainGhAuthenticatedEnv, resolvePlainGhBin } from "./lib/plain-gh.mjs";
 
 const execFileAsync = promisify(execFile);
-const DEFAULT_REPOSITORY = "openclaw/openclaw";
+const DEFAULT_REPOSITORY = "celaya-solutions/PASO-AGENT";
 const DEFAULT_POLL_MS = 30_000;
 const DEFAULT_TIMEOUT_MS = 12 * 60 * 60_000;
 const DEFAULT_RECONCILE_TIMEOUT_MS = 60_000;
@@ -816,7 +816,9 @@ function print(value, json) {
     console.log(`action: ${value.action}`);
   }
   if (value.finalRunId) {
-    console.log(`final run: https://github.com/openclaw/openclaw/actions/runs/${value.finalRunId}`);
+    console.log(
+      `final run: https://github.com/celaya-solutions/PASO-AGENT/actions/runs/${value.finalRunId}`,
+    );
   }
 }
 

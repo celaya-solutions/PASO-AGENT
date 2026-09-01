@@ -136,6 +136,8 @@ function readManifest(manifestPath: string) {
     throw new Error("Signing manifest must be an object.");
   }
   const manifest = {
+    releaseEnabled: parsed.releaseEnabled === true,
+    releaseOwner: requireString(parsed.releaseOwner, "Signing manifest missing releaseOwner."),
     teamId: requireString(parsed.teamId, "Signing manifest missing teamId."),
     signingRepo: requireString(parsed.signingRepo, "Signing manifest missing signingRepo."),
     signingBranch: requireString(parsed.signingBranch, "Signing manifest missing signingBranch."),
@@ -175,6 +177,8 @@ function writeXcconfig(manifest: SigningManifest) {
 
 function writePlan(manifest: SigningManifest) {
   process.stdout.write(`iOS App Store signing plan
+Release enabled: ${manifest.releaseEnabled ? "yes" : "no"}
+Release owner: ${manifest.releaseOwner}
 Team ID: ${manifest.teamId}
 Profile type: ${manifest.profileType}
 Signing repo: ${manifest.signingRepo}
@@ -199,6 +203,10 @@ try {
 
   if (mode === "plan") {
     writePlan(manifest);
+  } else if (!manifest.releaseEnabled) {
+    throw new Error(
+      "PASO iOS publishing is disabled. The checked-in manifest is retained only for upstream OpenClaw compatibility; configure Celaya-owned signing before enabling it.",
+    );
   } else if (mode === "xcconfig") {
     writeXcconfig(manifest);
   } else if (mode === "check") {

@@ -1,12 +1,12 @@
-# OpenClaw Qwen Cloud Provider
+# PASO Qwen Cloud Provider
 
-Official OpenClaw provider plugin for Qwen Cloud.
+Official PASO provider plugin for Qwen Cloud.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/qwen-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/qwen> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/qwen.md> for setup and configuration.

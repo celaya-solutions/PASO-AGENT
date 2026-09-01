@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/opencode-go-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw OpenCode Go provider plugin",
+  "description": "PASO OpenCode Go provider plugin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

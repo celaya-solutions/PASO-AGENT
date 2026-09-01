@@ -144,7 +144,7 @@ describe("LabsPage", () => {
     expect(page.querySelector(".settings-page__intro")).toBeNull();
     const introLink = page.querySelector<HTMLAnchorElement>(".page-subtitle a");
     expect(introLink?.textContent?.trim()).toBe("Learn more");
-    expect(introLink?.href).toBe("https://docs.openclaw.ai/concepts/experimental-features");
+    expect(introLink?.href).toBe("https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs");
     expect(page.querySelectorAll(".settings-row")).toHaveLength(LAB_FEATURES.length);
     expect(page.textContent).toContain("Code Mode");
     expect(page.textContent).toContain("Swarm");

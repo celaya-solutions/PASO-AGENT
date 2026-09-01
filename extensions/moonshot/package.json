@@ -1,7 +1,7 @@
 {
   "name": "@openclaw/moonshot-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Moonshot provider plugin",
+  "description": "PASO Moonshot provider plugin",
   "type": "module",
   "devDependencies": {
     "@openclaw/plugin-sdk": "workspace:*"
@@ -30,6 +30,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   }
 }

@@ -248,16 +248,7 @@ describe("dreaming view", () => {
       buildProps({ dreamingOf: "reindexing old chats\u2026", onViewStateChange }),
     );
 
-    expectElement(container, ".dreams__lobster svg");
-
-    // The sleeper is the seeded pet cameo: eyes closed, pupils hidden.
-    const closedEyes = container.querySelector<SVGGElement>(".dreams__lobster .lob-eye-closed");
-    expect(closedEyes?.getAttribute("style")).toContain("opacity:1");
-    const openEyes = container.querySelector<SVGGElement>(".dreams__lobster .lob-eye-open");
-    expect(openEyes?.getAttribute("style")).toContain("display:none");
-    expect(
-      container.querySelector<HTMLElement>(".dreams__lobster")?.getAttribute("style"),
-    ).toContain("--lob-shell:");
+    expectElement(container, ".dreams__mark svg.dreams__mark-svg");
 
     expect(textItems(container, ".dreams__z")).toEqual(["z", "z", "Z"]);
 

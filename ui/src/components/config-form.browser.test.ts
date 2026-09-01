@@ -846,7 +846,9 @@ describe("config form renderer", () => {
     render(
       renderConfigForm({
         schema: rootAnalysis.schema,
-        uiHints: { gateway: { docsUrl: "https://docs.openclaw.ai/gateway/configuration" } },
+        uiHints: {
+          gateway: { docsUrl: "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs" },
+        },
         unsupportedPaths: rootAnalysis.unsupportedPaths,
         value: {},
         activeSection: "gateway",
@@ -871,7 +873,9 @@ describe("config form renderer", () => {
     expect(link.classList.contains("learn-more-link")).toBe(true);
     const popover = expectElement(link.closest("wa-popover"), "section help popover");
     expect(button.getAttribute("aria-controls")).toBe(popover.id);
-    expect(link.getAttribute("href")).toBe("https://docs.openclaw.ai/gateway/configuration");
+    expect(link.getAttribute("href")).toBe(
+      "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    );
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
   });

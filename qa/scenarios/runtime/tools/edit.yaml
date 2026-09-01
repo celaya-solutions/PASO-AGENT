@@ -7,7 +7,7 @@ scenario:
   coverage:
     secondary:
       - agent-runtime.tool-edit
-  objective: Verify targeted edit behavior is tracked across OpenClaw and Codex while Codex owns edit natively.
+  objective: Verify targeted edit behavior is tracked across PASO and Codex while Codex owns edit natively.
   successCriteria:
     - OpenClaw may expose OpenClaw edit while Codex app-server mode may omit duplicate OpenClaw dynamic edit.
     - Mock provider edit plans are reported as fixture intent, not as actual runtime tool calls.

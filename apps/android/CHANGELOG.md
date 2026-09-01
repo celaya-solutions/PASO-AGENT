@@ -1,4 +1,4 @@
-# OpenClaw Android Changelog
+# PASO Android Changelog
 
 ## Unreleased
 
@@ -6,7 +6,7 @@
 
 Adds inline audio/video playback and uploads, session dashboards, run telemetry, chat rewind/fork, a Settings repair assistant, and Wear instant Talk.
 
-Improves the working claw, collapsible details, Skill Workshop flows, and generated images.
+Improves the working indicator, collapsible details, Skill Workshop flows, and generated images.
 
 Fixes reconnect/session state, Talk transcripts, manual gateway ports, large-text onboarding, reduced motion, and Wear pairing/reply reliability.
 
@@ -54,6 +54,6 @@ Refreshes native Android localization coverage, including Swedish app naming and
 
 ## 2026.6.2 - 2026-06-02
 
-OpenClaw is now available on Android.
+PASO is now available on Android.
 
-Connect to your OpenClaw Gateway to chat with your assistant, use realtime Talk mode, review approvals, and bring Android device capabilities like camera, location, screen, and notifications into your private automation workflows.
+Connect to your PASO Gateway to chat with your assistant, use realtime Talk mode, review approvals, and bring Android device capabilities like camera, location, screen, and notifications into your private automation workflows.

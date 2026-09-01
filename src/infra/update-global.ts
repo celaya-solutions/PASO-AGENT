@@ -23,7 +23,7 @@ import { applyPathPrepend } from "./path-prepend.js";
 import { parseSemver } from "./runtime-guard.js";
 import { collectGitRuntimeErrors, type GitRuntimeIdentity } from "./update-git-runtime.js";
 
-/** Supported package managers for OpenClaw global install and update flows. */
+/** Supported package managers for PASO global install and update flows. */
 export type GlobalInstallManager = "npm" | "pnpm" | "bun";
 
 /** Runs package-manager commands with timeout and environment control. */
@@ -66,7 +66,7 @@ const PRIMARY_PACKAGE_NAME = "openclaw";
 const ALL_PACKAGE_NAMES = [PRIMARY_PACKAGE_NAME] as const;
 const GLOBAL_RENAME_PREFIX = ".";
 /** npm-compatible spec used when the user asks to install the moving main branch. */
-const OPENCLAW_MAIN_PACKAGE_SPEC = "github:openclaw/openclaw#main";
+const OPENCLAW_MAIN_PACKAGE_SPEC = "github:celaya-solutions/PASO-AGENT#main";
 const COREPACK_ENABLE_DOWNLOAD_PROMPT_DEFAULT = "0";
 const NPM_GLOBAL_INSTALL_QUIET_FLAGS = ["--no-fund", "--no-audit", "--loglevel=error"] as const;
 const PNPM_OPENCLAW_BUILD_ALLOWLIST_FLAG = `--allow-build=${PRIMARY_PACKAGE_NAME}`;
@@ -634,7 +634,7 @@ export function resolveNpmGlobalPrefixLayoutFromGlobalRoot(
 
 /**
  * Derives npm's global package and bin directories from a prefix root.
- * Used for staged installs where OpenClaw creates the prefix itself.
+ * Used for staged installs where PASO creates the prefix itself.
  */
 export function resolveNpmGlobalPrefixLayoutFromPrefix(prefix: string): NpmGlobalPrefixLayout {
   const resolvedPrefix = path.resolve(prefix);
@@ -1249,7 +1249,7 @@ export async function detectGlobalInstallManagerForRoot(
 }
 
 /**
- * Detects an installed global OpenClaw package by probing package-manager roots
+ * Detects an installed global PASO package by probing package-manager roots
  * when no trusted package root is already available.
  */
 export async function detectGlobalInstallManagerByPresence(
@@ -1278,8 +1278,8 @@ export async function detectGlobalInstallManagerByPresence(
 }
 
 /**
- * Builds the primary package-manager argv for a global OpenClaw install.
- * npm receives quiet/freshness-bypass flags; pnpm and Bun approve OpenClaw's lifecycle.
+ * Builds the primary package-manager argv for a global PASO install.
+ * npm receives quiet/freshness-bypass flags; pnpm and Bun approve PASO's lifecycle.
  */
 export function globalInstallArgs(
   managerOrCommand: GlobalInstallManager | ResolvedGlobalInstallCommand,

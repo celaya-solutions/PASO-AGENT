@@ -69,14 +69,14 @@ enum ComputerControlReadinessPresentation {
                 status: providerAvailable ? .available : .unavailable,
                 nextStep: providerAvailable
                     ? nil
-                    : String(localized: "Use a packaged OpenClaw build that includes the CUA driver.")),
+                    : String(localized: "Use a packaged PASO build that includes the CUA driver.")),
             self.permissionRow(
                 id: .accessibility,
                 title: String(localized: "Accessibility"),
                 status: permissions[.accessibility],
                 nextStep: String(
                     localized: """
-                    Grant OpenClaw in System Settings → Privacy & Security → Accessibility, then reopen it.
+                    Grant PASO in System Settings → Privacy & Security → Accessibility, then reopen it.
                     """)),
             self.permissionRow(
                 id: .screenRecording,
@@ -84,7 +84,7 @@ enum ComputerControlReadinessPresentation {
                 status: permissions[.screenRecording],
                 nextStep: String(
                     localized: """
-                    Grant OpenClaw in System Settings → Privacy & Security → Screen Recording, then reopen it.
+                    Grant PASO in System Settings → Privacy & Security → Screen Recording, then reopen it.
                     """)),
         ]
 
@@ -100,11 +100,11 @@ enum ComputerControlReadinessPresentation {
             case .running:
                 nil
             case .unavailable:
-                String(localized: "Use a packaged OpenClaw build that includes the CUA driver.")
+                String(localized: "Use a packaged PASO build that includes the CUA driver.")
             case .notReady:
-                String(localized: "Reopen OpenClaw to retry the embedded CUA daemon.")
+                String(localized: "Reopen PASO to retry the embedded CUA daemon.")
             case .unknown:
-                String(localized: "Keep OpenClaw open while it checks the embedded CUA daemon.")
+                String(localized: "Keep PASO open while it checks the embedded CUA daemon.")
             case .available, .granted, .notGranted:
                 nil
             }

@@ -237,7 +237,7 @@ export function prepareLegacyWorkspaceStateReset(
     ...sources.stateDirAttestationPaths.map((sourcePath) => ({
       rootDir: path.dirname(path.dirname(sourcePath)),
       sourcePath,
-      // Hashed paths inside OpenClaw-owned attestation directories are
+      // Hashed paths inside PASO-owned attestation directories are
       // reserved state. Explicit reset must remove malformed blockers too.
       requireAttestationHeader: false,
     })),
@@ -251,7 +251,7 @@ export function prepareLegacyWorkspaceStateReset(
     {
       ...candidate,
       sourcePath: `${candidate.sourcePath}${WORKSPACE_DOCTOR_CLAIM_SUFFIX}`,
-      // Sibling claims remain outside OpenClaw-owned roots. Renaming a claimed
+      // Sibling claims remain outside PASO-owned roots. Renaming a claimed
       // marker preserves its header, so require that ownership proof there too.
       requireAttestationHeader: candidate.requireAttestationHeader,
     },

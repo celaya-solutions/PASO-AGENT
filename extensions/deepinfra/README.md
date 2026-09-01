@@ -1,12 +1,12 @@
-# OpenClaw DeepInfra Provider
+# PASO DeepInfra Provider
 
-Official OpenClaw provider plugin for DeepInfra.
+Official PASO provider plugin for DeepInfra.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/deepinfra-provider
 openclaw gateway restart
 ```
 
-See <https://docs.openclaw.ai/providers/deepinfra> for setup and configuration.
+See <https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/providers/deepinfra.md> for setup and configuration.

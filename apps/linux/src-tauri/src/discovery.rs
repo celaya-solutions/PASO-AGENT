@@ -378,7 +378,7 @@ fn service_instance_name(fullname: &str) -> String {
     let instance = strip_ascii_suffix(fullname, GATEWAY_SERVICE_TYPE).trim_end_matches('.');
     let name = prettify_instance_name(&decode_bonjour_name(instance));
     if name.is_empty() {
-        "OpenClaw Gateway".to_string()
+        "PASO Gateway".to_string()
     } else {
         name
     }
@@ -387,7 +387,8 @@ fn service_instance_name(fullname: &str) -> String {
 fn prettify_instance_name(name: &str) -> String {
     let normalized = name.split_whitespace().collect::<Vec<_>>().join(" ");
     let without_conflict = strip_conflict_suffix(&normalized).trim();
-    strip_ascii_suffix(without_conflict, " (OpenClaw)")
+    let without_product = strip_ascii_suffix(without_conflict, " (PASO)");
+    strip_ascii_suffix(without_product, " (OpenClaw)")
         .trim()
         .to_string()
 }
@@ -476,7 +477,7 @@ pub fn connect_discovered_gateway(
         return Ok(());
     }
     WebviewWindowBuilder::new(&app, &label, WebviewUrl::External(url))
-        .title(format!("{name} — OpenClaw"))
+        .title(format!("{name} — PASO"))
         .inner_size(1080.0, 720.0)
         .min_inner_size(720.0, 520.0)
         .center()
@@ -835,9 +836,10 @@ mod tests {
     #[test]
     fn decodes_and_prettifies_fallback_name() {
         assert_eq!(
-            service_instance_name("Peter\\032Studio\\032(OpenClaw)._openclaw-gw._tcp.local."),
+            service_instance_name("Peter\\032Studio\\032(PASO)._openclaw-gw._tcp.local."),
             "Peter Studio"
         );
+        assert_eq!(prettify_instance_name("Studio (PASO) (2)"), "Studio");
         assert_eq!(prettify_instance_name("Studio (OpenClaw) (2)"), "Studio");
     }
 }

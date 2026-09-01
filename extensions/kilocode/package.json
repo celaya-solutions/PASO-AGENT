@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/kilocode-provider",
   "version": "2026.8.1",
-  "description": "OpenClaw Kilo Gateway provider plugin.",
+  "description": "PASO Kilo Gateway provider plugin.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "devDependencies": {

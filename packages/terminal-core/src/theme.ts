@@ -1,6 +1,6 @@
 // Terminal Core module implements theme behavior.
 import chalk, { Chalk } from "chalk";
-import { LOBSTER_PALETTE } from "./palette.js";
+import { PASO_PALETTE } from "./palette.js";
 
 // Shared terminal color theme that respects NO_COLOR and FORCE_COLOR.
 
@@ -15,17 +15,17 @@ const hex = (value: string) => baseChalk.hex(value);
 
 /** Shared terminal theme color functions. */
 export const theme = {
-  accent: hex(LOBSTER_PALETTE.accent),
-  accentBright: hex(LOBSTER_PALETTE.accentBright),
-  accentDim: hex(LOBSTER_PALETTE.accentDim),
-  info: hex(LOBSTER_PALETTE.info),
-  success: hex(LOBSTER_PALETTE.success),
-  warn: hex(LOBSTER_PALETTE.warn),
-  error: hex(LOBSTER_PALETTE.error),
-  muted: hex(LOBSTER_PALETTE.muted),
-  heading: baseChalk.bold.hex(LOBSTER_PALETTE.accent),
-  command: hex(LOBSTER_PALETTE.accentBright),
-  option: hex(LOBSTER_PALETTE.warn),
+  accent: hex(PASO_PALETTE.accent),
+  accentBright: hex(PASO_PALETTE.accentBright),
+  accentDim: hex(PASO_PALETTE.accentDim),
+  info: hex(PASO_PALETTE.info),
+  success: hex(PASO_PALETTE.success),
+  warn: hex(PASO_PALETTE.warn),
+  error: hex(PASO_PALETTE.error),
+  muted: hex(PASO_PALETTE.muted),
+  heading: baseChalk.bold.hex(PASO_PALETTE.accent),
+  command: hex(PASO_PALETTE.accentBright),
+  option: hex(PASO_PALETTE.warn),
 } as const;
 
 /** Return true when color styling is active. */

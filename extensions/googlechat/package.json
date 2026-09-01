@@ -1,10 +1,10 @@
 {
   "name": "@openclaw/googlechat",
   "version": "2026.8.1",
-  "description": "OpenClaw Google Chat channel plugin for spaces and direct messages.",
+  "description": "PASO Google Chat channel plugin for spaces and direct messages.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/openclaw"
+    "url": "https://github.com/celaya-solutions/PASO-AGENT"
   },
   "type": "module",
   "dependencies": {

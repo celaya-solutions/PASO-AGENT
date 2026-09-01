@@ -40,7 +40,6 @@ const ALL_ROUTES: RouteId[] = Array.from(
     "memory-import",
     "ai-agents",
     "model-setup",
-    "lobsterdex",
     ...visibleSettingsNavigationGroups(true).flatMap((group) => group.routes),
   ]),
 );
@@ -55,7 +54,6 @@ const SETTINGS_ROUTE_PATHS = [
     alias: "/communications",
   },
   { routeId: "appearance", path: "/settings/appearance", alias: "/appearance" },
-  { routeId: "lobsterdex", path: "/settings/lobsterdex", alias: "/lobsterdex" },
   { routeId: "automation", path: "/settings/automation", alias: "/automation" },
   { routeId: "mcp", path: "/settings/mcp", alias: "/mcp" },
   {
@@ -92,7 +90,7 @@ describe("navigationIconForRoute", () => {
       Object.fromEntries(ALL_ROUTES.map((routeId) => [routeId, navigationIconForRoute(routeId)])),
     ).toEqual({
       chat: "messageSquare",
-      custodian: "lobster",
+      custodian: "spark",
       activity: "activity",
       apps: "layoutGrid",
       portals: "monitor",
@@ -115,7 +113,6 @@ describe("navigationIconForRoute", () => {
       profile: "circleUser",
       communications: "send",
       appearance: "palette",
-      lobsterdex: "bug",
       automation: "terminal",
       mcp: "wrench",
       memory: "book",
@@ -163,18 +160,18 @@ describe("settingsSearchTextMatches", () => {
 
 describe("formatDocumentTitle", () => {
   it("does not duplicate a context ending in the brand", () => {
-    expect(formatDocumentTitle({ context: "Ask OpenClaw" })).toBe("Ask OpenClaw");
-    expect(formatDocumentTitle({ context: "OpenClaw" })).toBe("OpenClaw");
+    expect(formatDocumentTitle({ context: "Ask PASO" })).toBe("Ask PASO");
+    expect(formatDocumentTitle({ context: "PASO" })).toBe("PASO");
   });
 
   it("names the disconnected gateway without implying internet loss", () => {
     expect(
       formatDocumentTitle({ context: "Usage", gatewayDisconnected: true, queuedCount: 0 }),
-    ).toBe("(Disconnected) Usage — OpenClaw");
+    ).toBe("(Disconnected) Usage — PASO");
   });
 
   it("ignores a queued count while online", () => {
-    expect(formatDocumentTitle({ context: "Usage", queuedCount: 3 })).toBe("Usage — OpenClaw");
+    expect(formatDocumentTitle({ context: "Usage", queuedCount: 3 })).toBe("Usage — PASO");
   });
 });
 
@@ -194,7 +191,7 @@ describe("titleForRoute", () => {
       Object.fromEntries(ALL_ROUTES.map((routeId) => [routeId, titleForRoute(routeId)])),
     ).toEqual({
       chat: "Chat",
-      custodian: "OpenClaw",
+      custodian: "PASO",
       activity: "Activity",
       apps: "Apps",
       portals: "Portals",
@@ -217,7 +214,6 @@ describe("titleForRoute", () => {
       profile: "Profile",
       communications: "Communications",
       appearance: "Appearance",
-      lobsterdex: "Lobsterdex",
       automation: "Automation",
       mcp: "MCP",
       memory: "Memory",
@@ -269,7 +265,6 @@ describe("subtitleForRoute", () => {
       profile: "Your display name, avatar, and identity on this gateway.",
       communications: "Messages and text-to-speech settings.",
       appearance: "Theme and UI settings.",
-      lobsterdex: "Every lobster palette that has visited this browser.",
       automation: "Commands, hooks, automations, and plugins.",
       mcp: "MCP servers, auth, tools, and diagnostics.",
       memory: "Memory engine, search, and dreaming.",

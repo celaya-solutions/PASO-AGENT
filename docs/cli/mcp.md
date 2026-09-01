@@ -1,42 +1,42 @@
 ---
-summary: "Expose OpenClaw channel conversations over MCP and manage saved MCP server definitions"
+summary: "Expose PASO channel conversations over MCP and manage saved MCP server definitions"
 read_when:
-  - Connecting Codex, Claude Code, or another MCP client to OpenClaw-backed channels
+  - Connecting Codex, Claude Code, or another MCP client to PASO-backed channels
   - Running `openclaw mcp serve`
-  - Managing OpenClaw-saved MCP server definitions
+  - Managing PASO-saved MCP server definitions
 title: "MCP"
 sidebarTitle: "MCP"
 ---
 
 `openclaw mcp` has two jobs:
 
-- run OpenClaw as an MCP server with `openclaw mcp serve`
-- manage OpenClaw-managed outbound MCP server definitions with `list`, `show`, `status`, `doctor`, `probe`, `add`, `set`, `configure`, `tools`, `login`, `logout`, `reload`, and `unset`
+- run PASO as an MCP server with `openclaw mcp serve`
+- manage PASO-managed outbound MCP server definitions with `list`, `show`, `status`, `doctor`, `probe`, `add`, `set`, `configure`, `tools`, `login`, `logout`, `reload`, and `unset`
 
-`serve` is OpenClaw acting as an MCP server. The other subcommands are OpenClaw acting as an MCP client-side registry for servers its own runtimes may consume later.
+`serve` is PASO acting as an MCP server. The other subcommands are PASO acting as an MCP client-side registry for servers its own runtimes may consume later.
 
 <Note>
-  `list`, `show`, `set`, and `unset` only read and write OpenClaw-managed `mcp.servers` entries in OpenClaw config. They do not include mcporter servers from `config/mcporter.json`; use `mcporter list` for that registry.
+  `list`, `show`, `set`, and `unset` only read and write PASO-managed `mcp.servers` entries in PASO config. They do not include mcporter servers from `config/mcporter.json`; use `mcporter list` for that registry.
 </Note>
 
-Use [`openclaw acp`](/cli/acp) when OpenClaw should host a coding harness session itself and route that runtime through ACP.
+Use [`openclaw acp`](/cli/acp) when PASO should host a coding harness session itself and route that runtime through ACP.
 
 ## Choose the right MCP path
 
-| Goal                                                                | Use                                                                  | Why                                                                                                             |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Let an external MCP client read/send OpenClaw channel conversations | `openclaw mcp serve`                                                 | OpenClaw is the MCP server and exposes Gateway-backed conversations over stdio.                                 |
-| Save third-party MCP servers for OpenClaw-managed agent runs        | `openclaw mcp add`, `set`, `configure`, `tools`, `login`             | OpenClaw is the MCP client-side registry and later projects those servers into eligible runtimes.               |
-| Check a saved server without running an agent turn                  | `openclaw mcp status`, `doctor`, `probe`                             | `status` and `doctor` inspect config; `probe` opens a live MCP connection and lists capabilities.               |
-| Edit MCP config from a browser                                      | Control UI `/settings/mcp` (`/mcp` alias)                            | The page shows inventory, enablement, OAuth/filter summaries, command hints, and a scoped `mcp` editor.         |
-| Give Codex app-server a scoped native MCP server                    | `mcp.servers.<name>.codex`                                           | The `codex` block only affects Codex app-server thread projection and is stripped before native config handoff. |
-| Run ACP-hosted harness sessions                                     | [`openclaw acp`](/cli/acp) and [ACP Agents](/tools/acp-agents-setup) | ACP bridge mode does not accept per-session MCP server injection; configure gateway/plugin bridges instead.     |
+| Goal                                                            | Use                                                                  | Why                                                                                                             |
+| --------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Let an external MCP client read/send PASO channel conversations | `openclaw mcp serve`                                                 | PASO is the MCP server and exposes Gateway-backed conversations over stdio.                                     |
+| Save third-party MCP servers for PASO-managed agent runs        | `openclaw mcp add`, `set`, `configure`, `tools`, `login`             | PASO is the MCP client-side registry and later projects those servers into eligible runtimes.                   |
+| Check a saved server without running an agent turn              | `openclaw mcp status`, `doctor`, `probe`                             | `status` and `doctor` inspect config; `probe` opens a live MCP connection and lists capabilities.               |
+| Edit MCP config from a browser                                  | Control UI `/settings/mcp` (`/mcp` alias)                            | The page shows inventory, enablement, OAuth/filter summaries, command hints, and a scoped `mcp` editor.         |
+| Give Codex app-server a scoped native MCP server                | `mcp.servers.<name>.codex`                                           | The `codex` block only affects Codex app-server thread projection and is stripped before native config handoff. |
+| Run ACP-hosted harness sessions                                 | [`openclaw acp`](/cli/acp) and [ACP Agents](/tools/acp-agents-setup) | ACP bridge mode does not accept per-session MCP server injection; configure gateway/plugin bridges instead.     |
 
 <Tip>
-If you are not sure which path you need, start with `openclaw mcp status --verbose`. It shows what OpenClaw has saved without starting any MCP servers.
+If you are not sure which path you need, start with `openclaw mcp status --verbose`. It shows what PASO has saved without starting any MCP servers.
 </Tip>
 
-## OpenClaw as an MCP server
+## PASO as an MCP server
 
 This is the `openclaw mcp serve` path.
 
@@ -44,22 +44,22 @@ This is the `openclaw mcp serve` path.
 
 Use `openclaw mcp serve` when:
 
-- Codex, Claude Code, or another MCP client should talk directly to OpenClaw-backed channel conversations
-- you already have a local or remote OpenClaw Gateway with routed sessions
-- you want one MCP server that works across OpenClaw's channel backends instead of running separate per-channel bridges
+- Codex, Claude Code, or another MCP client should talk directly to PASO-backed channel conversations
+- you already have a local or remote PASO Gateway with routed sessions
+- you want one MCP server that works across PASO's channel backends instead of running separate per-channel bridges
 
-Use [`openclaw acp`](/cli/acp) instead when OpenClaw should host the coding runtime itself and keep the agent session inside OpenClaw.
+Use [`openclaw acp`](/cli/acp) instead when PASO should host the coding runtime itself and keep the agent session inside PASO.
 
 ### How it works
 
-`openclaw mcp serve` starts a stdio MCP server. The MCP client owns that process. While the client keeps the stdio session open, the bridge connects to a local or remote OpenClaw Gateway over WebSocket and exposes routed channel conversations over MCP.
+`openclaw mcp serve` starts a stdio MCP server. The MCP client owns that process. While the client keeps the stdio session open, the bridge connects to a local or remote PASO Gateway over WebSocket and exposes routed channel conversations over MCP.
 
 <Steps>
   <Step title="Client spawns the bridge">
     The MCP client spawns `openclaw mcp serve`.
   </Step>
   <Step title="Bridge connects to Gateway">
-    The bridge connects to the OpenClaw Gateway over WebSocket.
+    The bridge connects to the PASO Gateway over WebSocket.
   </Step>
   <Step title="Sessions become MCP conversations">
     Routed sessions become MCP conversations and transcript/history tools.
@@ -81,7 +81,7 @@ Use [`openclaw acp`](/cli/acp) instead when OpenClaw should host the coding runt
     - cancelling an `events_wait` request immediately releases its server-side wait and timeout
     - bridge or MCP transport close failures make `openclaw mcp serve` fail instead of reporting a clean shutdown
     - one-shot agent entry points such as `openclaw agent` and `openclaw infer model run` retire any bundled MCP runtimes they open when the reply completes, so repeated scripted runs do not accumulate stdio MCP child processes
-    - stdio MCP servers launched by OpenClaw (bundled or user-configured) are torn down as a process tree on shutdown, so child subprocesses started by the server do not survive after the parent stdio client exits
+    - stdio MCP servers launched by PASO (bundled or user-configured) are torn down as a process tree on shutdown, so child subprocesses started by the server do not survive after the parent stdio client exits
     - deleting or resetting a session disposes that session's MCP clients through the shared runtime cleanup path, so there are no lingering stdio connections tied to a removed session
 
   </Accordion>
@@ -104,7 +104,7 @@ Today, `auto` behaves the same as `on`. There is no client capability detection 
 
 ### What serve exposes
 
-The bridge uses existing Gateway session route metadata to expose channel-backed conversations. A conversation appears when OpenClaw already has session state with a known route such as:
+The bridge uses existing Gateway session route metadata to expose channel-backed conversations. A conversation appears when PASO already has session state with a known route such as:
 
 - `channel`
 - recipient or destination metadata
@@ -219,7 +219,7 @@ Current event types:
 
 ### Claude channel notifications
 
-The bridge can also expose Claude-specific channel notifications. This is the OpenClaw equivalent of a Claude Code channel adapter: standard MCP tools remain available, but live inbound messages can also arrive as Claude-specific MCP notifications.
+The bridge can also expose Claude-specific channel notifications. This is the PASO equivalent of a Claude Code channel adapter: standard MCP tools remain available, but live inbound messages can also arrive as Claude-specific MCP notifications.
 
 <Tabs>
   <Tab title="off">
@@ -307,7 +307,7 @@ The bridge does not invent routing. It only exposes conversations that Gateway a
 
 That means:
 
-- sender allowlists, pairing, and channel-level trust still belong to the underlying OpenClaw channel configuration
+- sender allowlists, pairing, and channel-level trust still belong to the underlying PASO channel configuration
 - `messages_send` can only reply through an existing stored route
 - approval state is live/in-memory only for the current bridge session
 - bridge auth should use the same Gateway token or password controls you would trust for any other remote Gateway client
@@ -316,7 +316,7 @@ If a conversation is missing from `conversations_list`, the usual cause is not M
 
 ### Testing
 
-OpenClaw ships a deterministic Docker smoke for this bridge:
+PASO ships a deterministic Docker smoke for this bridge:
 
 ```bash
 pnpm test:docker:mcp-channels
@@ -351,18 +351,18 @@ For broader testing context, see [Testing](/help/testing).
   </Accordion>
 </AccordionGroup>
 
-## OpenClaw as an MCP client registry
+## PASO as an MCP client registry
 
 This is the `openclaw mcp list`, `show`, `status`, `doctor`, `probe`, `add`, `set`,
 `configure`, `tools`, `login`, `logout`, `reload`, and `unset` path.
 
-These commands do not expose OpenClaw over MCP. They manage OpenClaw-managed MCP server definitions under `mcp.servers` in OpenClaw config. They do not read mcporter servers from `config/mcporter.json`.
+These commands do not expose PASO over MCP. They manage PASO-managed MCP server definitions under `mcp.servers` in PASO config. They do not read mcporter servers from `config/mcporter.json`.
 
-Those saved definitions are for runtimes that OpenClaw launches or configures later, such as embedded OpenClaw and other runtime adapters. OpenClaw stores the definitions centrally so those runtimes do not need to keep their own duplicate MCP server lists.
+Those saved definitions are for runtimes that PASO launches or configures later, such as embedded PASO and other runtime adapters. PASO stores the definitions centrally so those runtimes do not need to keep their own duplicate MCP server lists.
 
 <AccordionGroup>
   <Accordion title="Important behavior">
-    - these commands only read or write OpenClaw config
+    - these commands only read or write PASO config
     - `status`, `list`, `show`, `doctor` without `--probe`, `set`, `configure`, `tools`, `logout`, `reload`, and `unset` do not connect to the target MCP server
     - `login` performs the MCP OAuth network flow for the configured HTTP server and saves the resulting local credentials
     - `status --verbose` prints resolved transport, auth, timeout, filter, and parallel-tool-call hints without connecting
@@ -375,8 +375,8 @@ Those saved definitions are for runtimes that OpenClaw launches or configures la
     - `requestTimeoutMs` and `connectionTimeoutMs` set per-server request and connection timeouts in milliseconds
     - `supportsParallelToolCalls: true` marks servers that adapters can call concurrently
     - HTTP servers can use static headers, OAuth login, TLS verification control, and mTLS certificate/key paths
-    - embedded OpenClaw exposes configured MCP tools in normal `coding` and `messaging` tool profiles; `minimal` still hides them, and `tools.deny: ["bundle-mcp"]` disables them explicitly
-    - per-server `toolFilter.include` and `toolFilter.exclude` filter discovered MCP tools before they become OpenClaw tools
+    - embedded PASO exposes configured MCP tools in normal `coding` and `messaging` tool profiles; `minimal` still hides them, and `tools.deny: ["bundle-mcp"]` disables them explicitly
+    - per-server `toolFilter.include` and `toolFilter.exclude` filter discovered MCP tools before they become PASO tools
     - servers that advertise resources or prompts also expose utility tools for listing/reading resources and listing/fetching prompts; those generated utility names (`resources_list`, `resources_read`, `prompts_list`, `prompts_get`) use the same include/exclude filter
     - dynamic MCP tool-list changes invalidate the cached catalog for that session; the next discovery/use refreshes from the server
     - repeated MCP tool request/protocol failures pause that server briefly so one broken server does not consume the whole turn
@@ -385,7 +385,7 @@ Those saved definitions are for runtimes that OpenClaw launches or configures la
   </Accordion>
 </AccordionGroup>
 
-Runtime adapters may normalize this shared registry into the shape their downstream client expects. For example, embedded OpenClaw consumes OpenClaw `transport` values directly, while Claude Code and Gemini receive CLI-native `type` values such as `http`, `sse`, or `stdio`.
+Runtime adapters may normalize this shared registry into the shape their downstream client expects. For example, embedded PASO consumes PASO `transport` values directly, while Claude Code and Gemini receive CLI-native `type` values such as `http`, `sse`, or `stdio`.
 
 ### Codex tool approvals
 
@@ -413,12 +413,12 @@ that server, so use it only for trusted servers. `mcp probe` and `mcp doctor
 --probe` warn when a server remains in `auto` mode and none of its tools has
 safety annotations.
 
-The optional `codex` block is OpenClaw projection metadata for Codex app-server
+The optional `codex` block is PASO projection metadata for Codex app-server
 threads only; it does not change ACP sessions, generic Codex harness config, or
 other runtime adapters. Use non-empty `codex.agents` to project a server only
-into specific OpenClaw agent ids. Empty, blank, or invalid agent lists are
+into specific PASO agent ids. Empty, blank, or invalid agent lists are
 rejected by config validation and omitted by the runtime projection path
-instead of becoming global. OpenClaw strips the `codex` metadata before handing
+instead of becoming global. PASO strips the `codex` metadata before handing
 the native `mcp_servers` config to Codex.
 
 ### Saved MCP server definitions
@@ -450,7 +450,7 @@ Notes:
 - `set` expects one JSON object value on the command line.
 - `configure` updates enablement, tool filters, timeouts, OAuth, TLS, Codex approval mode, and parallel-tool-call hints without replacing the whole server definition. Add `--probe` to verify the updated server before saving.
 - `tools` updates per-server tool filters. Include/exclude entries are MCP tool names and simple `*` globs.
-- `login` runs the OAuth flow for HTTP servers configured with `auth: "oauth"`. For a loopback redirect, OpenClaw listens for the browser callback and completes login automatically. The printed `--code` command remains the fallback for remote, headless, or unreachable callbacks.
+- `login` runs the OAuth flow for HTTP servers configured with `auth: "oauth"`. For a loopback redirect, PASO listens for the browser callback and completes login automatically. The printed `--code` command remains the fallback for remote, headless, or unreachable callbacks.
 - `logout` clears stored OAuth credentials for the named server without removing the saved server definition.
 - `reload` disposes cached in-process MCP runtimes for the current CLI process only. Gateway or agent processes in another process still need their own reload or restart path.
 - Use `transport: "streamable-http"` for Streamable HTTP MCP servers. `openclaw mcp set` also normalizes CLI-native `type: "http"` to the same canonical config shape for compatibility.
@@ -687,7 +687,7 @@ Launches a local child process and communicates over stdin/stdout.
 <Warning>
 **Stdio env safety filter**
 
-OpenClaw rejects interpreter-startup, loader-hijack, and shell-init env keys before spawning a stdio MCP server, even if they appear in a server's `env` block. This uses the same host environment security policy as other OpenClaw-spawned processes: it blocks known interpreter startup hooks (for example `NODE_OPTIONS`, `PYTHONSTARTUP`, `PERL5OPT`, `RUBYOPT`, `BASHOPTS`, `KSH_ENV`), shared-library and function-injection prefixes (`DYLD_*`, `LD_*`, `BASH_FUNC_*`), and similar runtime-control variables. Startup drops these silently and logs a warning so they cannot inject an implicit prelude, swap the interpreter, enable a debugger, or hijack the dynamic linker against the stdio process. An explicit allowlist keeps ordinary MCP credential env vars usable (`GITHUB_TOKEN`, `GH_TOKEN`, `GITLAB_TOKEN`, `NPM_TOKEN`, `NODE_AUTH_TOKEN`, `DATABASE_URL`, `MONGODB_URI`, `REDIS_URL`, `AMQP_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`), along with ordinary proxy and server-specific env vars (`HTTP_PROXY`, custom `*_API_KEY`, etc.). Other `AWS_*` keys such as `AWS_CONFIG_FILE` and `AWS_SHARED_CREDENTIALS_FILE` remain blocked because they point at credential files rather than carry a credential value directly.
+PASO rejects interpreter-startup, loader-hijack, and shell-init env keys before spawning a stdio MCP server, even if they appear in a server's `env` block. This uses the same host environment security policy as other PASO-spawned processes: it blocks known interpreter startup hooks (for example `NODE_OPTIONS`, `PYTHONSTARTUP`, `PERL5OPT`, `RUBYOPT`, `BASHOPTS`, `KSH_ENV`), shared-library and function-injection prefixes (`DYLD_*`, `LD_*`, `BASH_FUNC_*`), and similar runtime-control variables. Startup drops these silently and logs a warning so they cannot inject an implicit prelude, swap the interpreter, enable a debugger, or hijack the dynamic linker against the stdio process. An explicit allowlist keeps ordinary MCP credential env vars usable (`GITHUB_TOKEN`, `GH_TOKEN`, `GITLAB_TOKEN`, `NPM_TOKEN`, `NODE_AUTH_TOKEN`, `DATABASE_URL`, `MONGODB_URI`, `REDIS_URL`, `AMQP_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`), along with ordinary proxy and server-specific env vars (`HTTP_PROXY`, custom `*_API_KEY`, etc.). Other `AWS_*` keys such as `AWS_CONFIG_FILE` and `AWS_SHARED_CREDENTIALS_FILE` remain blocked because they point at credential files rather than carry a credential value directly.
 
 If your MCP server genuinely needs one of the blocked variables, set it on the gateway host process instead of under the stdio server's `env`.
 </Warning>
@@ -732,15 +732,15 @@ Sensitive values in `url` (userinfo) and `headers` are redacted in logs and stat
 
 OAuth is for HTTP MCP servers that advertise the MCP OAuth flow. Static `Authorization` headers are ignored for a server while `auth: "oauth"` is enabled. By default, OAuth credentials are shared and operator-managed. Credentials saved by `openclaw mcp login` work with embedded MCP, CLI runners, and the local Codex app-server.
 
-Native MCP OAuth sessions live in the owner-only shared SQLite database at `<state-dir>/state/openclaw.sqlite` (`mcp_oauth_stores`). The row can contain access and refresh tokens, dynamic client registration secrets, discovery metadata, and the temporary PKCE verifier. Refresh, login, and logout use the same SQLite lease, so parallel OpenClaw processes cannot consume one refresh token or resurrect a logged-out session.
+Native MCP OAuth sessions live in the owner-only shared SQLite database at `<state-dir>/state/openclaw.sqlite` (`mcp_oauth_stores`). The row can contain access and refresh tokens, dynamic client registration secrets, discovery metadata, and the temporary PKCE verifier. Refresh, login, and logout use the same SQLite lease, so parallel PASO processes cannot consume one refresh token or resurrect a logged-out session.
 
 Upgrades from the retired `<state-dir>/mcp-oauth/*.json` store are handled only by `openclaw doctor --fix`. Runtime code never reads, writes, or falls back to those files.
 
-Until shared credentials are available, OpenClaw omits only that MCP server from the agent runtime instead of failing the agent turn. The operator, or an agent with shell access, can then run `openclaw mcp login <name>` and use the server on a later turn.
+Until shared credentials are available, PASO omits only that MCP server from the agent runtime instead of failing the agent turn. The operator, or an agent with shell access, can then run `openclaw mcp login <name>` and use the server on a later turn.
 
-If a server rejects a token with `insufficient_scope`, OpenClaw preserves the requested scope and asks for `openclaw mcp login <name>` instead of repeating a refresh that cannot grant new scope. That login starts a new authorization request while keeping the previous token until replacement credentials are saved.
+If a server rejects a token with `insufficient_scope`, PASO preserves the requested scope and asks for `openclaw mcp login <name>` instead of repeating a refresh that cannot grant new scope. That login starts a new authorization request while keeping the previous token until replacement credentials are saved.
 
-When a remote MCP service is already backed by a separate OpenClaw refresh-capable auth profile, you can optionally set `oauth.authProfileId`. OpenClaw refreshes either credential source before runtime projection and passes only the current access token to the downstream MCP client.
+When a remote MCP service is already backed by a separate PASO refresh-capable auth profile, you can optionally set `oauth.authProfileId`. PASO refreshes either credential source before runtime projection and passes only the current access token to the downstream MCP client.
 
 Set `oauth.identity: "per-requester"` when every authenticated sender should connect a separate account. Per-requester OAuth requires an HTTP server URL and cannot use `oauth.authProfileId`. Configure `gateway.publicOrigin` as the externally reachable HTTPS origin of the Gateway; HTTP is accepted only for literal loopback hosts (`localhost`, `127.0.0.1`, or `[::1]`) during local development. The provider redirects to `<gateway.publicOrigin>/oauth/mcp/callback` after authorization.
 
@@ -768,7 +768,7 @@ Set `oauth.identity: "per-requester"` when every authenticated sender should con
 The per-requester flow is sender-driven:
 
 1. The sender calls a tool from the server before connecting an account.
-2. OpenClaw returns a sign-in link for that sender instead of exposing another sender's credentials.
+2. PASO returns a sign-in link for that sender instead of exposing another sender's credentials.
 3. The provider redirects through the Gateway callback. After the callback succeeds, the sender retries the tool call with their connected account.
 
 If `gateway.publicOrigin` is missing, the sign-in result names that setting and `openclaw doctor` reports the same operator fix. `openclaw mcp login` and `openclaw mcp logout` remain operator-only commands for shared credentials; they do not manage per-requester accounts.
@@ -799,11 +799,11 @@ The shared operator flow uses the following commands:
     openclaw mcp login docs
     ```
 
-    OpenClaw starts the registered loopback callback, prints the authorization URL, and stores temporary OAuth verifier state in shared SQLite. Approve the request in the browser and return to the terminal; token exchange completes automatically after the callback arrives.
+    PASO starts the registered loopback callback, prints the authorization URL, and stores temporary OAuth verifier state in shared SQLite. Approve the request in the browser and return to the terminal; token exchange completes automatically after the callback arrives.
 
   </Step>
   <Step title="Use the manual fallback when needed">
-    If the browser runs on another machine or cannot reach the printed loopback address, copy the returned code and pass it back to OpenClaw.
+    If the browser runs on another machine or cannot reach the printed loopback address, copy the returned code and pass it back to PASO.
 
     ```bash
     openclaw mcp login docs --code abc123
@@ -835,19 +835,19 @@ If the provider rotates tokens or the authorization state gets stuck, run `openc
 
 `streamable-http` is an additional transport option alongside `sse` and `stdio`. It uses HTTP streaming for bidirectional communication with remote MCP servers.
 
-| Field                       | Description                                                                            |
-| --------------------------- | -------------------------------------------------------------------------------------- |
-| `url`                       | HTTP or HTTPS URL of the remote server (required)                                      |
-| `transport`                 | Set to `"streamable-http"` to select this transport; when omitted, OpenClaw uses `sse` |
-| `headers`                   | Optional key-value map of HTTP headers (for example auth tokens)                       |
-| `connectionTimeoutMs`       | Per-server connection timeout in ms (optional)                                         |
-| `requestTimeoutMs`          | Per-server MCP request timeout in milliseconds                                         |
-| `auth: "oauth"`             | Use MCP OAuth credentials saved by `openclaw mcp login`                                |
-| `sslVerify`                 | Set false only for explicitly trusted private HTTPS endpoints                          |
-| `clientCert` / `clientKey`  | mTLS client certificate and key paths                                                  |
-| `supportsParallelToolCalls` | Hint that concurrent calls are safe for this server                                    |
+| Field                       | Description                                                                        |
+| --------------------------- | ---------------------------------------------------------------------------------- |
+| `url`                       | HTTP or HTTPS URL of the remote server (required)                                  |
+| `transport`                 | Set to `"streamable-http"` to select this transport; when omitted, PASO uses `sse` |
+| `headers`                   | Optional key-value map of HTTP headers (for example auth tokens)                   |
+| `connectionTimeoutMs`       | Per-server connection timeout in ms (optional)                                     |
+| `requestTimeoutMs`          | Per-server MCP request timeout in milliseconds                                     |
+| `auth: "oauth"`             | Use MCP OAuth credentials saved by `openclaw mcp login`                            |
+| `sslVerify`                 | Set false only for explicitly trusted private HTTPS endpoints                      |
+| `clientCert` / `clientKey`  | mTLS client certificate and key paths                                              |
+| `supportsParallelToolCalls` | Hint that concurrent calls are safe for this server                                |
 
-OpenClaw config uses `transport: "streamable-http"` as the canonical spelling. CLI-native MCP `type: "http"` values are accepted when saved through `openclaw mcp set` and repaired by `openclaw doctor --fix` in existing config, but `transport` is what embedded OpenClaw consumes directly.
+PASO config uses `transport: "streamable-http"` as the canonical spelling. CLI-native MCP `type: "http"` values are accepted when saved through `openclaw mcp set` and repaired by `openclaw doctor --fix` in existing config, but `transport` is what embedded PASO consumes directly.
 
 Example:
 
@@ -900,7 +900,7 @@ Notes:
 
 ## MCP Apps
 
-OpenClaw can render tools that implement the stable [MCP Apps extension](https://modelcontextprotocol.io/extensions/apps). Apps are opt-in because their HTML comes from the configured MCP server. A view with current App-interaction authority can request app-visible tools and resources from that same server.
+PASO can render tools that implement the stable [MCP Apps extension](https://modelcontextprotocol.io/extensions/apps). Apps are opt-in because their HTML comes from the configured MCP server. A view with current App-interaction authority can request app-visible tools and resources from that same server.
 
 Enable the host bridge:
 
@@ -908,7 +908,7 @@ Enable the host bridge:
 openclaw config set mcp.apps.enabled true --strict-json
 ```
 
-Restart the Gateway after changing this setting. When enabled, OpenClaw starts a sandbox-only HTTP(S) listener on the Gateway port plus one (for the default Gateway, `18790`). The Control UI loads Apps from that separate origin; the listener never serves Control UI, authenticated Gateway routes, or user data.
+Restart the Gateway after changing this setting. When enabled, PASO starts a sandbox-only HTTP(S) listener on the Gateway port plus one (for the default Gateway, `18790`). The Control UI loads Apps from that separate origin; the listener never serves Control UI, authenticated Gateway routes, or user data.
 
 Direct Gateway connections need access to both ports. If a reverse proxy or TLS terminator exposes the Control UI, give Apps a dedicated public origin and proxy only that origin to the sandbox listener:
 
@@ -944,15 +944,15 @@ For example, the official basic React demo can be configured as:
 
 Behavior and security boundaries:
 
-- OpenClaw advertises the `io.modelcontextprotocol/ui` extension only when Apps are enabled.
+- PASO advertises the `io.modelcontextprotocol/ui` extension only when Apps are enabled.
 - Only `ui://` resources with the exact `text/html;profile=mcp-app` MIME type render.
 - UI resources are capped at 2 MiB, placed behind a double-iframe proxy on a dedicated outer origin, loaded into an opaque inner App origin, and constrained by CSP derived from the resource metadata.
-- App-only tools (`_meta.ui.visibility: ["app"]`) stay out of model tool lists. Apps can call only app-visible tools on their owning server that also pass the effective OpenClaw tool policy for the run that created the view.
-- Same-server resource listing and reads require that same current App-interaction authority. OpenClaw rechecks after upstream resource work, so a grant revoked in flight cannot return resource data to the App.
+- App-only tools (`_meta.ui.visibility: ["app"]`) stay out of model tool lists. Apps can call only app-visible tools on their owning server that also pass the effective PASO tool policy for the run that created the view.
+- Same-server resource listing and reads require that same current App-interaction authority. PASO rechecks after upstream resource work, so a grant revoked in flight cannot return resource data to the App.
 - Origin-bound App permissions such as camera, microphone, and geolocation are not granted while inner App documents use opaque origins for cross-App isolation.
 - App HTML, complete tool arguments, and raw results live in a bounded ten-minute in-memory view lease and are not written to disk or copied into transcript preview metadata. The transcript stores only a bounded server/tool/resource descriptor tied to the original tool-call ID. After a Gateway restart, the Control UI can verify that descriptor against the authenticated session transcript and refetch the `ui://` document for display; reconstructed views cannot call tools or use the resource bridge until a fresh run establishes current App-interaction authority.
 - In channel conversations, the latest successful App view in a turn adds one **Open App**-style action to the final assistant reply. Telegram DMs use a native Mini App button; Slack and Discord render the same portable action as a link. Other channels keep the original reply text and append an understandable HTTPS link.
-- Channel launch links are available only when Gateway Tailscale exposure has prepared a published HTTPS origin. `gateway.tailscale.mode: "serve"` is reachable only from the tailnet; password-authenticated `"funnel"` is reachable from the public internet. Externally managed Funnel routes targeting the ordinary Gateway listener must migrate to managed `"funnel"` mode before OpenClaw can publish an internet-reachable origin. See [Tailscale](/gateway/tailscale).
+- Channel launch links are available only when Gateway Tailscale exposure has prepared a published HTTPS origin. `gateway.tailscale.mode: "serve"` is reachable only from the tailnet; password-authenticated `"funnel"` is reachable from the public internet. Externally managed Funnel routes targeting the ordinary Gateway listener must migrate to managed `"funnel"` mode before PASO can publish an internet-reachable origin. See [Tailscale](/gateway/tailscale).
 - Launch tickets are opaque, minted only while materializing the final channel reply, and expire after at most two minutes or when the underlying view lease expires, whichever comes first. The URL does not contain Gateway bearer credentials, session keys, view metadata, App HTML, tool input, or tool results.
 - Standalone App windows allow 30 seconds to load the view. Each server's `requestTimeoutMs` applies to individual MCP requests, not to a complete App operation that may refresh the catalog before calling a tool. App request cancellation or closing the window aborts its browser request and propagates to the managed MCP runtime; other callers can still finish a shared catalog refresh. Cancellation cannot undo side effects already performed by the server.
 - When an App requests teardown, existing calls and authorized cleanup calls can finish until the App acknowledges shutdown or the one-second grace period expires. Closing or navigating away from the window cancels immediately.

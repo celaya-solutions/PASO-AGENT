@@ -157,7 +157,7 @@ export function validateGatewayPasswordInput(value: unknown): string | undefined
   return undefined;
 }
 
-/** Prints the onboarding banner: pixel mascot beside the OPENCLAW wordmark. */
+/** Prints the onboarding banner: PASO path mark beside the wordmark. */
 export async function printWizardHeader(runtime: RuntimeEnv): Promise<void> {
   await printClawBanner(runtime);
 }
@@ -201,8 +201,8 @@ export function formatControlUiSshHint(params: {
     "BYOH note: lan, tailnet, and custom bind are currently IPv4-only.",
     "If your host is IPv6-only, use an IPv4 sidecar or proxy in front of the Gateway.",
     "Docs:",
-    "https://docs.openclaw.ai/gateway/remote",
-    "https://docs.openclaw.ai/web/control-ui",
+    "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
+    "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
   ]
     .filter(Boolean)
     .join("\n");
@@ -249,7 +249,7 @@ async function assertFullResetPreservesOnboardingLock(workspaceDir: string): Pro
   ) {
     throw new Error(
       "Full reset workspace overlaps the active onboarding lock directory. " +
-        "Choose a workspace outside the OpenClaw state migration directory or use a narrower reset scope.",
+        "Choose a workspace outside the PASO state migration directory or use a narrower reset scope.",
     );
   }
 }

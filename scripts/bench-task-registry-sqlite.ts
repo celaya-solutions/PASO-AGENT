@@ -94,7 +94,7 @@ type BenchmarkRuntime = {
 };
 
 function usage(): string {
-  return `OpenClaw durable task registry churn benchmark
+  return `PASO durable task registry churn benchmark
 
 Usage:
   node --import tsx scripts/bench-task-registry-sqlite.ts [options]

@@ -34,7 +34,7 @@ import { createManagedWorktree } from "../../lib/worktrees/create-worktree.ts";
 import { GatewayPageController } from "../../lit/gateway-page-controller.ts";
 import { OpenClawLightDomElement } from "../../lit/openclaw-element.ts";
 
-const WORKTREES_DOCS_URL = "https://docs.openclaw.ai/concepts/managed-worktrees";
+const WORKTREES_DOCS_URL = "https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs";
 
 type WorktreesListResult = { worktrees: WorktreeRecord[] };
 type WorktreeBranchesResult = {

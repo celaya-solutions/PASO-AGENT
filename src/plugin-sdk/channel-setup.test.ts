@@ -48,11 +48,11 @@ describe("createOptionalChannelSetupSurface", () => {
         input: {},
       }),
     ).toBe(
-      "Example setup requires @openclaw/example to be installed. Docs: https://docs.openclaw.ai/channels/example",
+      "Example setup requires @openclaw/example to be installed. Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
     expect(setup.setupWizard.channel).toBe("example");
     expect(setup.setupWizard.status.unconfiguredHint).toBe(
-      "Example setup requires @openclaw/example to be installed. Docs: https://docs.openclaw.ai/channels/example",
+      "Example setup requires @openclaw/example to be installed. Docs: https://github.com/celaya-solutions/PASO-AGENT/tree/main/docs",
     );
     await expect(
       runSetupWizardFinalize({

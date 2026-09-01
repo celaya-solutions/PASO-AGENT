@@ -322,7 +322,7 @@ prepare_squash_merge_body() {
   body_file=$(mktemp .local/merge-body.XXXXXX) || return 1
   # Git parses complete commit messages; a body containing only trailers needs
   # a temporary subject. Keep all authors in one terminal trailer block.
-  envelope=$'OpenClaw merge message\n\n'
+  envelope=$'PASO merge message\n\n'
   printf '%s' "$envelope" > "$body_file" || return 1
   printf '%s\n' "$preview" | jq -r '.data.repository.pullRequest.viewerMergeBodyText' >> "$body_file" || return 1
   original_trailers=$(git -c trailer.separators=: -c trailer.co-authored-by.key=Co-authored-by interpret-trailers \

@@ -1,4 +1,4 @@
-# OpenClaw macOS app (dev + signing)
+# PASO macOS app (dev + signing)
 
 ## Quick dev run
 
@@ -44,7 +44,7 @@ Keychain services, duplicate-instance lock, and the CLI-managed Gateway service
 `ai.openclaw.<name>`. Unless config or environment selects a port, each profile
 derives a stable port in the profile `20000...59999` range. The app does not
 install or modify the host-global Mac node
-service or OpenClaw login item while a profile is active. The runtime child node
+service or PASO login item while a profile is active. The runtime child node
 still runs in process as usual. App relocation, Sparkle updates, and post-update
 service repair are disabled in profile mode; update the installed app through
 the normal default-profile workflow.
@@ -60,7 +60,7 @@ Run the full app suite only in disposable macOS CI or a VM without operator
 credentials or a live Gateway. A test filter or temporary `HOME` is not enough:
 preferences and Keychain use system services, and AppKit/WebKit tests can open
 windows and helper processes. Local subsets need a verified OS sandbox as well
-as test-owned resources. See [native test safety](https://docs.openclaw.ai/platforms/mac/dev-setup#run-native-tests-safely).
+as test-owned resources. See [native test safety](https://github.com/celaya-solutions/PASO-AGENT/blob/main/docs/platforms/mac/dev-setup.md#run-native-tests-safely).
 
 The `macos-swift` CI job builds tests once, then runs them through
 `scripts/test-macos-native.mts`. The full suite retains default-profile behavior;
@@ -95,10 +95,11 @@ It is not a distribution artifact. For a notarized app ZIP and DMG, use:
 scripts/package-mac-dist.sh
 ```
 
-For an unattended Peekaboo elevation host, use the closed Foundation signing
-profile and source-addressed ZIP workflow. `package` is an internal release
-operator command: it requires the OpenClaw Foundation signing identity and
-notarization credentials, and its archive is not a general-download artifact.
+The inherited Peekaboo elevation-host package lane is disabled for PASO. Its
+OpenClaw Foundation identity is retained only to verify legacy upstream
+artifacts; it must not sign or publish a PASO build. The command below now
+fails closed until Celaya Solutions Research implements a fork-owned signer,
+notarization profile, and release procedure.
 
 ```bash
 scripts/mac-elevation-host.sh package \

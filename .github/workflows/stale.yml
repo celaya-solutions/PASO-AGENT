@@ -88,13 +88,13 @@ jobs:
             Please add updates or it will be closed.
           close-issue-message: |
             Closing due to inactivity.
-            If this is still an issue, please retry on the latest OpenClaw release and share updated details.
+            If this is still an issue, please retry on the latest PASO release and share updated details.
             If you are absolutely sure it still happens on the latest release, open a new issue with fresh steps to reproduce.
           close-issue-reason: not_planned
           close-pr-message: |
             Closing due to inactivity.
-            If you believe this PR should be revived, post in #clawtributors on Discord to talk to a maintainer.
-            That channel is the escape hatch for high-quality PRs that get auto-closed.
+            If this change is still needed, open a fresh PR with current evidence or contact hello@celayasolutions.com.
+            Include a link to the closed PR so prior discussion stays easy to find.
       - name: Mark stale assigned issues (primary)
         id: assigned-issue-stale-primary
         continue-on-error: true
@@ -116,7 +116,7 @@ jobs:
             Please add updates or it will be closed.
           close-issue-message: |
             Closing due to inactivity.
-            If this is still an issue, please retry on the latest OpenClaw release and share updated details.
+            If this is still an issue, please retry on the latest PASO release and share updated details.
             If you are absolutely sure it still happens on the latest release, open a new issue with fresh steps to reproduce.
           close-issue-reason: not_planned
       - name: Mark stale assigned pull requests (primary)
@@ -141,8 +141,8 @@ jobs:
             Please add updates or it will be closed.
           close-pr-message: |
             Closing due to inactivity.
-            If you believe this PR should be revived, post in #clawtributors on Discord to talk to a maintainer.
-            That channel is the escape hatch for high-quality PRs that get auto-closed.
+            If this change is still needed, open a fresh PR with current evidence or contact hello@celayasolutions.com.
+            Include a link to the closed PR so prior discussion stays easy to find.
       - name: Check stale state cache
         id: stale-state
         if: always()
@@ -192,13 +192,13 @@ jobs:
             Please add updates or it will be closed.
           close-issue-message: |
             Closing due to inactivity.
-            If this is still an issue, please retry on the latest OpenClaw release and share updated details.
+            If this is still an issue, please retry on the latest PASO release and share updated details.
             If you are absolutely sure it still happens on the latest release, open a new issue with fresh steps to reproduce.
           close-issue-reason: not_planned
           close-pr-message: |
             Closing due to inactivity.
-            If you believe this PR should be revived, post in #clawtributors on Discord to talk to a maintainer.
-            That channel is the escape hatch for high-quality PRs that get auto-closed.
+            If this change is still needed, open a fresh PR with current evidence or contact hello@celayasolutions.com.
+            Include a link to the closed PR so prior discussion stays easy to find.
       - name: Mark stale assigned issues (fallback)
         if: (steps.assigned-issue-stale-primary.outcome == 'failure' || steps.stale-state.outputs.has_state == 'true') && steps.app-token-fallback.outputs.token != ''
         uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
@@ -219,7 +219,7 @@ jobs:
             Please add updates or it will be closed.
           close-issue-message: |
             Closing due to inactivity.
-            If this is still an issue, please retry on the latest OpenClaw release and share updated details.
+            If this is still an issue, please retry on the latest PASO release and share updated details.
             If you are absolutely sure it still happens on the latest release, open a new issue with fresh steps to reproduce.
           close-issue-reason: not_planned
       - name: Mark stale assigned pull requests (fallback)
@@ -243,8 +243,8 @@ jobs:
             Please add updates or it will be closed.
           close-pr-message: |
             Closing due to inactivity.
-            If you believe this PR should be revived, post in #clawtributors on Discord to talk to a maintainer.
-            That channel is the escape hatch for high-quality PRs that get auto-closed.
+            If this change is still needed, open a fresh PR with current evidence or contact hello@celayasolutions.com.
+            Include a link to the closed PR so prior discussion stays easy to find.
 
   stale-bug-verification:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.backfill_stale_closures != true }}
@@ -507,13 +507,13 @@ jobs:
 
             const issueCloseMessage = [
               "Closing due to inactivity.",
-              "If this is still an issue, please retry on the latest OpenClaw release and share updated details.",
+              "If this is still an issue, please retry on the latest PASO release and share updated details.",
               "If you are absolutely sure it still happens on the latest release, open a new issue with fresh steps to reproduce.",
             ].join("\n");
             const prCloseMessage = [
               "Closing due to inactivity.",
-              "If you believe this PR should be revived, post in #clawtributors on Discord to talk to a maintainer.",
-              "That channel is the escape hatch for high-quality PRs that get auto-closed.",
+              "If this change is still needed, open a fresh PR with current evidence or contact hello@celayasolutions.com.",
+              "Include a link to the closed PR so prior discussion stays easy to find.",
             ].join("\n");
 
             const hasAny = (labels, exemptLabels) => {

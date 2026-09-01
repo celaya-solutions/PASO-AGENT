@@ -1,11 +1,11 @@
-# OpenClaw Google Chat
+# PASO Google Chat
 
-Official OpenClaw channel plugin for Google Chat spaces and direct messages.
+Official PASO channel plugin for Google Chat spaces and direct messages.
 
-Install from OpenClaw:
+Install from PASO:
 
 ```bash
 openclaw plugins install @openclaw/googlechat
 ```
 
-Configure the Google Chat app credentials and allowed spaces in OpenClaw. The plugin lets agents receive Google Chat events and reply through the configured app.
+Configure the Google Chat app credentials and allowed spaces in PASO. The plugin lets agents receive Google Chat events and reply through the configured app.

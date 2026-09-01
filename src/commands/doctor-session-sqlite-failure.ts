@@ -89,7 +89,7 @@ export function createSessionSqliteMigrationFailureIssue(
     version: VERSION,
   });
   const body = [
-    "OpenClaw doctor generated this sanitized report from a local session SQLite migration recovery.",
+    "PASO doctor generated this sanitized report from a local session SQLite migration recovery.",
     "",
     reportBody,
   ].join("\n");
@@ -111,7 +111,7 @@ function createPrefilledGithubIssueUrl(title: string, body: string): string {
     body: urlBody,
     title,
   });
-  return `https://github.com/openclaw/openclaw/issues/new?${params.toString()}`;
+  return `https://github.com/celaya-solutions/PASO-AGENT/issues/new?${params.toString()}`;
 }
 
 function renderFailureMarkdown(payload: {
@@ -137,7 +137,7 @@ function renderFailureMarkdown(payload: {
     "",
     `- Run: ${payload.runId}`,
     `- Generated: ${payload.generatedAt}`,
-    `- OpenClaw version: ${payload.version}`,
+    `- PASO version: ${payload.version}`,
     `- Reason: ${sanitizeFailureReportText(payload.reason)}`,
     `- Restore status: ${payload.restoreStatus}`,
     `- Recovery command: \`${payload.recoveryCommand}\``,

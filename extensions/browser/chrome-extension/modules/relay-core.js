@@ -1,9 +1,17 @@
-// Pure helpers for the OpenClaw extension: pairing-string parsing, reconnect
+// Pure helpers for the PASO extension: pairing-string parsing, reconnect
 // backoff, and Chrome tab-group color mapping. No chrome.* usage here so the
 // repo's vitest suite can exercise the logic directly.
 
 /** Tab group shown to the user; an ACL in selected mode and an ownership marker in all mode. */
-export const OPENCLAW_TAB_GROUP_TITLE = "OpenClaw";
+export const OPENCLAW_TAB_GROUP_TITLE = "PASO";
+const OPENCLAW_LEGACY_TAB_GROUP_TITLE = "OpenClaw";
+export const OPENCLAW_TAB_GROUP_TITLES = [
+  OPENCLAW_TAB_GROUP_TITLE,
+  OPENCLAW_LEGACY_TAB_GROUP_TITLE,
+];
+export function isOpenClawTabGroupTitle(title) {
+  return OPENCLAW_TAB_GROUP_TITLES.includes(title);
+}
 export const ACCESS_MODE_ALL = "all";
 export const ACCESS_MODE_SELECTED = "selected";
 const EXTENSION_RELAY_PROTOCOL = "openclaw-extension-relay.v2";

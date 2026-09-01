@@ -1,5 +1,5 @@
 /**
- * Bridges OpenClaw runtime tools into Codex app-server dynamic tool specs and
+ * Bridges PASO runtime tools into Codex app-server dynamic tool specs and
  * tool-call responses.
  */
 import { createHash } from "node:crypto";
@@ -458,12 +458,12 @@ function normalizeAcceptedSessionSpawn(result: unknown): {
   return runId && childSessionKey ? { runId, childSessionKey } : null;
 }
 
-/** Namespace attached to OpenClaw-owned dynamic tools exposed to Codex. */
+/** Namespace attached to PASO-owned dynamic tools exposed to Codex. */
 const CODEX_OPENCLAW_DYNAMIC_TOOL_NAMESPACE = "openclaw";
 const CODEX_DYNAMIC_TOOL_NAME_MAX_CHARS = 128;
 const CODEX_DYNAMIC_TOOL_NAME_PATTERN = /^[a-zA-Z0-9_-]+$/u;
 
-// Keep OpenClaw control-path tools directly callable even when Codex tool_search
+// Keep PASO control-path tools directly callable even when Codex tool_search
 // is unavailable or resolves a connector-only universe. Developer instructions
 // still steer normal Codex subagents to native spawn_agent.
 // sessions_yield is normally routed by its catalogMode "direct-only" before
@@ -506,7 +506,7 @@ function invalidateComputerFrame(contextEpoch: {
 }
 
 /**
- * Creates dynamic tool specs and a call handler that executes OpenClaw tools,
+ * Creates dynamic tool specs and a call handler that executes PASO tools,
  * applies hooks/middleware, and records delivery/media telemetry.
  */
 export function createCodexDynamicToolBridge(params: {
@@ -632,8 +632,8 @@ export function createCodexDynamicToolBridge(params: {
       if (!toolEntry) {
         const executedArguments = asNonArrayRecord(call.arguments);
         const message = registeredToolNames.has(call.tool)
-          ? `OpenClaw tool is not available for this turn: ${call.tool}`
-          : `Unknown OpenClaw tool: ${call.tool}`;
+          ? `PASO tool is not available for this turn: ${call.tool}`
+          : `Unknown PASO tool: ${call.tool}`;
         finalizeToolTerminalPresentation({
           toolCallId: call.callId,
           runId: toolResultHookContext.runId,
@@ -936,7 +936,7 @@ export function createCodexDynamicToolBridge(params: {
             : resolveToolExecutionErrorKind(error));
         const errorMessage = formatToolExecutionErrorMessage(
           error,
-          "OpenClaw dynamic tool call failed.",
+          "PASO dynamic tool call failed.",
         );
         executionPrevented =
           executionPrevented ||
@@ -1112,7 +1112,7 @@ function createCodexDynamicToolSpecs(params: {
   for (const entry of entries) {
     const functionSpec = createCodexDynamicToolFunctionSpec({ entry });
     if (entry.name === "openclaw" && params.directToolNames.has(entry.name)) {
-      // OpenClaw is ring-zero and its whole turn surface. Keep its canonical
+      // PASO is ring-zero and its whole turn surface. Keep its canonical
       // root name even though generic direct-only tools use a model namespace.
       specs.push(functionSpec);
       continue;
@@ -1622,7 +1622,7 @@ function convertToolContents(
   if (totalTextBudget <= maxChars) {
     return content.flatMap(convertToolContent);
   }
-  const noticeText = `...(OpenClaw truncated dynamic tool result: original ${totalTextChars} chars, weighted budget ${maxChars}; rerun with narrower args.)`;
+  const noticeText = `...(PASO truncated dynamic tool result: original ${totalTextChars} chars, weighted budget ${maxChars}; rerun with narrower args.)`;
   const notice = `\n${noticeText}`;
   const noticeChars = estimateToolResultTextChars(notice);
   const textBudget = Math.max(0, maxChars - noticeChars);

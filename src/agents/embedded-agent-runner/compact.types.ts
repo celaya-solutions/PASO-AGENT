@@ -110,7 +110,7 @@ export type CompactEmbeddedAgentSessionParams = {
   sessionEntry?: SessionEntry;
   /** Prevent compaction from changing the persisted session runtime or model. */
   modelSelectionLocked?: boolean;
-  /** OpenClaw-owned runtime policy prepared for this compaction path. */
+  /** PASO-owned runtime policy prepared for this compaction path. */
   runtimePlan?: AgentRuntimePlan;
   /** Host-prepared route and credential selection for native harness compaction. */
   runtimeAuthPlan?: AgentRuntimeAuthPlan;

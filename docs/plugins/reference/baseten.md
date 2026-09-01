@@ -1,5 +1,5 @@
 ---
-summary: "OpenClaw Baseten provider plugin."
+summary: "PASO Baseten provider plugin."
 read_when:
   - You are installing, configuring, or auditing the baseten plugin
 title: "Baseten plugin"
@@ -7,7 +7,7 @@ title: "Baseten plugin"
 
 # Baseten plugin
 
-OpenClaw Baseten provider plugin.
+PASO Baseten provider plugin.
 
 ## Distribution
 
