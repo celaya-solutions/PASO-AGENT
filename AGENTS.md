@@ -352,6 +352,7 @@ Mechanics only; policy lives above.
 
 ### Fork notes
 
+- 2026-09-01: Added Railway production settings for the PASO gateway, including public port binding and health checks; the live service uses token auth and persistent `/data` storage.
 - 2026-09-01: Rebranded user-facing product, docs, web, CLI, and native app surfaces as PASO by Celaya Solutions Research while preserving framework compatibility identifiers.
 - 2026-09-01: The owner explicitly approved publishing +1 915-270-0237 as PASO's public contact number for this rebrand.
 - 2026-09-01: Control UI locale memory remains automation-owned; changed PASO messages use safe English fallbacks until the post-merge locale refresh translates them.
