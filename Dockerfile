@@ -89,7 +89,7 @@ COPY --from=workspace-deps /out/openclaw-required-platform-packages /tmp/opencla
 
 # ── Production dependencies ────────────────────────────────────
 FROM dependency-inputs AS production-deps
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-pnpm-store,target=/root/.local/share/pnpm/store,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-pnpm-store,target=/root/.local/share/pnpm/store,sharing=locked \
     NODE_OPTIONS=--max-old-space-size=2048 pnpm install --frozen-lockfile --prod \
       --config.supportedArchitectures.os=linux \
       --config.supportedArchitectures.cpu="$(node -p 'process.arch')" \
@@ -108,7 +108,7 @@ COPY --from=bun-binary /usr/local/bin/bun /usr/local/bin/bun
 
 # Reduce OOM risk on low-memory hosts during dependency installation.
 # Docker builds on small VMs may otherwise fail with "Killed" (exit 137).
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-pnpm-store,target=/root/.local/share/pnpm/store,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-pnpm-store,target=/root/.local/share/pnpm/store,sharing=locked \
     NODE_OPTIONS=--max-old-space-size=2048 pnpm install --frozen-lockfile \
       --config.supportedArchitectures.os=linux \
       --config.supportedArchitectures.cpu="$(node -p 'process.arch')" \
@@ -241,8 +241,8 @@ WORKDIR /app
 # spawns `ssh` directly, and bookworm-slim does not provide it.
 # Apply current Debian point-release security fixes even when the pinned base
 # digest predates them, without waiting for a base-digest refresh.
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -309,8 +309,8 @@ RUN install -d -m 0755 "$COREPACK_HOME" && \
 ARG OPENCLAW_IMAGE_APT_PACKAGES
 ARG OPENCLAW_DOCKER_APT_PACKAGES=""
 ENV PATH="/home/node/.local/bin:${PATH}"
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     packages="${OPENCLAW_IMAGE_APT_PACKAGES:-$OPENCLAW_DOCKER_APT_PACKAGES}"; \
     if [ -n "$packages" ]; then \
       apt-get update && \
@@ -320,8 +320,8 @@ RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookwo
 # Install additional Python packages needed by your plugins or skills.
 # Example: docker build --build-arg OPENCLAW_IMAGE_PIP_PACKAGES="requests humanize" .
 ARG OPENCLAW_IMAGE_PIP_PACKAGES=""
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     if [ -n "$OPENCLAW_IMAGE_PIP_PACKAGES" ]; then \
       if ! python3 -m pip --version >/dev/null 2>&1; then \
         apt-get update && \
@@ -336,8 +336,8 @@ RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookwo
 # Must run after node_modules COPY so playwright-core is available.
 ARG OPENCLAW_INSTALL_BROWSER=""
 ENV PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     if [ -n "$OPENCLAW_INSTALL_BROWSER" ]; then \
       apt-get update && \
       DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xvfb && \
@@ -352,8 +352,8 @@ RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookwo
 # Required for agents.defaults.sandbox to function in Docker deployments.
 ARG OPENCLAW_INSTALL_DOCKER_CLI=""
 ARG OPENCLAW_DOCKER_GPG_FINGERPRINT="9DC858229FC7DD38854AE2D88D81803C0EBFCD88"
-RUN --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,id=s/b4d05d5c-4c2d-43e1-b103-05cdec719853-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
+RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookworm-apt-lists,target=/var/lib/apt,sharing=locked \
     if [ -n "$OPENCLAW_INSTALL_DOCKER_CLI" ]; then \
       apt-get update && \
       DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
