@@ -246,7 +246,7 @@ RUN --mount=type=cache,id=s/cb1f7a8b-7ee8-4925-a5e0-c87bf60f7d8c-openclaw-bookwo
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      ca-certificates curl git hostname lsof openssh-client openssl procps python3 tini && \
+      ca-certificates curl git gosu hostname lsof openssh-client openssl procps python3 tini && \
     update-ca-certificates
 
 # Keep npm as an operator-facing capability while replacing the base image's
@@ -407,13 +407,14 @@ RUN install -d -m 0755 -o node -g node /home/node/.config && \
 
 ENV NODE_ENV=production
 
-# Security hardening: Run as non-root user
-# The node:24-bookworm image includes a 'node' user (uid 1000)
-# This reduces the attack surface by preventing container escape via root privileges
-USER node
+# Railway volumes mount as root. The entrypoint prepares the configured persistent
+# directories, then uses gosu so the PASO process still runs as the non-root node user.
+COPY --chown=root:root --chmod=0755 scripts/docker/railway-entrypoint.sh /usr/local/bin/paso-entrypoint
 
 # Verify the shipped toolchain needs no privileged writes or first-run downloads.
+USER node
 RUN COREPACK_ENABLE_NETWORK=0 PNPM_CONFIG_OFFLINE=true pnpm --version
+USER root
 
 # Start gateway server with default config.
 # Binds to loopback (127.0.0.1) by default for security.
@@ -430,5 +431,5 @@ RUN COREPACK_ENABLE_NETWORK=0 PNPM_CONFIG_OFFLINE=true pnpm --version
 # For external access from host/ingress, override bind to "lan" and set auth.
 HEALTHCHECK --interval=3m --timeout=10s --start-period=15s --retries=3 \
   CMD ["node", "dist/docker-healthcheck.js"]
-ENTRYPOINT ["tini", "-s", "--"]
+ENTRYPOINT ["tini", "-s", "--", "/usr/local/bin/paso-entrypoint"]
 CMD ["node", "openclaw.mjs", "gateway"]
